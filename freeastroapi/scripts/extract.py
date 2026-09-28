@@ -94,11 +94,53 @@ async def extract_freeastroapi(
         "gender": gender
     }
 
+    payload_bazi_health = {
+        "year": year, "month": month, "day": day,
+        "hour": hour, "minute": minute,
+        "lat": lat, "lng": lng, "tz_str": tz_str,
+        "sex": gender[0].upper() if gender else "M",
+        "time_standard": "true_solar",
+        "include_timing": True,
+        "timing_years_ahead": 10
+    }
+
+    payload_bazi_lifespan = {
+        "year": year, "month": month, "day": day,
+        "hour": hour, "minute": minute,
+        "lat": lat, "lng": lng, "tz_str": tz_str,
+        "sex": gender[0].upper() if gender else "M",
+        "time_standard": "true_solar",
+        "max_age": 100,
+        "cultivation_factor": 0.75
+    }
+
     payload_kp = {
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
         "lat": lat, "lng": lng, "tz_str": tz_str,
         "ayanamsa": "kallam_krishnamurti"
+    }
+
+    payload_vargas = {
+        "year": year, "month": month, "day": day,
+        "hour": hour, "minute": minute,
+        "lat": lat, "lng": lng, "tz_str": tz_str,
+        "ayanamsha": "lahiri",
+        "divisions": [1, 2, 3, 4, 5, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]
+    }
+
+    payload_acg = {
+        "natal": {
+            "year": year, "month": month, "day": day,
+            "hour": hour, "minute": minute,
+            "lat": lat, "lng": lng, "tz_str": tz_str,
+            "house_system": "placidus",
+            "time_known": True
+        },
+        "mode": "in_mundo",
+        "bodies": ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "True_Node"],
+        "angles": ["asc", "dsc", "mc", "ic"],
+        "include_crossings": False
     }
 
     post_endpoints = [
@@ -109,7 +151,11 @@ async def extract_freeastroapi(
         ("numerology_profile_pythagorean", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
         ("chinese_bazi_true_solar", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
         ("chinese_bazi_flow", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi),
+        ("chinese_bazi_health", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health),
+        ("chinese_bazi_lifespan", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan),
         ("vedic_kp_v2", f"{BASE_URL}/api/v2/vedic/kp", payload_kp),
+        ("vedic_vargas", f"{BASE_URL}/api/v1/vedic/vargas", payload_vargas),
+        ("astrocartography_lines", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg),
     ]
 
     results: Dict[str, Any] = {

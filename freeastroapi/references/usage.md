@@ -1,4 +1,4 @@
-# FreeAstroAPI Comprehensive Technical Usage Manual (v1.2)
+# FreeAstroAPI Comprehensive Technical Usage Manual (v1.3)
 
 Unified reference manual for all calculation, metaphysical, chart rendering, astrocartography, progressions, and electional timing endpoints provided by FreeAstroAPI (`https://api.freeastroapi.com/api/`).
 
@@ -176,15 +176,17 @@ Comprehensive relationship affinity, cross-aspect matrices, house overlays, and 
 
 Temporal unfolded planetary movements and exact planetary return moments.
 
-### Endpoints
-- `POST /api/v1/transits/calculate`: Active transits to natal positions on a specific date.
-- `POST /api/v1/western/transits/insights`: Narrative interpretation of current transit activations.
-- `POST /api/v1/western/transits/search`: Scans a date window for exact aspect hits.
-- `POST /api/v1/western/transits/timeline`: Chronological transit aspect timeline.
-- `POST /api/v1/western/returns/calculate`: Returns for any planet (Solar, Lunar, Saturn Return, Jupiter Return, etc.).
-- `POST /api/v1/western/solar/calculate`: Solar return chart with optional relocation coordinates.
+> **Tier Boundary Notice**: Continuous timeline endpoints (`/api/v1/western/transits/timeline` and `/transits/search`) scan long windows and require the High plan ($40/mo). On the **Entry plan ($8/mo)**, use instant snapshot calculations via `POST /api/v1/transits/calculate` (requires `current_city`) or Solar/Planetary Returns.
 
-### Canonical Request (Solar Return with Relocation)
+### Endpoints
+- `POST /api/v1/transits/calculate`: Active transits to natal positions on a specific date (Entry compliant).
+- `POST /api/v1/western/transits/insights`: Narrative interpretation of current transit activations.
+- `POST /api/v1/western/transits/search`: Scans a date window for exact aspect hits (High plan required).
+- `POST /api/v1/western/transits/timeline`: Chronological transit aspect timeline (High plan required).
+- `POST /api/v1/western/returns/calculate`: Returns for any planet (Solar, Lunar, Saturn Return, Jupiter Return, etc.).
+- `POST /api/v1/western/solar/calculate`: Solar return chart with exact relocation coordinates.
+
+### Canonical Transits Calculate Request (Entry Plan Compliant)
 ```json
 {
   "natal": {
@@ -197,12 +199,32 @@ Temporal unfolded planetary movements and exact planetary return moments.
     "lng": <BIRTH_LNG>,
     "tz_str": "<BIRTH_TZ>"
   },
-  "return_year": <YYYY_TARGET>,
-  "relocation": {
-    "city": "<TARGET_CITY>",
-    "latitude": <TARGET_LAT>,
-    "longitude": <TARGET_LNG>,
-    "timezone": "<TARGET_TZ>"
+  "current_city": "<CURRENT_LOCATION_CITY>",
+  "transit_datetime": "<YYYY-MM-DDTHH:MM:SSZ>"
+}
+```
+
+### Canonical Solar Return Request (Strict Pydantic Nested Schema)
+```json
+{
+  "natal": {
+    "name": "<CONSULTANT_NAME>",
+    "datetime": "<YYYY-MM-DDTHH:MM:SS-05:00>",
+    "location": {
+      "city": "<BIRTH_CITY>",
+      "latitude": <BIRTH_LAT>,
+      "longitude": <BIRTH_LNG>,
+      "timezone": "<BIRTH_TZ>"
+    }
+  },
+  "solar_return": {
+    "year": <TARGET_RETURN_YEAR>,
+    "location": {
+      "city": "<RELOCATED_CITY>",
+      "latitude": <RELOCATED_LAT>,
+      "longitude": <RELOCATED_LNG>,
+      "timezone": "<RELOCATED_TZ>"
+    }
   }
 }
 ```
@@ -219,6 +241,21 @@ Classical predictive astrology and traditional time lords.
 - `POST /api/v1/western/directions/primary/exact-aspects`: Exact promisor-significator contacts.
 - `POST /api/v1/western/directions/primary/search`: Directional aspect scanning.
 - `POST /api/v1/western/profections/annual`: Hellenistic annual profections identifying the Lord of the Year, profected house, and activated natal planets.
+
+### Canonical Annual Profections Request (Pydantic-Strict)
+```json
+{
+  "year": <YYYY>,
+  "month": <MM>,
+  "day": <DD>,
+  "hour": <HH>,
+  "minute": <MN>,
+  "city": "<BIRTH_CITY>",
+  "annual_profection": {
+    "year": <TARGET_PROFECTION_YEAR>
+  }
+}
+```
 
 ---
 
@@ -362,9 +399,9 @@ Four Pillars metaphysics, 10-year Da Yun luck cycles, and classical TCM Huangdi 
 ### Endpoints
 - `POST /api/v1/chinese/bazi`: Four Pillars calculation with mandatory True Solar Time.
 - `POST /api/v1/chinese/bazi/flow`: Da Yun 10-year luck cycles (ages 0 to 90), annual and monthly pillars.
-- `POST /api/v1/chinese/bazi/health`: TCM 5 elements organ constitution and health tendencies.
-- `POST /api/v1/chinese/bazi/lifespan`: Neijing life curve (balance of Jing, Qi, and Shen).
-- `POST /api/v1/chinese/bazi/synastry`: BaZi relationship compatibility and element balance.
+- `POST /api/v1/chinese/bazi/health`: TCM 5 elements organ constitution, temperature/moisture indexes, and health tendencies.
+- `POST /api/v1/chinese/bazi/lifespan`: Neijing life curve (balance of Jing, Qi, and Shen) with cultivation factor.
+- `POST /api/v1/chinese/bazi/synastry`: BaZi 5-layer relationship compatibility and element balance.
 - `POST /api/v1/chinese/bazi/time-correction`: Solar time offset and equation of time calculator.
 - `GET /api/v1/chinese/bazi/dictionary`: Dictionary of 10 Gods, stars, clashes, and combinations.
 - `GET /api/v1/chinese/calendar/{date}`: Traditional Chinese lunar calendar (Huangli) for any date.
@@ -392,6 +429,59 @@ Four Pillars metaphysics, 10-year Da Yun luck cycles, and classical TCM Huangdi 
 }
 ```
 
+### TCM Health Analysis Request (`POST /api/v1/chinese/bazi/health`)
+Evaluates constitutional organ balance according to the *Huangdi Neijing* (黄帝内经):
+```json
+{
+  "year": 1990,
+  "month": 5,
+  "day": 15,
+  "hour": 12,
+  "minute": 0,
+  "lat": 6.25,
+  "lng": -75.56,
+  "tz_str": "America/Bogota",
+  "sex": "M",
+  "time_standard": "true_solar",
+  "include_timing": true,
+  "timing_years_ahead": 10
+}
+```
+**Scoring Architecture:**
+- **Raw Base (200 pts):** Celestial Stems (20 pts), Earthly Branches (20 pts), Hidden Stems (*Cang Gan* weighted 60-100%, 30%, 10% up to 10 pts).
+- **Seasonal Multipliers:** Modulated by birth month branch (e.g. Summer: Fire ×1.2–1.5, Metal ×0.5–0.7; Winter: Water ×1.2–1.5, Fire ×0.4–0.5).
+- **Thermal Index (-1.0 to +1.0):** Fire (+1.0), Wood (+0.2), Earth (0.0), Metal (-0.3), Water (-0.8). $>+0.25 \to$ Hot; $<-0.25 \to$ Cold.
+- **Moisture Index (-1.0 to +1.0):** Water (+0.8), Earth (+0.5), Wood (+0.3), Metal (-0.5), Fire (-0.8). $>+0.20 \to$ Damp; $<-0.20 \to$ Dry.
+- **Strain Index (Da Yun):** Tracks stress risk on vulnerable organs during unfavorable 10-year luck pillars.
+
+### Neijing Lifespan Simulation Request (`POST /api/v1/chinese/bazi/lifespan`)
+Stochastic annual simulation (0 to `max_age` years) based on Jing-Qi-Shen bioenergetics:
+```json
+{
+  "year": 1990,
+  "month": 5,
+  "day": 15,
+  "hour": 12,
+  "minute": 0,
+  "lat": 6.25,
+  "lng": -75.56,
+  "tz_str": "America/Bogota",
+  "sex": "M",
+  "time_standard": "true_solar",
+  "max_age": 100,
+  "cultivation_factor": 0.75
+}
+```
+- `cultivation_factor` (0.0 to 1.0): Internal alchemy / Neigong preservation factor.
+- Returns: `j0`/`j_final` (Jing vitality), `jing_prenatal` vs `jing_postnatal`, `qi_pre_heaven`, `qi_post_heaven`, `shen` spirit balance, and biometrics: S (Stability), D (Depletion), V (Vitality), H (Harmony).
+
+### BaZi Synastry 5-Layer Weighting (`POST /api/v1/chinese/bazi/synastry`)
+1. **Day Master Reciprocity (25%):** Stem combination *He* (+95 pts), Production *Sheng* (+85 pts), Clash *Chong* (40 pts).
+2. **Spouse Palace / Ri Zhi (20%):** Six Harmonies *Liu He* (+15 pts), Penalty *Xing* (-12 pts), Clash *Chong* (-15 pts).
+3. **Four Pillars Alignment (30%):** Day (40%), Month (30%), Hour (20%), Year (10%).
+4. **Useful God / Yong Shen Complementarity (15%):** Fills missing elements (+15 pts).
+5. **Hidden Stems / Cang Gan Karmic Bonds (10%):** Magnetic attraction between hidden roots.
+
 ### Professional Response Structure
 When `"include_professional": true` is passed, the response includes the `professional` object:
 - `dm_strength`: `"Weak"` or `"Strong"`, with `dm_strength_score` and `balance_ratio`.
@@ -412,7 +502,7 @@ High-precision Vedic astrology covering classical Parashara and Krishnamurti Pad
 - **KP V2 Engine**: `POST /api/v2/vedic/kp`
 - **KP Visual Chart**: `POST /api/v2/vedic/kp/render`
 - **Parashari Full Chart**: `POST /api/v1/vedic/calculate` & `POST /api/v2/vedic/calculate`
-- **Divisional Charts (Vargas)**: `POST /api/v1/vedic/vargas` & `POST /api/v2/vedic/vargas` (D-1 to D-60)
+- **Divisional Charts (Vargas D1-D60)**: `POST /api/v1/vedic/vargas` & `POST /api/v2/vedic/vargas`
 - **Vimshottari Dashas**: `POST /api/v1/vedic/dasha` & `POST /api/v2/vedic/dasha`
 - **Shadbala & Strengths**: `POST /api/v1/vedic/strength` & `POST /api/v2/vedic/strength` (6-factor Shadbala and Bhavabala)
 - **Classical Yogas**: `POST /api/v1/vedic/yogas` & `POST /api/v2/vedic/yogas` (Raja, Dhana, Gajakesari, etc.)
@@ -420,6 +510,37 @@ High-precision Vedic astrology covering classical Parashara and Krishnamurti Pad
 - **Compatibility**: `POST /api/v1/vedic/match` & `POST /api/v2/vedic/match` (Ashtakoota 36 Gunas, Manglik Dosha)
 - **Panchang**: `POST /api/v1/vedic/panchang` & `POST /api/v2/vedic/panchang` (Tithi, Vara, Nakshatra, Yoga, Karana)
 - **Muhurat Search**: `POST /api/v2/vedic/muhurat/search` & `POST /api/v2/vedic/muhurat/personalized-search`
+
+### Shodashavarga Divisional Charts Request (`POST /api/v1/vedic/vargas`)
+```json
+{
+  "year": 1990,
+  "month": 5,
+  "day": 15,
+  "hour": 12,
+  "minute": 0,
+  "lat": 6.25,
+  "lng": -75.56,
+  "tz_str": "America/Bogota",
+  "ayanamsha": "lahiri",
+  "divisions": [1, 2, 3, 4, 5, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]
+}
+```
+
+### Muhurat Window Search Request (`POST /api/v2/vedic/muhurat/search`)
+Algorithmic electional window search evaluating Tithi, Nakshatra, Yoga, Karana, and Lagna while auditing **Rahu Kaal**, **Bhadra**, and **Panchak** restrictions:
+```json
+{
+  "purpose": "vehicle_purchase",
+  "start_date": "2026-10-01",
+  "end_date": "2026-10-31",
+  "lat": 6.25,
+  "lng": -75.56,
+  "ayanamsha": "lahiri",
+  "limit": 5
+}
+```
+*Supported purposes:* `general_work`, `vehicle_purchase`, `property_purchase`, `griha_pravesh` (new home), `namkaran` (naming/brand launch), `mundan` (first haircut).
 
 ### Canonical KP V2 Request
 ```json

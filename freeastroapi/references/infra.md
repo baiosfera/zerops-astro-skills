@@ -67,9 +67,9 @@ Billable `POST` endpoints (specifically PDF report generation and compute-intens
 |---|---|---|---|
 | `400` | `bad_request` | Invalid coordinates, unresolved city name, or invalid date format | Verify date range; provide explicit `lat` and `lng` floats (-90 to 90, -180 to 180). |
 | `401` | `unauthorized` | Missing or invalid `x-api-key` header | Verify `$FREEASTRO_API_KEY` in environment or container secrets. |
-| `403` | `high_plan_required` | Feature requested exceeds Entry tier (e.g. `include_crossings: true` in ACG) | Set `include_crossings: false` or upgrade tier. |
+| `403` | `high_plan_required` | Feature requested exceeds Entry tier (e.g. `include_crossings: true` in ACG, or continuous `transits/timeline` and `transits/search`) | Enforce `include_crossings: false`, use `transits/calculate` with `current_city` for single-point snapshots, or upgrade tier. |
 | `409` | `idempotency_conflict` | Idempotency key reused with different payload, or request in progress | Generate fresh UUID with `uuidgen`, or respect `Retry-After` header. |
-| `422` | `validation_error` | Pydantic validation failure (missing required fields, invalid types, wrong nesting) | Inspect `detail` array in JSON error response. Common fixes: add `location.city` in Progressions, use `principal_natal` in Electional. |
+| `422` | `validation_error` | Pydantic validation failure (missing required fields, invalid types, wrong nesting) | Inspect `detail` array in JSON error response. Common fixes: nest `location` inside `natal` and `solar_return`, provide `annual_profection: {year}`, add `current_city` in transits. |
 | `429` | `too_many_requests` | Concurrency limit (5 RPS) or monthly quota exceeded | Respect `Retry-After` header; throttle loop with `sleep 0.25` or backoff to `sleep 1.0`. |
 | `501` | `png_unavailable` | Native Cairo rendering library unavailable on server | Fall back to `format: "svg"` vector output. |
 
