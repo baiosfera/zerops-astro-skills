@@ -43,3 +43,13 @@ Los tokens de color se conectan directamente a los IDs semánticos del SVG monoc
 - `--brand-primary` $\rightarrow$ tiñe `#symbol-core` y `#symbol-monogram`.
 - `--brand-secondary` $\rightarrow$ tiñe `#symbol-orbit-1` y `#symbol-orbit-2`.
 - `--brand-accent` $\rightarrow$ tiñe `#symbol-geometry-star` y estados `:hover`.
+
+---
+
+## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
+- **Desacople de Cascada:** `chroma` formula los 3 ecosistemas cromáticos completos, la auditoría dual WCAG 2.2 AAA / APCA y los tokens DTCG directamente a partir de las directrices de color y psicología del SSoT, sin requerir que `fontgen` o `symbol` se hayan ejecutado.
+- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante. Si `symbol_manifest.json` existe, mapea sobre sus trazos; de lo contrario mapea sobre los IDs semánticos estándar.
+- **Contratos de Salida Garantizados:** Emite `chroma_manifest.json` (3 ecosistemas OKLCH, Dark/Light Mode, WCAG AAA / APCA y `selected_ecosystem_id`), el bloque `@theme` para Tailwind CSS v4 y variables CSS `:root` consumibles por `brandview`.
+

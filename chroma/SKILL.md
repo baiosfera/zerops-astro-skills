@@ -4,51 +4,40 @@ description: "Trigger: chroma, paleta de color, oklch, wcag aaa, apca, psicologi
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Chroma — Motor de Color SOTA, 3 Ecosistemas OKLCH & Auditoría Dual Dual-RAG
 
 ## Activation Contract
-Activar cuando se requiera diseñar la arquitectura cromática de una marca, formulando **3 Ecosistemas Cromáticos Completos**, auditados bajo WCAG 2.2 AAA y APCA en espacio perceptual OKLCH, e inyectándolos sobre el SVG monocromático de Fase 2.
+Activar para diseñar la arquitectura cromática de una marca, formulando **3 Ecosistemas Cromáticos Completos**, auditados bajo WCAG 2.2 AAA y APCA en espacio perceptual OKLCH, con exportación Tailwind CSS v4 `@theme` y variables CSS. Opera desacoplado con ingestión directa desde `astrobranding_[MARCA].md` o en modo interactivo.
+
+## Input Rule (Desacople SSoT)
+- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0) sin requerir que fases previas se hayan ejecutado o bloqueen el pipeline. Si `symbol_manifest.json` existe, mapea sobre sus vectores; de lo contrario formula la paleta sobre los IDs semánticos estándar.
+- **Modo Standalone / Manual:** Acepta especificaciones directas del usuario o `brand_input.json`.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Formulación de 3 Ecosistemas Cromáticos Completos:** Generar obligatoriamente 3 propuestas cromáticas completas y conceptualmente diferenciadas (ej: *Quiet Luxury*, *High Performance*, *Bio-Sensual Sacred Glamour*).
-- **2. Arquitectura Bipolar (Dark Mode & Light Mode por Ecosistema):** Cada uno de los 3 ecosistemas debe contener su paleta Dark Mode y Light Mode completas con 7 tokens semánticos:
-  - `primary`: Color dominante de marca y monograma.
-  - `secondary`: Color de apoyo y elipses secundarias.
-  - `accent`: Color de alto impacto para micro-interacciones.
+- **1. Formulación de 3 Ecosistemas Cromáticos Completos:** Generar 3 propuestas conceptualmente diferenciadas (ej: *Quiet Luxury*, *High Performance*, *Bio-Sensual*).
+- **2. Arquitectura Bipolar (Dark & Light Mode por Ecosistema):** Cada ecosistema define Dark y Light Mode con 7 tokens semánticos:
+  - `primary`: Dominante de marca y monograma.
+  - `secondary`: Apoyo y elipses secundarias.
+  - `accent`: Alto impacto para micro-interacciones.
   - `background`: Lienzo base de la interfaz.
   - `surface`: Superficie elevada de tarjetas y módulos.
   - `text_primary`: Texto principal de máximo contraste.
   - `text_muted`: Texto secundario y metadatos.
-- **3. Espacio Perceptual OKLCH & Tokens W3C DTCG:** Cada token debe definir `$value`, `$type: "color"`, componentes `{ lightness, chroma, hue }`, código `hex` y `p3`.
+- **3. Espacio OKLCH & Tokens W3C DTCG:** Cada token define `$value`, `$type: "color"`, `{ lightness, chroma, hue }`, `hex` y `p3`. Emite código dev Tailwind v4 `@theme` y variables CSS `:root`.
 - **4. Auditoría Dual Estricta (WCAG 2.2 AAA + APCA):**
   - WCAG 2.2 AAA: Ratio $\ge 7.0:1$ para texto regular sobre background.
   - APCA: $L_c \ge 75.0$ para texto Body y $\ge 60.0$ para display.
-- **5. Inyección Directa sobre el Vector de Fase 2:** Mapear las variables `--brand-primary`, `--brand-secondary`, `--brand-accent` para teñir los nodos semánticos del SVG monocromático de la Fase 2 (`#symbol-core`, `#symbol-orbit-1`, `#symbol-monogram`).
-- **6. Contrato de Selección:** Incluir `selected_ecosystem_id` (ej: `"eco-dark-obsidian"`) para transferir la elección del usuario a Fase 4 y 5.
-- **7. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json` y validar contra `chroma_manifest.schema.json`.
-
-## Decision Gates
-
-| Condición | Acción |
-|---|---|
-| Contraste WCAG AAA < 7.0:1 | Ajustar la componente `lightness` en OKLCH hasta alcanzar $\ge 7.0:1$ sin alterar el `hue` |
-| APCA Body $L_c < 75.0$ | Aumentar la polaridad luminosa entre `text_primary` y `background` |
-| Pantallas Retina / P3 | Emitir valores `color(display-p3 r g b)` para gamas amplias |
-
-## Execution Steps
-1. Leer el arquetipo rector y el `symbol_manifest.json` generado en Fase 2.
-2. Formular los 3 Ecosistemas Cromáticos Completos en OKLCH con justificación psicológica.
-3. Auditar cada ecosistema con algoritmos de luminosidad relativa WCAG 2.2 y contraste perceptual APCA.
-4. Generar el bloque CSS `@theme` para Tailwind CSS v4 e inyección `:root`.
-5. Emitir `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json` validado con `chroma_manifest.schema.json`.
+- **5. Mapeo a IDs Semánticos:** Mapear `--brand-primary`, `--brand-secondary`, `--brand-accent` hacia `#symbol-core`, `#symbol-orbit-1`, `#symbol-monogram`.
+- **6. Contrato de Selección:** Incluir `selected_ecosystem_id` (ej: `"eco-dark-obsidian"`).
+- **7. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json` validado contra `chroma_manifest.schema.json`.
 
 ## Output Contract
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json`
 
 ## References
-- `references/usage.md` — Manual de 3 ecosistemas OKLCH, psicología del color y validación dual WCAG/APCA.
+- `references/usage.md` — Manual de 3 ecosistemas OKLCH, psicología del color, desacople SSoT y validación WCAG/APCA.
 - `assets/schemas/chroma_manifest.schema.json` — Esquema JSON Draft 2020-12.
 - `assets/templates/chroma_manifest_template.json` — Plantilla con 3 ecosistemas cromáticos.

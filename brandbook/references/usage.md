@@ -52,3 +52,13 @@ La exportación en `brandview` debe renderizar **el Isologotipo exactamente como
 - **PNG Retina ($2\times/3\times$):** Renderizado en backend mediante `@resvg/resvg-js` + `sharp` o en frontend vía Canvas HTML5 escalado con `window.devicePixelRatio`.
 - **JPG High-Res:** Fondo sólido según el tema seleccionado (`#0f172a` o `#ffffff`).
 - **PDF Vectorial:** Maquetado con `jsPDF` + `svg2pdf.js` incluyendo la ficha técnica, valores OKLCH/HEX, muestras tipográficas y el isologotipo principal.
+
+---
+
+## 3. Arquitectura Desacoplada & Ingestión Directa SSoT
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
+- **Desacople Total de Cascada:** `brandbook` puede compilar el `brandbook.json` DTCG y el manual ejecutivo directamente desde el SSoT sin requerir que los 4 manifiestos previos (`font_manifest.json`, `symbol_manifest.json`, `chroma_manifest.json`, `kinetic_manifest.json`) existan completos en disco.
+- **Cascada No Bloqueante & Consolidación Flexible:** Si uno o más manifiestos existen en disco, consolida sus selecciones definitivas; cualquier token faltante se deriva armoniosamente desde el SSoT sin detener la compilación.
+- **Contratos de Salida Garantizados:** Emite `brandbook.json` (W3C DTCG completo con extensiones Tailwind v4 y CSS variables), `brandbook_manifest.md` e `index.html` interactivo descargable consumibles por `brandview` o herramientas downstream.
+

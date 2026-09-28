@@ -52,3 +52,13 @@ El archivo `symbol_manifest.json` debe contener:
 La WebApp `brandview` consume `symbol_manifest.json` y permite exportar mediante:
 1. **Canvas Retina ($2\times/3\times$):** Renderizado escalado por `window.devicePixelRatio` para PNG nítido.
 2. **PDF Vectorial:** Incrustación directa de comandos vectoriales a 300 DPI mediante `jsPDF` + `svg2pdf.js`.
+
+---
+
+## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards astronómicos y arquetípicos.
+- **Desacople de Cascada:** `symbol` puede ejecutarse directamente sin requerir que `fontgen` haya concluido. Si `font_manifest.json` existe en disco, hereda las fuentes y proporciones de lockup; de lo contrario toma las directrices del SSoT o valores por defecto armónicos ($\Phi = 1.618$).
+- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante.
+- **Contratos de Salida Garantizados:** Emite `symbol_manifest.json` (3 isologos, 3 monogramas, 3 favicons en estricto B/N con IDs semánticos `#symbol-core`, `#symbol-orbit-1`, `#symbol-orbit-2`, `#symbol-geometry-star`, `#symbol-monogram`) y código dev SVG puro para `brandview`.
+

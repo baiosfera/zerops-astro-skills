@@ -10,21 +10,26 @@ metadata:
 # Orchesbrand — Orquestador de Pipeline de Identidad Visual Dual-RAG
 
 ## Activation Contract
-Activar cuando se requiera ejecutar el pipeline completo de branding o coordinar la generación en cascada de sus 5 fases especializadas ($F1 \rightarrow F5$), garantizando la transferencia de selecciones definitivas entre etapas, validación de schemas y sincronización en tiempo real con `brandview`.
+Activar para ejecutar el pipeline completo de branding o coordinar la generación de sus 5 fases especializadas ($F1 \rightarrow F5$), garantizando la transferencia de selecciones definitivas entre etapas, validación de schemas y sincronización en tiempo real con `brandview`. Opera en modo desacoplado directo o interactivo paso a paso.
+
+## Input Rule (Desacople SSoT & Modos de Ejecución)
+- **Fuente Primaria Indivisible:** Consume herméticamente `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0).
+- **Modo Desacoplado Directo:** Cada fase especializada (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) puede ejecutarse de forma autónoma e ingerir directamente desde el SSoT sin bloqueos en cascada.
+- **Modo Interactivo Paso a Paso (Brandview):** Permite disparar fases individuales a demanda desde la UI web, permitiendo al usuario seleccionar variantes y mutar manifiestos interactivamente.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Handoff Hermético (SSoT Indivisible):** Consume herméticamente `astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0 a partir de los 12 Shards) como SSoT sin tocar JSONs crudos ni esperar la ejecución de sub-diagnósticos. La suite de diseño opera 100% desacoplada de la data astronómica cruda.
-- **2. Secuencia en Cascada Determinista:**
-  $$\text{astrobranding} \xrightarrow{} \text{fontgen (F1)} \xrightarrow{\text{Fuentes Definitivas}} \text{symbol (F2 B/N)} \xrightarrow{\text{Vector Definitivo}} \text{chroma (F3 3-Eco)} \xrightarrow{\text{Colores Definitivos}} \text{kinetic (F4 3-Anim)} \xrightarrow{\text{Motion Definitivo}} \text{brandbook (F5 DTCG)}$$
-- **3. Puntos de Control y Circuit Breakers:** Antes de desbloquear la fase $N+1$, verificar:
-  - Existencia del archivo JSON en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
+- **1. Handoff Hermético (SSoT Indivisible):** Ingiere `astrobranding_[MARCA].md` sin tocar JSONs crudos ni esperar sub-diagnósticos. La suite de diseño opera 100% desacoplada de la data astronómica cruda.
+- **2. Cascada Flexible & No Bloqueante:**
+  $$\text{astrobranding} \xrightarrow{} \text{fontgen (F1)} \rightleftarrows \text{symbol (F2 B/N)} \rightleftarrows \text{chroma (F3 3-Eco)} \rightleftarrows \text{kinetic (F4 3-Anim)} \rightleftarrows \text{brandbook (F5 DTCG)}$$
+  La secuencia secuencial es opcional y no bloqueante; cada skill puede consumir directamente el SSoT y enriquecer los manifiestos existentes.
+- **3. Puntos de Control y Circuit Breakers:** Al ejecutar fases supervisadas:
+  - Verificar existencia del artefacto en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
   - Conformidad estricta con el JSON Schema correspondiente en `assets/schemas/`.
   - En caso de error de validación, reintentar con diagnóstico específico (máximo 2 intentos).
-- **4. Respeto al Contrato Monocromático de Fase 2:** Asegurar que `symbol` no incruste colores antes de `chroma`.
-- **5. Respeto al Contrato de 3 Ecosistemas en Fase 3:** Asegurar que `chroma` emita 3 propuestas completas en OKLCH con validación WCAG/APCA.
-- **6. Respeto al Contrato de 3 Opciones de Animación en Fase 4:** Asegurar que `kinetic` emita 3 opciones de animación sobre el SVG definitivo.
-- **7. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/baiostorage/DIAG/[MARCA]/`.
+- **4. Respeto a Contratos de Fase:** Asegurar monocromía estricta en `symbol` (F2), 3 ecosistemas OKLCH en `chroma` (F3), 3 presets 60fps en `kinetic` (F4) y tokens W3C DTCG en `brandbook` (F5).
+- **5. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/baiostorage/DIAG/[MARCA]/`.
 
 ## References
-- `references/pipeline.md` — Topología del pipeline, dependencias y sincronización RFC 6902.
+- `references/pipeline.md` — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.
+- `references/usage.md` — Manual de invocación Antigravity, modo interactivo y control de estado.
 - `assets/schemas/pipeline_state.schema.json` — Esquema del estado de orquestación.

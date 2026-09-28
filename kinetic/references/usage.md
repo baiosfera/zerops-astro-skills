@@ -77,3 +77,13 @@ class BrandAudioSynthesizer {
   }
 }
 ```
+
+---
+
+## 3. Arquitectura Desacoplada & Ingestión Directa SSoT
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los Shards 08 (Dinámica Cinética & Audio) y 10 del VirtualDataLake.
+- **Desacople de Cascada:** `kinetic` puede formular las 3 opciones de animación y sintetizar el micro-audio ADSR directamente a partir de las especificaciones cinéticas del SSoT, sin requerir que las fases previas (`fontgen`, `symbol`, `chroma`) hayan completado su ciclo.
+- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante. Si `symbol_manifest.json` y `chroma_manifest.json` existen en disco, hereda sus nodos vectoriales y paletas; de lo contrario anima directamente sobre los IDs semánticos canónicos (`#symbol-core`, `#symbol-orbit-1`, `#symbol-orbit-2`, `#symbol-geometry-star`, `#symbol-monogram`).
+- **Contratos de Salida Garantizados:** Emite `kinetic_manifest.json` (3 presets 60fps sobre IDs semánticos, tokens DTCG de aceleración/duración, presets ADSR y `selected_animation_id`) y código dev CSS/GSAP listo para `brandview`.
+

@@ -5,8 +5,11 @@
 # ==============================================================================
 set -euo pipefail
 
+export PYTHONDONTWRITEBYTECODE=1
+
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_NAME="$(basename "$SKILL_DIR")"
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 ERRORS=0
 
 echo "============================================================"

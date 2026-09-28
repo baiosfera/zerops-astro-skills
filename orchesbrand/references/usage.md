@@ -40,3 +40,13 @@ Antigravity opera con subagentes dinámicos en tiempo de ejecución. El orquesta
   2. Identifica la clave faltante o tipo incorrecto.
   3. Re-invoca con instrucción de remediación explícita.
 - Máximo 2 intentos antes del apagado seguro del circuito.
+
+---
+
+## 3. Arquitectura Desacoplada & Modos de Invocación
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
+- **Desacople Total de Cascada:** La cascada entre fases es opcional y no bloqueante. Las skills (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) pueden ser invocadas de forma aislada sin requerir que las fases precedentes se hayan ejecutado o completado.
+- **Modo Interactivo (Brandview):** Brandview puede invocar o solicitar la ejecución de una fase particular cuando el usuario interactúa con la interfaz web.
+- **Resiliencia de Manifiestos:** Cada fase genera su contrato de salida específico consumiendo directamente el SSoT y enriqueciendo los manifiestos preexistentes en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
+

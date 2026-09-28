@@ -71,3 +71,13 @@ El manifiesto JSON (`font_manifest.json`) exporta e importa los presets de los c
 - `text_transform`: `uppercase`, `lowercase`, `capitalize`, `none`.
 - `ligatures_enabled`: Activa `font-feature-settings: "liga" 1, "dlig" 1`.
 - `transform_x` / `transform_y` / `rotation_deg` / `mirror_enabled`: Coordenadas de transformación visual en lienzo.
+
+---
+
+## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
+
+La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
+- **Desacople Total de Cascada:** `fontgen` no requiere que ninguna otra fase del pipeline se haya ejecutado previamente. Puede invocarse de manera autónoma o interactiva desde `brandview`.
+- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante.
+- **Contratos de Salida Garantizados:** Emite `font_manifest.json` (3 ecosistemas, 6 capas funcionales y `selected_ecosystem_id`), `fontgen_[MARCA].md` y código dev (`@font-face` y Google Fonts v2) para `brandview`.
+
