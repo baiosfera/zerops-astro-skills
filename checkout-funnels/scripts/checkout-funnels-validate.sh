@@ -3,9 +3,12 @@
 # Deterministic Physical Validation Sensor for checkout-funnels Suite (v2.0)
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ERRORS=0
+
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 
 echo "============================================================"
 echo "  🔍 Validating checkout-funnels Skill Integrity (v2.0)"

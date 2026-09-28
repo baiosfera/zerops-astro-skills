@@ -5,7 +5,7 @@ Stripe serves as the international payment gateway for cross-border credit/debit
 
 ### Required Environment Variables:
 - `STRIPE_PUBLISHABLE_KEY`: `pk_live_...` or `pk_test_...`
-- `STRIPE_SECRET_KEY`: `sk_live_...` or `sk_test_...`
+- `STRIPE_SECRET_KEY`: `$STRIPE_SECRET_KEY (from Stripe Dashboard)`
 - `STRIPE_WEBHOOK_SECRET`: `whsec_...`
 
 ---

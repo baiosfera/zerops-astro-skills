@@ -16,12 +16,16 @@ Activate whenever designing, implementing, or optimizing automated sales qualifi
 
 ## Hard Rules & Technical Invariants
 
-1. **Deterministic BANT/CHAMP Scoring (0-100):**
+1. **Astrobranding SSoT Grounding:**
+   - AI Closer and AI SDR persona, tone, vocabulary, and objection-handling posture MUST be grounded directly in `astrobranding_[MARCA].md` (compiled by Oráculo in Fase 0) to align with brand archetypes and wealth-house positioning.
+2. **Hermetic Code Definitions & Zero Live DB Invariant:**
+   - ZERO live provisioning or active runtime connection to PostgreSQL in Zerops at this time. All database schemas, pgvector definitions, and SQL queries remain strictly hermetic code patterns until explicit platform deployment.
+3. **Deterministic BANT/CHAMP Scoring (0-100):**
    - Lead qualification scores MUST be computed deterministically combining explicit criteria (Budget: 30pts, Authority: 25pts, Need: 25pts, Timing: 20pts) with semantic similarity vector search.
-2. **Seamless Human Agent Handover Invariant:**
+4. **Seamless Human Agent Handover Invariant:**
    - Whenever an AI agent detects complex negotiation, customer frustration, or a high-ticket score (>80), it MUST lock the conversational state in Directus and dispatch an alert to human closers without dropping context.
-3. **Objection Battlecard Grounding:**
-   - AI Closers MUST ground responses strictly in validated objection battlecards stored in PostgreSQL/pgvector to avoid hallucinated pricing or unapproved discounts.
+5. **Objection Battlecard Grounding:**
+   - AI Closers MUST ground responses strictly in validated objection battlecards stored in PostgreSQL/pgvector definitions to avoid hallucinated pricing or unapproved discounts.
 
 ---
 

@@ -1,27 +1,36 @@
 # Sovereign Growth Engine: Brand Ingestion, Copywriting & Cart Recovery (v1.0)
 
 ## 1. Brand SSoT Ingestion & Voice Calibration
-All commercial copy, ad variations, and cart recovery sequences MUST inherit the brand identity directly from the local single-tenant mount:
-- **Brand Identity SSoT**: `/var/www/astro/brand/fase0_system_prompt.md`
-- **Design Tokens & Archetype**: `/var/www/astro/brand/brandbook.json`
+All commercial copy, ad variations, and cart recovery sequences MUST inherit the brand identity directly from the local single-tenant mount compiled by Oráculo in Fase 0:
+- **Brand Identity SSoT**: `/var/www/astro/brand/astrobranding_[MARCA].md`
+- **Extracted Dimensions**:
+  - Archetypal psychology for neurocopywriting tone calibration (Greene, Arroyo, Fagan).
+  - Wealth houses (2, 6, 10) & Shadbala for Hormozi Value Equation framing ($100M Offers).
+  - Astrocartography (ACG) lines & power cities for Meta CAPI geographic segmentation.
+- **Design Tokens & Archetype Fallback**: `/var/www/astro/brand/brandbook.json` (if present).
 - **Rejection Tropes**: Ingest `<lo_que_la_marca_rechaza>` to guarantee zero generic buzzwords (e.g., "la mejor calidad", "oferta imperdible").
 
 ```typescript
 import fs from "node:fs";
 
-export function getBrandVoiceContext(brandPath = "/var/www/astro/brand"): { prompt: string; archetype: string } {
-  const promptFile = `${brandPath}/fase0_system_prompt.md`;
-  const brandbookFile = `${brandPath}/brandbook.json`;
+export function getBrandVoiceContext(brandPath = "/var/www/astro/brand", brandSlug = "default"): { prompt: string; archetype: string; powerCities: string[] } {
+  const astrobrandingFile = `${brandPath}/astrobranding_${brandSlug}.md`;
+  const fallbackBrandbook = `${brandPath}/brandbook.json`;
 
-  const prompt = fs.existsSync(promptFile) ? fs.readFileSync(promptFile, "utf-8") : "You are a luxury fashion consultant.";
+  let prompt = "You are an elite brand growth consultant.";
   let archetype = "The Ruler / Quiet Luxury";
-  if (fs.existsSync(brandbookFile)) {
+  let powerCities: string[] = [];
+
+  if (fs.existsSync(astrobrandingFile)) {
+    prompt = fs.readFileSync(astrobrandingFile, "utf-8");
+  } else if (fs.existsSync(fallbackBrandbook)) {
     try {
-      const data = JSON.parse(fs.readFileSync(brandbookFile, "utf-8"));
+      const data = JSON.parse(fs.readFileSync(fallbackBrandbook, "utf-8"));
       archetype = data?.brand?.archetype || archetype;
+      prompt = `Archetype: ${archetype}. Voice: ${data?.brand?.voice || "Authoritative"}`;
     } catch {}
   }
-  return { prompt, archetype };
+  return { prompt, archetype, powerCities };
 }
 ```
 

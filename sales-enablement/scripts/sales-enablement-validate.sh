@@ -4,10 +4,13 @@
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_NAME="$(basename "$SKILL_DIR")"
 ERRORS=0
+
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 
 echo "============================================================"
 echo "  🔍 Validating Skill Integrity: [$SKILL_NAME]"

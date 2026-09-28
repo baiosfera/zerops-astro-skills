@@ -11,7 +11,7 @@ All payment secrets MUST be configured as sensitive environment variables within
 | `WOMPI_INTEGRITY_SECRET` | Wompi | Secret for checkout SHA-256 signature | `prod_integrity_...` |
 | `WOMPI_EVENTS_SECRET` | Wompi | Secret for webhook event checksum verification | `prod_events_...` |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe | Public key for client-side Stripe Elements | `pk_live_...` |
-| `STRIPE_SECRET_KEY` | Stripe | Private key for server-side PaymentIntents | `sk_live_...` |
+| `STRIPE_SECRET_KEY` | Stripe | Private key for server-side PaymentIntents | `$STRIPE_SECRET_KEY` |
 | `STRIPE_WEBHOOK_SECRET` | Stripe | Endpoint secret for HMAC signature verification | `whsec_...` |
 | `BOLD_IDENTITY_KEY` | Bold | Public merchant identity key | `...` |
 | `BOLD_SECRET_KEY` | Bold | Secret key for webhook signature and integrity | `...` |

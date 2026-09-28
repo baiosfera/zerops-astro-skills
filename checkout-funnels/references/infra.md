@@ -34,7 +34,7 @@ DLOCAL_GO_ENV="live"
 # ============================================================================
 # STRIPE GLOBAL
 # ============================================================================
-STRIPE_SECRET_KEY="sk_test_placeholder_key"
+STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY"
 STRIPE_PUBLISHABLE_KEY="pk_test_placeholder_key"
 STRIPE_WEBHOOK_SECRET="whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
