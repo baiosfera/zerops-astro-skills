@@ -1,0 +1,9 @@
+# Production Application Wiring for Valkey Cache in Zerops
+zerops:
+  - setup: prod
+    run:
+      envVariables:
+        REDIS_HOST: cache
+        REDIS_PORT: ${cache_port}
+        REDIS_PASSWORD: ${cache_password}
+        REDIS_URL: ${cache_connectionString}

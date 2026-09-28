@@ -1,0 +1,20 @@
+# Production Zerops Topology for Qdrant Vector Search Stack
+# Demonstrates native elastic autoscaling without manual min/max guesswork
+
+project:
+  name: gentle-qdrant-suite
+
+services:
+  # ==========================================
+  # MANAGED QDRANT 1.12 (SINGLE NODE DEV/PROD)
+  # ==========================================
+  - hostname: qdrant
+    type: qdrant:single@1.12
+    priority: 10
+
+  # ==========================================
+  # MANAGED QDRANT 1.12 (HIGH AVAILABILITY 3-NODE CLUSTER)
+  # ==========================================
+  - hostname: qdrantha
+    type: qdrant:ha@1.12
+    priority: 10

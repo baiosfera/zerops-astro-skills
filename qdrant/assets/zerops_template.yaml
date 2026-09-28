@@ -1,0 +1,10 @@
+# Production Application Wiring for Qdrant Vector DB in Zerops
+zerops:
+  - setup: prod
+    run:
+      envVariables:
+        QDRANT_HOST: qdrant
+        QDRANT_PORT: ${qdrant_port}
+        QDRANT_GRPC: ${qdrant_grpcPort}
+        QDRANT_API_KEY: ${qdrant_apiKey}
+        QDRANT_READ_ONLY_KEY: ${qdrant_readOnlyApiKey}

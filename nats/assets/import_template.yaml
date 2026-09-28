@@ -1,0 +1,20 @@
+# Production Zerops Topology for NATS Messaging Stack
+# Demonstrates native elastic autoscaling without manual min/max guesswork
+
+project:
+  name: gentle-nats-suite
+
+services:
+  # ==========================================
+  # MANAGED NATS 2.12 (SINGLE BROKER)
+  # ==========================================
+  - hostname: queue
+    type: nats:single@2.12
+    priority: 10
+
+  # ==========================================
+  # MANAGED NATS 2.12 (HIGH AVAILABILITY RAFT CLUSTER)
+  # ==========================================
+  - hostname: queueha
+    type: nats:ha@2.12
+    priority: 10

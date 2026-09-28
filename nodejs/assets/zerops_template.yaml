@@ -1,0 +1,99 @@
+zerops:
+  # =========================================================================
+  # PRODUCTION SETUP: COMPILED, PRUNED & LEAN PRODUCTION ARTIFACTS
+  # =========================================================================
+  - setup: prod
+    build:
+      base: nodejs@24
+      os: ubuntu
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y build-essential python3 libvips-dev
+      envVariables:
+        npm_config_cache: .npm-cache
+      buildCommands:
+        - npm ci --prefer-offline
+        - npm run build
+        - npm prune --omit=dev
+      deployFiles:
+        - ./dist
+        - ./node_modules
+        - ./package.json
+      cache:
+        - node_modules
+        - .npm-cache
+
+    deploy:
+      temporaryShutdown: false
+      readinessCheck:
+        httpGet:
+          port: 3000
+          path: /health
+
+    run:
+      base: nodejs@24
+      os: ubuntu
+      initCommands:
+        - zsc execOnce ${appVersionId} --retryUntilSuccessful -- npm run db:migrate
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        NODE_ENV: production
+        PORT: 3000
+        # Database Wiring
+        DB_HOST: db
+        DB_PORT: ${db_port}
+        DB_NAME: ${db_dbName}
+        DB_USER: ${db_user}
+        DB_PASSWORD: ${db_password}
+        DATABASE_URL: postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}
+        # Valkey Wiring
+        REDIS_URL: ${cache_connectionString}
+        REDIS_HOST: cache
+        REDIS_PORT: ${cache_port}
+        REDIS_PASSWORD: ${cache_password}
+        APP_URL: ${zeropsSubdomain}
+      start: node dist/index.js
+      healthCheck:
+        httpGet:
+          port: 3000
+          path: /health
+
+  # =========================================================================
+  # DEVELOPMENT SETUP: FULL SOURCE & INTERACTIVE SSH / DEV SERVER
+  # =========================================================================
+  - setup: dev
+    build:
+      base: nodejs@24
+      os: ubuntu
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y build-essential python3 git curl
+      envVariables:
+        npm_config_cache: .npm-cache
+      buildCommands:
+        - npm install
+      deployFiles:
+        - .
+      cache:
+        - node_modules
+        - .npm-cache
+
+    run:
+      base: nodejs@24
+      os: ubuntu
+      initCommands:
+        - zsc execOnce ${appVersionId} --retryUntilSuccessful -- npm run db:migrate || true
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        NODE_ENV: development
+        PORT: 3000
+        DB_HOST: db
+        DB_PORT: ${db_port}
+        DB_NAME: ${db_dbName}
+        DB_USER: ${db_user}
+        DB_PASSWORD: ${db_password}
+        DATABASE_URL: postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}
+        REDIS_URL: ${cache_connectionString}
+      start: zsc noop --silent

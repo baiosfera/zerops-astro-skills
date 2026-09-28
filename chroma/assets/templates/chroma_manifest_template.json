@@ -1,0 +1,140 @@
+{
+  "brand": "[MARCA]",
+  "color_space": "oklch",
+  "themes": {
+    "dark": {
+      "primary": {
+        "$value": "oklch(0.60 0.20 150)",
+        "$type": "color",
+        "$description": "Verde esmeralda vibrante para acciones principales",
+        "components": { "lightness": 0.60, "chroma": 0.20, "hue": 150 },
+        "hex": "#00A86B",
+        "p3": "color(display-p3 0.18 0.65 0.43)"
+      },
+      "secondary": {
+        "$value": "oklch(0.80 0.10 200)",
+        "$type": "color",
+        "$description": "Cian luminoso para badges y elementos secundarios",
+        "components": { "lightness": 0.80, "chroma": 0.10, "hue": 200 },
+        "hex": "#48CAE4",
+        "p3": "color(display-p3 0.32 0.78 0.88)"
+      },
+      "accent": {
+        "$value": "oklch(0.70 0.22 45)",
+        "$type": "color",
+        "$description": "Cobre metálico cálido de alto impacto",
+        "components": { "lightness": 0.70, "chroma": 0.22, "hue": 45 },
+        "hex": "#E07A5F",
+        "p3": "color(display-p3 0.84 0.47 0.38)"
+      },
+      "background": {
+        "$value": "oklch(0.14 0.02 260)",
+        "$type": "color",
+        "$description": "Lienzo profundo Dark Mode",
+        "components": { "lightness": 0.14, "chroma": 0.02, "hue": 260 },
+        "hex": "#12131A",
+        "p3": "color(display-p3 0.07 0.07 0.10)"
+      },
+      "surface": {
+        "$value": "oklch(0.20 0.03 260)",
+        "$type": "color",
+        "$description": "Superficie de tarjetas y contenedores",
+        "components": { "lightness": 0.20, "chroma": 0.03, "hue": 260 },
+        "hex": "#1E202B",
+        "p3": "color(display-p3 0.11 0.12 0.17)"
+      },
+      "text_primary": {
+        "$value": "oklch(0.96 0.01 260)",
+        "$type": "color",
+        "$description": "Texto principal de alto contraste",
+        "components": { "lightness": 0.96, "chroma": 0.01, "hue": 260 },
+        "hex": "#F4F5F8",
+        "p3": "color(display-p3 0.95 0.96 0.97)"
+      },
+      "text_muted": {
+        "$value": "oklch(0.65 0.02 260)",
+        "$type": "color",
+        "$description": "Texto secundario y metadatos",
+        "components": { "lightness": 0.65, "chroma": 0.02, "hue": 260 },
+        "hex": "#9A9DA8",
+        "p3": "color(display-p3 0.59 0.61 0.66)"
+      }
+    },
+    "light": {
+      "primary": {
+        "$value": "oklch(0.50 0.20 150)",
+        "$type": "color",
+        "$description": "Verde esmeralda profundo para Light Mode",
+        "components": { "lightness": 0.50, "chroma": 0.20, "hue": 150 },
+        "hex": "#007A4D",
+        "p3": "color(display-p3 0.12 0.48 0.31)"
+      },
+      "secondary": {
+        "$value": "oklch(0.60 0.12 200)",
+        "$type": "color",
+        "$description": "Azul zafiro para Light Mode",
+        "components": { "lightness": 0.60, "chroma": 0.12, "hue": 200 },
+        "hex": "#0085A8",
+        "p3": "color(display-p3 0.15 0.52 0.65)"
+      },
+      "accent": {
+        "$value": "oklch(0.60 0.22 45)",
+        "$type": "color",
+        "$description": "Terracota de acento Light Mode",
+        "components": { "lightness": 0.60, "chroma": 0.22, "hue": 45 },
+        "hex": "#B8553B",
+        "p3": "color(display-p3 0.70 0.33 0.24)"
+      },
+      "background": {
+        "$value": "oklch(0.98 0.005 260)",
+        "$type": "color",
+        "$description": "Lienzo Light Mode suave",
+        "components": { "lightness": 0.98, "chroma": 0.005, "hue": 260 },
+        "hex": "#FAFAFC",
+        "p3": "color(display-p3 0.98 0.98 0.99)"
+      },
+      "surface": {
+        "$value": "oklch(0.94 0.01 260)",
+        "$type": "color",
+        "$description": "Superficie de tarjetas Light Mode",
+        "components": { "lightness": 0.94, "chroma": 0.01, "hue": 260 },
+        "hex": "#EFF0F4",
+        "p3": "color(display-p3 0.93 0.94 0.96)"
+      },
+      "text_primary": {
+        "$value": "oklch(0.18 0.03 260)",
+        "$type": "color",
+        "$description": "Texto principal oscuro de alta legibilidad",
+        "components": { "lightness": 0.18, "chroma": 0.03, "hue": 260 },
+        "hex": "#161720",
+        "p3": "color(display-p3 0.09 0.09 0.13)"
+      },
+      "text_muted": {
+        "$value": "oklch(0.45 0.02 260)",
+        "$type": "color",
+        "$description": "Texto secundario Light Mode",
+        "components": { "lightness": 0.45, "chroma": 0.02, "hue": 260 },
+        "hex": "#5A5D6B",
+        "p3": "color(display-p3 0.35 0.36 0.42)"
+      }
+    }
+  },
+  "accessibility_audit": {
+    "wcag_2_2_compliance": {
+      "body_to_bg_ratio": 14.8,
+      "headings_to_bg_ratio": 15.6,
+      "button_to_bg_ratio": 7.4,
+      "status_aaa": true
+    },
+    "apca_compliance": {
+      "body_lc": 92.5,
+      "headings_lc": 96.1,
+      "ui_components_lc": 64.2
+    }
+  },
+  "css_integration": {
+    "tailwind_v4_theme_block": "@theme {\n  --color-brand-primary: oklch(0.60 0.20 150);\n  --color-brand-secondary: oklch(0.80 0.10 200);\n  --color-brand-accent: oklch(0.70 0.22 45);\n  --color-brand-bg: oklch(0.14 0.02 260);\n  --color-brand-surface: oklch(0.20 0.03 260);\n  --color-brand-text: oklch(0.96 0.01 260);\n  --color-brand-muted: oklch(0.65 0.02 260);\n}",
+    "css_variables_root": ":root {\n  --color-brand-primary: oklch(0.60 0.20 150);\n  --color-brand-secondary: oklch(0.80 0.10 200);\n  --color-brand-accent: oklch(0.70 0.22 45);\n  --color-brand-bg: oklch(0.14 0.02 260);\n  --color-brand-surface: oklch(0.20 0.03 260);\n  --color-brand-text: oklch(0.96 0.01 260);\n  --color-brand-muted: oklch(0.65 0.02 260);\n}",
+    "gradient_interpolation": "in oklch"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "engine": "qdrant@1.12",
+  "recipes": {
+    "collection_dense_sparse_hybrid": {
+      "name": "Hybrid Collection Setup (Dense + Sparse SPLADE)",
+      "description": "Multi-vector collection with named dense cosine vectors and in-memory sparse index",
+      "vectors": {
+        "dense-text": {
+          "size": 1536,
+          "distance": "Cosine"
+        }
+      },
+      "sparse_vectors": {
+        "sparse-text": {
+          "index": {
+            "on_disk": false
+          }
+        }
+      },
+      "quantization_config": {
+        "scalar": {
+          "type": "int8",
+          "quantile": 0.99,
+          "always_ram": true
+        }
+      }
+    },
+    "query_api_rrf_hybrid_search": {
+      "name": "Server-Side Reciprocal Rank Fusion (RRF) Hybrid Search",
+      "description": "Parallel prefetch sub-requests combined server-side using RRF constant k=60",
+      "rrfConstantK": 60,
+      "defaultLimit": 10,
+      "prefetchSubRequests": 2
+    },
+    "multi_tenant_payload_index": {
+      "name": "Multi-Tenant Payload Keyword Index",
+      "description": "Sub-millisecond metadata pre-filtering by tenant_id before HNSW graph traversal",
+      "fieldName": "tenant_id",
+      "fieldSchema": "keyword"
+    }
+  }
+}

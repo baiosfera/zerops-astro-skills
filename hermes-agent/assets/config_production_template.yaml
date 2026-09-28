@@ -1,0 +1,47 @@
+# Hermes-Agent Production Configuration Template (Zerops Environment)
+version: "2026.8"
+
+agent:
+  name: "hermes-zerops-controller"
+  system_prompt: |
+    You are Hermes, the autonomous administrative agent for this Zerops cloud architecture.
+    You supervise and control backend services (Directus, ERPNext, EvolutionGo), frontend (Astro),
+    and infrastructure (PostgreSQL, Valkey, NATS).
+    You execute operations using strict function calls (<tool_call>).
+    Never assume or invent credentials; use registered tool handlers to inspect and query state.
+    Always summarize actions clearly and report status with precision.
+
+model:
+  endpoint: "${HERMES_MODEL_ENDPOINT:-http://bifrost:8080/v1}"
+  model_name: "${HERMES_MODEL_NAME:-hermes-3-llama-3.1-8b}"
+  api_key: "${HERMES_API_KEY:-dummy}"
+  temperature: 0.2
+  max_tokens: 4096
+  timeout_seconds: 30
+
+telegram:
+  enabled: true
+  token: "${TELEGRAM_BOT_TOKEN}"
+  allowed_users: "${TELEGRAM_ALLOWED_USERS}"
+  webhook_url: "${TELEGRAM_WEBHOOK_URL}"
+  drop_pending_updates: true
+  streaming:
+    enabled: true
+    min_interval_seconds: 0.6
+    min_char_delta: 25
+
+bridge:
+  primary_mode: "nats" # Options: nats, mcp, ssh, plugin
+  nats:
+    url: "${ZCP_NATS_URL:-nats://nats:4222}"
+    request_subject: "zerops.ops.requests"
+    update_subject_prefix: "zerops.ops.updates."
+    stream_name: "ZEROPS_OPS"
+  mcp:
+    server_url: "${ZCP_MCP_URL:-http://zcp:8080/mcp}"
+    timeout_seconds: 10
+
+persistence:
+  cache_url: "${VALKEY_URL:-redis://valkey:6379/0}"
+  log_file: "/var/log/hermes/agent.log"
+  audit_file: "/var/log/hermes/bridge_audit.jsonl"

@@ -1,0 +1,23 @@
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce-version-ac42946c
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    gnupg \
+    ca-certificates \
+    rclone \
+    fonts-liberation \
+    xdg-utils \
+    libnss3 \
+    libgbm1 \
+    libasound2 \
+    dbus-x11 \
+    && curl -fsSL "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" -o /tmp/google-chrome.deb \
+    && dpkg -i /tmp/google-chrome.deb || apt-get install -fy \
+    && rm -f /tmp/google-chrome.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN if [ -f /kclient/public/index.html ]; then sed -i 's/resize=remote/resize=scale/g' /kclient/public/index.html; fi

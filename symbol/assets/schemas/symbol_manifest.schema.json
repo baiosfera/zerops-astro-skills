@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SymbolManifestSOTA",
+  "type": "object",
+  "required": ["brand", "color_mode", "isologos", "monograms", "favicons", "selected_vector_id", "lockup"],
+  "properties": {
+    "brand": { "type": "string" },
+    "color_mode": { "type": "string", "enum": ["monochrome_bw", "monochrome"] },
+    "selected_vector_id": { "type": "string" },
+    "selected_vector_type": { "type": "string", "enum": ["isologo", "monogram", "favicon"] },
+    "isologos": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/VectorProposal" }
+    },
+    "monograms": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/VectorProposal" }
+    },
+    "favicons": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/VectorProposal" }
+    },
+    "vectors": {
+      "type": "object",
+      "description": "Acceso rápido a los vectores clave por slug"
+    },
+    "svg": { "type": "string" },
+    "logo": { "type": "string" },
+    "geometry_rationale": { "type": "string" },
+    "lockup": {
+      "type": "object",
+      "required": ["symbolScale", "symbolX", "symbolY", "brandY", "sloganY"],
+      "properties": {
+        "symbolScale": { "type": "number" },
+        "symbolStroke": { "type": "number" },
+        "symbolX": { "type": "number" },
+        "symbolY": { "type": "number" },
+        "initialsX": { "type": "number" },
+        "initialsY": { "type": "number" },
+        "brandX": { "type": "number" },
+        "brandY": { "type": "number" },
+        "sloganX": { "type": "number" },
+        "sloganY": { "type": "number" }
+      }
+    }
+  },
+  "$defs": {
+    "VectorProposal": {
+      "type": "object",
+      "required": ["id", "name", "geometry_style", "svg_raw", "viewBox"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "geometry_style": { "type": "string" },
+        "svg_raw": { "type": "string" },
+        "viewBox": { "type": "string" },
+        "aspect_ratio": { "type": "string" },
+        "semantic_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

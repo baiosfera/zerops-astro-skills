@@ -1,0 +1,102 @@
+{
+  "source": "Rav P.S. Berg, Kabbalistic Astrology (The Kabbalah Centre)",
+  "version": "1.0",
+  "axes": {
+    "Aries": {
+      "tikkun_sign": "Aries",
+      "past_sign": "Libra",
+      "tikkun_title": "Tikkun en Aries (Libra a Aries)",
+      "correction": "Trascender la indecisión y la dependencia de aprobación ajena para forjar identidad propia, coraje pionero y liderazgo espiritual.",
+      "trap": "Complacer a otros a costa de anular los propios anhelos y posponer decisiones vitales.",
+      "virtue": "Iniciativa audaz, defensa de la verdad interior y autonomía soberana."
+    },
+    "Taurus": {
+      "tikkun_sign": "Taurus",
+      "past_sign": "Scorpio",
+      "tikkun_title": "Tikkun en Tauro (Escorpio a Tauro)",
+      "correction": "Trascender el drama destructivo, la sospecha y la necesidad de control para construir paz interior, valor tangible y estabilidad.",
+      "trap": "Engancharse en crisis emocionales, rencores subterráneos y escenarios catastróficos imaginarios.",
+      "virtue": "Serenidad, nutrición estética, constancia terrenal y confianza incondicional en la Luz."
+    },
+    "Gemini": {
+      "tikkun_sign": "Gemini",
+      "past_sign": "Sagittarius",
+      "tikkun_title": "Tikkun en Géminis (Sagitario a Géminis)",
+      "correction": "Trascender la arrogancia dogmática y las generalizaciones abstractas para escuchar con humildad, dialogar y conectar en lo cercano.",
+      "trap": "Imponer convicciones morales y creer poseer la verdad absoluta sin validar los hechos cotidianos.",
+      "virtue": "Curiosidad genuina, adaptabilidad, comunicación cristalina y empatía intelectual."
+    },
+    "Cancer": {
+      "tikkun_sign": "Cancer",
+      "past_sign": "Capricorn",
+      "tikkun_title": "Tikkun en Cáncer (Capricornio a Cáncer)",
+      "correction": "Trascender la frialdad utilitaria, la coraza juiciosa y el miedo a la vulnerabilidad para abrir el corazón al calor afectivo.",
+      "trap": "Medir el valor personal exclusivamente por el éxito material, el estatus y el deber severo.",
+      "virtue": "Sensibilidad intuitiva, nutrición emocional, compasión y capacidad de cobijar a otros."
+    },
+    "Leo": {
+      "tikkun_sign": "Leo",
+      "past_sign": "Aquarius",
+      "tikkun_title": "Tikkun en Leo (Acuario a Leo)",
+      "correction": "Trascender el distanciamiento intelectual frío y el anonimato impersonal para irradiar calor humano, generosidad y brillo de autor.",
+      "trap": "Observar la vida como espectador cínico y esconderse tras las opiniones del colectivo o el grupo.",
+      "virtue": "Liderazgo noble, pasión expresiva, calidez magnética y generosidad creadora."
+    },
+    "Virgo": {
+      "tikkun_sign": "Virgo",
+      "past_sign": "Pisces",
+      "tikkun_title": "Tikkun en Virgo (Piscis a Virgo)",
+      "correction": "Trascender el victimismo caótico, la evasión en ilusiones y la falta de límites para aplicar discernimiento práctico y método.",
+      "trap": "Perderse en confusiones emocionales, culpar a las circunstancias y evadir la responsabilidad cotidiana.",
+      "virtue": "Orden riguroso, servicio altruista tangible, disciplina saludable y maestría artesanal."
+    },
+    "Libra": {
+      "tikkun_sign": "Libra",
+      "past_sign": "Aries",
+      "tikkun_title": "Tikkun en Libra (Aries a Libra)",
+      "correction": "Trascender el individualismo beligerante y la autosuficiencia obstinada para aprender a compartir, escuchar y cooperar con equidad.",
+      "trap": "Imponer la voluntad por la fuerza y considerar que la consideración hacia el otro es signo de debilidad.",
+      "virtue": "Diplomacia, justicia relacional, gracia armónica y capacidad de construir pactos sagrados."
+    },
+    "Scorpio": {
+      "tikkun_sign": "Scorpio",
+      "past_sign": "Taurus",
+      "tikkun_title": "Tikkun en Escorpio (Tauro a Escorpio)",
+      "correction": "Trascender el apego excesivo a la comodidad material y el pánico al cambio para entregarse a la transformación profunda y el renacimiento espiritual.",
+      "trap": "Aferrarse rígidamente a bienes tangibles y tolerar situaciones mediocres por miedo a la pérdida.",
+      "virtue": "Valentía regeneradora, poder de transmutar sombras, desapego y conexión con el poder del alma."
+    },
+    "Sagittarius": {
+      "tikkun_sign": "Sagittarius",
+      "past_sign": "Gemini",
+      "tikkun_title": "Tikkun en Sagitario (Géminis a Sagitario)",
+      "correction": "Trascender la dispersión mental, el chisme superficial y la duda perpetua para edificar una filosofía de vida coherente y fe trascendente.",
+      "trap": "Acumular información banal sin profundizar jamás en el significado superior de las cosas.",
+      "virtue": "Visión panorámica, optimismo fundado en la sabiduría, generosidad de miras y fe viva."
+    },
+    "Capricorn": {
+      "tikkun_sign": "Capricorn",
+      "past_sign": "Cancer",
+      "tikkun_title": "Tikkun en Capricornio (Cáncer a Capricornio)",
+      "correction": "Trascender el chantaje emocional infantil, la dependencia afectiva y la inmadurez para asumir la soberanía personal y la responsabilidad madura.",
+      "trap": "Manipular mediante el desamparo y refugiarse en el victimismo familiar ante los desafíos adultos.",
+      "virtue": "Integridad ética, templanza, autodominio y construcción de legado sólido."
+    },
+    "Aquarius": {
+      "tikkun_sign": "Aquarius",
+      "past_sign": "Leo",
+      "tikkun_title": "Tikkun en Acuario (Leo a Acuario)",
+      "correction": "Trascender la necesidad neurótica de aplauso, el orgullo herido y el personalismo para poner los talentos creativos al servicio del bien común.",
+      "trap": "Exigir pleitesía y creerse el centro del universo, despreciando las necesidades comunitarias.",
+      "virtue": "Fraternidad universal, visión vanguardista, justicia social e innovación colaborativa."
+    },
+    "Pisces": {
+      "tikkun_sign": "Pisces",
+      "past_sign": "Virgo",
+      "tikkun_title": "Tikkun en Piscis (Virgo a Piscis)",
+      "correction": "Trascender la hipercrítica paralizante, la obsesión con los errores mínimos y la ansiedad de control para fluir en compasión y fe incondicional.",
+      "trap": "Juzgar implacablemente a los demás y a uno mismo, bloqueando la intuición con racionalizaciones estériles.",
+      "virtue": "Entrega al flujo divino, empatía mística, perdón sanador y unidad con la totalidad."
+    }
+  }
+}

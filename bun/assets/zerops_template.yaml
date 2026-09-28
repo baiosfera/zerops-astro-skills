@@ -1,0 +1,73 @@
+zerops:
+  - setup: dev
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      envVariables:
+        BUN_INSTALL: ./.bun
+      buildCommands:
+        - bun install
+      deployFiles:
+        - .
+      cache:
+        - node_modules
+        - .bun/install/cache
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      start: zsc noop --silent
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        PORT: 3000
+        NODE_ENV: development
+        DB_HOST: db
+        DB_PORT: ${db_port}
+        DB_NAME: ${db_dbName}
+        DATABASE_URL: "postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}"
+        REDIS_URL: "${cache_connectionString}"
+        APP_URL: "${zeropsSubdomain}"
+        BUN_INSTALL: /var/www/.bun
+
+  - setup: prod
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      envVariables:
+        BUN_INSTALL: ./.bun
+      buildCommands:
+        - bun install --frozen-lockfile
+        - bun test
+        - bun build src/index.ts --outfile dist/index.js --target bun --minify
+        - bun build src/migrate.ts --outfile dist/migrate.js --target bun --minify
+      deployFiles:
+        - dist
+      cache:
+        - node_modules
+        - .bun/install/cache
+    deploy:
+      temporaryShutdown: false
+      readinessCheck:
+        httpGet:
+          port: 3000
+          path: /health
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      initCommands:
+        - zsc execOnce ${appVersionId} -- bun dist/migrate.js
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        PORT: 3000
+        NODE_ENV: production
+        DATABASE_URL: "postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}"
+        REDIS_URL: "${cache_connectionString}"
+        APP_URL: "${zeropsSubdomain}"
+      start: bun dist/index.js
+      healthCheck:
+        httpGet:
+          port: 3000
+          path: /health

@@ -1,0 +1,73 @@
+{
+  "version": "2.0",
+  "runtime": "nodejs@22",
+  "recipes": {
+    "fastify_api_alpine": {
+      "name": "Fastify TypeScript API on Alpine Base (Default)",
+      "description": "Ultra-lightweight Fastify deployment with npm_config_cache and production pruning",
+      "os": "alpine",
+      "envVariables": {
+        "npm_config_cache": ".npm-cache"
+      },
+      "buildCommands": [
+        "npm ci",
+        "npm run build",
+        "npm prune --omit=dev"
+      ],
+      "deployFiles": [
+        "./dist",
+        "./node_modules",
+        "./package.json"
+      ],
+      "cache": [
+        "node_modules",
+        ".npm-cache"
+      ],
+      "initCommands": [
+        "zsc execOnce ${appVersionId} --retryUntilSuccessful -- node dist/migrate.js"
+      ],
+      "start": "node dist/index.js"
+    },
+    "sharp_c_addons_ubuntu": {
+      "name": "Sharp Image Processing Service on Ubuntu Base",
+      "description": "Compiles C++ native addons via node-gyp on Ubuntu glibc base",
+      "os": "ubuntu",
+      "prepareCommands": [
+        "sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential python3 libvips-dev && sudo rm -rf /var/lib/apt/lists/*"
+      ],
+      "envVariables": {
+        "npm_config_cache": ".npm-cache"
+      },
+      "buildCommands": [
+        "npm ci",
+        "npm run build",
+        "npm prune --omit=dev"
+      ],
+      "deployFiles": [
+        "./dist",
+        "./node_modules",
+        "./package.json"
+      ],
+      "cache": [
+        "node_modules",
+        ".npm-cache"
+      ],
+      "start": "node dist/index.js"
+    },
+    "dev_interactive_workspace": {
+      "name": "Interactive SSH Development Workspace",
+      "description": "Deploys full source tree with noop runner for live SSH development",
+      "os": "alpine",
+      "buildCommands": [
+        "npm install"
+      ],
+      "deployFiles": [
+        "./"
+      ],
+      "cache": [
+        "node_modules"
+      ],
+      "start": "zsc noop --silent"
+    }
+  }
+}

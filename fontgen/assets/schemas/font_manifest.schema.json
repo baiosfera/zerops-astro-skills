@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontManifestSOTA",
+  "type": "object",
+  "required": ["brand", "selected_ecosystem_id", "candidate_ecosystems", "inheritance"],
+  "properties": {
+    "brand": {
+      "type": "string",
+      "description": "Nombre de la marca o proyecto"
+    },
+    "selected_ecosystem_id": {
+      "type": "string",
+      "description": "ID del ecosistema tipográfico seleccionado por el usuario o agente"
+    },
+    "candidate_ecosystems": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "3 ecosistemas tipográficos completos propuestos",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "archetype", "rationale", "tokens"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "archetype": { "type": "string" },
+          "rationale": { "type": "string", "description": "Justificación de emparejamiento Gestalt" },
+          "tokens": {
+            "type": "object",
+            "required": ["display_primary", "ui_secondary", "accent_brand"],
+            "properties": {
+              "display_primary": { "$ref": "#/$defs/FontToken" },
+              "ui_secondary": { "$ref": "#/$defs/FontToken" },
+              "accent_brand": { "$ref": "#/$defs/FontToken" }
+            }
+          },
+          "layers": {
+            "type": "object",
+            "description": "Mapeo directo de las 6 capas tipográficas funcionales",
+            "properties": {
+              "logo": { "type": "string" },
+              "slogan": { "type": "string" },
+              "h1": { "type": "string" },
+              "h2": { "type": "string" },
+              "body": { "type": "string" },
+              "ui": { "type": "string" }
+            }
+          },
+          "cls_metric_overrides": {
+            "type": "object",
+            "description": "Descriptores CSS @font-face para anulación total de Cumulative Layout Shift (CLS = 0.00)",
+            "required": ["fallback_font", "size_adjust", "ascent_override", "descent_override", "line_gap_override"],
+            "properties": {
+              "fallback_font": { "type": "string" },
+              "size_adjust": { "type": "string", "pattern": "^[0-9.]+(%)?$" },
+              "ascent_override": { "type": "string", "pattern": "^[0-9.]+(%)?$" },
+              "descent_override": { "type": "string", "pattern": "^[0-9.]+(%)?$" },
+              "line_gap_override": { "type": "string", "pattern": "^[0-9.]+(%)?$" }
+            }
+          },
+          "workbench_presets": {
+            "type": "object",
+            "description": "Configuración inicial y overrides de sliders en webapp.html",
+            "properties": {
+              "font_size_px": { "type": "number" },
+              "letter_spacing_em": { "type": "number" },
+              "line_height": { "type": "number" },
+              "text_transform": { "type": "string", "enum": ["none", "uppercase", "lowercase", "capitalize"] },
+              "font_weight": { "type": "string" },
+              "font_style": { "type": "string", "enum": ["normal", "italic"] },
+              "text_align": { "type": "string", "enum": ["left", "center", "right", "justify"] },
+              "ligatures_enabled": { "type": "boolean" },
+              "translate_x": { "type": "number" },
+              "translate_y": { "type": "number" },
+              "rotation_deg": { "type": "number" },
+              "mirror_enabled": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "selected_ecosystem": {
+      "type": "object",
+      "description": "Ecosistema tipográfico activo seleccionado"
+    },
+    "inheritance": {
+      "type": "object",
+      "description": "Herencia funcional en cascada de 6 capas",
+      "required": ["logo", "slogan", "h1", "h2", "body"],
+      "properties": {
+        "logo": { "type": "string" },
+        "slogan": { "type": "string" },
+        "h1": { "type": "string" },
+        "h2": { "type": "string" },
+        "body": { "type": "string" },
+        "ui": { "type": "string" },
+        "ui_buttons": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "FontToken": {
+      "type": "object",
+      "required": ["$value", "source"],
+      "properties": {
+        "$value": { "type": "string", "description": "Nombre canónico de la familia tipográfica" },
+        "$type": { "type": "string", "default": "fontFamily" },
+        "$description": { "type": "string" },
+        "source": { "type": "string", "enum": ["envato", "google_fonts", "local_upload"] },
+        "url": { "type": "string" },
+        "weights": { "type": "array", "items": { "type": "string" } },
+        "variable_axes": { "type": "string", "description": "Tupla de variación multieje ej: ital,opsz,wght@0,14..32,100..900" },
+        "google_fonts_v2_url": { "type": "string" }
+      }
+    }
+  }
+}

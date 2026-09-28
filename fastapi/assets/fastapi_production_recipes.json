@@ -1,0 +1,15 @@
+{
+  "name": "fastapi",
+  "version": "2.0.0",
+  "description": "Production FastAPI lifespan templates, Granian ASGI launchers, pgvector HNSW search handlers, and Pydantic v2 configuration recipes",
+  "recipes": {
+    "lifespan_handler": {
+      "description": "FastAPI Lifespan handler initializing asyncpg with pgvector binary codecs, Valkey, and NATS",
+      "code": "@asynccontextmanager\nasync def lifespan(app: FastAPI):\n    app.state.pg_pool = await asyncpg.create_pool(dsn=settings.DATABASE_URL.get_secret_value(), init=register_vector)\n    yield\n    await app.state.pg_pool.close()"
+    },
+    "granian_zerops_command": {
+      "description": "Production Granian launch command for zerops.yaml",
+      "command": "/var/www/vendor/bin/granian --interface asgi --host 0.0.0.0 --port 8000 --workers 2 --loop uvloop --http auto src.main:app"
+    }
+  }
+}

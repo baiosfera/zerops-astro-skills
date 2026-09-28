@@ -1,0 +1,23 @@
+# Production Zerops Topology for Bun Application Stack
+# Demonstrates native elastic autoscaling without manual min/max guesswork
+
+project:
+  name: bun-app
+
+services:
+  # Bun API Service (Incus LXC Container with Native Automatic Vertical Autoscaling)
+  - hostname: api
+    type: bun@1.3.9
+    enableSubdomainAccess: true
+
+  # Managed PostgreSQL Database
+  - hostname: db
+    type: postgresql@16:single
+
+  # Managed Valkey Cache
+  - hostname: cache
+    type: valkey@7.2:single
+
+  # Shared Storage Mount
+  - hostname: storage
+    type: shared-storage

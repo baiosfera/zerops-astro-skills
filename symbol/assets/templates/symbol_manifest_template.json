@@ -1,0 +1,30 @@
+{
+  "brand": "[MARCA]",
+  "archetype": "[ARQUETIPO_PRINCIPAL]",
+  "geometry_rationale": "Geometría sagrada construida sobre la proporción áurea (Phi = 1.618) y retícula euclidiana para proyectar orden, autoridad y pregnancia visual.",
+  "vectors": {
+    "logo_primary": {
+      "svg_raw": "<svg viewBox=\"0 0 512 512\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"256\" cy=\"256\" r=\"240\" stroke=\"var(--color-brand-primary, #00A86B)\" stroke-width=\"12\" vector-effect=\"non-scaling-stroke\" /><polygon points=\"256,96 394,384 118,384\" fill=\"var(--color-brand-accent, #E07A5F)\" opacity=\"0.9\" /></svg>",
+      "viewBox": "0 0 512 512",
+      "css_variables": ["--color-brand-primary", "--color-brand-accent"],
+      "aspect_ratio": "1:1"
+    },
+    "monogram": {
+      "svg_raw": "<svg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><rect x=\"16\" y=\"16\" width=\"224\" height=\"224\" rx=\"48\" stroke=\"var(--color-brand-primary, #00A86B)\" stroke-width=\"8\" vector-effect=\"non-scaling-stroke\" /><path d=\"M80 192 L128 64 L176 192 M96 152 L160 152\" stroke=\"var(--color-brand-text, #F4F5F8)\" stroke-width=\"12\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" /></svg>",
+      "viewBox": "0 0 256 256",
+      "css_variables": ["--color-brand-primary", "--color-brand-text"],
+      "aspect_ratio": "1:1"
+    },
+    "favicon": {
+      "svg_raw": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"32\" cy=\"32\" r=\"30\" fill=\"var(--color-brand-primary, #00A86B)\" /><circle cx=\"32\" cy=\"32\" r=\"12\" fill=\"var(--color-brand-bg, #12131A)\" /></svg>",
+      "viewBox": "0 0 64 64",
+      "css_variables": ["--color-brand-primary", "--color-brand-bg"],
+      "aspect_ratio": "1:1"
+    }
+  },
+  "export_config": {
+    "retina_factors": [1, 2, 3],
+    "pdf_vector_enabled": true,
+    "default_png_dimensions": [512, 1024, 2048]
+  }
+}

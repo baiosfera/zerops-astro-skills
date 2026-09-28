@@ -1,0 +1,12 @@
+# Production Application Wiring for NATS Broker in Zerops
+zerops:
+  - setup: prod
+    run:
+      envVariables:
+        # Canonical Pattern A: Explicit parameters (recommended)
+        NATS_HOST: queue
+        NATS_PORT: ${queue_port}
+        NATS_USER: ${queue_user}
+        NATS_PASS: ${queue_password}
+        # Canonical Pattern B: Opaque connection URL
+        NATS_URL: ${queue_connectionString}

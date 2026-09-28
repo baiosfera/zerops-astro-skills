@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "os": "alpine@3.20",
+  "libc": "musl",
+  "recipes": {
+    "c_toolchain_ephemeral": {
+      "name": "Ephemeral C/C++ Build Toolchain",
+      "packages": ["build-base", "cmake", "pkgconfig"],
+      "prepareCommand": "sudo apk add --no-cache --virtual .build-deps build-base cmake pkgconfig",
+      "cleanupCommand": "sudo apk del .build-deps"
+    },
+    "pure_go_static": {
+      "name": "Pure Go Static Binary Build",
+      "packages": ["go", "git", "ca-certificates"],
+      "prepareCommand": "sudo apk add --no-cache go git ca-certificates",
+      "env": {
+        "CGO_ENABLED": "0"
+      },
+      "buildCommand": "go build -ldflags=\"-s -w\" -o dist/app ."
+    },
+    "rust_musl_static": {
+      "name": "Rust Static Compilation for Alpine",
+      "packages": ["rust", "cargo", "musl-dev"],
+      "prepareCommand": "sudo apk add --no-cache rust cargo musl-dev",
+      "buildCommand": "cargo build --release --target x86_64-unknown-linux-musl"
+    },
+    "nginx_static_server": {
+      "name": "Ultra-Lean Nginx Web Server (~8MB RAM)",
+      "packages": ["nginx"],
+      "prepareCommand": "sudo apk add --no-cache nginx",
+      "startCommand": "nginx -g 'daemon off;'"
+    },
+    "system_diagnostics": {
+      "name": "Alpine Network Inspection & Diagnostics",
+      "packages": ["curl", "bind-tools", "busybox-extras", "iputils", "htop"],
+      "prepareCommand": "sudo apk add --no-cache curl bind-tools busybox-extras iputils htop"
+    }
+  }
+}

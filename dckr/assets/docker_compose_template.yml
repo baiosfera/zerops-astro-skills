@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: /var/www
+      dockerfile: Dockerfile
+    container_name: custom_app
+    network_mode: host
+    restart: unless-stopped
+    shm_size: "2gb"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - /mnt/storage/app/config:/config
+      - /mnt/storage/app/data:/data

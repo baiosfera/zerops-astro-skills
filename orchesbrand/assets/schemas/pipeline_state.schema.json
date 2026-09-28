@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrchesbrandPipelineStateSOTA",
+  "type": "object",
+  "required": ["brand_id", "execution_mode", "current_phase", "status", "artifacts"],
+  "properties": {
+    "brand_id": {
+      "type": "string",
+      "description": "Identificador único o slug de la marca"
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": ["oraculo", "standalone"]
+    },
+    "current_phase": {
+      "type": "string",
+      "enum": ["fontgen", "symbol", "chroma", "kinetic", "brandbook", "completed", "failed"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["idle", "running", "validating", "success", "error"]
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "astrobranding": { "type": "string" },
+        "brand_input": { "type": "string" },
+        "font_manifest": { "type": "string" },
+        "symbol_manifest": { "type": "string" },
+        "chroma_manifest": { "type": "string" },
+        "kinetic_manifest": { "type": "string" },
+        "brandbook_manifest": { "type": "string" },
+        "brandbook_json": { "type": "string" },
+        "showcase_html": { "type": "string" }
+      }
+    },
+    "live_sync": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "last_synced_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "error_log": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+zerops:
+  - setup: api
+    build:
+      base: python@3.14
+      prepareCommands:
+        - sudo apk add --no-cache curl build-base libffi-dev postgresql-dev
+      buildCommands:
+        - curl -LsSf https://astral.sh/uv/install.sh | sh
+        - export PATH="/root/.local/bin:$PATH"
+        - uv pip install --target=./vendor -r requirements.txt
+      deployFiles:
+        - ./src
+        - ./assets
+        - ./vendor
+      cache:
+        - vendor
+
+    deploy:
+      readinessCheck:
+        httpGet:
+          port: 8000
+          path: /healthz
+
+    run:
+      base: python@3.14
+      ports:
+        - port: 8000
+          httpSupport: true
+      envVariables:
+        PYTHONPATH: /var/www/vendor
+        PYTHONUNBUFFERED: "1"
+        ENVIRONMENT: production
+        DB_HOST: ${db_hostname}
+        DB_PORT: ${db_port}
+        DB_USER: ${db_user}
+        DB_PASS: ${db_password}
+        DB_NAME: ${db_hostname}
+        DATABASE_URL: postgresql://${db_user}:${db_password}@${db_hostname}:${db_port}/${db_hostname}
+        VALKEY_HOST: ${valkey_hostname}
+        VALKEY_PORT: ${valkey_port}
+        VALKEY_PASS: ${valkey_password}
+      start: >-
+        /var/www/vendor/bin/granian
+        --interface asgi
+        --host 0.0.0.0
+        --port 8000
+        --workers 2
+        --runtime-threads 1
+        --blocking-threads 1
+        --loop uvloop
+        --http auto
+        --no-ws
+        --backlog 2048
+        --backpressure 1024
+        --log
+        --log-level info
+        --no-access-log
+        src.main:app

@@ -1,0 +1,19 @@
+{
+  "name": "frnt",
+  "version": "2.0.0",
+  "description": "Production Astro 5 SSR middleware, Zustand 5 persistent stores, React 19 Compiler islands, and Cloudflare edge recipes",
+  "recipes": {
+    "directus_auth_middleware": {
+      "description": "Astro SSR middleware for secure session authentication via HTTP-only cookies",
+      "path": "src/middleware.ts"
+    },
+    "zustand_cart_store": {
+      "description": "Persistent TypeScript shopping cart store with Zustand 5",
+      "path": "src/stores/cart-store.ts"
+    },
+    "server_island_skeleton": {
+      "description": "Astro Server Island with fallback skeleton to guarantee zero layout shift",
+      "code": "<UserSlot server:defer>\n  <UserSkeleton slot=\"fallback\" />\n</UserSlot>"
+    }
+  }
+}

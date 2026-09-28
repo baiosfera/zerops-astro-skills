@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "automation_engine_recipes",
+  "version": "2.0",
+  "recipes": [
+    {
+      "id": "bullmq_post_payment_worker",
+      "description": "BullMQ worker consuming post-payment settlement jobs with exponential backoff",
+      "queue_name": "orders:post-settlement",
+      "retry_attempts": 3,
+      "backoff_type": "exponential"
+    },
+    {
+      "id": "nats_jetstream_stream_setup",
+      "description": "NATS JetStream ORDERS stream definition with limits retention and 7-day TTL",
+      "stream_name": "ORDERS",
+      "subjects": ["order.*"],
+      "retention": "limits"
+    }
+  ]
+}

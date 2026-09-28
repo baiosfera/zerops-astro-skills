@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.2",
+  "description": "Universal Brand-Agnostic Fiscal & Business Onboarding Profile",
+  "company_name": "{{COMPANY_LEGAL_NAME}}",
+  "business_archetype": "PHYSICAL_RETAIL",
+  "primary_ciiu": "4791",
+  "secondary_ciius": [],
+  "tax_id": "{{TAX_ID_WITH_DV}}",
+  "vat_regime_code": "49",
+  "is_vat_responsible": false,
+  "currency": "COP",
+  "country": "Colombia",
+  "city": "{{CITY_NAME}}",
+  "department": "{{STATE_OR_DEPARTMENT}}",
+  "address_line1": "{{STREET_ADDRESS_LINE}}",
+  "phone": "{{CONTACT_PHONE}}",
+  "email": "{{CONTACT_EMAIL}}"
+}

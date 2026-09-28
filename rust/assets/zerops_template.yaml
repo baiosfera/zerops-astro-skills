@@ -1,0 +1,37 @@
+# Production and Development zerops.yaml for Rust Services in Zerops
+zerops:
+  - setup: prod
+    build:
+      base: rust@stable
+      envVariables:
+        CARGO_HOME: ./.cargo
+      buildCommands:
+        - cargo build --release --locked
+      deployFiles:
+        - ./target/release/rust-app
+        - ./target/release/migrate
+      cache:
+        - .cargo/registry
+        - target
+
+    deploy:
+      readinessCheck:
+        httpGet:
+          port: 8080
+          path: /healthz
+
+    run:
+      base: rust@stable
+      initCommands:
+        - zsc execOnce ${appVersionId} -- ./target/release/migrate
+      ports:
+        - port: 8080
+          httpSupport: true
+      envVariables:
+        PORT: 8080
+        DB_HOST: ${db_hostname}
+        DB_PORT: ${db_port}
+        DB_USER: ${db_user}
+        DB_PASS: ${db_password}
+        DB_NAME: ${db_dbName}
+      start: ./target/release/rust-app

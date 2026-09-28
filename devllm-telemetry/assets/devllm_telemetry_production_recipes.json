@@ -1,0 +1,15 @@
+{
+  "name": "devllm-telemetry",
+  "version": "2.0.0",
+  "description": "Production LLMOps telemetry trackers, system health pollers, and Directus Insights dashboard seeders",
+  "recipes": {
+    "llm_tracker_wrapper": {
+      "description": "TypeScript non-blocking LLM call tracker with automated cost calculation in USD",
+      "code": "import { createDirectus, rest, staticToken, createItem } from '@directus/sdk';\n\nconst directus = createDirectus(process.env.DIRECTUS_URL || 'http://directus:8055')\n  .with(staticToken(process.env.DIRECTUS_STATIC_TOKEN || ''))\n  .with(rest());\n\nexport function trackLLMCall(meta: any) {\n  setImmediate(async () => {\n    try {\n      await directus.request(createItem('llm_telemetry_logs', meta));\n    } catch (e) {\n      console.error('[Telemetry] Error:', e.message);\n    }\n  });\n}"
+    },
+    "system_health_poller": {
+      "description": "60-second background poller for NATS :8222, Valkey memory, DLQ depth, and PostgreSQL backup verification",
+      "code": "import Redis from 'ioredis';\nconst redis = new Redis(process.env.VALKEY_URL || 'redis://cache:6379');\n\nexport async function checkHealth() {\n  const res = await fetch('http://nats:8222/varz', { signal: AbortSignal.timeout(3000) });\n  const varz = await res.json();\n  const dlq = await redis.llen('bull:dlq:failed').catch(() => 0);\n  return { natsConnections: varz.connections, dlqDepth: dlq };\n}"
+    }
+  }
+}

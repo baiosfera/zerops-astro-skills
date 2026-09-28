@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChromaManifestSOTA",
+  "type": "object",
+  "required": ["brand", "color_space", "ecosystems", "selected_ecosystem_id", "themes", "accessibility_audit", "css_integration"],
+  "properties": {
+    "brand": { "type": "string" },
+    "color_space": { "type": "string", "const": "oklch" },
+    "selected_ecosystem_id": { "type": "string" },
+    "ecosystems": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ChromaticEcosystem" }
+    },
+    "palettes": {
+      "type": "array",
+      "description": "Acceso rápido a las paletas para la UI de brandview"
+    },
+    "themes": {
+      "type": "object",
+      "required": ["dark", "light"],
+      "properties": {
+        "dark": { "$ref": "#/$defs/ThemePalette" },
+        "light": { "$ref": "#/$defs/ThemePalette" }
+      }
+    },
+    "accessibility_audit": {
+      "type": "object",
+      "required": ["wcag_2_2_compliance", "apca_compliance"],
+      "properties": {
+        "wcag_2_2_compliance": {
+          "type": "object",
+          "required": ["body_to_bg_ratio", "status_aaa"],
+          "properties": {
+            "body_to_bg_ratio": { "type": "number" },
+            "headings_to_bg_ratio": { "type": "number" },
+            "button_to_bg_ratio": { "type": "number" },
+            "status_aaa": { "type": "boolean" }
+          }
+        },
+        "apca_compliance": {
+          "type": "object",
+          "required": ["body_lc", "headings_lc"],
+          "properties": {
+            "body_lc": { "type": "number", "minimum": 75 },
+            "headings_lc": { "type": "number", "minimum": 60 },
+            "ui_components_lc": { "type": "number" }
+          }
+        }
+      }
+    },
+    "css_integration": {
+      "type": "object",
+      "required": ["tailwind_v4_theme_block", "css_variables_root"],
+      "properties": {
+        "tailwind_v4_theme_block": { "type": "string" },
+        "css_variables_root": { "type": "string" },
+        "gradient_interpolation": { "type": "string", "default": "in oklch" }
+      }
+    }
+  },
+  "$defs": {
+    "ChromaticEcosystem": {
+      "type": "object",
+      "required": ["id", "name", "concept", "themes", "audit"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "concept": { "type": "string" },
+        "themes": {
+          "type": "object",
+          "required": ["dark", "light"],
+          "properties": {
+            "dark": { "$ref": "#/$defs/ThemePalette" },
+            "light": { "$ref": "#/$defs/ThemePalette" }
+          }
+        },
+        "audit": {
+          "type": "object",
+          "properties": {
+            "wcag_aaa_ratio": { "type": "number" },
+            "apca_lc": { "type": "number" }
+          }
+        }
+      }
+    },
+    "ThemePalette": {
+      "type": "object",
+      "required": ["primary", "secondary", "accent", "background", "surface", "text_primary", "text_muted"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "secondary": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "accent": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "background": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "surface": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "text_primary": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "text_muted": { "$ref": "#/$defs/ColorTokenDTCG" }
+      }
+    },
+    "ColorTokenDTCG": {
+      "type": "object",
+      "required": ["$value", "$type", "components", "hex", "p3"],
+      "properties": {
+        "$value": { "type": "string" },
+        "$type": { "type": "string", "const": "color" },
+        "$description": { "type": "string" },
+        "components": {
+          "type": "object",
+          "required": ["lightness", "chroma", "hue"],
+          "properties": {
+            "lightness": { "type": "number" },
+            "chroma": { "type": "number" },
+            "hue": { "type": "number" }
+          }
+        },
+        "hex": { "type": "string" },
+        "p3": { "type": "string" }
+      }
+    }
+  }
+}

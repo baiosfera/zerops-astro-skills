@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0",
+  "recipes": {
+    "lead_create_standard": {
+      "endpoint": "/api/resource/CRM Lead",
+      "method": "POST",
+      "headers": {
+        "Authorization": "token {{FRAPPE_API_KEY}}:{{FRAPPE_API_SECRET}}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "lead@{{COMPANY_DOMAIN}}",
+        "mobile_no": "+573001234567",
+        "organization": "{{ORGANIZATION_NAME}}",
+        "industry": "Commercial Services",
+        "source": "Web Form",
+        "status": "New",
+        "details": "Client requesting initial consultation for services."
+      }
+    },
+    "lead_to_deal_conversion": {
+      "endpoint": "/api/method/crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal",
+      "method": "POST",
+      "headers": {
+        "Authorization": "token {{FRAPPE_API_KEY}}:{{FRAPPE_API_SECRET}}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "lead": "CRM-LEAD-2026-00001",
+        "deal": {
+          "status": "Qualification",
+          "expected_deal_value": 15000000.0,
+          "expected_closure_date": "2026-10-31"
+        }
+      }
+    },
+    "deal_stage_transition_won": {
+      "endpoint": "/api/resource/CRM Deal/{{DEAL_ID}}",
+      "method": "PUT",
+      "headers": {
+        "Authorization": "token {{FRAPPE_API_KEY}}:{{FRAPPE_API_SECRET}}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "status": "Won"
+      }
+    },
+    "deal_stage_transition_lost": {
+      "endpoint": "/api/resource/CRM Deal/{{DEAL_ID}}",
+      "method": "PUT",
+      "headers": {
+        "Authorization": "token {{FRAPPE_API_KEY}}:{{FRAPPE_API_SECRET}}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "status": "Lost",
+        "lost_reason": "Budget Constraint",
+        "lost_notes": "Client opted for lower budget alternative for Q3."
+      }
+    },
+    "quotation_from_deal_payload": {
+      "endpoint": "/api/resource/Quotation",
+      "method": "POST",
+      "headers": {
+        "Authorization": "token {{FRAPPE_API_KEY}}:{{FRAPPE_API_SECRET}}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "doctype": "Quotation",
+        "quotation_to": "Customer",
+        "party_name": "{{CUSTOMER_NAME}}",
+        "company": "{{COMPANY_LEGAL_NAME}}",
+        "order_type": "Sales",
+        "items": [
+          {
+            "item_code": "{{DEFAULT_ITEM_CODE}}",
+            "qty": 10,
+            "rate": 150000.0
+          }
+        ]
+      }
+    }
+  }
+}

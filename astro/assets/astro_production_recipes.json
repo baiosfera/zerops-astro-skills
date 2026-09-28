@@ -1,0 +1,15 @@
+{
+  "name": "astro",
+  "version": "2.0.0",
+  "description": "Production Zerops deployment recipes, multi-service topologies, Astro Actions with NATS RPC, and Directus Content Layer loaders for Astro 5 SSR",
+  "recipes": {
+    "zerops_yaml_astro": {
+      "description": "Production zerops.yaml for Astro 5 SSR on Bun 1.3.9 with Directus, NATS, Valkey, and PostgreSQL",
+      "yaml": "zerops:\n  - setup: astro\n    build:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl ca-certificates\n        - bun install --frozen-lockfile\n        - bun run build\n      deployFiles:\n        - dist\n        - node_modules\n        - package.json\n      cache:\n        - node_modules\n    run:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl ca-certificates tzdata\n      start: bun ./dist/server/entry.mjs\n      ports:\n        - port: 3000\n          httpSupport: true\n      envVariables:\n        HOST: \"0.0.0.0\"\n        PORT: \"3000\"\n        ASTRO_KEY: \"${ASTRO_KEY}\"\n        PUBLIC_DIRECTUS_URL: \"https://cms.yourdomain.com\"\n        DIRECTUS_URL: \"http://directus:8055\"\n        NATS_URL: \"${nats_url}\"\n        VALKEY_URL: \"${cache_connectionString}\"\n        DATABASE_URL: \"${db_connectionString}\""
+    },
+    "directus_content_loader": {
+      "description": "Custom Directus Content Layer loader for Astro 5 src/content.config.ts",
+      "code": "import { defineCollection } from 'astro:content';\nimport { z } from 'astro/zod';\n\nexport function directusLoader({ collectionName, directusUrl }: { collectionName: string; directusUrl: string }) {\n  return {\n    name: `directus-${collectionName}`,\n    load: async ({ store, logger, parseData }: any) => {\n      const res = await fetch(`${directusUrl}/items/${collectionName}?filter[status][_eq]=published`);\n      const { data } = await res.json();\n      store.clear();\n      for (const item of data) {\n        const parsed = await parseData({ id: String(item.id), data: item });\n        store.set({ id: String(item.id), data: parsed });\n      }\n    }\n  };\n}"
+    }
+  }
+}

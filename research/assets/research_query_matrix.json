@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResearchQueryMatrix_v6.0",
+  "description": "Deterministic decision routing matrix for 12-engine multi-tier epistemic research and free-tier quota preservation.",
+  "engines_catalog": {
+    "tier_0_memory": ["engram"],
+    "tier_1_official_docs": ["context7"],
+    "tier_2_discovery": ["exa", "tavily", "brave", "jina_search", "duckduckgo"],
+    "tier_3_verbatim": ["jina_reader", "native_http"],
+    "tier_4_scrapers": ["crawl4ai", "playwright", "puppeteer", "firecrawl"]
+  },
+  "quota_policies": {
+    "engram": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "context7": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "duckduckgo": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "jina_reader": { "limit_monthly": "1_000_000_tokens", "cost_per_query": 0, "priority": 1 },
+    "crawl4ai": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "playwright": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "puppeteer": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
+    "exa": { "limit_monthly": 1000, "cost_per_query": 1, "priority": 2 },
+    "tavily": { "limit_monthly": 1000, "cost_per_query": 1, "priority": 2 },
+    "brave": { "limit_monthly": 2000, "cost_per_query": 1, "rate_limit_rps": 1, "priority": 2 },
+    "firecrawl": { "limit_monthly": 500, "cost_per_query": 1, "priority": 3 }
+  },
+  "routing_rules": [
+    {
+      "category": "libraries_and_types",
+      "keywords": ["npm", "pypi", "types", "api", "sdk", "methods", "functions"],
+      "phase_0_recall": "engram",
+      "phase_1_official": "context7",
+      "phase_2_discovery": "exa",
+      "phase_3_verbatim": "jina_reader",
+      "phase_4_scraper": "crawl4ai",
+      "fallback": "duckduckgo"
+    },
+    {
+      "category": "versions_and_changelogs",
+      "keywords": ["release", "version", "breaking changes", "cve", "changelog", "security"],
+      "phase_0_recall": "engram",
+      "phase_1_official": "context7",
+      "phase_2_discovery": "tavily",
+      "phase_3_verbatim": "jina_reader",
+      "phase_4_scraper": "crawl4ai",
+      "fallback": "brave"
+    },
+    {
+      "category": "branding_and_typography",
+      "keywords": ["font", "branding", "color", "palette", "design", "tokens", "oklch", "svg"],
+      "phase_0_recall": "engram",
+      "phase_1_official": null,
+      "phase_2_discovery": "brave",
+      "phase_3_verbatim": "jina_reader",
+      "phase_4_scraper": "playwright_or_puppeteer",
+      "fallback": "duckduckgo"
+    },
+    {
+      "category": "heavy_spa_and_dynamic_pages",
+      "keywords": ["infinite scroll", "spa", "dashboard", "dynamic js", "anti bot"],
+      "phase_0_recall": "engram",
+      "phase_1_official": null,
+      "phase_2_discovery": "brave",
+      "phase_3_verbatim": "jina_reader",
+      "phase_4_scraper": "crawl4ai_or_playwright",
+      "fallback": "firecrawl"
+    }
+  ]
+}

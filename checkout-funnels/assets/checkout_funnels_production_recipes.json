@@ -1,0 +1,15 @@
+{
+  "name": "checkout-funnels",
+  "version": "2.0.0",
+  "description": "Production multi-gateway payment adapters, cryptographic signature validators, COD OTP verification, and Meta CAPI dispatchers",
+  "recipes": {
+    "wompi_signature_calculator": {
+      "description": "TypeScript function calculating Wompi SHA-256 integrity signature",
+      "code": "import crypto from 'node:crypto';\n\nexport function calculateWompiSignature(reference: string, amountInCents: number, currency: string, integritySecret: string): string {\n  const raw = `${reference}${amountInCents}${currency}${integritySecret}`;\n  return crypto.createHash('sha256').update(raw).digest('hex');\n}"
+    },
+    "meta_capi_purchase_payload": {
+      "description": "Server-side Meta Conversions API (CAPI) Purchase event dispatcher",
+      "code": "export async function dispatchMetaPurchase(order: any) {\n  const payload = {\n    data: [{\n      event_name: 'Purchase',\n      event_time: Math.floor(Date.now() / 1000),\n      event_id: order.id,\n      action_source: 'website',\n      custom_data: { currency: order.currency, value: order.total_amount }\n    }]\n  };\n  await fetch(`https://graph.facebook.com/v20.0/${process.env.META_PIXEL_ID}/events?access_token=${process.env.META_CAPI_ACCESS_TOKEN}`, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload)\n  });\n}"
+    }
+  }
+}

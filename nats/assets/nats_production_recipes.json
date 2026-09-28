@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "engine": "nats@2.12",
+  "recipes": {
+    "core_request_reply_rpc": {
+      "name": "Sub-Millisecond Request-Reply RPC (<0.3ms P99)",
+      "description": "Native protocol-level RPC using ephemeral inboxes and explicit client timeouts",
+      "timeoutMs": 2000,
+      "subject": "service.compute_total",
+      "queueGroup": "compute_workers"
+    },
+    "jetstream_stream_provisioning": {
+      "name": "JetStream Stream with Native Msg-Id Deduplication",
+      "description": "Durable file-backed stream with Nats-Msg-Id idempotency headers",
+      "streamConfig": {
+        "name": "EVENTS",
+        "subjects": ["events.>"],
+        "storage": "file",
+        "num_replicas": 1
+      },
+      "deduplicationHeader": "Nats-Msg-Id"
+    },
+    "durable_pull_consumer_poison_pill": {
+      "name": "Durable Pull Consumer with Poison Pill Defense",
+      "description": "Pull consumer with batch fetch and msg.term() termination after 5 failed deliveries",
+      "maxDeliveries": 5,
+      "ackPolicy": "explicit",
+      "actionOnPoisonPill": "msg.term()"
+    },
+    "distributed_kv_store": {
+      "name": "Distributed Key-Value Store with TTL",
+      "description": "High-speed key-value store with revision history and real-time watch subscriptions",
+      "bucket": "app_config",
+      "ttlMs": 3600000
+    }
+  }
+}

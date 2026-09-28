@@ -1,0 +1,458 @@
+{
+  "freeastroapi": [
+    {
+      "id": "fa_natal_tropical",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/natal/calculate",
+      "description": "Calculates tropical natal chart with placidus houses, modern dominants, declination aspects and fixed stars"
+    },
+    {
+      "id": "fa_natal_sidereal_fagan",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/natal/calculate",
+      "description": "Calculates sidereal natal chart with Fagan-Bradley ayanamsha and Campanus house system"
+    },
+    {
+      "id": "fa_natal_sidereal_lahiri",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/natal/calculate",
+      "description": "Calculates sidereal natal chart with Lahiri ayanamsha and Whole Sign house system"
+    },
+    {
+      "id": "fa_vedic_kp",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/vedic/kp",
+      "description": "Calculates Krishnamurti Paddhati (KP V2) with 4-level significators, sub-lords and ruling planets"
+    },
+    {
+      "id": "fa_chinese_bazi",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/chinese/bazi",
+      "description": "Calculates Four Pillars of Destiny in True Solar Time with Ten Gods and Shen Sha auxiliary stars"
+    },
+    {
+      "id": "fa_chinese_bazi_flow",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/chinese/bazi/flow",
+      "description": "Calculates 10-year Da Yun luck cycle sequence from birth to age 90+"
+    },
+    {
+      "id": "fa_numerology_pythagorean",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/numerology/profile",
+      "description": "Calculates full Pythagorean profile with core numbers, master numbers 11/22/33 and pinnacles"
+    },
+    {
+      "id": "fa_numerology_chaldean",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/numerology/profile",
+      "description": "Calculates Chaldean Cheiro compound and root vibrations for personal and brand names"
+    },
+    {
+      "id": "fa_numerology_kabbalah",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/numerology/profile",
+      "description": "Calculates Kabbalistic gematria profiles (Standard, Ordinal, Reduced)"
+    },
+    {
+      "id": "fa_numerology_ank_jyotish",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/numerology/profile",
+      "description": "Calculates Vedic Navagraha numbers: Janmank (Driver), Bhagyank (Conductor), Namank"
+    },
+    {
+      "id": "fa_astrocartography_lines",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/western/astrocartography/lines",
+      "description": "Calculates WGS84 GeoJSON planetary angular lines and crossings across global maps"
+    },
+    {
+      "id": "fa_progressions_secondary",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/western/progressions/secondary",
+      "description": "Calculates secondary progressions (a day for a year) for active lifecycle evolution"
+    },
+    {
+      "id": "fa_progressions_tertiary",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/western/progressions/tertiary",
+      "description": "Calculates tertiary progressions (a day for a lunar month)"
+    },
+    {
+      "id": "fa_progressions_converse",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v1/western/progressions/converse-secondary",
+      "description": "Calculates converse secondary progressions for karmic root investigation"
+    },
+    {
+      "id": "fa_electional_contracts",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/western/electional/making-contracts/search",
+      "description": "Scans window for optimal planetary timing for corporate contracts and partnerships"
+    },
+    {
+      "id": "fa_electional_invest",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/western/electional/invest-money/search",
+      "description": "Scans window for optimal timing for financial investments and capital allocation"
+    },
+    {
+      "id": "fa_electional_legal",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/western/electional/legal-proceedings/search",
+      "description": "Scans window for optimal timing for legal shielding and corporate filings"
+    },
+    {
+      "id": "fa_electional_job",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/western/electional/job-audition/search",
+      "description": "Scans window for career presentations, launches and high-visibility appearances"
+    },
+    {
+      "id": "fa_electional_property",
+      "method": "POST",
+      "endpoint": "https://api.freeastroapi.com/api/v2/western/electional/purchase-property/search",
+      "description": "Scans window for commercial real estate acquisition and asset securing"
+    }
+  ],
+  "astrologyapi_v3": [
+    {
+      "id": "aa_core_numerology",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/numerology/core-numbers",
+      "description": "Calculates 5 Core Pillars: Life Path, Expression/Destiny, Soul Urge, Personality, Birthday"
+    },
+    {
+      "id": "aa_western_natal_23houses",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/western/natal-chart",
+      "description": "Calculates exact planetary coordinates, 23 house system cusps and aspect tables"
+    },
+    {
+      "id": "aa_kabbalah_gematria",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/kabbalah/gematria",
+      "description": "Calculates Hebrew & transliterated gematria across 4 systems (Ragil, Siduri, Katan, Kolel)"
+    },
+    {
+      "id": "aa_timing_timeline",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/timing/timeline",
+      "description": "Flagship Timeline Aggregator: Profections, Firdaria, Decennials and Zodiacal Releasing in parallel"
+    },
+    {
+      "id": "aa_timing_profections",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/timing/profections/annual",
+      "description": "Calculates annual profections with house activation and Lord of the Year"
+    },
+    {
+      "id": "aa_timing_firdaria",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/timing/firdaria",
+      "description": "Calculates Persian 75-year sect-aware cycle with L1 major and L2 sub-rulers"
+    },
+    {
+      "id": "aa_timing_decennials",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/timing/decennials",
+      "description": "Calculates 10-year general planetary time-lords"
+    },
+    {
+      "id": "aa_timing_zodiacal_releasing",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/timing/zodiacal-releasing",
+      "description": "Calculates Vettius Valens Lots of Fortune/Spirit time releases down to L4"
+    },
+    {
+      "id": "aa_vedic_aspects_drik_bala",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/vedic/aspects",
+      "description": "Calculates Graha Drishti, Bhava Drishti, Drik Bala (BPHS Ch. 26/27) and Jaimini Rashi Drishti"
+    },
+    {
+      "id": "aa_analysis_relocation",
+      "method": "POST",
+      "endpoint": "https://api.astrology-api.io/api/v3/analysis/relocation-report",
+      "description": "Calculates multi-city astrocartography relocation score and angular shifts"
+    }
+  ],
+  "vedastro": [
+    {
+      "id": "va_horoscope_predictions",
+      "method": "POST",
+      "endpoint": "https://api.vedastro.org/api/Calculate/HoroscopePredictions",
+      "description": "Calculates 200+ classical Parashari, Jaimini, Raja Yogas, Dhana Yogas and Doshas"
+    },
+    {
+      "id": "va_all_planet_data",
+      "method": "POST",
+      "endpoint": "https://api.vedastro.org/api/Calculate/AllPlanetData",
+      "description": "Calculates Swiss Ephemeris astronomical positions, speeds, constellations and houses"
+    },
+    {
+      "id": "va_all_easy_astrology",
+      "method": "POST",
+      "endpoint": "https://api.vedastro.org/api/Calculate/AllEasyAstrology",
+      "description": "Comprehensive Vedic astrology summary with core planetary alignments"
+    }
+  ],
+  "hebcal": [
+    {
+      "id": "hebcal_gregorian_to_hebrew",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/converter?cfg=json&gy={year}&gm={month}&gd={day}&g2h=1",
+      "description": "Converts Gregorian birth date to Hebrew Calendar (Day, Month, Year, Parashat HaShavua)"
+    },
+    {
+      "id": "hebcal_zmanim",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date}",
+      "description": "Calculates solar halachic times (Sha'ot Zmaniyot, Alot, Chatzot, Shekiya)"
+    },
+    {
+      "id": "hebcal_zmanim_detailed",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&tzid={tz}&date={date}&sec=1",
+      "description": "34 solar halachic marks with second precision"
+    },
+    {
+      "id": "hebcal_shabbat",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/shabbat?cfg=json&latitude={lat}&longitude={lng}&tzid={tz}&m=on",
+      "description": "Candle lighting, Havdalah, and Torah Parashat"
+    },
+    {
+      "id": "hebcal_calendar_events",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&c=on",
+      "description": "Hebrew holidays, Omer count, Rosh Chodesh"
+    },
+    {
+      "id": "hebcal_leyning",
+      "method": "GET",
+      "endpoint": "https://www.hebcal.com/leyning?cfg=json&date={date}",
+      "description": "Torah readings and Aliyot"
+    }
+  ],
+  "nasa": [
+    {
+      "id": "nasa_jpl_horizons",
+      "method": "GET",
+      "endpoint": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "description": "Scientific Ephemerides DE440/DE441 state vectors, geocentric and heliocentric coordinates"
+    },
+    {
+      "id": "nasa_horizons_asteroids",
+      "method": "GET",
+      "endpoint": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "description": "DE440/DE441 Geocentric ephemerides for Ceres (1), Pallas (2), Juno (3), Vesta (4), Chiron (2060), Chariklo (10199), Eris (136199)"
+    }
+  ],
+  "astroway_rest": [
+    {
+      "id": "aw_western_chart",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/chart",
+      "description": "High-precision Swiss Ephemeris Western Chart"
+    },
+    {
+      "id": "aw_human_design",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/human-design",
+      "description": "Complete BodyGraph: Type, Strategy, Authority, Profile, 9 Centers, Channels, Gates"
+    },
+    {
+      "id": "aw_hd_circuitry",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/hd/circuitry",
+      "description": "Human Design Sub-circuitry breakdown (Individual, Collective, Tribal, Integration)"
+    },
+    {
+      "id": "aw_hd_incarnation_cross",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/hd/incarnation-cross",
+      "description": "Incarnation Cross mechanics and conscious/unconscious Sun/Earth gates"
+    },
+    {
+      "id": "aw_bazi_four_pillars",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/bazi/four-pillars",
+      "description": "Four Pillars of Destiny on 60-Jiazi cycle with Day Master strength"
+    },
+    {
+      "id": "aw_vedic_varga_d1",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d1",
+      "description": "Rasi Chart (Physical existence, constitution)"
+    },
+    {
+      "id": "aw_vedic_varga_d9",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d9",
+      "description": "Navamsa Chart (Soul destiny, dharma, marriage)"
+    },
+    {
+      "id": "aw_vedic_varga_d10",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d10",
+      "description": "Dasamsa Chart (Career, status, executive achievements)"
+    },
+    {
+      "id": "aw_vedic_varga_d60",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d60",
+      "description": "Shashtiamsa Chart (Past karmas, root destiny)"
+    },
+    {
+      "id": "aw_vedic_shadbala",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/shadbala/full",
+      "description": "6-Factor Shadbala Strength (Sthana, Dig, Kala, Chesta, Naisargika, Drik)"
+    },
+    {
+      "id": "aw_vedic_dasha_vimshottari",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/dashas/vimshottari/maha",
+      "description": "Vimshottari Mahadasha sequence and sub-periods"
+    },
+    {
+      "id": "aw_acg_lines",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/acg",
+      "description": "Global Astrocartography planetary angular crossing lines"
+    },
+    {
+      "id": "aw_cosmobiology_dial90",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/cosmobiology/dial-90",
+      "description": "90-degree Ebertin/Witte Cosmobiology Dial transformation"
+    },
+    {
+      "id": "aw_hellenistic_lots",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/hellenistic/lots-15",
+      "description": "15 Classical Greek Lots (Fortune, Spirit, Eros, Necessity, Courage, Victory)"
+    },
+    {
+      "id": "aw_sabian_symbols",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/aspects/sabian-symbols",
+      "description": "360 Sabian symbols degrees"
+    },
+    {
+      "id": "aw_founder_personality",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/business/founder-personality",
+      "description": "Executive founder archetypes"
+    },
+    {
+      "id": "aw_leadership_style",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/business/leadership-style",
+      "description": "Leadership and sales archetypes"
+    },
+    {
+      "id": "aw_jaimini_chara_karakas",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/jaimini/chara-karakas",
+      "description": "Canonical Jaimini Chara Karakas (AK to DK) with Lahiri Ayanamsa"
+    },
+    {
+      "id": "aw_evolutionary_nodal_axis_detail",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/evolutionary/nodal-axis-detail",
+      "description": "Detailed evolutionary astrology of Nodal axis"
+    },
+    {
+      "id": "aw_evolutionary_skipped_steps",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/evolutionary/skipped-steps",
+      "description": "Planets in square to the lunar nodes (karmic skipped steps)"
+    },
+    {
+      "id": "aw_acg_best_places",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/geo/acg/best-places",
+      "description": "Top planetary relocation places worldwide"
+    },
+    {
+      "id": "aw_zr_peak_periods",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/hellenistic/zr/peak-periods",
+      "description": "Zodiacal Releasing peak career periods"
+    },
+    {
+      "id": "aw_vedic_varga_d2",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d2",
+      "description": "Shodashavarga Divisional Chart D2"
+    },
+    {
+      "id": "aw_vedic_varga_d3",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d3",
+      "description": "Shodashavarga Divisional Chart D3"
+    },
+    {
+      "id": "aw_vedic_varga_d4",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d4",
+      "description": "Shodashavarga Divisional Chart D4"
+    },
+    {
+      "id": "aw_vedic_varga_d7",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d7",
+      "description": "Shodashavarga Divisional Chart D7"
+    },
+    {
+      "id": "aw_vedic_varga_d12",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d12",
+      "description": "Shodashavarga Divisional Chart D12"
+    },
+    {
+      "id": "aw_vedic_varga_d16",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d16",
+      "description": "Shodashavarga Divisional Chart D16"
+    },
+    {
+      "id": "aw_vedic_varga_d20",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d20",
+      "description": "Shodashavarga Divisional Chart D20"
+    },
+    {
+      "id": "aw_vedic_varga_d24",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d24",
+      "description": "Shodashavarga Divisional Chart D24"
+    },
+    {
+      "id": "aw_vedic_varga_d27",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d27",
+      "description": "Shodashavarga Divisional Chart D27"
+    },
+    {
+      "id": "aw_vedic_varga_d30",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d30",
+      "description": "Shodashavarga Divisional Chart D30"
+    },
+    {
+      "id": "aw_vedic_varga_d40",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d40",
+      "description": "Shodashavarga Divisional Chart D40"
+    },
+    {
+      "id": "aw_vedic_varga_d45",
+      "method": "POST",
+      "endpoint": "https://api.astroway.info/v1/vedic/varga/d45",
+      "description": "Shodashavarga Divisional Chart D45"
+    }
+  ]
+}

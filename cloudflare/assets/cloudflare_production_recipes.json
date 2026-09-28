@@ -1,0 +1,38 @@
+{
+  "name": "cloudflare",
+  "version": "2.0.0",
+  "description": "Production Cloudflare API v4 recipes, Turnstile verification handlers, WAF ACME bypass rules, and DNS synchronization templates",
+  "recipes": {
+    "waf_acme_bypass_rule": {
+      "description": "Cloudflare WAF Custom Rule for Let's Encrypt ACME HTTP-01 renewal bypass",
+      "expression": "(http.request.uri.path starts_with \"/.well-known/acme-challenge/\")",
+      "action": "skip",
+      "action_parameters": {
+        "ruleset": "current"
+      }
+    },
+    "turnstile_server_verification": {
+      "description": "TypeScript Turnstile token verification handler for Astro Actions",
+      "code": "export async function verifyTurnstile(token: string, secretKey: string, remoteIp?: string): Promise<boolean> {\n  const form = new FormData();\n  form.append('secret', secretKey);\n  form.append('response', token);\n  if (remoteIp) form.append('remoteip', remoteIp);\n  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {\n    method: 'POST',\n    body: form,\n  });\n  const outcome = await res.json();\n  return outcome.success === true;\n}"
+    },
+    "edge_cache_rules": {
+      "description": "Cloudflare Edge Cache Rules for Astro and Directus assets",
+      "rules": [
+        {
+          "name": "Astro Immutable Assets",
+          "expression": "(http.request.uri.path starts_with \"/_astro/\")",
+          "action": "set_cache_settings",
+          "edge_ttl": 31536000,
+          "browser_ttl": 31536000
+        },
+        {
+          "name": "Directus Media Assets",
+          "expression": "(http.request.uri.path starts_with \"/assets/\")",
+          "action": "set_cache_settings",
+          "edge_ttl": 2592000,
+          "browser_ttl": 604800
+        }
+      ]
+    }
+  }
+}

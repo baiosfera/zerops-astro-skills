@@ -1,0 +1,13 @@
+# Zerops Import Recipe: FreeLLMAPI Sovereign Microservice
+project:
+  name: freellmapi-service
+services:
+  - hostname: freellmapi
+    type: nodejs@22
+    enableSubdomainAccess: true
+    envVariables:
+      PORT: "3001"
+      NODE_ENV: "production"
+      FREELLMAPI_CONTEXT_HANDOFF: "on_model_switch"
+      FREEAPI_DB_PATH: "/app/server/data/freellmapi.db"
+      ENCRYPTION_KEY: "generate-with-openssl-rand-hex-32"

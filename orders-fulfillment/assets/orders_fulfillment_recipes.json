@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "orders_fulfillment_recipes",
+  "version": "2.0",
+  "recipes": [
+    {
+      "id": "post_settlement_fulfillment_dispatcher",
+      "description": "Recipe for dispatching shipment creation after Directus order paid and ERPNext delivery note submitted",
+      "dane_code_normalization": true,
+      "supported_aggregators": ["mipaquete", "skydropx"],
+      "thermal_label_formats": ["PDF", "ZPL"]
+    }
+  ]
+}

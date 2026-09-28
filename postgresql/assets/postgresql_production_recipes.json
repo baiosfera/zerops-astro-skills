@@ -1,0 +1,27 @@
+{
+  "version": "2.0",
+  "engine": "postgresql@18",
+  "recipes": {
+    "json_table_projection": {
+      "name": "SQL/JSON JSON_TABLE Relational Projection",
+      "description": "Transforms nested JSONB documents into tabular rows without intermediate plpgsql functions",
+      "sql": "SELECT jt.id, jt.username, jt.role, jt.created_at FROM raw_events, JSON_TABLE(event_data, '$.users[*]' COLUMNS (id INT PATH '$.id', username TEXT PATH '$.username', role TEXT PATH '$.role' DEFAULT 'member' ON EMPTY, created_at TIMESTAMP PATH '$.created_at')) AS jt;"
+    },
+    "uuidv7_virtual_columns": {
+      "name": "Time-Ordered uuidv7 and Virtual Columns Schema",
+      "description": "High-throughput table schema using native uuidv7 and virtual generated columns with zero disk overhead",
+      "sql": "CREATE TABLE orders (id UUID PRIMARY KEY DEFAULT uuidv7(), subtotal NUMERIC(12, 2) NOT NULL, tax_rate NUMERIC(4, 2) NOT NULL, total NUMERIC(12, 2) GENERATED ALWAYS AS (subtotal * (1 + tax_rate)) VIRTUAL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
+    },
+    "pgvector_hnsw_indexing": {
+      "name": "pgvector HNSW Vector Search and Indexing",
+      "description": "Creates halfvec/vector embeddings table with multi-layer HNSW cosine distance index",
+      "sql": "CREATE EXTENSION IF NOT EXISTS vector; CREATE TABLE documents (id UUID PRIMARY KEY DEFAULT uuidv7(), title TEXT NOT NULL, embedding vector(1536) NOT NULL); CREATE INDEX idx_documents_embedding_hnsw ON documents USING hnsw (embedding vector_cosine_ops) WITH (m = 16, ef_construction = 128);"
+    },
+    "extension_provisioning_flow": {
+      "name": "Superuser Extension Provisioning Pipeline",
+      "description": "Standard pipeline to install extensions and restart PostgreSQL service on Zerops",
+      "psqlCommand": "psql \"postgresql://$db_superUser:$db_superUserPassword@db:5432/$db_dbName\" -c \"CREATE EXTENSION IF NOT EXISTS vector;\"",
+      "restartCommand": "zerops_manage action=\"restart\" serviceHostname=\"db\""
+    }
+  }
+}

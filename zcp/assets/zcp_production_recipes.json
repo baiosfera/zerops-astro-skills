@@ -1,0 +1,15 @@
+{
+  "name": "zcp",
+  "version": "6.0.0",
+  "description": "Production Zerops import manifests, zerops.yaml lifecycle recipes, scaling blueprints, and MCP orchestrator commands",
+  "recipes": {
+    "canonical_import_yaml": {
+      "description": "Multi-service ecosystem import manifest with Astro, Directus, FastAPI, PostgreSQL 18, Valkey 7.2, NATS 2.12 and Shared Storage",
+      "yaml_path": "assets/import_template.yaml"
+    },
+    "canonical_zerops_yaml": {
+      "description": "Production zerops.yaml lifecycle recipe with dev keepalive and prod release",
+      "yaml_path": "assets/zerops_template.yaml"
+    }
+  }
+}

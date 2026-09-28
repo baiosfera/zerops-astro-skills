@@ -1,0 +1,29 @@
+{
+  "name": "directus",
+  "version": "2.0.0",
+  "description": "Production Zerops deployment recipes, multi-service topologies, RAG pgvector hooks, and telemetry seeders for Directus 11+",
+  "recipes": {
+    "zerops_yaml_directus": {
+      "description": "Production zerops.yaml for Directus 11+ on Node.js 24 (Ubuntu glibc) with PostgreSQL 18, Valkey, and Shared Storage",
+      "yaml": "zerops:\n  - setup: directus\n    build:\n      os: ubuntu\n      prepareCommands:\n        - sudo apt-get update && sudo apt-get install -y curl ca-certificates build-essential python3\n        - npm install directus @directus/extensions-sdk sharp\n      deployFiles:\n        - node_modules\n        - package.json\n        - extensions\n        - uploads\n      cache:\n        - node_modules\n    run:\n      os: ubuntu\n      prepareCommands:\n        - sudo apt-get update && sudo apt-get install -y ffmpeg curl ca-certificates\n        - sudo mkdir -p /mnt/baiostorage/directus/uploads 2>/dev/null || true\n        - sudo chmod -R 777 /mnt/baiostorage/directus/uploads 2>/dev/null || true\n      initCommands:\n        - zsc execOnce ${appVersionId} --retryUntilSuccessful -- npx directus bootstrap\n      start: npx directus start\n      ports:\n        - port: 8055\n          httpSupport: true\n      envVariables:\n        PORT: \"8055\"\n        HOST: \"0.0.0.0\"\n        DB_CLIENT: \"pg\"\n        DB_CONNECTION_STRING: \"${db_connectionString}\"\n        CACHE_ENABLED: \"true\"\n        CACHE_STORE: \"redis\"\n        CACHE_REDIS: \"${cache_connectionString}\"\n        CACHE_AUTO_PURGE: \"true\"\n        SYNCHRONIZATION_STORE: \"redis\"\n        MESSENGER_STORE: \"redis\"\n        WEBSOCKETS_ENABLED: \"true\"\n        STORAGE_LOCATIONS: \"local\"\n        STORAGE_LOCAL_ROOT: \"/mnt/baiostorage/directus/uploads\""
+    },
+    "rag_vector_hook_code": {
+      "description": "Directus Extension Hook for automated document embedding generation into PostgreSQL pgvector",
+      "code": "import { defineHook } from '@directus/extensions-sdk';\nimport OpenAI from 'openai';\n\nconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\n\nexport default defineHook(({ action }) => {\n  action('knowledge_base.items.create', async (meta, { database }) => {\n    try {\n      const item = await database('knowledge_base').where('id', meta.key).first();\n      if (!item || !item.content) return;\n      const res = await openai.embeddings.create({\n        model: 'text-embedding-3-small',\n        input: `${item.title}\\n\\n${item.content}`\n      });\n      await database('knowledge_base').where('id', meta.key).update({\n        embedding: JSON.stringify(res.data[0].embedding)\n      });\n    } catch (e) {\n      console.error('[RAG] Vectorization error:', e.message);\n    }\n  });\n});"
+    },
+    "devllm_telemetry_schema": {
+      "description": "Collection schema for zero-bloat LLMOps telemetry logs in Directus",
+      "collection": "llm_telemetry_logs",
+      "fields": [
+        {"field": "id", "type": "uuid", "primary": true},
+        {"field": "model_name", "type": "string"},
+        {"field": "prompt_tokens", "type": "integer"},
+        {"field": "completion_tokens", "type": "integer"},
+        {"field": "total_cost_usd", "type": "float"},
+        {"field": "latency_ms", "type": "integer"},
+        {"field": "caller_service", "type": "string"},
+        {"field": "timestamp", "type": "timestamp"}
+      ]
+    }
+  }
+}

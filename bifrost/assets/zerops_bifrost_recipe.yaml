@@ -1,0 +1,34 @@
+# Zerops Production Recipe for Maxim AI Bifrost Gateway
+# Deploy via: zcli service import or zerops_workflow
+zerops:
+  - setup: bifrost
+    run:
+      base: alpine@3.20
+      ports:
+        - port: 8080
+          httpSupport: true
+      prepareCommands:
+        - apk add --no-cache curl ca-certificates tzdata
+        - curl -fsSL -o /usr/local/bin/bifrost https://github.com/maximhq/bifrost/releases/download/transports%2Fv1.6.11/bifrost-linux-amd64
+        - chmod +x /usr/local/bin/bifrost
+        - mkdir -p /app/data
+      initCommands:
+        - /usr/local/bin/bifrost -app-dir /app/data -port 8080 -host 0.0.0.0 &
+        - sleep 2
+        - curl -f http://localhost:8080/health || exit 1
+        - killall bifrost
+      start:
+        exec: /usr/local/bin/bifrost -app-dir /app/data -port 8080 -host 0.0.0.0 -log-level ${LOG_LEVEL:-info} -log-style ${LOG_STYLE:-json}
+      healthCheck:
+        httpGet:
+          port: 8080
+          path: /health
+      envVariables:
+        APP_PORT: "8080"
+        APP_HOST: "0.0.0.0"
+        APP_DIR: "/app/data"
+        LOG_LEVEL: "info"
+        LOG_STYLE: "json"
+        GOMEMLIMIT: "900MiB"
+        GOGC: "200"
+        BIFROST_ENCRYPTION_KEY: "generate-a-secure-32-byte-passphrase-here"

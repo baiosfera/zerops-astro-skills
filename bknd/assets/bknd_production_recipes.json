@@ -1,0 +1,19 @@
+{
+  "name": "bknd",
+  "version": "2.0.0",
+  "description": "Production NATS Request-Reply RPC handlers, Frappe Cloud REST clients, pg_dump backup scripts, and database health probes",
+  "recipes": {
+    "nats_rpc_order_handler": {
+      "description": "NATS Request-Reply RPC handler for atomic inventory locks and order persistence",
+      "path": "src/actions/checkout.ts"
+    },
+    "frappe_cloud_rest_client": {
+      "description": "TypeScript client for Frappe Cloud / ERPNext REST API ($0 SaaS tier)",
+      "path": "src/lib/erpnext-client.ts"
+    },
+    "automated_pg_dump_backup": {
+      "description": "Automated PostgreSQL 18 backup script to POSIX shared storage with 7-day retention",
+      "path": "scripts/backup-postgres.sh"
+    }
+  }
+}

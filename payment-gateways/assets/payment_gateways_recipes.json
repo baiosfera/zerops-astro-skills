@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0",
+  "name": "payment_gateways_recipes",
+  "recipes": [
+    {
+      "id": "wompi_checkout_url_recipe",
+      "description": "Recipe for generating a secure Wompi checkout session URL with SHA-256 integrity hash",
+      "gateway": "wompi",
+      "required_params": ["orderId", "amountInCents", "currency", "publicKey", "integritySecret", "redirectUrl"],
+      "formula": "SHA256(orderId + amountInCents + currency + integritySecret)"
+    },
+    {
+      "id": "wompi_webhook_handler_recipe",
+      "description": "Server-to-server webhook route for Wompi with checksum verification and Valkey atomic lock",
+      "gateway": "wompi",
+      "route": "/api/webhooks/wompi",
+      "method": "POST",
+      "idempotency_key_pattern": "lock:payment:{transaction.id}",
+      "success_event": "order.payment.settled"
+    },
+    {
+      "id": "stripe_webhook_handler_recipe",
+      "description": "Server-to-server webhook route for Stripe with HMAC-SHA256 signature verification",
+      "gateway": "stripe",
+      "route": "/api/webhooks/stripe",
+      "method": "POST",
+      "header": "stripe-signature",
+      "success_event": "order.payment.settled"
+    },
+    {
+      "id": "cod_otp_dispatch_recipe",
+      "description": "Recipe for Cash on Delivery 6-digit WhatsApp OTP dispatch and Valkey TTL storage",
+      "gateway": "cod",
+      "otp_length": 6,
+      "valkey_ttl_seconds": 600,
+      "nats_subject": "events.whatsapp.otp"
+    }
+  ]
+}

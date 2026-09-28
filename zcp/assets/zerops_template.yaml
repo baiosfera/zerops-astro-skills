@@ -1,0 +1,75 @@
+zerops:
+  # Development setup — deployed full source for live iteration
+  - setup: dev
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y ffmpeg
+      buildCommands:
+        - bun install
+      deployFiles:
+        - .
+      cache:
+        - node_modules
+        - .bun/install/cache
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      start: zsc noop --silent
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        PORT: 3000
+        NODE_ENV: development
+        DB_HOST: db
+        DB_PORT: ${db_port}
+        DB_NAME: ${db_dbName}
+        DATABASE_URL: "postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}"
+        REDIS_URL: "${cache_connectionString}"
+        NATS_URL: "${queue_connectionString}"
+        APP_URL: "${zeropsSubdomain}"
+
+  # Production setup — zero-downtime atomic release
+  - setup: prod
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      envVariables:
+        BUN_INSTALL: ./.bun
+      buildCommands:
+        - bun install --frozen-lockfile
+        - bun run build
+      deployFiles:
+        - dist
+        - package.json
+        - node_modules
+      cache:
+        - node_modules
+        - .bun/install/cache
+    deploy:
+      temporaryShutdown: false
+      readinessCheck:
+        httpGet:
+          port: 3000
+          path: /health
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      initCommands:
+        - zsc execOnce ${appVersionId} -- bun run db:migrate
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        PORT: 3000
+        NODE_ENV: production
+        DATABASE_URL: "postgresql://${db_user}:${db_password}@db:${db_port}/${db_dbName}"
+        REDIS_URL: "${cache_connectionString}"
+        APP_URL: "${zeropsSubdomain}"
+      start: bun dist/server.js
+      healthCheck:
+        httpGet:
+          port: 3000
+          path: /health

@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "runtime": "go@1.22",
+  "recipes": {
+    "pure_go_api_alpine": {
+      "name": "Pure Go REST API on Alpine Base (Default)",
+      "description": "Ultra-lightweight static binary deployment with pgx/v5, chi, and GOMODCACHE caching",
+      "os": "alpine",
+      "envVariables": {
+        "CGO_ENABLED": "0"
+      },
+      "buildCommands": [
+        "go mod download",
+        "go build -ldflags=\"-s -w\" -o app .",
+        "go build -ldflags=\"-s -w\" -o migrate ./cmd/migrate"
+      ],
+      "deployFiles": [
+        "./app",
+        "./migrate"
+      ],
+      "cache": true,
+      "initCommands": [
+        "zsc execOnce ${appVersionId} -- ./migrate"
+      ],
+      "start": "./app"
+    },
+    "cgo_service_ubuntu": {
+      "name": "CGO Image Processing Service on Ubuntu Base",
+      "description": "Dynamically links libvips with glibc on Ubuntu base",
+      "os": "ubuntu",
+      "prepareCommands": [
+        "sudo apt-get update && sudo apt-get install -y pkg-config libvips-dev && sudo rm -rf /var/lib/apt/lists/*"
+      ],
+      "envVariables": {
+        "CGO_ENABLED": "1"
+      },
+      "buildCommands": [
+        "go mod download",
+        "go build -ldflags=\"-s -w\" -o app ."
+      ],
+      "deployFiles": [
+        "./app"
+      ],
+      "cache": true,
+      "start": "./app"
+    },
+    "dev_interactive_workspace": {
+      "name": "Interactive SSH Development Workspace",
+      "description": "Deploys full source tree with noop runner for live SSH development",
+      "os": "alpine",
+      "buildCommands": [
+        "go mod download"
+      ],
+      "deployFiles": [
+        "./"
+      ],
+      "cache": true,
+      "start": "zsc noop --silent"
+    }
+  }
+}

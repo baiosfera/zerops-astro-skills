@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "os": "ubuntu@24",
+  "libc": "glibc-2.39",
+  "recipes": {
+    "c_cpp_toolchain": {
+      "name": "Standard C/C++ Toolchain",
+      "packages": ["build-essential", "cmake", "pkg-config", "gdb", "valgrind"],
+      "prepareCommand": "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential cmake pkg-config gdb valgrind && sudo rm -rf /var/lib/apt/lists/*",
+      "cflags": "-O3 -march=x86-64-v3 -pipe -fstack-protector-strong"
+    },
+    "go_cgo_libvips": {
+      "name": "Go CGO Image Processing with libvips",
+      "packages": ["golang-go", "pkg-config", "libvips-dev", "libglib2.0-dev"],
+      "prepareCommand": "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libvips-dev libglib2.0-dev && sudo rm -rf /var/lib/apt/lists/*",
+      "env": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "CXX": "g++"
+      },
+      "buildCommand": "go build -ldflags=\"-s -w\" -o dist/app main.go"
+    },
+    "python_glibc_wheels": {
+      "name": "Python Data Science with Pre-Compiled glibc Wheels",
+      "packages": ["python3-dev", "python3-venv", "build-essential", "libssl-dev", "libffi-dev"],
+      "prepareCommand": "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-dev python3-venv build-essential libssl-dev libffi-dev && sudo rm -rf /var/lib/apt/lists/*",
+      "installCommand": "pip install --upgrade pip setuptools wheel && pip install numpy pandas scipy torch --extra-index-url https://download.pytorch.org/whl/cpu"
+    },
+    "nodejs_native_addons": {
+      "name": "Node.js node-gyp & Sharp Native Addons",
+      "packages": ["python3", "make", "g++", "libvips-dev"],
+      "prepareCommand": "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3 make g++ libvips-dev && sudo rm -rf /var/lib/apt/lists/*",
+      "buildCommand": "npm ci && npm run build && npm prune --production"
+    },
+    "system_diagnostics": {
+      "name": "Low-Level Diagnostics & Syscall Tracing",
+      "packages": ["strace", "lsof", "procps", "net-tools", "curl", "dnsutils", "htop"],
+      "prepareCommand": "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends strace lsof procps net-tools curl dnsutils htop && sudo rm -rf /var/lib/apt/lists/*",
+      "traceCommand": "strace -c -p $(pgrep -f app)"
+    }
+  }
+}

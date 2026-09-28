@@ -1,0 +1,99 @@
+{
+  "$schema": "https://freellmapi.co/schemas/config.v1.json",
+  "version": 1,
+  "keys": [
+    {
+      "platform": "groq",
+      "key": "env.GROQ_API_KEY",
+      "label": "Groq Cloud Main",
+      "enabled": true
+    },
+    {
+      "platform": "cerebras",
+      "key": "env.CEREBRAS_API_KEY",
+      "label": "Cerebras Fast Inference",
+      "enabled": true
+    },
+    {
+      "platform": "opencode",
+      "key": "env.OPENCODE_API_KEY",
+      "label": "OpenCode Zen Pool",
+      "enabled": true
+    },
+    {
+      "platform": "openrouter",
+      "key": "env.OPENROUTER_API_KEY",
+      "label": "OpenRouter Free Models",
+      "enabled": true
+    },
+    {
+      "platform": "huggingface",
+      "key": "env.HUGGINGFACE_API_KEY",
+      "label": "HuggingFace Serverless",
+      "enabled": true
+    },
+    {
+      "platform": "ollama",
+      "key": "env.OLLAMA_API_KEY",
+      "label": "Ollama Cloud Tier",
+      "enabled": true
+    }
+  ],
+  "customProviders": [
+    {
+      "baseUrl": "https://api.aisa.one/v1",
+      "label": "Aisa One Gateway",
+      "apiKey": "env.AISA_API_KEY",
+      "models": [
+        {
+          "model": "gpt-4o-mini",
+          "displayName": "Aisa GPT-4o Mini",
+          "supportsTools": true
+        }
+      ]
+    }
+  ],
+  "routing": {
+    "strategy": "balanced",
+    "fallbackEnabled": true,
+    "cooldownSeconds": 300,
+    "contextHandoff": "on_model_switch"
+  },
+  "models": [
+    {
+      "platform": "groq",
+      "modelId": "llama-3.3-70b-versatile",
+      "displayName": "Llama 3.3 70B (Groq)",
+      "supportsTools": true,
+      "fallbackEnabled": true
+    },
+    {
+      "platform": "cerebras",
+      "modelId": "llama3.1-70b",
+      "displayName": "Llama 3.1 70B (Cerebras Ultra-Fast)",
+      "supportsTools": false,
+      "fallbackEnabled": true
+    },
+    {
+      "platform": "opencode",
+      "modelId": "qwen2.5-coder-32b",
+      "displayName": "Qwen 2.5 Coder 32B (OpenCode Zen)",
+      "supportsTools": true,
+      "fallbackEnabled": true
+    },
+    {
+      "platform": "openrouter",
+      "modelId": "deepseek/deepseek-r1:free",
+      "displayName": "DeepSeek R1 (OpenRouter Free)",
+      "supportsTools": true,
+      "fallbackEnabled": true
+    },
+    {
+      "platform": "openrouter",
+      "modelId": "deepseek/deepseek-chat:free",
+      "displayName": "DeepSeek V3 (OpenRouter Free)",
+      "supportsTools": true,
+      "fallbackEnabled": true
+    }
+  ]
+}

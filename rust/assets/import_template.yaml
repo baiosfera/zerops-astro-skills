@@ -1,0 +1,21 @@
+# Production Zerops Topology for Rust Application Stack
+# Demonstrates native elastic autoscaling without manual min/max guesswork
+
+project:
+  name: gentle-rust-suite
+
+services:
+  # ==========================================
+  # MANAGED POSTGRESQL 18 (PRIMARY DATABASE)
+  # ==========================================
+  - hostname: db
+    type: postgresql:single@18
+    profile: staging
+    priority: 10
+
+  # ==========================================
+  # RUST WEB RUNTIME SERVICE
+  # ==========================================
+  - hostname: api
+    type: rust@stable
+    enableSubdomainAccess: true

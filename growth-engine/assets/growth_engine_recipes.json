@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "growth_engine_recipes",
+  "version": "1.0",
+  "recipes": [
+    {
+      "id": "brand_voice_prompt_injection",
+      "description": "Recipe for loading brand voice from local mount and generating copy via Bifrost",
+      "brand_prompt_path": "/var/www/astro/brand/fase0_system_prompt.md",
+      "gateway_endpoint": "http://bifrost:8000/v1/chat/completions"
+    },
+    {
+      "id": "cart_abandonment_lead_capture",
+      "description": "Astro checkout action capturing blurred customer contact info to Valkey staging hash",
+      "key_prefix": "cart:abandoned:",
+      "valkey_ttl_seconds": 86400
+    },
+    {
+      "id": "anti_spam_email_linter",
+      "description": "Validation rules for subject line length, caps suppression, and emoji limits",
+      "min_subject_len": 30,
+      "max_subject_len": 50,
+      "max_emojis": 1
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "version": "2.0",
+  "engine": "valkey@7.2",
+  "recipes": {
+    "cache_aside_ttl": {
+      "name": "Cache-Aside with Automatic Expiration",
+      "description": "TypeScript pattern for caching JSON objects with fallback fetch and configurable TTL",
+      "client": "ioredis",
+      "defaultTtlSeconds": 3600
+    },
+    "sliding_window_rate_limiter": {
+      "name": "Atomic Sliding-Window Rate Limiter (Lua Script)",
+      "description": "ZREMRANGEBYSCORE + ZADD rate limiter script executing atomically on Valkey",
+      "luaScript": "local key = KEYS[1]; local now = tonumber(ARGV[1]); local window = tonumber(ARGV[2]); local limit = tonumber(ARGV[3]); local clearBefore = now - window; redis.call('ZREMRANGEBYSCORE', key, 0, clearBefore); local currentRequests = redis.call('ZCARD', key); if currentRequests < limit then redis.call('ZADD', key, now, now); redis.call('EXPIRE', key, math.ceil(window / 1000)); return 1 else return 0 end;"
+    },
+    "bullmq_queue_worker": {
+      "name": "BullMQ Job Queue & Worker Configuration",
+      "description": "Redis-compatible background queue with exponential retry backoff and concurrency control",
+      "client": "bullmq",
+      "defaultAttempts": 3,
+      "backoffDelay": 1000
+    },
+    "session_store_redis": {
+      "name": "Express/Fastify Distributed Session Store",
+      "description": "Session store using connect-redis backed by Valkey 7.2 over private VXLAN",
+      "cookieMaxAge": 86400000
+    }
+  }
+}

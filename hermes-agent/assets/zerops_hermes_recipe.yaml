@@ -1,0 +1,38 @@
+# Zerops Deployment Recipe for Hermes-Agent
+# Enforces the Ubuntu Invariant for Python 3.12 and Vendor Caching
+
+zerops:
+  - setup: hermes
+    build:
+      base: python@3.12
+      os: ubuntu
+      buildCommands:
+        - pip install --upgrade pip setuptools wheel
+        - pip install --target=./vendor -r requirements.txt
+      deployFiles:
+        - vendor/
+        - hermes/
+        - config/
+        - main.py
+        - zerops.yaml
+      cacheFiles:
+        - /root/.cache/pip
+    run:
+      base: python@3.12
+      os: ubuntu
+      ports:
+        - port: 8000
+          httpSupport: true
+      envVariables:
+        PORT: "8000"
+        PYTHONPATH: "./vendor"
+        HERMES_MODEL_ENDPOINT: "http://bifrost:8080/v1"
+        HERMES_MODEL_NAME: "hermes-3-llama-3.1-8b"
+        ZCP_NATS_URL: "nats://nats:4222"
+        ZCP_MCP_URL: "http://zcp:8080/mcp"
+        VALKEY_URL: "redis://valkey:6379/0"
+      start: python main.py
+      healthCheck:
+        httpGet:
+          port: 8000
+          path: /healthz

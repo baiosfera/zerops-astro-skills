@@ -1,0 +1,81 @@
+zerops:
+  # =========================================================================
+  # PRODUCTION SETUP: ASTRO 5 SSR STANDALONE EN BUN 1.3.9
+  # =========================================================================
+  - setup: prod
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      envVariables:
+        BUN_INSTALL: ./.bun
+      buildCommands:
+        - bun install --frozen-lockfile
+        - bun run build
+      deployFiles:
+        - dist
+        - node_modules
+        - package.json
+      cache:
+        - node_modules
+        - .bun/install/cache
+
+    deploy:
+      temporaryShutdown: false
+      readinessCheck:
+        httpGet:
+          port: 3000
+          path: /
+
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      initCommands:
+        - zsc execOnce ${appVersionId} -- mkdir -p /mnt/storage/astro/cache && chmod -R 777 /mnt/storage/astro/cache || true
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        NODE_ENV: production
+        HOST: "0.0.0.0"
+        PORT: "3000"
+        VALKEY_CONNECTION_STRING: ${cache_connectionString}
+        DIRECTUS_URL: "http://${directus_hostname}:${directus_port}"
+        PUBLIC_SITE_URL: ${zeropsSubdomain}
+        ASTRO_KEY: ${ASTRO_KEY}
+      start: bun ./dist/server/entry.mjs
+      healthCheck:
+        httpGet:
+          port: 3000
+          path: /
+
+  # =========================================================================
+  # DEVELOPMENT SETUP: INTERACTIVE WORKSPACE
+  # =========================================================================
+  - setup: dev
+    build:
+      base: bun@1.3.9
+      os: ubuntu
+      envVariables:
+        BUN_INSTALL: ./.bun
+      buildCommands:
+        - bun install
+      deployFiles:
+        - .
+      cache:
+        - node_modules
+        - .bun/install/cache
+
+    run:
+      base: bun@1.3.9
+      os: ubuntu
+      ports:
+        - port: 3000
+          httpSupport: true
+      envVariables:
+        NODE_ENV: development
+        HOST: "0.0.0.0"
+        PORT: "3000"
+        BUN_INSTALL: /var/www/.bun
+        VALKEY_CONNECTION_STRING: ${cache_connectionString}
+        ASTRO_KEY: ${ASTRO_KEY}
+      start: zsc noop --silent

@@ -1,0 +1,15 @@
+{
+  "name": "erpnext",
+  "version": "2.0.0",
+  "description": "Production Frappe Cloud ERPNext REST API client, DIAN electronic invoice emitters, and HMAC webhook verification recipes",
+  "recipes": {
+    "sales_order_creator": {
+      "description": "TypeScript function to create and submit a formalized Sales Order in Frappe Cloud",
+      "code": "export async function createSalesOrder(url: string, key: string, secret: string, data: any) {\n  const res = await fetch(`${url}/api/resource/Sales Order`, {\n    method: 'POST',\n    headers: { 'Authorization': `token ${key}:${secret}`, 'Content-Type': 'application/json' },\n    body: JSON.stringify({ ...data, docstatus: 1 })\n  });\n  return (await res.json()).data;\n}"
+    },
+    "hmac_signature_validator": {
+      "description": "Node.js cryptographic timing-safe HMAC-SHA256 signature verification for Frappe webhooks",
+      "code": "import crypto from 'node:crypto';\nexport function verifyFrappeWebhook(rawBody: string, signature: string, secret: string): boolean {\n  const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('base64');\n  const sigBuf = Buffer.from(signature, 'base64');\n  const expBuf = Buffer.from(expected, 'base64');\n  return sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);\n}"
+    }
+  }
+}

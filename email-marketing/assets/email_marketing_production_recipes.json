@@ -1,0 +1,15 @@
+{
+  "name": "email-marketing",
+  "version": "2.0.0",
+  "description": "Production multi-provider email dispatchers, React Email templates, BullMQ rate-limited workers, and NATS JetStream reactive consumers",
+  "recipes": {
+    "zeptomail_rest_dispatcher": {
+      "description": "TypeScript snippet to dispatch emails via Zoho ZeptoMail REST API v1.1",
+      "code": "export async function sendZeptoMail(token: string, payload: any) {\n  const res = await fetch('https://api.zeptomail.com/v1.1/email', {\n    method: 'POST',\n    headers: { 'Authorization': token, 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload)\n  });\n  return await res.json();\n}"
+    },
+    "nats_email_consumer": {
+      "description": "NATS JetStream event listener triggering transactional email delivery on orders.completed",
+      "code": "import { connect, JSONCodec } from 'nats';\nexport async function listenOrderEmails() {\n  const nc = await connect({ servers: process.env.NATS_URL || 'nats://nats:4222' });\n  const jc = JSONCodec();\n  const sub = nc.subscribe('events.orders.completed');\n  for await (const m of sub) { const order = jc.decode(m.data); console.log('Dispatching email for order:', order.id); }\n}"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "whatsapp_engine_recipes",
+  "version": "1.0",
+  "recipes": [
+    {
+      "id": "evolutiongo_zerops_runtime",
+      "description": "Production Go 1.22 / Alpine runtime recipe with dual PostgreSQL schemas and NATS integration",
+      "binary": "./evolution-go",
+      "port": 8080
+    },
+    {
+      "id": "bifrost_ai_worker",
+      "description": "NATS JetStream consumer worker integrating Bifrost LLM gateway and brand SSoT system prompt",
+      "nats_subject": "events.whatsapp.incoming",
+      "bifrost_gateway": "http://bifrost:8000/v1/chat/completions",
+      "brand_prompt_path": "/var/www/evolution/brand/fase0_system_prompt.md"
+    },
+    {
+      "id": "send_carousel_message",
+      "description": "Rich product carousel payload format for interactive catalog browsing",
+      "endpoint": "/send/carousel",
+      "method": "POST"
+    }
+  ]
+}

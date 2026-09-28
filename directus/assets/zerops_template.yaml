@@ -1,0 +1,143 @@
+zerops:
+  # =========================================================================
+  # PRODUCTION SETUP: DIRECTUS 11+ CON SHARP, PG18, VALKEY Y SEAWEEDFS
+  # =========================================================================
+  - setup: prod
+    build:
+      base: nodejs@24
+      os: ubuntu
+      envVariables:
+        npm_config_cache: .npm-cache
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y build-essential python3
+      buildCommands:
+        - npm ci --production=false
+        - npm run build || true
+        - npm prune --omit=dev
+      deployFiles:
+        - ./node_modules
+        - ./package.json
+        - ./package-lock.json
+        - ./extensions
+        - ./uploads
+        - ./src
+        - ./dist
+      cache:
+        - .npm-cache
+        - node_modules
+
+    deploy:
+      temporaryShutdown: false
+      readinessCheck:
+        httpGet:
+          port: 8055
+          path: /server/ping
+
+    run:
+      base: nodejs@24
+      os: ubuntu
+      initCommands:
+        # 1. Escudo de Permisos FUSE para SeaweedFS Shared Storage
+        - mkdir -p /mnt/storage/directus/uploads && chmod -R 777 /mnt/storage/directus/uploads || true
+        # 2. Bootstrap atómico del esquema de datos multi-contenedor
+        - zsc execOnce ${appVersionId} --retryUntilSuccessful -- npx directus bootstrap
+
+      ports:
+        - port: 8055
+          httpSupport: true
+
+      envVariables:
+        HOST: "0.0.0.0"
+        PORT: 8055
+        PUBLIC_URL: https://${zeropsSubdomain}
+        CORS_ENABLED: "true"
+        CORS_ORIGIN: "true"
+        CORS_CREDENTIALS: "true"
+
+        # Conexión PostgreSQL 18
+        DB_CLIENT: "pg"
+        DB_HOST: "db"
+        DB_PORT: ${db_port}
+        DB_DATABASE: ${db_dbName}
+        DB_USER: ${db_user}
+        DB_PASSWORD: ${db_password}
+
+        # Conexión Valkey 7.2 (Caché, Sincronización y WebSockets)
+        REDIS: ${cache_connectionString}
+        CACHE_ENABLED: "true"
+        CACHE_STORE: "redis"
+        CACHE_AUTO_PURGE: "true"
+        SYNCHRONIZATION_STORE: "redis"
+        MESSENGER_STORE: "redis"
+
+        WEBSOCKETS_ENABLED: "true"
+        WEBSOCKETS_HEARTBEAT_ENABLED: "true"
+        WEBSOCKETS_COLLAB_ENABLED: "true"
+
+        # Almacenamiento Persistente en SeaweedFS
+        STORAGE_LOCATIONS: "local"
+        STORAGE_LOCAL_ROOT: "/mnt/storage/directus/uploads"
+        EXTENSIONS_PATH: "./extensions"
+
+      start: npx directus start
+      healthCheck:
+        httpGet:
+          port: 8055
+          path: /server/health
+
+  # =========================================================================
+  # DEVELOPMENT SETUP: INTERACTIVE WORKSPACE
+  # =========================================================================
+  - setup: dev
+    build:
+      base: nodejs@24
+      os: ubuntu
+      envVariables:
+        npm_config_cache: .npm-cache
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y build-essential python3
+      buildCommands:
+        - npm install
+      deployFiles: ./
+      cache:
+        - .npm-cache
+        - node_modules
+
+    run:
+      base: nodejs@24
+      os: ubuntu
+      initCommands:
+        - mkdir -p /mnt/storage/directus/uploads && chmod -R 777 /mnt/storage/directus/uploads || true
+        - zsc execOnce ${appVersionId} --retryUntilSuccessful -- npx directus bootstrap || true
+
+      ports:
+        - port: 8055
+          httpSupport: true
+
+      envVariables:
+        HOST: "0.0.0.0"
+        PORT: 8055
+        PUBLIC_URL: https://${zeropsSubdomain}
+        CORS_ENABLED: "true"
+        CORS_ORIGIN: "true"
+        CORS_CREDENTIALS: "true"
+
+        DB_CLIENT: "pg"
+        DB_HOST: "db"
+        DB_PORT: ${db_port}
+        DB_DATABASE: ${db_dbName}
+        DB_USER: ${db_user}
+        DB_PASSWORD: ${db_password}
+
+        REDIS: ${cache_connectionString}
+        CACHE_ENABLED: "true"
+        CACHE_STORE: "redis"
+        CACHE_AUTO_PURGE: "true"
+        SYNCHRONIZATION_STORE: "redis"
+        MESSENGER_STORE: "redis"
+
+        STORAGE_LOCATIONS: "local"
+        STORAGE_LOCAL_ROOT: "/mnt/storage/directus/uploads"
+        EXTENSIONS_PATH: "./extensions"
+
+      start: zsc noop --silent

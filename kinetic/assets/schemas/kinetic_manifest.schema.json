@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KineticManifestSOTA",
+  "type": "object",
+  "required": ["brand", "fps_target", "animation_options", "selected_animation_id", "motion_tokens", "sound_bank"],
+  "properties": {
+    "brand": { "type": "string" },
+    "fps_target": { "type": "integer", "enum": [60, 120] },
+    "selected_animation_id": { "type": "string" },
+    "animation_options": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/AnimationOption" }
+    },
+    "motion_tokens": {
+      "type": "object",
+      "required": ["durations", "easings"],
+      "properties": {
+        "durations": {
+          "type": "object",
+          "required": ["fast", "normal", "slow"],
+          "properties": {
+            "fast": { "$ref": "#/$defs/DurationToken" },
+            "normal": { "$ref": "#/$defs/DurationToken" },
+            "slow": { "$ref": "#/$defs/DurationToken" }
+          }
+        },
+        "easings": {
+          "type": "object",
+          "required": ["standard", "hero_reveal", "interaction"],
+          "properties": {
+            "standard": { "$ref": "#/$defs/CubicBezierToken" },
+            "hero_reveal": { "$ref": "#/$defs/CubicBezierToken" },
+            "interaction": { "$ref": "#/$defs/CubicBezierToken" }
+          }
+        }
+      }
+    },
+    "sound_bank": {
+      "type": "object",
+      "description": "Banco de micro-sonidos procedurales ADSR sin archivos MP3",
+      "required": ["hover", "click", "modal_open", "success_confirm"],
+      "properties": {
+        "hover": { "$ref": "#/$defs/AdsrSoundPreset" },
+        "click": { "$ref": "#/$defs/AdsrSoundPreset" },
+        "modal_open": { "$ref": "#/$defs/AdsrSoundPreset" },
+        "success_confirm": { "$ref": "#/$defs/AdsrSoundPreset" }
+      }
+    },
+    "svg_animations": { "type": "object" },
+    "css_keyframes": { "type": "string" }
+  },
+  "$defs": {
+    "AnimationOption": {
+      "type": "object",
+      "required": ["id", "name", "concept", "css_keyframes", "target_selectors"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "concept": { "type": "string" },
+        "css_keyframes": { "type": "string" },
+        "target_selectors": { "type": "object" }
+      }
+    },
+    "DurationToken": {
+      "type": "object",
+      "required": ["$value", "$type"],
+      "properties": {
+        "$value": {
+          "type": "object",
+          "required": ["value", "unit"],
+          "properties": {
+            "value": { "type": "number" },
+            "unit": { "type": "string", "enum": ["ms", "s"] }
+          }
+        },
+        "$type": { "type": "string", "const": "duration" }
+      }
+    },
+    "CubicBezierToken": {
+      "type": "object",
+      "required": ["$value", "$type", "gsap_ease_string"],
+      "properties": {
+        "$value": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": { "type": "number" }
+        },
+        "$type": { "type": "string", "const": "cubicBezier" },
+        "gsap_ease_string": { "type": "string" }
+      }
+    },
+    "AdsrSoundPreset": {
+      "type": "object",
+      "required": ["oscillator_type", "frequency_hz", "attack_sec", "decay_sec", "sustain_level", "release_sec", "peak_gain", "filter_cutoff_hz"],
+      "properties": {
+        "oscillator_type": { "type": "string", "enum": ["sine", "triangle", "sawtooth", "square"] },
+        "frequency_hz": { "type": "number", "minimum": 20, "maximum": 20000 },
+        "attack_sec": { "type": "number", "minimum": 0.001, "maximum": 0.5 },
+        "decay_sec": { "type": "number", "minimum": 0.01, "maximum": 1.0 },
+        "sustain_level": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "release_sec": { "type": "number", "minimum": 0.01, "maximum": 1.0 },
+        "peak_gain": { "type": "number", "minimum": 0.001, "maximum": 0.2 },
+        "filter_cutoff_hz": { "type": "number", "minimum": 200, "maximum": 10000 }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# Production Zerops Topology for Valkey In-Memory Cache Stack
+# Demonstrates native elastic autoscaling via scaling profiles without manual min/max guesswork
+
+project:
+  name: gentle-valkey-suite
+
+services:
+  # ==========================================
+  # MANAGED VALKEY 7.2 (SINGLE DEV/STAGING)
+  # ==========================================
+  - hostname: cachedev
+    type: valkey:single@7.2
+    profile: hobby
+    priority: 10
+
+  # ==========================================
+  # MANAGED VALKEY 7.2 (HIGH AVAILABILITY PROD)
+  # ==========================================
+  - hostname: cacheprod
+    type: valkey:ha@7.2
+    profile: staging
+    priority: 10

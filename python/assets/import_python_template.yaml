@@ -1,0 +1,37 @@
+project:
+  name: python-app
+
+services:
+  - hostname: db
+    type: postgresql@18
+    mode: NON_HA
+    verticalAutoscaling:
+      minCpu: 1
+      maxCpu: 4
+      minRam: 1
+      maxRam: 8
+      minDisk: 10
+      maxDisk: 100
+
+  - hostname: valkey
+    type: valkey@7.2
+    mode: NON_HA
+    verticalAutoscaling:
+      minCpu: 1
+      maxCpu: 2
+      minRam: 0.5
+      maxRam: 4
+      minDisk: 5
+      maxDisk: 20
+
+  - hostname: api
+    type: python@3.14
+    verticalAutoscaling:
+      minCpu: 1
+      maxCpu: 4
+      minRam: 0.5
+      maxRam: 4
+      minDisk: 5
+      maxDisk: 50
+    minContainers: 1
+    maxContainers: 4

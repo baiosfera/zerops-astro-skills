@@ -1,0 +1,22 @@
+# Production Zerops Topology for Managed PostgreSQL Stack
+# Demonstrates native elastic autoscaling via scaling profiles without manual min/max guesswork
+
+project:
+  name: gentle-postgres-suite
+
+services:
+  # ==========================================
+  # MANAGED POSTGRESQL 18 (SINGLE DEV/STAGING)
+  # ==========================================
+  - hostname: dbdev
+    type: postgresql:single@18
+    profile: oltp-hobby
+    priority: 10
+
+  # ==========================================
+  # MANAGED POSTGRESQL 18 (HIGH AVAILABILITY PROD)
+  # ==========================================
+  - hostname: dbprod
+    type: postgresql:ha@18
+    profile: oltp-staging
+    priority: 10

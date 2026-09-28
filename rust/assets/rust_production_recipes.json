@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "runtime": "rust@stable",
+  "recipes": {
+    "axum_http_service": {
+      "name": "Production Axum 0.8+ HTTP Service with State",
+      "description": "Ergonomic modular HTTP routing with shared PgPool state and trace logging",
+      "framework": "axum@0.8",
+      "asyncRuntime": "tokio@1.40",
+      "healthRoute": "/healthz"
+    },
+    "sqlx_postgres_pool_rustls": {
+      "name": "SQLx Async Connection Pool with Rustls",
+      "description": "PostgreSQL connection pool avoiding OpenSSL build errors using runtime-tokio-rustls",
+      "features": ["runtime-tokio-rustls", "postgres", "macros"],
+      "maxConnections": 25
+    },
+    "cargo_caching_zerops": {
+      "name": "Sub-Second Incremental Cargo Caching",
+      "description": "Build environment caching both crate sources and compiled incremental artifacts",
+      "cargoHome": "./.cargo",
+      "cacheDirs": [".cargo/registry", "target"]
+    },
+    "atomic_migration_binary": {
+      "name": "Atomic Database Migration with zsc execOnce",
+      "description": "Self-contained migration binary executed once per deployed version across all cluster containers",
+      "binaryPath": "./target/release/migrate",
+      "initCommand": "zsc execOnce ${appVersionId} -- ./target/release/migrate"
+    }
+  }
+}

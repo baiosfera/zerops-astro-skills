@@ -1,0 +1,25 @@
+---
+import type { Graph, Thing } from 'schema-dts';
+
+export interface Props {
+  graph: Graph | Thing[];
+  siteUrl: string;
+}
+
+const { graph } = Astro.props;
+
+const rawGraphData: Graph = Array.isArray(graph)
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': graph as any,
+    }
+  : graph;
+
+// Sanitización estricta contra XSS en scripts JSON-LD
+const safeJsonLd = JSON.stringify(rawGraphData)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e')
+  .replace(/&/g, '\\u0026');
+---
+
+<script type="application/ld+json" set:html={safeJsonLd} />

@@ -1,0 +1,83 @@
+{
+  "brand": "[MARCA]",
+  "fps_target": 60,
+  "motion_tokens": {
+    "durations": {
+      "fast": {
+        "$value": { "value": 150, "unit": "ms" },
+        "$type": "duration"
+      },
+      "normal": {
+        "$value": { "value": 300, "unit": "ms" },
+        "$type": "duration"
+      },
+      "slow": {
+        "$value": { "value": 600, "unit": "ms" },
+        "$type": "duration"
+      }
+    },
+    "easings": {
+      "standard": {
+        "$value": [0.2, 0, 0, 1],
+        "$type": "cubicBezier",
+        "gsap_ease_string": "power3.out"
+      },
+      "hero_reveal": {
+        "$value": [0.16, 1, 0.3, 1],
+        "$type": "cubicBezier",
+        "gsap_ease_string": "power4.out"
+      },
+      "interaction": {
+        "$value": [0.34, 1.56, 0.64, 1],
+        "$type": "cubicBezier",
+        "gsap_ease_string": "back.out(1.7)"
+      }
+    }
+  },
+  "view_transitions": {
+    "enabled": true,
+    "gsap_context_scoped": true
+  },
+  "sound_bank": {
+    "hover": {
+      "oscillator_type": "sine",
+      "frequency_hz": 520,
+      "attack_sec": 0.015,
+      "decay_sec": 0.04,
+      "sustain_level": 0.2,
+      "release_sec": 0.06,
+      "peak_gain": 0.03,
+      "filter_cutoff_hz": 3200
+    },
+    "click": {
+      "oscillator_type": "triangle",
+      "frequency_hz": 740,
+      "attack_sec": 0.008,
+      "decay_sec": 0.06,
+      "sustain_level": 0.1,
+      "release_sec": 0.08,
+      "peak_gain": 0.05,
+      "filter_cutoff_hz": 4000
+    },
+    "modal_open": {
+      "oscillator_type": "sine",
+      "frequency_hz": 440,
+      "attack_sec": 0.02,
+      "decay_sec": 0.1,
+      "sustain_level": 0.3,
+      "release_sec": 0.15,
+      "peak_gain": 0.04,
+      "filter_cutoff_hz": 2800
+    },
+    "success_confirm": {
+      "oscillator_type": "triangle",
+      "frequency_hz": 880,
+      "attack_sec": 0.01,
+      "decay_sec": 0.08,
+      "sustain_level": 0.25,
+      "release_sec": 0.2,
+      "peak_gain": 0.06,
+      "filter_cutoff_hz": 4800
+    }
+  }
+}
