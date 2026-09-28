@@ -7,12 +7,18 @@ project:
     PUBLIC_CDN_URL: "${storageCdnUrl}"
 
 services:
-  # Runtime Service (Autonomous Elastic Autoscaling by Zerops)
+  # Runtime Service (Canonical Frugal Resilient Recipe)
   - hostname: appdev
     type: bun@1.3.9
     priority: 5
     startWithoutCode: true
     enableSubdomainAccess: true
+    minContainers: 1
+    maxContainers: 2
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minFreeRamGB: 0.25
+      minFreeRamPercent: 10
 
   # Primary Managed PostgreSQL Database
   - hostname: db

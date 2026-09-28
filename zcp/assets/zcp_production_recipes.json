@@ -1,6 +1,6 @@
 {
   "name": "zcp",
-  "version": "6.0.0",
+  "version": "6.3.0",
   "description": "Production Zerops import manifests, zerops.yaml lifecycle recipes, scaling blueprints, and MCP orchestrator commands",
   "recipes": {
     "canonical_import_yaml": {

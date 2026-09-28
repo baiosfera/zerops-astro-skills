@@ -1,4 +1,4 @@
-# Zerops Operational Reference Manual: 22 MCP Tools, Manifest Schemas & Ecosystem Orchestrator (v6.2)
+# Zerops Operational Reference Manual: 22 MCP Tools, Manifest Schemas & Ecosystem Orchestrator (v6.3)
 
 `zcp` is the master platform engineering, workload provisioning, and infrastructure lifecycle suite for Zerops. Operating natively on unprivileged **Incus LXC containers** with sub-millisecond private network mesh (`<0.3ms P99`), it governs the entire sovereign stack: **Astro 5 SSR**, **Directus 11+ BaaS**, **FastAPI Microservices**, **PostgreSQL 18**, **Valkey 7.2**, **NATS 2.12**, **Shared Storage**, **Evolution WhatsApp Gateways**, and **Cloudflare Edge Ingress**.
 
@@ -105,27 +105,45 @@ project:
   corePackage: LIGHT # LIGHT for dev/staging, SERIOUS for HA production
 
 services:
-  # 1. Astro 5 Frontend (Bun 1.3)
+  # 1. Astro 5 Frontend (Bun 1.3 - Frugal Resilient Recipe)
   - hostname: astro
     type: bun@1.3.9
     priority: 5
     startWithoutCode: true
     enableSubdomainAccess: true
+    minContainers: 1
+    maxContainers: 2
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minFreeRamGB: 0.25
+      minFreeRamPercent: 10
 
-  # 2. Directus 11+ Headless CMS (Node 24 / Ubuntu)
+  # 2. Directus 11+ Headless CMS (Node 24 / Ubuntu - Frugal Resilient Recipe)
   - hostname: directus
     type: nodejs@24
     os: ubuntu
     priority: 8
     startWithoutCode: true
     enableSubdomainAccess: true
+    minContainers: 1
+    maxContainers: 2
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minFreeRamGB: 0.25
+      minFreeRamPercent: 10
 
-  # 3. FastAPI Python Microservice
+  # 3. FastAPI Python Microservice (Frugal Resilient Recipe)
   - hostname: fastapi
     type: python@3.12
     priority: 7
     startWithoutCode: true
     enableSubdomainAccess: true
+    minContainers: 1
+    maxContainers: 2
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minFreeRamGB: 0.25
+      minFreeRamPercent: 10
 
   # 4. Managed PostgreSQL 18 (OLTP Production)
   - hostname: db
@@ -237,7 +255,7 @@ Validates container status, port responsiveness, and log streams before closing 
 
 ## 7. Anti-Patterns & Common Gotchas
 
-1. **Forced Min/Max Boilerplate & Artificial Ceilings**: Do NOT declare `verticalAutoscaling` or manual `min`/`max` ranges on native LXC runtimes in `import.yaml` by default. Zerops automatically handles elastic autoscaling with platform defaults. Forcing low ceilings (`maxRam: 4.0`) does not save costs in sub-second pay-per-use billing and triggers unnecessary `OOMKilled` crashes on load spikes.
-2. **Declaring `run.mount` in `zerops.yaml`**: Storage mounts MUST be declared under the `mount` key at the service level in `import.yaml`, never inside `zerops.yaml`.
+1. **Forced Min/Max Boilerplate & Artificial Ceilings**: Do NOT force arbitrary low ceilings (`maxRam: 2.0`, `maxCpu: 2`) on native LXC runtimes in `import.yaml`. Zerops bills strictly on actual sub-second utilization; artificial ceilings do not reduce costs and cause catastrophic `OOMKilled` crashes on traffic surges. Use the canonical Frugal Resilient recipe (`minContainers: 1`, `maxContainers: 2`, `cpuMode: SHARED`, `minFreeRamGB: 0.25`, `minFreeRamPercent: 10`) and omit `min/max` boundaries to let Zerops autoscale organically across 0.125-48 GB RAM and 1-8 vCPUs.
+2. **Legacy Mount Directives**: Persistent storage volumes (`local-storage:single@1`) must be declared under `services:` in `import.yaml` and mounted in `zerops.yaml` via `run.volume`. Never declare legacy `mount:` in `import.yaml` or obsolete `run.mount` in `zerops.yaml`.
 3. **Backgrounding Dev Servers with `ssh "cmd &"`**: SSH background commands terminate when the channel closes. Always use `zerops_dev_server`.
 4. **Self-Shadowing Environment Variables**: Never define `VAR: ${VAR}`; always use distinctive source variables like `DB_HOST: ${db_hostname}`.

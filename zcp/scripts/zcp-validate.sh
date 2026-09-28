@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Deterministic Physical Validation Sensor for zcp Suite (v6.2)
+# Deterministic Physical Validation Sensor for zcp Suite (v6.3)
 # ==============================================================================
 set -euo pipefail
 
+export PYTHONDONTWRITEBYTECODE=1
+
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Trap cleanup on exit to eliminate any bytecode artifacts
+trap 'find "$SKILL_DIR" -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -name "*.pyc" -delete 2>/dev/null || true' EXIT INT TERM
+
 ERRORS=0
 
 echo "============================================================"
-echo "  🔍 Validating zcp Skill Integrity (v6.2)"
+echo "  🔍 Validating zcp Skill Integrity (v6.3)"
 echo "============================================================"
 
 # 1. Check SKILL.md existence
@@ -20,10 +26,11 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 6.2"
+VERSION=$(grep -E 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md" | head -n 1 | sed -E 's/.*version: "([^"]+)".*/\1/')
+if [ "$VERSION" = "6.3" ]; then
+    echo "✓ Frontmatter version is 6.3"
 else
-    echo "❌ Frontmatter version is not 6.2"
+    echo "❌ Frontmatter version is not 6.3 (found: $VERSION)"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -47,7 +54,7 @@ for ref in "references/usage.md" "references/infra.md" "assets/zcp_production_re
 done
 
 # 5. Check JSON validity
-if python3 -m json.tool "$SKILL_DIR/assets/zcp_production_recipes.json" >/dev/null 2>&1; then
+if python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$SKILL_DIR/assets/zcp_production_recipes.json"; then
     echo "✓ zcp_production_recipes.json is valid JSON"
 else
     echo "❌ Syntax error in zcp_production_recipes.json"
@@ -66,9 +73,9 @@ done
 
 echo "------------------------------------------------------------"
 if [ "$ERRORS" -eq 0 ]; then
-    echo "✅ zcp v6.2 validation passed successfully with exit code 0."
+    echo "✅ zcp v6.3 validation passed successfully with exit code 0."
     exit 0
 else
-    echo "❌ zcp v6.2 validation failed with $ERRORS error(s)."
+    echo "❌ zcp v6.3 validation failed with $ERRORS error(s)."
     exit 1
 fi

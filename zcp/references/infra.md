@@ -1,4 +1,4 @@
-# Zerops Infrastructure, Autoscaling Architecture & Storage Engine (v6.2)
+# Zerops Infrastructure, Autoscaling Architecture & Storage Engine (v6.3)
 
 This manual provides detailed engineering specifications for autonomous vertical autoscaling, real platform limits, managed database sizing profiles, POSIX shared storage architecture, and the Fractal CoHaLo operational harness in Zerops.
 
@@ -6,25 +6,64 @@ This manual provides detailed engineering specifications for autonomous vertical
 
 ## 1. Autonomous Elastic Autoscaling & Clean Manifest Architecture
 
-Zerops Incus LXC runtimes scale dynamically by default without container restarts. The platform continuously monitors cgroup metrics and adjusts resources automatically.
+Zerops Incus LXC runtimes scale dynamically by default without container restarts. The platform continuously monitors cgroup metrics and adjusts allocated compute and memory automatically.
 
-### A. Zero-Boilerplate Standard (No Min/Max Required)
-In modern Zerops (2026), service manifests in `import.yaml` **do not require defining `verticalAutoscaling` or manual `min`/`max` boundaries**:
-* **Autonomous Platform Defaults**: When `verticalAutoscaling` is omitted, Zerops automatically enables elastic scaling across native resource boundaries:
-  * **CPU**: Scales dynamically up to 8 cores per container (default `SHARED` mode, burst step up to 4 cores / 20s).
-  * **RAM**: Scales dynamically up to 48 GB per container (granularity 0.125 GB, burst step up to 32 GB / 10s).
-  * **Disk**: Scales dynamically up to 250 GB per container (persistent, grow-only, step up to 128 GB).
-  * **Horizontal Scaling**: 1 to 10 containers (up to 80 cores and 480 GB RAM aggregate compute).
-* **Pay-per-Use Billing Reality**: Zerops meters CPU, RAM, and disk by actual sub-second utilization, NOT allocated headroom. Setting arbitrary low ceilings (`maxRam: 4.0`, `maxCpu: 4`) does not reduce costs; it only creates artificial bottlenecks and risks `OOMKilled` crashes on legitimate traffic surges.
+### A. Canonical Frugal & Resilient Autoscaling Recipe (`frugal-elastic`)
+The recommended architecture for production runtimes balances absolute minimal baseline spend with resilient spike handling:
 
-### B. When to Use `verticalAutoscaling` (Advanced Overrides Only)
-The `verticalAutoscaling` block is optional and reserved strictly for intentional, advanced overrides:
-1. **Dedicated CPU Allocation**: Enforce `cpuMode: DEDICATED` for CPU-intensive, zero-jitter production workloads.
-2. **Startup Spike Buffering**: Setting `minRam` (e.g. `minRam: 1.0` or `minRam: 2.0`) when heavy frameworks (`npm install`, Rust/Go builds, JVM warming) spike faster than the 10-20s autoscaler reaction window.
-3. **Fixed Compute Pinning**: Setting `min == max` (e.g. `minRam: 4, maxRam: 4`) to intentionally pin resources and disable autoscaling for deterministic benchmarking.
-4. **Dual Threshold Tuning (Optional)**:
-   * Scaling evaluates free RAM: $\text{Scale Up} = (\text{Free RAM} < \text{minFreeRamGB}) \lor (\text{Free RAM \%} < \text{minFreeRamPercent})$.
-   * Defaults: `minFreeRamGB: 0.0625` (64 MB), `minFreeRamPercent: 0%` (disabled). Whichever grants more buffer wins.
+```yaml
+minContainers: 1
+maxContainers: 2
+verticalAutoscaling:
+  cpuMode: SHARED
+  minFreeRamGB: 0.25
+  minFreeRamPercent: 10
+```
+
+- **`cpuMode: SHARED` (Mandatory Frugal Core)**: Runtimes start on shared multi-tenant cores (up to 10 tenants per physical core). Performance scales smoothly from 1/10 to 10/10 of a core based on demand without paying for dedicated compute during idle or low-traffic periods. Dedicated CPU (`cpuMode: DEDICATED`) is never required at startup.
+- **`startCpuCoreCount: 1` (or omitted)**: Allocates a baseline of 1 vCPU at startup, avoiding over-provisioning.
+- **`minContainers: 1`, `maxContainers: 2` (Saturation Insurance)**: Baseline is kept at a single container to minimize cost. Capping `maxContainers: 2` provides an automated redundancy and load-distribution shield if the primary container approaches vertical saturation under sudden surges.
+
+### B. The Clean Manifest Pattern (Omission of minCpu, maxCpu, minRam, maxRam)
+In modern Zerops, clean service manifests in `import.yaml` intentionally omit explicit resource boundary keys (`minCpu`, `maxCpu`, `minRam`, `maxRam`):
+
+* **Native Elasticity Across Full Platform Envelope**: When these keys are omitted, the corresponding input boxes in the Zerops GUI dashboard remain completely unconstrained (empty defaults). Zerops automatically orchestrates vertical scaling across its entire native hardware range:
+  * **RAM**: Elastic scaling from **0.125 GB (128 MB)** up to **48 GB** per container (granularity 0.125 GB, burst step up to 32 GB / 10s).
+  * **CPU**: Elastic scaling from **1 core** up to **8 vCPUs** per container (burst step up to 4 cores / 20s).
+  * **Disk**: Elastic scaling up to **250 GB** per container (persistent, grow-only, step up to 128 GB).
+* **Pay-per-Use Billing Reality**: Zerops bills strictly by actual sub-second utilization, NOT allocated ceiling headroom. Setting artificial ceilings (`maxRam: 2.0`, `maxCpu: 2`) does **not** save money during normal operations; it only creates artificial choke points and triggers catastrophic `OOMKilled` crashes on legitimate traffic surges.
+
+### C. Dual-RAM Threshold Mathematics & Dynamic Buffer Policy
+Zerops evaluates memory pressure every **10 seconds**. Two independent thresholds control when vertical RAM scale-up triggers, governed by the invariant that **whichever threshold provides the larger free memory buffer wins**:
+
+$$\text{Required Free Buffer} = \max\left(\text{minFreeRamGB}, \; \frac{\text{minFreeRamPercent}}{100} \times \text{Granted RAM}\right)$$
+
+Scale-up triggers immediately upon a single 10s measurement where:
+$$\text{Free RAM} < \text{Required Free Buffer}$$
+
+1. **Absolute Threshold (`minFreeRamGB: 0.25`)**: Guarantees a minimum fixed cushion of 256 MB of unallocated RAM at all times. At low memory consumption (e.g. 512 MB to 1 GB granted), 10% is only 51-100 MB; the absolute 256 MB threshold takes precedence, preventing abrupt out-of-memory errors caused by small application allocations.
+2. **Dynamic Percentage Threshold (`minFreeRamPercent: 10`)**: Adapts proportionally to overall memory grant. As granted memory scales up to 4 GB, 8 GB, or 16 GB, the buffer automatically expands to 400 MB, 800 MB, and 1.6 GB respectively. This accommodates large transient request bursts and preserves Linux kernel page cache without latency degradation.
+3. **Comparison with Platform Defaults**:
+   * *Platform Defaults*: `minFreeRamGB: 0.0625` (64 MB), `minFreeRamPercent: 0%` (disabled).
+   * *Frugal Resilient Standard*: `minFreeRamGB: 0.25` (256 MB), `minFreeRamPercent: 10%`. Quadruples the base safety buffer and adds dynamic expansion, completely eliminating micro-OOMs while remaining ultra-frugal at rest.
+
+### D. Financial Circuit Breaker Pattern (`maxRam`)
+While resource boundaries should normally remain unconstrained, `maxRam` can be deployed as an intentional **Financial Circuit Breaker**:
+- **Risk Profile**: Long-running background workers, unvetted third-party libraries, or experimental services susceptible to uncontrolled heap memory leaks.
+- **Circuit Breaker Action**: Declaring `maxRam: 4` or `maxRam: 8` sets an immutable ceiling. If a runaway leak occurs while unmonitored, the container will restart upon hitting the limit rather than silently expanding memory to 48 GB and causing unexpected billing spikes.
+
+### E. Hot Runtime Scaling via `zerops_scale`
+All scaling thresholds and boundaries can be mutated on live, running containers without downtime or container restarts using the `zerops_scale` MCP tool:
+
+```bash
+# Apply Frugal Resilient dual-RAM threshold to live container
+zerops_scale serviceHostname="zcp" minFreeRamGB=0.25 minFreeRamPercent=10
+
+# Adjust horizontal safety boundaries and apply financial circuit breaker
+zerops_scale serviceHostname="appdev" minContainers=1 maxContainers=2 maxRam=8
+```
+
+Scale changes are registered immediately by the Zerops control plane and take effect within the next 10-second metric evaluation cycle.
 
 ---
 
