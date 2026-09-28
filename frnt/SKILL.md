@@ -26,7 +26,7 @@ Activate when designing, architecting, building, or optimizing client interfaces
 
 | Domain / Capability | Sub-Skill | Canonical SSoT Pointer | Role & Boundary |
 |---|---|---|---|
-| **Core SSR Framework** | `astro` | [`astro`](file:///var/www/.agents/skills/astro/SKILL.md) | Server Islands, Content Layer, SSR middleware, routing |
+| **Core SSR Framework** | `astro-web` | [`astro-web`](file:///var/www/.agents/skills/astro-web/SKILL.md) | Server Islands, Content Layer, SSR middleware, routing |
 | **Zerops Bun Runtime** | `bun` | [`bun`](file:///var/www/.agents/skills/bun/SKILL.md) | Native `alpine/bun@1.3.9` runtime, package management, build |
 | **Interactive Islands** | `react-19` | [`react-19`](file:///var/www/.agents/skills/react-19/SKILL.md) | Reactive components optimized with native React Compiler |
 | **Client State Store** | `zustand-5` | [`zustand-5`](file:///var/www/.agents/skills/zustand-5/SKILL.md) | Lightweight persistent cart store and slide-over drawer |

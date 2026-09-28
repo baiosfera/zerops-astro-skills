@@ -19,7 +19,7 @@
 
 | Sub-Skill | Role in Frontend Ecosystem | Direct SSoT Pointer |
 |---|---|---|
-| **`astro`** | Core SSR framework, Server Islands, View Transitions, Content Layer | [`astro`](file:///var/www/.agents/skills/astro/SKILL.md) |
+| **`astro-web`** | Core SSR framework, Server Islands, View Transitions, Content Layer | [`astro-web`](file:///var/www/.agents/skills/astro-web/SKILL.md) |
 | **`react-19`** | Interactive island components optimized with React Compiler | [`react-19`](file:///var/www/.agents/skills/react-19/SKILL.md) |
 | **`tailwind-4`** | Modern styling engine with CSS variables and OKLCH color palettes | [`tailwind-4`](file:///var/www/.agents/skills/tailwind-4/SKILL.md) |
 | **`zustand-5`** | Lightweight client-side global state (shopping cart, navigation drawer) | [`zustand-5`](file:///var/www/.agents/skills/zustand-5/SKILL.md) |

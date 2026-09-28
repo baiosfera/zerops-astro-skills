@@ -55,8 +55,8 @@ else
 fi
 
 # 6. Check file links
-for link in "references/usage.md" "references/infra.md" "assets/astro_production_recipes.json" "assets/import_template.yaml" "assets/zerops_template.yaml" "scripts/astro-validate.sh"; do
-    if grep -q "file:///var/www/.agents/skills/astro/$link" "$SKILL_DIR/SKILL.md"; then
+for link in "references/usage.md" "references/infra.md" "assets/astro_production_recipes.json" "assets/import_template.yaml" "assets/zerops_template.yaml" "scripts/astro-web-validate.sh"; do
+    if grep -q "file:///var/www/.agents/skills/astro-web/$link" "$SKILL_DIR/SKILL.md"; then
         echo "✓ Absolute file link verified: $link"
     else
         echo "❌ Missing absolute file link in SKILL.md: $link"
