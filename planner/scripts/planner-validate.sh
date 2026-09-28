@@ -4,9 +4,11 @@
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 SKILL_DIR="$(cd "$(dirname "$REAL_SCRIPT")/.." && pwd)"
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 ERRORS=0
 
 echo "============================================================"

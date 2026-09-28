@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Research Skill Validation Harness & MCP Health Sensor (v7.0)
+# Research Skill Validation Harness & MCP Health Sensor (v8.2)
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 SKILL_DIR="$(cd "$(dirname "$REAL_SCRIPT")/.." && pwd)"
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 ERRORS=0
 
 echo "============================================================"
-echo "  [Research v7.2] Sensor de Validación y Salud Epistémica"
+echo "  [Research v8.2] Sensor de Validación y Salud Epistémica"
 echo "============================================================"
 
 # 1. Validar integridad de archivos SSoT
@@ -25,10 +27,10 @@ done
 
 # 2. Validar versión en Frontmatter (Dynamic SemVer)
 echo "• Validando metadata.version en SKILL.md..."
-if grep -Eq 'version: "7\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "  ✓ Versión SemVer v7.x validada en Frontmatter."
+if grep -Eq 'version: "(7\.[0-9]+|8\.[0-9]+)"' "$SKILL_DIR/SKILL.md"; then
+    echo "  ✓ Versión SemVer validada en Frontmatter."
 else
-    echo "  ❌ Error: Falta versión 7.x en Frontmatter."
+    echo "  ❌ Error: Falta versión 7.x/8.x en Frontmatter."
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -136,7 +138,7 @@ fi
 
 echo "============================================================"
 if [ "$ERRORS" -eq 0 ]; then
-    echo "  ✅ Validación EXITOSA: Skill Research v7.0 al 100% de integridad física."
+    echo "  ✅ Validación EXITOSA: Skill Research v8.2 al 100% de integridad física."
     exit 0
 else
     echo "  ❌ Validación FALLIDA con $ERRORS errores."

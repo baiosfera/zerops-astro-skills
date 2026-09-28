@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Deterministic Physical Validation Sensor for Docu (v7.0 — Standard v3.0)
+# Deterministic Physical Validation Sensor for Docu (v8.2 — Standard v3.0)
 # Zero LLM Tokens | Bounded Execution < 500ms | 100% Deterministic Round-Trip
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 
 REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 SKILL_DIR="$(cd "$(dirname "$REAL_SCRIPT")/.." && pwd)"
+trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 ERRORS=0
 
 echo "============================================================"
-echo "  🔍 Validating Docu Skill Integrity (v7.0)"
+echo "  🔍 Validating Docu Skill Integrity (v8.2)"
 echo "============================================================"
 
 # 1. Check SKILL.md existence
@@ -22,10 +24,10 @@ else
 fi
 
 # 2. Check frontmatter metadata.version (Dynamic SemVer)
-if grep -Eq 'version: "7\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 7.x"
+if grep -Eq 'version: "(7\.[0-9]+|8\.[0-9]+)"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is valid (8.x/7.x)"
 else
-    echo "❌ Frontmatter version is not 7.x"
+    echo "❌ Frontmatter version is not valid"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -82,12 +84,12 @@ else
     echo "✓ Clean-room hygiene verified: zero bytecode cache in skill tree"
 fi
 
-# 8. Check Version Synchronization in references and assets (v7.x)
+# 8. Check Version Synchronization in references and assets (v7.x / v8.x)
 for f in "references/workflow.md" "references/templates.md" "references/certification.md" "assets/skill_scaffold.py" "assets/subagent_meta_prompt_template.md" "assets/research_ingestion_protocol.md"; do
-    if grep -Eq "v7\.[0-9]+" "$SKILL_DIR/$f"; then
-        echo "✓ Version v7.x verified in $f"
+    if grep -Eq "v[78]\.[0-9]+" "$SKILL_DIR/$f"; then
+        echo "✓ Version tag verified in $f"
     else
-        echo "❌ Missing v7.x version tag in $f"
+        echo "❌ Missing version tag in $f"
         ERRORS=$((ERRORS + 1))
     fi
 done
@@ -164,9 +166,9 @@ fi
 
 echo "------------------------------------------------------------"
 if [ "$ERRORS" -eq 0 ]; then
-    echo "✅ Docu v7.0 validation passed successfully with exit code 0."
+    echo "✅ Docu v8.2 validation passed successfully with exit code 0."
     exit 0
 else
-    echo "❌ Docu v7.0 validation failed with $ERRORS error(s)."
+    echo "❌ Docu v8.2 validation failed with $ERRORS error(s)."
     exit 1
 fi

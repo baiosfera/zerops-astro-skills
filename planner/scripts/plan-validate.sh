@@ -5,6 +5,9 @@
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
+
+trap 'find "$(dirname "${BASH_SOURCE[0]}")/.." -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$(dirname "${BASH_SOURCE[0]}")/.." -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
 
 PLAN_PATH="${1:-}"
 
