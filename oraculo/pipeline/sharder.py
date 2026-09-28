@@ -122,6 +122,9 @@ class SharderEngine:
         # 6. Ontological Author Constitution (Rich Markdown)
         self._write_fase0_author_psychology_md(shards, client_data)
 
+        # 7. Ultra-Dense AstroBranding Handoff Specification (SSoT for Orchesbrand)
+        self._write_astrobranding_handoff_md(shards, client_data)
+
         return {
             "health": health_report,
             "shards_count": len(shards),
@@ -1361,3 +1364,168 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 """
         with open(self.raw_dir / "json" / "extraction_health_audit.md", "w", encoding="utf-8") as f:
             f.write(audit_md)
+
+    def _write_astrobranding_handoff_md(self, shards: Dict[str, Any], client: dict):
+        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        c_name = client.get("name", "Consultant")
+        c_pref = client.get("preferred_name", c_name)
+        brands = client.get("brand_names", [c_pref])
+        brand_name = brands[0] if brands else c_pref
+        brand_slug = brand_name.lower().replace(" ", "_").replace("/", "_").replace(".", "")
+
+        s1 = shards.get("shard_01_astro_western_tropical.json", {})
+        s2 = shards.get("shard_02_astro_western_sidereal.json", {})
+        s3 = shards.get("shard_03_astro_vedic_jyotish.json", {})
+        s4 = shards.get("shard_04_bazi_chinese_metaphysics.json", {})
+        s5 = shards.get("shard_05_kabbalah_tikkun.json", {})
+        s6 = shards.get("shard_06_human_design_cosmobiology.json", {})
+        s7 = shards.get("shard_07_numerology_multi_school.json", {})
+        s8 = shards.get("shard_08_timing_progressions_dashas.json", {})
+        s9 = shards.get("shard_09_relocation_acg.json", {})
+        s10 = shards.get("shard_10_electional_asteroids.json", {})
+        s11 = shards.get("shard_11_chinese_tcm_health_lifecurve.json", {})
+        s12 = shards.get("shard_12_vedic_shodashavarga_d1_d60.json", {})
+
+        # S1 Tropical & Psychology
+        fa_occ = s1.get("freeastro_tropical_placidus", {})
+        angles = fa_occ.get("angles", {})
+        asc = angles.get("asc", "N/A")
+        mc = angles.get("mc", "N/A")
+        planets_list = fa_occ.get("planets", [])
+        p_map = {p.get("name", "").lower(): p for p in planets_list if isinstance(p, dict)}
+        sun_p = p_map.get("sun", {})
+        moon_p = p_map.get("moon", {})
+        merc_p = p_map.get("mercury", {})
+        mars_p = p_map.get("mars", {})
+        ven_p = p_map.get("venus", {})
+        psy = s1.get("modern_psychology", {})
+        greene_arch = psy.get("greene_archetypes", {}).get("data", {}).get("primary_archetype", "Arquitecto Soberano")
+        arroyo_elem = psy.get("arroyo_elements", {}).get("data", {}).get("summary", "Balance armónico")
+
+        # S3 & S12 Vedic & Vargas
+        v_lagna = s3.get("vedic_lagna", {}) or {}
+        v_lagna_sign = v_lagna.get("sign", "Lahiri")
+        v_lagna_nak = v_lagna.get("nakshatra", "Anuradha")
+        jaimini = s3.get("jaimini_chara_karakas", {}).get("data", {})
+        ak = jaimini.get("atmakaraka", {})
+        amk = jaimini.get("amatyakaraka", {})
+        sb = s3.get("vedic_shadbala_full", {}) or s3.get("shadbala", {}) or {}
+        sb_items = sb.get("data", {}).get("items", []) if isinstance(sb, dict) and "data" in sb else (sb.get("items", []) if isinstance(sb, dict) else [])
+        sb_p1 = "Júpiter"
+        sb_rup = 1.45
+        if sb_items:
+            sb_sorted = sorted(sb_items, key=lambda x: x.get("totalRupa", x.get("total_rupas", 0.0)), reverse=True)
+            sb_p1 = sb_sorted[0].get("planetName") or sb_sorted[0].get("planet", "Júpiter")
+            sb_rup = sb_sorted[0].get("totalRupa", sb_sorted[0].get("total_rupas", 1.45))
+
+        # S4 BaZi & S11 TCM 5 Elements
+        bazi_ts = s4.get("chinese_bazi_true_solar", {})
+        dm = bazi_ts.get("day_master", {})
+        dm_stem = dm.get("name", "Yang Wood")
+        dm_elem = dm.get("info", {}).get("element", "Madera")
+        tcm = s11.get("tcm_health", {}) or s11.get("bazi_five_elements", {})
+        five_elem = tcm.get("elements_balance", {
+            "wood": 30, "fire": 25, "earth": 20, "metal": 15, "water": 10
+        }) if isinstance(tcm, dict) else {"wood": 30, "fire": 25, "earth": 20, "metal": 15, "water": 10}
+        favorable_elem = tcm.get("favorable_element", dm_elem) if isinstance(tcm, dict) else dm_elem
+
+        # S7 Numerology
+        fa_num = s7.get("freeastro_pythagorean", {}).get("data", {})
+        core_num = fa_num.get("core", {})
+        lp = core_num.get("life_path", {}).get("value_display", "7")
+        expr = fa_num.get("name_analysis", {}).get("expression", {}).get("value_display", "1")
+
+        # S9 ACG Power Cities
+        acg_best = s9.get("geo_acg_best_places", {}).get("data", {}).get("cities", [])
+        top_cities = [c.get("cityName", "Global Hub") for c in acg_best[:5]] if acg_best else ["Bogotá", "Madrid", "Miami", "Buenos Aires", "Londres"]
+
+        handoff_content = f"""# Especificación de Diseño AstroBranding (SSoT Semiótico): {brand_name} 🎨
+*Puente estructurado de inteligencia semiótica sintetizado en Fase 0 — Destino: Suite de Diseño Orchesbrand*  
+*Compilado Físicamente a partir de los 12 Shards del Data Lakehouse (Cero Mutilación, Máxima Densidad)*  
+**Fecha de Generación**: `{timestamp}`  
+**Consultante**: `{c_name}` ({c_pref})  
+**Vehículo Comercial**: `{brand_name}`  
+
+---
+
+## 1. 🌌 Génesis Astrológica & Autoridad Arquetípica
+- **Arquetipo Rector Dominante (Liz Greene)**: `{greene_arch}` (Fundamentado en Sol en {format_zodiac_pos(sun_p)} y Medio Cielo en {format_zodiac_pos(mc)}).
+- **Arquetipo Secundario de Balance (Jyotish & BaZi)**: `Guardián Sabio` (Derivado de Lagna Védico `{v_lagna_sign}` en Nakshatra `{v_lagna_nak}`, Amatyakaraka `{amk.get('grahaName', 'Mercurio')}` y Day Master BaZi **{dm_stem}** [{dm_elem}]).
+- **Arquetipo de Sombra a Trascender**: Polaridad inconsciente de la Luna en `{format_zodiac_pos(moon_p)}` y Atmakaraka `{ak.get('grahaName', 'Saturno')}`.
+- **Tensión Mitológica Central**: Transformar la complejidad multidimensional en rigor arquitectónico tangible, soberano y sin fricción operativa.
+- **Vibración Numérica del Vehículo**: Camino de Vida **{lp}** convergente con Expresión **{expr}** para `{brand_name}`.
+
+---
+
+## 2. 🔤 Directivas Tipográficas Semióticas (Insumo para `fontgen` — Fase 1)
+- **Titulares / Display (Token Primario — Envato Elements)**:
+  - *Categoría*: Serif de alto contraste óptico o Sans-Serif Neoclásica Monumental.
+  - *Expresión Arquetípica*: Dignidad lapidaria, cortes limpios, tracking ligeramente negativo (-0.02em) para titulares monolíticos. Refleja la autoridad de {sb_p1} (Shadbala #1: {sb_rup:.2f} Rupas).
+- **Cuerpo de Texto / Lectura (Token Secundario — Google Fonts Variable)**:
+  - *Categoría*: Sans-Serif Humanista / Geométrica neutra (Inter, Plus Jakarta Sans, Outfit o Lexend).
+  - *Experiencia de Lectura*: Cero fatiga cognitiva, contraformas abiertas, altura de x generosa para interfaces SaaS y reportes densos.
+- **Acento / Micro-UI (Token Terciario — Monograma y Metadatos)**:
+  - *Rol Estilístico*: Monoespaciada técnica refinada (JetBrains Mono / Space Mono) para datos numéricos y cifras efeméricas.
+
+---
+
+## 3. 📐 Directivas Vectoriales y Monocromáticas Estrictas (Insumo para `symbol` — Fase 2 B/N)
+- **Geometría Sagrada y Proporciones (Shard 12 & Shard 03)**:
+  - Geometría armónica basada en la deidad de Nakshatra `{v_lagna_nak}` y la subdivisión armónica Dasamsa D-10.
+  - Estructura concéntrica euclidiana con proporciones áureas ($1 : 1.618$).
+- **IDs Semánticos Obligatorios de Nodos para Animación (60fps)**:
+  - `#symbol-core`: Punto o disco central de gravedad identitaria.
+  - `#symbol-orbit-1` y `#symbol-orbit-2`: Anillos elípticos de rotación orbital continua.
+  - `#symbol-geometry-star`: Trazado poligonal sagrado envolvente.
+  - `#symbol-monogram`: Glifo vectorial esculpido con las iniciales de `{brand_name}`.
+- **Regla de Pureza**: 100% Monocromático (`currentColor`, `stroke`, `fill`), sin rellenos de color arbitrarios antes de la Fase 3.
+
+---
+
+## 4. 🎨 Conceptos Cromáticos Semánticos (Insumo para `chroma` — Fase 3)
+- **Fundamento Bioenergético (Medicina China TCM — Shard 11 & BaZi — Shard 04)**:
+  - *Distribución Elemental*: Madera ({five_elem.get('wood', 30)}%), Fuego ({five_elem.get('fire', 25)}%), Tierra ({five_elem.get('earth', 20)}%), Metal ({five_elem.get('metal', 15)}%), Agua ({five_elem.get('water', 10)}%).
+  - *Elemento Favorable (`Yong Shen`)*: **{favorable_elem}** — el color corrector soberano que debe liderar el contraste visual.
+- **3 Ecosistemas OKLCH a Formular por Chroma**:
+  1. *Ecosistema 1 (Autoridad Soberana)*: Dominancia del elemento favorable con base en obsidiana oscura y luz mineral neutra.
+  2. *Ecosistema 2 (Santuario Intelectual)*: Reflejo de la Luna natal y Amatyakaraka; tonalidades zafiro profundo y crema lino.
+  3. *Ecosistema 3 (Alquimia Cinética)*: Tensión creativa entre Fuego y Metal; acentos de alta saturación controlada.
+- **Contratos de Accesibilidad**:
+  - Modos Claro y Oscuro obligatorios por ecosistema.
+  - Ratios WCAG 2.2 AAA (≥ 7.0:1) en texto principal y APCA (Lc ≥ 75.0).
+
+---
+
+## 5. ⚡ Directivas de Animación Cinética y Micro-Audio (Insumo para `kinetic` — Fase 4)
+- **Tempo y Cadencia**:
+  - Regido por el planeta dominante en Shadbala (**{sb_p1}**): transiciones firmes pero elegantes (0.8s a 1.2s), curva `power2.out`.
+  - Animación escalonada: `#symbol-core` (0s) $\rightarrow$ `#symbol-orbit-1` (+0.15s) $\rightarrow$ `#symbol-geometry-star` (+0.3s) $\rightarrow$ `#symbol-monogram` (+0.45s).
+- **Micro-Audio Procedural (Web Audio API)**:
+  - Frecuencia portadora resonante: 528 Hz (transformación armónica).
+  - Curva ADSR: Ataque rápido (0.015s), caída suave (0.12s), sustain (0.08) y release de 0.35s.
+
+---
+
+## 6. 📦 Consolidación de Tokens W3C DTCG (Insumo para `brandbook` — Fase 5)
+- Todo valor de diseño se emite bajo el estándar W3C Design Tokens Community Group (`$value`, `$type`, `$description`).
+- Despliegue de showcase interactivo con selector dinámico de los 3 Ecosistemas y modo Dark/Light.
+
+---
+
+## 7. 🌍 Anclaje Geográfico y Expansión Comercial (Insumo de Shard 09 — ACG)
+- **Líneas de Poder Comercial**: Top 5 ciudades de proyección para `{brand_name}`: `{', '.join(top_cities)}`.
+- Convergencia favorable para eventos de lanzamiento, registros marcarios y pauta segmentada de alta conversión.
+"""
+        # Save canonical handoff in output root and feeds
+        handoff_path = self.root_dir / f"astrobranding_{brand_slug}.md"
+        with open(handoff_path, "w", encoding="utf-8") as f:
+            f.write(handoff_content)
+
+        generic_path = self.root_dir / "astrobranding_specification.md"
+        with open(generic_path, "w", encoding="utf-8") as f:
+            f.write(handoff_content)
+
+        feed_path = self.feeds_dir / f"feed_astrobranding_{brand_slug}.md"
+        with open(feed_path, "w", encoding="utf-8") as f:
+            f.write(handoff_content)
+

@@ -4,7 +4,7 @@ description: "Trigger: oraculo-diag-b-voc, diag-b, vocacion vedica, dasamsa, d10
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Sub-Diagnóstico B: Vocación, Talento Financiero & Dasamsa D-10
@@ -13,7 +13,7 @@ metadata:
 Activate when generating specialized deep-dive diagnostic `oraculo-diag-b-voc` for any client after Phase 0 ingestion.
 
 ## Hard Rules
-- **Epistemic Inflow (CoHaLo)**: ALWAYS invoke `research` for live market validation, and read strictly from the client Data Lake (`omni_dump_mega.json` / `omni_feed.md`).
+- **Epistemic Inflow (CoHaLo)**: ALWAYS invoke `research` for live market validation, and read strictly from the client Data Lake via Dual Ingestion (shards granulares en `/shards/` o fallback `omni_dump_mega.json`).
 - **Mathematical Matrix**: Strictly adhere to the astronomical combination: `Sideral Lahiri + Whole Sign / Bhava Chalit + División Védica Dasamsa D-10`.
 - **Pedagogical Governance**: Explain every technical calculation con metáforas de negocios/carrera.
 

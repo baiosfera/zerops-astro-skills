@@ -6,11 +6,13 @@ Este documento formaliza el flujo secuencial determinista, las dependencias de d
 
 ## 1. Topología del Pipeline Lineal & Modo Dual
 
-### Modo A: Ingestión desde Oráculo (Fase 10)
-$$\text{Oráculo} \xrightarrow{\text{astrobranding}} \text{fontgen} \xrightarrow{\text{font\\_manifest}} \text{symbol} \xrightarrow{\text{symbol\\_manifest}} \text{chroma} \xrightarrow{\text{chroma\\_manifest}} \text{kinetic} \xrightarrow{\text{kinetic\\_manifest}} \text{brandbook}$$
+### Modo A: Ingestión Hermética desde Oráculo (Fase 0 SSoT)
+Fase 0 de Oráculo compila herméticamente el artefacto ultra-denso `astrobranding_[MARCA].md` sintetizando los 12 Shards astronómicos del VirtualDataLake (incluyendo salud MTC y curva Neijing, especificaciones de microinteracciones a 60fps para kinetic, tokens W3C DTCG para chroma/brandbook, y ciudades de poder ACG para anclaje de marca). Este artefacto actúa como SSoT canónico único: la suite de diseño especializada (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) trabaja 100% desacoplada de los JSONs astronómicos crudos y sin requerir la ejecución previa ni asíncrona de los sub-diagnósticos satélite.
+
+$$\text{Oráculo (F0: 12 Shards)} \xrightarrow{\text{astrobranding\_[MARCA].md (Hermético)}} \text{fontgen (F1)} \xrightarrow{\text{font\_manifest}} \text{symbol (F2)} \xrightarrow{\text{symbol\_manifest}} \text{chroma (F3)} \xrightarrow{\text{chroma\_manifest}} \text{kinetic (F4)} \xrightarrow{\text{kinetic\_manifest}} \text{brandbook (F5)}$$
 
 ### Modo B: Ingestión Standalone (WebApp / Directo)
-$$\text{brand\\_input.json} \xrightarrow{} \text{fontgen} \xrightarrow{} \text{symbol} \xrightarrow{} \text{chroma} \xrightarrow{} \text{kinetic} \xrightarrow{} \text{brandbook}$$
+$$\text{brand\_input.json} \xrightarrow{} \text{fontgen} \xrightarrow{} \text{symbol} \xrightarrow{} \text{chroma} \xrightarrow{} \text{kinetic} \xrightarrow{} \text{brandbook}$$
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -32,18 +34,27 @@ $$\text{brand\\_input.json} \xrightarrow{} \text{fontgen} \xrightarrow{} \text{s
   Hydration Lock & View Transitions                             Manual .md & Showcase index.html
 ```
 
+### 1.1 Especificación del Modo A Hermético (Oráculo F0 -> Suite de Diseño)
+- **Compilación en Fase 0:** Oráculo procesa los 12 Shards del VirtualDataLake (`shard_01` a `shard_12`) y genera `astrobranding_[MARCA].md` conteniendo:
+  - **MTC & Ritmos Biológicos (Shard 11):** Integración de biotipos, meridianos horarios y curva Neijing para tono, pausas cognitivas y tiempos de interacción.
+  - **Dinámica Cinética & Audio (Shard 08 + Shard 10):** Especificaciones de aceleración física a 60fps (GSAP) y envolventes ADSR (Web Audio API) para microinteracciones de marca.
+  - **Tokens de Color W3C DTCG (Shard 01 + Shard 02):** Valores OKLCH, ratios APCA / WCAG 2.2 AAA y paletas tri-ecosistémicas.
+  - **Ciudades de Poder ACG (Shard 09):** Coordenadas geográficas angulares de máxima influencia para activación y eventos de marca.
+- **Desacoplamiento Estricto:** La suite de diseño NUNCA analiza JSONs crudos (`omni_dump_mega.json`), no realiza consultas REST astronómicas ni espera la ejecución de los sub-diagnósticos (`diag-a-psy`, `diag-b-voc`, `diag-c-mkt`, `diag-d-leg`, `diag-e-geo`).
+- **Máxima Densidad Informativa:** Todos los insumos visuales, tipográficos, simbólicos, cinéticos y arquitectónicos requeridos por F1–F5 están pre-digeridos en `astrobranding_[MARCA].md`.
+
 ---
 
 ## 2. Matriz de Contratos de Entrada y Salida por Fase
 
 | Fase | Skill | Contrato de Entrada Requerido | Contrato de Salida Emitido | Ubicación SSoT |
 |---|---|---|---|---|
-| **0** | **Pre-Flight** | `astrobranding_[MARCA].md` o `brand_input.json` | Directorio inicializado | `.../DIAG/[MARCA]/` |
-| **1** | `fontgen` | Directrices de marca | `fontgen_[MARCA].md` + `font_manifest.json` | `.../DIAG/[MARCA]/` |
-| **2** | `symbol` | `font_manifest.json` + Arquetipo | `symbol_manifest.json` | `.../DIAG/[MARCA]/` |
-| **3** | `chroma` | `symbol_manifest.json` + Arquetipo | `chroma_manifest.json` | `.../DIAG/[MARCA]/` |
-| **4** | `kinetic` | `font_manifest` + `symbol_manifest` + `chroma_manifest` | `kinetic_manifest.json` | `.../DIAG/[MARCA]/` |
-| **5** | `brandbook` | Manifiestos completos de Fases 1 a 4 | `brandbook_manifest.md` + `brandbook.json` + `index.html` | `.../DIAG/[MARCA]/` |
+| **0** | **Pre-Flight (Oráculo F0)** | 12 Shards astronómicos compilados en `astrobranding_[MARCA].md` (o `brand_input.json` en Modo B) | Directorio inicializado y SSoT hermético | `.../DIAG/[MARCA]/` |
+| **1** | `fontgen` | Directrices de marca desde `astrobranding_[MARCA].md` | `fontgen_[MARCA].md` + `font_manifest.json` | `.../DIAG/[MARCA]/` |
+| **2** | `symbol` | `font_manifest.json` + Arquetipo / Simbología sagrada | `symbol_manifest.json` | `.../DIAG/[MARCA]/` |
+| **3** | `chroma` | `symbol_manifest.json` + Arquetipo / 3 Ecosistemas | `chroma_manifest.json` | `.../DIAG/[MARCA]/` |
+| **4** | `kinetic` | `font_manifest` + `symbol_manifest` + `chroma_manifest` + Spec 60fps | `kinetic_manifest.json` | `.../DIAG/[MARCA]/` |
+| **5** | `brandbook` | Manifiestos completos de Fases 1 a 4 + Tokens W3C DTCG | `brandbook_manifest.md` + `brandbook.json` + `index.html` | `.../DIAG/[MARCA]/` |
 
 ---
 

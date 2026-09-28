@@ -4,7 +4,7 @@ description: "Trigger: oraculo-diag-e-geo, diag-e, astrocartografia, acg, espaci
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Sub-Diagnóstico E: Astrocartografía, Relocación & Espacio Local
@@ -13,7 +13,7 @@ metadata:
 Activate when generating specialized deep-dive diagnostic `oraculo-diag-e-geo` for any client after Phase 0 ingestion.
 
 ## Hard Rules
-- **Epistemic Inflow (CoHaLo)**: ALWAYS invoke `research` for live market validation, and read strictly from the client Data Lake (`omni_dump_mega.json` / `omni_feed.md`).
+- **Epistemic Inflow (CoHaLo)**: ALWAYS invoke `research` for live market validation, and read strictly from the client Data Lake via Dual Ingestion (shards granulares en `/shards/` o fallback `omni_dump_mega.json`).
 - **Mathematical Matrix**: Strictly adhere to the astronomical combination: `Astrocartografía Mundial (Líneas ASC/DSC/MC/IC) + Sistema de Espacio Local (Azimut/Elevación) + Parans`.
 - **Pedagogical Governance**: Explain every technical calculation with clear executive metaphors (Global Expansion & Anchoring).
 
