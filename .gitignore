@@ -12,3 +12,5 @@ Thumbs.db
 *.tmp
 *.swp
 *~
+# Local AI runtime state
+.atl/

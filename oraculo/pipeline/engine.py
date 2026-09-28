@@ -373,6 +373,28 @@ class ExtractionEngine:
                 except Exception as e:
                     results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="calculate_bazi", status="FAILED", data={}, error=str(e)))
 
+                # Lunar MCP solar_to_lunar
+                try:
+                    stl_res = await mcp_client.call_tool(
+                        "lunar", "solar_to_lunar",
+                        {"solar_date": date_str, "culture": "chinese"}
+                    )
+                    mcp_results["lunar_mcp_solar_to_lunar"] = stl_res
+                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="solar_to_lunar", status="SUCCESS", data=stl_res, http_status=200))
+                except Exception as e:
+                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="solar_to_lunar", status="FAILED", data={}, error=str(e)))
+
+                # Lunar MCP get_lucky_hours
+                try:
+                    lh_res = await mcp_client.call_tool(
+                        "lunar", "get_lucky_hours",
+                        {"date": date_str, "culture": "chinese"}
+                    )
+                    mcp_results["lunar_mcp_get_lucky_hours"] = lh_res
+                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="get_lucky_hours", status="SUCCESS", data=lh_res, http_status=200))
+                except Exception as e:
+                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="get_lucky_hours", status="FAILED", data={}, error=str(e)))
+
                 # Zmanim MCP daily_times
                 try:
                     zm_res = await mcp_client.call_tool(
@@ -394,6 +416,25 @@ class ExtractionEngine:
                     results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_calc", status="SUCCESS", data=kd_res, http_status=200))
                 except Exception as e:
                     results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_calc", status="FAILED", data={}, error=str(e)))
+
+                # Kundali MCP kundali_milan (if secondary profile exists or self-pair)
+                partner = client_data.get("partner")
+                if partner and isinstance(partner, dict):
+                    try:
+                        p_dt = f"{partner.get('year', year):04d}-{partner.get('month', month):02d}-{partner.get('day', day):02d}T{partner.get('hour', hour):02d}:{partner.get('minute', minute):02d}:00"
+                        km_res = await mcp_client.call_tool(
+                            "kundali", "kundali_milan",
+                            {
+                                "groom": {"birth_datetime": iso_local_str, "latitude": lat, "longitude": lng},
+                                "bride": {"birth_datetime": p_dt, "latitude": float(partner.get("lat", lat)), "longitude": float(partner.get("lng", lng))},
+                                "school": "parashari",
+                                "locale": "en"
+                            }
+                        )
+                        mcp_results["kundali_mcp_kundali_milan"] = km_res
+                        results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="SUCCESS", data=km_res, http_status=200))
+                    except Exception as e:
+                        results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="FAILED", data={}, error=str(e)))
 
             # Execute all tasks concurrently in TaskGroup
             async with asyncio.TaskGroup() as tg:

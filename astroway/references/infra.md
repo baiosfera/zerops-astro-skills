@@ -48,7 +48,13 @@ Calculations are charged per call based on server compute complexity:
 - **Tier 4 (100 credits, >500ms)**: Multi-day temporal scans, AI interpretations (`/ai/interpret/natal`).
 - **Tier 5 (250 credits, 2–5s)**: Hermetic Trutine rectification, AI long-form narratives (`/reports/ai-natal-narrative`).
 - **Tier 6 (500 credits, 10–120s)**: Deep biographical multi-event rectification.
-- **Tier 7 (5,000 credits, 3–8s)**: 40+ page publication-grade PDF report compiler.
+- **Tier 7 (5,000 credits, 3–8s) — STRICTLY VETOED**: 40+ page publication-grade PDF report compiler (`/v1/reports/*`). Consumes 10% of total monthly Indie PRO quota in a single request. Vetoed in automated extraction.
+
+### Canonical Single-Pass Ingestion Basket (740 Credits / Consultant)
+For Phase 0 extraction in the Data Lakehouse, use the 30 JSON endpoints cataloged in [usage.md](file:///var/www/.agents/skills/astroway/references/usage.md#14-the-30-endpoint-single-pass-basket-740-credits).
+- Total compute cost: exactly 740 credits per consultant run.
+- Throughput capacity: 67 complete client runs per month on Indie PRO ($5/mo, 50,000 credits).
+- Mandatory pacing: `sleep 2.0` between sequential requests to respect the 30 req/min rate limit.
 
 ---
 

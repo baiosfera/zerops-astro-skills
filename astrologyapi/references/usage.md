@@ -103,28 +103,55 @@ timeout 10s curl -s -X POST "https://api.astrology-api.io/api/v3/numerology/core
 
 ---
 
-## 4. Module 3: Hebrew Kabbalistic Gematria (4 Systems)
+## 4. Module 3: Hebrew Kabbalistic Gematria (7 Methods & 72 Angels)
 
-Calculates numerical values and mystical letter vibrations for Hebrew and Latin words across 4 classical systems.
+Calculates numerical values and mystical letter vibrations for Hebrew and Latin words across 7 classical calculation methods, plus the 72 Angels of Shem HaMephorash.
 
 ### A. Gematria Calculation Endpoint
 `POST https://api.astrology-api.io/api/v3/kabbalah/gematria`
 
 ```bash
 timeout 10s curl -s -X POST "https://api.astrology-api.io/api/v3/kabbalah/gematria" \
-  -H "Authorization: Bearer $ASTROLOGY_API_KEY" \
+  -H "Authorization: Bearer ${API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Bereshit",
-    "language": "latin_translit"
+    "language": "latin_translit",
+    "method": "mispar_gadol"
   }'
 ```
 
-### Supported Calculation Modes:
-1. **Standard / Absolute (Ragil)**: Standard numerical value of letters ($1..400$).
-2. **Ordinal (Siduri)**: Positional index ($1..22$).
-3. **Reduced (Katan)**: Modulo 9 reduction of individual letter values.
-4. **Integral (Kolel)**: Base value plus total letter count.
+### Supported Calculation Methods:
+1. `mispar_hechrachi` (Ragil): Standard absolute numerical value ($1..400$).
+2. `mispar_gadol`: Final letters (sofit) continue from 500 to 900 (Kaf Sofit=500, Mem=600, Nun=700, Pe=800, Tsade=900).
+3. `mispar_katan`: Modulo 9 reduction of individual letter values (eliminates positional zeros).
+4. `mispar_katan_mispari`: Integral word reduction to single digit.
+5. `ordinal` (Siduri): Positional index in the 22-letter Hebrew alphabet ($1..22$).
+6. `atbash`: Mirror substitution cipher (Aleph $\leftrightarrow$ Tav, Bet $\leftrightarrow$ Shin).
+7. `albam`: Half-split substitution cipher (Aleph $\leftrightarrow$ Lamed).
+
+### B. Birth Angels of Shem HaMephorash Endpoint
+`POST https://api.astrology-api.io/api/v3/kabbalah/birth-angels`
+
+Maps the 72 divine angels to exact 5° zodiacal quinances, providing the Physical, Emotional, and Intellectual guardian angels, along with Tree of Life pillar balancing (Mercy, Severity, Mildness):
+
+```bash
+timeout 10s curl -s -X POST "https://api.astrology-api.io/api/v3/kabbalah/birth-angels" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "birth_data": {
+      "year": <YYYY>,
+      "month": <MM>,
+      "day": <DD>,
+      "hour": <HH>,
+      "minute": <MIN>,
+      "latitude": <FLOAT_LATITUDE>,
+      "longitude": <FLOAT_LONGITUDE>,
+      "timezone": "<TIMEZONE_STR>"
+    }
+  }'
+```
 
 ---
 
@@ -324,3 +351,51 @@ timeout 10s curl -s -X POST "https://api.astrology-api.io/api/v3/data/global-pos
     "zodiac_type": "tropical"
   }'
 ```
+
+---
+
+## 11. Module 10: Traditional Dignities & Almuten Figuris (Bonatti)
+
+Calculates the Almuten Figuris (Ruler of the Chart) using Guido Bonatti's medieval weighted scoring system ($5/4/3/2/1$) over the 5 canonical Hyleg points (Sun, Moon, Ascendant, Part of Fortune, and Prenatal Syzygy solved via Brent's root-finding algorithm `brentq`).
+
+### A. Almuten Figuris Calculation Endpoint
+`POST https://api.astrology-api.io/api/v3/traditional/almuten`
+
+```bash
+timeout 10s curl -s -X POST "https://api.astrology-api.io/api/v3/traditional/almuten" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "birth_data": {
+      "year": <YYYY>,
+      "month": <MM>,
+      "day": <DD>,
+      "hour": <HH>,
+      "minute": <MIN>,
+      "latitude": <FLOAT_LATITUDE>,
+      "longitude": <FLOAT_LONGITUDE>,
+      "timezone": "<TIMEZONE_STR>"
+    },
+    "scoring_system": "bonatti",
+    "include_accidental": true,
+    "syzygy_solver": "brent"
+  }'
+```
+
+---
+
+## 12. Canonical 3-Call Single-Pass Ingestion Basket (3 Credits / Consultant)
+
+For Phase 0 extraction in the Data Lakehouse, execute exactly these 3 calls sequentially with `sleep 2.0` throttling. This guarantees 100% data coverage while consuming only 3 credits per client:
+
+1. **Call 1 — Master Hellenistic Timeline (1 credit)**:
+   - `POST /api/v3/timing/timeline`
+   - Ingests Profections, Firdaria L1/L2, Decennials, and Zodiacal Releasing in parallel.
+2. **Call 2 — Enhanced Positions & Dignities (1 credit)**:
+   - `POST /api/v3/data/positions/enhanced`
+   - Ingests tropical coordinates, essential dignities, debilities, joys, sect, and 9 Arabic lots.
+3. **Call 3 — Core Numerology (1 credit)**:
+   - `POST /api/v3/numerology/core-numbers`
+   - Ingests Life Path, Expression, Soul Urge, Personality, and Birthday numbers.
+
+Total Consumption: Exactly 3 API credits per client run. Allows up to 16 complete consultant audits per month on the 50 req/mo Free Tier.

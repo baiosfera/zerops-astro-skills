@@ -57,6 +57,15 @@ With the **Forever Free Plan** providing 50 requests/month, applications must ad
    - Natal charts never change over time. Cache the raw natal response forever indexed by `sha256(YYYY-MM-DD-HH-MM-LAT-LNG)`.
    - Repeated lookups for the same consultant consume **0 API credits**.
 
+### Canonical Single-Pass Ingestion Basket (3 Credits / Consultant)
+For Phase 0 extraction in the Data Lakehouse, use the 3-endpoint basket cataloged in [usage.md](file:///var/www/.agents/skills/astrologyapi/references/usage.md#12-canonical-3-call-single-pass-ingestion-basket-3-credits--consultant):
+- `POST /api/v3/timing/timeline` (1 credit)
+- `POST /api/v3/data/positions/enhanced` (1 credit)
+- `POST /api/v3/numerology/core-numbers` (1 credit)
+- Total compute cost: exactly 3 credits per consultant run.
+- Capacity: 16 full client profiles per month on the 50 req/mo Free Tier.
+- Throttling: `sleep 2.0` between calls.
+
 ---
 
 ## 4. Request Header Standards

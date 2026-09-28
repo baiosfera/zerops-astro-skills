@@ -115,7 +115,7 @@ def test_sharder_engine_hermetic():
         }
         sharder = SharderEngine(output_root=temp_dir)
         res = sharder.verify_and_shard(extraction_output)
-        assert res["shards_count"] == 10
+        assert res["shards_count"] == 12
         assert res["feeds_count"] == 10
         assert res["manifest_generated"] is True
         

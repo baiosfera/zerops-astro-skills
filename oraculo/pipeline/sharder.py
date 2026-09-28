@@ -131,7 +131,7 @@ class SharderEngine:
 
     def _verify_health(self, rest_data: dict, mcp_data: dict, results_list: list) -> dict:
         total_calls = len(results_list)
-        successes = [r for r in results_list if r.status == "SUCCESS"]
+        successes = [r for r in results_list if r.status in ["SUCCESS", "CACHED"]]
         failures = [r for r in results_list if r.status == "FAILED"]
 
         freeastro_ok = bool(rest_data.get("freeastro", {}).get("western_natal_tropical"))
@@ -283,6 +283,26 @@ class SharderEngine:
                 "metadata": client,
                 "system": "electional_asteroids",
                 "asteroids": nasa
+            },
+            "shard_11_chinese_tcm_health_lifecurve.json": {
+                "metadata": client,
+                "system": "chinese_tcm_health_lifecurve",
+                "tcm_health": freeastro.get("chinese_health", {}) or freeastro.get("tcm_health", {}),
+                "lifespan_curve": freeastro.get("chinese_lifespan", {}) or freeastro.get("lifespan_curve", {}),
+                "bazi_five_elements": freeastro.get("chinese_bazi_five_elements", {}),
+                "lunar_lucky_hours": mcp.get("lunar_mcp_get_lucky_hours", {}),
+                "lunar_solar_to_lunar": mcp.get("lunar_mcp_solar_to_lunar", {})
+            },
+            "shard_12_vedic_shodashavarga_d1_d60.json": {
+                "metadata": client,
+                "system": "vedic_shodashavarga_d1_d60",
+                "vargas_d1_d60": freeastro.get("vedic_vargas", {}) or freeastro.get("vedic_vargas_d1_d60", {}),
+                "astroway_vargas": {
+                    "d9": astroway.get("vedic_varga_d9", {}),
+                    "d10": astroway.get("vedic_varga_d10", {})
+                },
+                "vedastro_vargas": vedastro.get("planet_data", {}),
+                "kundali_milan": mcp.get("kundali_mcp_kundali_milan", {})
             }
         }
 
@@ -302,7 +322,9 @@ class SharderEngine:
                 "numerology": "shard_07_numerology_multi_school.json",
                 "timing_dashas": "shard_08_timing_progressions_dashas.json",
                 "relocation_acg": "shard_09_relocation_acg.json",
-                "electional_asteroids": "shard_10_electional_asteroids.json"
+                "electional_asteroids": "shard_10_electional_asteroids.json",
+                "chinese_tcm_health": "shard_11_chinese_tcm_health_lifecurve.json",
+                "vedic_shodashavarga": "shard_12_vedic_shodashavarga_d1_d60.json"
             },
             "pointers": {
                 "tropical/ascendant": "western_tropical#/freeastro_tropical_placidus/angles/asc",
@@ -316,7 +338,10 @@ class SharderEngine:
                 "kabbalah/tikkun_axis": "kabbalah_tikkun#/evolutionary_nodal_axis",
                 "hd/chart": "human_design#/human_design",
                 "timing/timeline": "timing_dashas#/timing_timeline",
-                "acg/best_places": "relocation_acg#/geo_acg_best_places"
+                "acg/best_places": "relocation_acg#/geo_acg_best_places",
+                "chinese/tcm_health": "chinese_tcm_health#/tcm_health",
+                "chinese/lifespan": "chinese_tcm_health#/lifespan_curve",
+                "vedic/vargas_d1_d60": "vedic_shodashavarga#/vargas_d1_d60"
             }
         }
 
@@ -1275,8 +1300,8 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
         for idx, res in enumerate(results_list, start=1):
             prov = res.provider
             endpoint = res.endpoint_key
-            status_badge = "✅ OK" if res.status == "SUCCESS" else "❌ FAIL"
-            http_code = res.http_status if res.http_status else ("200 (MCP)" if res.status == "SUCCESS" else "ERR")
+            status_badge = "⚡ CACHED" if res.status == "CACHED" else ("✅ OK" if res.status == "SUCCESS" else "❌ FAIL")
+            http_code = res.http_status if res.http_status else ("200 (CACHE)" if res.status == "CACHED" else ("200 (MCP)" if res.status == "SUCCESS" else "ERR"))
             latency = f"{res.latency_ms:.1f} ms"
             try:
                 payload_len = len(json.dumps(res.data))

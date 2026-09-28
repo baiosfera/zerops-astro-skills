@@ -270,3 +270,22 @@ A complete raw extraction of VedAstro yields ~177 KB of JSON (~45,000 tokens). D
    Save full raw JSON dumps in `raw/json/dumps/04_vedic_jyotish_kp.json`. Accessible offline by specialized diagnostic subskills (`oraculo-diag-b-voc`, `oraculo-diag-d-leg`).
 2. **Tier 2 — Surgical Phase Feeds (CoHaLo XML):**  
    `omni_consensus_engine.py` filters the data into structured, typed XML feeds (`<feed_input phase="4">`) containing exclusively the **Vedic Trinity** (Lagna, Surya Lagna, Chandra Lagna/AK) and 2-3 karmic challenge yogas (<2.5 KB XML, >95% token savings).
+
+---
+
+## 11. Canonical Single-Pass Ingestion Basket (Unlimited Plan Strategy)
+
+Because VedAstro PRO operates on an unlimited monthly tier ($1/mo, zero incremental cost), Phase 0 extraction executes the complete 4-call macro basket for each client:
+
+1. **Call 1 — All Planet Data (`POST /api/Calculate/AllPlanetData`)**:
+   - Computes 144 factors for all 9 planets (1,296 calculations in 1 call).
+   - Ingests: Sayana and Nirayana longitudes, 16 Shodashavargas (D1 to D60), 6-factor Shadbala breakdown (Sthana, Dig, Kala, Chesta, Naisargika, Drik), Ishta/Kashta Phala, and Ashtakavarga bindu reductions.
+2. **Call 2 — All House Data (`POST /api/Calculate/AllHouseData`)**:
+   - Computes 40 factors for each of the 12 houses (480 calculations in 1 call).
+   - Ingests: Bhava Chalit cusp bounds, Arudha Padas, occupants by exact degree vs by sign, and House Shadbala strength.
+3. **Call 3 — Horoscope Predictions (`POST /api/Calculate/HoroscopePredictions`)**:
+   - Evaluates 200+ classical yogas, doshas, and predictions with verbatim Parashari and Jaimini literature citations.
+4. **Call 4 — 5-Level Vimshottari Dashas (`POST /api/Calculate/DasaAtRange`)**:
+   - Ingests lifetime timeline from Maha Dasa down to Prana Dasa with canonical interpretations.
+
+Total compute cost: $0.00 incremental cost. Ingestion latency: ~1.2s total across all 4 macro requests.

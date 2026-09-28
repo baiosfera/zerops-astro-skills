@@ -319,3 +319,75 @@ Structured generative intelligence and multilingual synthesis.
 - `POST /v1/ai/interpret/synastry`: Relationship dynamics and tension points synthesis.
 - `POST /v1/reports/ai-natal-narrative`: Long-form 5,000–8,000 word publication-ready narrative report.
 - `POST /v1/content-localization/translate-astro`: Astrological translation maintaining technical terms across 21 supported languages.
+
+---
+
+## 14. Module 12: Phase 0 Optimal Extraction Basket & Differentiated Payloads (740 Credits)
+
+### A. The 30-Endpoint Comprehensive JSON Basket (Indie PRO $5/mo | 50,000 Credits)
+Extracts 100% of unique multidimensional data without burning quota on Tier 7 PDF reports (5,000 credits each):
+
+1. **Western & Esoteric**: `/v1/chart` (Placidus Tropical, 20 cr), `/v1/chart` (Campanus Sidereal, 20 cr), `/v1/almuten` (20 cr), `/v1/modern/rudhyar/symbolic-degrees` (20 cr).
+2. **Human Design Mechanics**: `/v1/human-design` (50 cr), `/v1/hd/circuitry` (20 cr), `/v1/hd/incarnation-cross` (20 cr), `/v1/hd/sensitivity` (20 cr).
+3. **Vedic Jyotish & Vargas**: `/v1/vedic/varga/D1` (20 cr), `/v1/vedic/varga/D9` (20 cr), `/v1/vedic/varga/D10` (20 cr), `/v1/vedic/varga/D60` (20 cr), `/v1/vedic/shadbala/full` (20 cr), `/v1/vedic/jaimini/chara-karakas` (20 cr), `/v1/vedic/dashas/vimshottari/maha` (50 cr).
+4. **Hellenistic Suite**: `/v1/hellenistic/brennan/lots-15` (20 cr), `/v1/hellenistic/brennan/zodiacal-releasing-spirit` (50 cr), `/v1/hellenistic/greenbaum/antiscia-hellenistic` (20 cr), `/v1/hellenistic/hand/bounds` (20 cr).
+5. **Cosmobiology & 90° Dial**: `/v1/cosmobiology/dial-90` (20 cr), `/v1/midpoint-trees` (20 cr), `/v1/cosmobiology/uranian-tnps` (20 cr).
+6. **Chinese Metaphysics**: `/v1/bazi/four-pillars` (20 cr), `/v1/bazi/ten-gods` (20 cr), `/v1/ziwei/twelve-palaces` (20 cr).
+7. **Astro-Geography (ACG)**: `/v1/acg` (20 cr), `/v1/acg/best-places` (50 cr), `/v1/local-space` (20 cr).
+8. **Modern Psychological**: `/v1/modern/arroyo/water-houses-trauma` (20 cr), `/v1/modern/greene/saturn-shadow` (20 cr), `/v1/evolutionary/skipped-steps` (20 cr).
+
+**Total Cost per Consultant: 740 credits.** Allows 67 complete 360° diagnoses per month for $5.00 USD.
+
+### B. Human Design BG5 Penta Payload (`POST /v1/hd/penta`)
+Evaluates small group/executive dynamics (requires 3 to 5 member charts):
+```json
+{
+  "inputs": [
+    { "date": "1986-01-18", "time": "03:00:00", "timezoneOffset": -5.0, "latitude": 6.234, "longitude": -75.573 },
+    { "date": "1988-04-12", "time": "14:15:00", "timezoneOffset": -5.0, "latitude": 4.711, "longitude": -74.072 },
+    { "date": "1992-11-05", "time": "08:45:00", "timezoneOffset": -5.0, "latitude": 3.451, "longitude": -76.532 }
+  ]
+}
+```
+
+### C. Astrocartography Best Places Ranking (`POST /v1/acg/best-places`)
+Trigonometric spherical calculation evaluating 34,028 GeoNames cities (>15,000 hab) across 19 life categories:
+```json
+{
+  "date": "1986-01-18",
+  "time": "03:00:00",
+  "timezoneOffset": -5.0,
+  "latitude": 6.2340437,
+  "longitude": -75.5731248,
+  "category": "career",
+  "orbKm": 1126,
+  "limit": 10,
+  "minSeparationKm": 300,
+  "sort": "net"
+}
+```
+*Categories:* `career`, `wealth`, `love`, `adventure`, `spirituality`, `family`, `health`.
+
+### D. Cosmobiology 90° Dial with Transneptunians (`POST /v1/cosmobiology/dial-90`)
+```json
+{
+  "date": "1986-01-18",
+  "time": "03:00:00",
+  "timezoneOffset": -5.0,
+  "latitude": 6.2340437,
+  "longitude": -75.5731248,
+  "withTnp": true
+}
+```
+
+### E. Hellenistic Zodiacal Releasing (`POST /v1/hellenistic/brennan/zodiacal-releasing-spirit`)
+```json
+{
+  "date": "1986-01-18",
+  "time": "03:00:00",
+  "timezoneOffset": -5.0,
+  "latitude": 6.2340437,
+  "longitude": -75.5731248,
+  "years": 80
+}
+```
