@@ -27,30 +27,80 @@ Bifrost is deployed on Zerops as an ultra-fast, autonomous Linux service running
 | `BIFROST_ENCRYPTION_KEY` | String | Yes | — | Secret passphrase used by Argon2id KDF to derive 32-byte AES-256 key for DB secret encryption. |
 | `BIFROST_SETUP_TOKEN` | String | Conditional | — | Operator bootstrap token required to create the first admin user account. |
 | `BIFROST_ENV_LABEL` | String | No | `PROD` | Visual environment tag (max 10 chars) rendered in the Bifrost UI header. |
-| `BIFROST_DB_TYPE` | String | No | `sqlite` | Database engine backend: `sqlite` (single node) or `postgres` (HA cluster). |
-| `BIFROST_DB_DSN` | String | Conditional | — | PostgreSQL connection string: `postgres://user:pass@host:5432/bifrost?sslmode=disable`. |
-| `VALKEY_ADDR` | String | Optional | `valkey:6379` | Valkey/Redis instance address (`host:6379`) for exact & semantic caching. |
-| `VALKEY_PASSWORD` | String | Optional | — | Valkey/Redis authentication password if required. |
-| `FREELLMAPI_URL` | String | Optional | `http://freellmapi:4000/v1` | Upstream URL for FreeLLMAPI custom provider. |
+| `PG_HOST` | String | Required in Prod | `database` | PostgreSQL 18 host (${database_hostname}). |
+| `PG_PORT` | Integer | Required in Prod | `5432` | PostgreSQL 18 port. |
+| `PG_USER` | String | Required in Prod | — | PostgreSQL username (${database_user}). |
+| `PG_PASSWORD` | String | Required in Prod | — | PostgreSQL password (${database_password}). |
+| `PG_DATABASE` | String | Required in Prod | — | PostgreSQL database name (${database_dbName}). |
+| `DATABASE_URL` | String | Recommended | — | Complete connection string (${database_connectionString}). |
+| `VALKEY_ADDR` | String | Recommended | `valkey:6379` | Valkey 7.2 host:port for Redis-compatible vector cache. |
+| `VALKEY_PASSWORD` | String | Recommended | — | Valkey 7.2 password (${valkey_password}). |
+| `FREELLMAPI_URL` | String | Optional | `http://freellmapi:3001/v1` | Upstream URL for FreeLLMAPI custom provider (port 3001). |
 
 ---
 
-## 3. Storage Architecture & Permission Safeguards
+## 3. Storage Architecture & Production Invariants
 
-Bifrost supports two distinct storage modes depending on scale requirements:
+### Production Mode: PostgreSQL 18 + Valkey 7.2 (Mandatory)
+Bifrost in Zerops must persist its configuration and logs in managed PostgreSQL 18 (`type: postgresql:single@18` or `postgresql:ha@18`) and cache via Valkey 7.2 (`valkey:single@7.2`).
 
-### A. Dev / Single-Node Mode (SQLite)
-- Mount a persistent Zerops volume at `/app/data/`.
-- SQLite database files (`bifrost.db`, `logs.db`) reside directly inside `/app/data/`.
-- **FUSE Permission Safeguard**: Ensure proper permissions on mount:
-```bash
-chmod -R 777 /app/data
+In `config.json`:
+```json
+{
+  "$schema": "https://www.getbifrost.ai/schema",
+  "encryption_key": "env.BIFROST_ENCRYPTION_KEY",
+  "config_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "env.PG_HOST",
+      "port": "5432",
+      "user": "env.PG_USER",
+      "password": "env.PG_PASSWORD",
+      "db_name": "env.PG_DATABASE",
+      "ssl_mode": "disable"
+    }
+  },
+  "logs_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "env.PG_HOST",
+      "port": "5432",
+      "user": "env.PG_USER",
+      "password": "env.PG_PASSWORD",
+      "db_name": "env.PG_DATABASE",
+      "ssl_mode": "disable"
+    }
+  },
+  "vector_store": {
+    "enabled": true,
+    "type": "redis",
+    "config": {
+      "addr": "env.VALKEY_ADDR",
+      "password": "env.VALKEY_PASSWORD",
+      "db": 0,
+      "use_tls": false,
+      "cluster_mode": false
+    }
+  },
+  "plugins": [
+    {
+      "enabled": true,
+      "name": "semantic_cache",
+      "config": {
+        "dimension": 1,
+        "ttl": 86400,
+        "threshold": 0.8,
+        "default_cache_key": "elplacerdc-production-cache",
+        "vector_store_namespace": "BifrostLocalCache",
+        "cache_by_model": true,
+        "cache_by_provider": true
+      }
+    }
+  ]
+}
 ```
-
-### B. High-Availability Clustered Mode (PostgreSQL + Valkey)
-- Fully stateless compute containers scaling horizontally (`min: 2, max: 10`).
-- Backed by managed **PostgreSQL 16+** (`postgresql:single@18` or `postgresql:ha`) for configuration and audit logs.
-- Backed by managed **Valkey 7.2+** (`valkey:single@7.2`) for direct key hashing and semantic vector cache storage.
 
 ---
 
@@ -59,23 +109,33 @@ chmod -R 777 /app/data
 ```yaml
 zerops:
   - setup: bifrost
+    build:
+      base: alpine/go@1.22
+      buildCommands:
+        - curl -fsSL -o bifrost https://downloads.getmaxim.ai/bifrost/v2.2.3/linux/amd64/bifrost-http
+        - chmod +x bifrost
+        - mkdir -p data
+        - cp apps/bifrost/config.json data/config.json
+      deployFiles: .
+      cache:
+        - bifrost
     run:
-      base: alpine@3.21
+      base: alpine/go@1.22
+      volume:
+        hostname: localstorage
+        mountPath: /mnt/localstorage
+        readOnly: false
       ports:
         - port: 8080
           httpSupport: true
       prepareCommands:
-        - apk add --no-cache curl ca-certificates tzdata
-        - curl -fsSL -o /usr/local/bin/bifrost https://github.com/maximhq/bifrost/releases/download/v2.0.0/bifrost-linux-amd64
-        - chmod +x /usr/local/bin/bifrost
-        - mkdir -p /app/data
+        - sudo apk add --no-cache ca-certificates tzdata
+        - sudo mkdir -p /mnt/localstorage/bifrost
+        - sudo chown -R zerops:zerops /mnt/localstorage/bifrost
       initCommands:
-        - /usr/local/bin/bifrost -app-dir /app/data -port 8080 -host 0.0.0.0 &
-        - sleep 2
-        - curl -f http://localhost:8080/health || exit 1
-        - killall bifrost
-      start:
-        exec: /usr/local/bin/bifrost -app-dir /app/data -port 8080 -host 0.0.0.0 -log-level ${LOG_LEVEL:-info} -log-style ${LOG_STYLE:-json}
+        - cp /var/www/data/config.json /mnt/localstorage/bifrost/config.json
+        - chmod +x /var/www/bifrost
+      start: /var/www/bifrost -app-dir /mnt/localstorage/bifrost -port 8080 -host 0.0.0.0 -log-level info -log-style json
       healthCheck:
         httpGet:
           port: 8080
@@ -83,12 +143,21 @@ zerops:
       envVariables:
         APP_PORT: "8080"
         APP_HOST: "0.0.0.0"
-        APP_DIR: "/app/data"
-        LOG_LEVEL: "info"
-        LOG_STYLE: "json"
+        APP_DIR: "/mnt/localstorage/bifrost"
         GOMEMLIMIT: "900MiB"
         GOGC: "200"
-        BIFROST_ENCRYPTION_KEY: "change-to-production-secret-argon2id-key"
+        PG_HOST: ${database_hostname}
+        PG_PORT: "5432"
+        PG_USER: ${database_user}
+        PG_PASSWORD: ${database_password}
+        PG_DATABASE: ${database_dbName}
+        DATABASE_URL: ${database_connectionString}
+        BIFROST_DB_TYPE: "postgres"
+        BIFROST_DB_DSN: ${database_connectionString}
+        VALKEY_ADDR: "valkey:6379"
+        VALKEY_PASSWORD: ${valkey_password}
+        FREELLMAPI_URL: "http://freellmapi:3001/v1"
+        BIFROST_ENCRYPTION_KEY: "env.BIFROST_ENCRYPTION_KEY"
 ```
 
 ---
