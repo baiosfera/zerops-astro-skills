@@ -41,8 +41,8 @@ Bifrost is deployed on Zerops as an ultra-fast, autonomous Linux service running
 
 ## 3. Storage Architecture & Production Invariants
 
-### Production Mode: PostgreSQL 18 + Valkey 7.2 (Mandatory)
-Bifrost in Zerops must persist its configuration and logs in managed PostgreSQL 18 (`type: postgresql:single@18` or `postgresql:ha@18`) and cache via Valkey 7.2 (`valkey:single@7.2`).
+### Production Mode: PostgreSQL 18 + Valkey 7.2 + chromem Vector Store
+Bifrost in Zerops persists its configuration and logs in managed PostgreSQL 18 (`config_store` and `logs_store`). Valkey 7.2 manages distributed locks and rate limits. For `semantic_cache`, `vector_store.type` MUST be `chromem` (embedded pure-Go vector engine) or `qdrant`. Setting `vector_store.type: redis` against standard Valkey 7.2 fails because vanilla Valkey lacks the proprietary RediSearch (`FT.*`) C-module.
 
 In `config.json`:
 ```json
@@ -75,7 +75,7 @@ In `config.json`:
   },
   "vector_store": {
     "enabled": true,
-    "type": "redis",
+    "type": "chromem",
     "config": {
       "addr": "env.VALKEY_ADDR",
       "password": "env.VALKEY_PASSWORD",
