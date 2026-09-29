@@ -22,6 +22,7 @@ Activate when architecting, configuring, mounting, optimizing, or operating Zero
 6. **Atomic Database Backups**: Live `.tar.gz` captures require quiet I/O. For SQLite, run `sqlite3 <db> ".backup <dest>"` via `run.crontab` (`allContainers: false`).
 7. **Volume Deletion Blocker**: Local Storage cannot be deleted while connected runtimes declare `run.volume`. Remove `run.volume` and redeploy first.
 8. **ZCP Control-Plane Mount Law**: When mounting to `/var/www/{hostname}` in ZCP, bind `/data` to `/var/www` on storage (`mount --bind /data /var/www` in `/etc/fstab`). Automate via `scripts/localstorage-mount-zcp.sh`.
+9. **Subdirectory Permission Bootstrap**: While the mount root is owned natively by the platform, new application subdirectories on the persistent volume (e.g. `/mnt/localstorage/<service>`) must be provisioned in `prepareCommands` via `sudo mkdir -p <dir> && sudo chown -R zerops:zerops <dir>` to prevent unprivileged runtime crashes during initial database creation.
 
 ## Decision Matrix
 
