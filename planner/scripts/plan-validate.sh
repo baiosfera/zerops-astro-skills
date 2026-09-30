@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Deterministic Physical Plan Linter & Validation Sensor (plan-validate.sh)
-# Version: 2.2 (Physical 8-Node Loop & Zero-Omission Standard)
+# Version: 2.3 (Physical 8-Node Loop, Root Uniqueness & Zero-Omission Standard)
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
@@ -39,6 +39,28 @@ if [[ "$PLAN_NAME" =~ _v[0-9]+([_\.][0-9]+)* ]]; then
 else
     echo "❌ Violación de Regla 3 de Planner: El nombre del plan [$PLAN_NAME] no incluye versionamiento canónico (_vN, ej: _v1.md, _v2.md, _v7_1.md)"
     ERRORS=$((ERRORS + 1))
+fi
+
+# 0.1 Regla 3 de Planner: Invariante de Unicidad Activa en Raíz (plan-archive)
+DIR_OF_PLAN="$(dirname "$(realpath "$PLAN_PATH" 2>/dev/null || echo "$PLAN_PATH")")"
+ARTIFACTS_ROOT="$(realpath "/var/www/artifacts" 2>/dev/null || echo "/var/www/artifacts")"
+
+if [ "$DIR_OF_PLAN" == "$ARTIFACTS_ROOT" ]; then
+    STEM=$(echo "$PLAN_NAME" | sed -E 's/_v[0-9]+.*$//')
+    SUPERSEDED_FOUND=0
+    for sibling in "$ARTIFACTS_ROOT"/${STEM}_v*.md; do
+        [ -e "$sibling" ] || continue
+        SIBLING_NAME="$(basename "$sibling")"
+        if [ "$SIBLING_NAME" != "$PLAN_NAME" ]; then
+            echo "❌ Violación de Invariante de Raíz Limpia: Se detectó versión obsoleta coexistiendo en la raíz de artifacts: $SIBLING_NAME"
+            echo "   Ejecuta 'plan-archive' para trasladar versiones superseded a archive/."
+            SUPERSEDED_FOUND=$((SUPERSEDED_FOUND + 1))
+            ERRORS=$((ERRORS + 1))
+        fi
+    done
+    if [ "$SUPERSEDED_FOUND" -eq 0 ]; then
+        echo "✓ Unicidad de plan activo en raíz de artifacts validada (cero versiones obsoletas coexistentes)"
+    fi
 fi
 
 # 1. Cabecera y Marco de Gobernanza

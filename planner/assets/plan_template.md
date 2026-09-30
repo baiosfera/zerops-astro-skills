@@ -8,7 +8,9 @@
 > - [`Ley de Indivisibilidad SSoT (unisetup.sh-first)`](file:///var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/unisetup.sh) (Replicabilidad Limpia Soberana en Contenedor Virgen)  
 > - *[Skills Especializadas Adicionales]: Declarar ÚNICAMENTE si la tarea ejecuta su arnés físico y cuenta con un sensor determinista en la Matriz de Control (Sección 5).*  
 >  
-> **Plan Track:** `[Track A: Skill Governance & SSoT Tooling | Track B: Zerops Workload Deployment]`
+> **Plan Track:** `[Track A: Skill Governance & SSoT Tooling | Track B: Zerops Workload Deployment]`  
+> **Linear Roadmap Sync (Opcional Epics):** `[Linear Issue ID / URL o N/A para tareas locales]`  
+> **Estado de Aprobación:** `[Pendiente de Aprobación Human-in-the-Loop (F4 Halt Gate) | En Ejecución]`
 
 ---
 
@@ -47,6 +49,8 @@ flowchart TD
 4. **Dual-Anchor Pattern:** Rutas absolutas navegables obligatorias (`file:///`) en encabezado y cuerpo.
 5. **Principio unisetup.sh-first & Contenedor Virgen (Track A):** La solución de gobernanza/tooling debe integrarse y ser reproducible en una corrida limpia de `unisetup.sh` en un proyecto virgen sin drift.
 6. **Compuerta de Certificación & Invarianza:** Cuando una skill auditada cumple los 5 criterios normativos, se certifica como invariante con 0 bytes de mutación en disco.
+7. **Mandato Anti-Desbocado & F4 Halt Gate:** Prohibido por diseño mutar código sin aprobación explícita del usuario ("Go") tras validar el plan con `plan-validate`. El plan es el plano físico indispensable contra alucinaciones y olvidos.
+8. **Linear Dual-Track Synergy:** Tareas locales se gestionan mediante el plan en disco sin overhead de red; macro-iniciativas y despliegues completos se sincronizan opcionalmente con Linear para seguimiento persistente multi-sesión.
 
 ---
 

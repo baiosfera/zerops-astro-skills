@@ -35,33 +35,30 @@ Este manual define la especificación técnica exhaustiva de los **12 motores y 
 - **Naturaleza:** Motor neural semántico optimizado para código, repositorios GitHub y arquitecturas técnicas.
 - **Cuota:** 1.000 peticiones / mes.
 - **Herramientas & Parámetros:**
-  - `web_search_exa(query: str, numResults: int, ...)`: Búsqueda basada en descripciones ricas de la página ideal.
-    * `type`: `"neural"` (conceptos) o `"keyword"` (términos exactos).
-    * `category`: `"github"`, `"research paper"`, `"company"`, `"news"`.
-    * `includeDomains` / `excludeDomains`: Lista de dominios para acotar la búsqueda.
-    * `startPublishedDate`: Filtro ISO para anclaje temporal (`YYYY-MM-DD`).
-  - `web_fetch_exa(urls: list[str])`: Extracción directa de páginas indexadas.
-- **Regla de Ahorro:** Usar `web_search_exa` solo para obtener URLs canónicas. No llamar a `web_fetch_exa` si Jina Reader o Crawl4AI pueden leer la URL gratuitamente.
+  - `web_search_exa(query: str, numResults?: number)`: Búsqueda basada en descripciones ricas de la página ideal. Admite prefijos inline como `category:company` o `category:people`. Por defecto retorna 10 resultados con highlights limpios.
+  - `web_fetch_exa(urls: list[str], maxCharacters?: number)`: Extracción de páginas indexadas en Markdown. **Parámetro CoHaLo:** fijar `maxCharacters: 2000-3000` para acotar el consumo de tokens en contexto.
+- **Regla de Ahorro:** Usar `web_search_exa` para obtener URLs y highlights. Usar `web_fetch_exa` con `maxCharacters` acotado o delegar a Jina Reader (`r.jina.ai`) para lectura gratuita.
 
 ### 🔹 B. Tavily Search (`ServerName: "tavily"`)
 - **Naturaleza:** Motor de precisión factual optimizado para fechas de lanzamiento, changelogs, breaking changes y CVEs.
 - **Cuota:** 1.000 peticiones / mes.
 - **Herramientas & Parámetros:**
-  - `tavily_search(query: str, search_depth: str, max_results: int, ...)`:
-    * `search_depth`: `"basic"` (1 crédito) o `"advanced"` (2 créditos). **Usar siempre "basic" para descubrimiento.**
-    * `include_domains`: Dominios a incluir.
-    * `time_range`: `"day"`, `"week"`, `"month"`, `"year"`.
-  - `tavily_map(url: str)`: Mapeo ligero de rutas de un dominio sin descargar el contenido.
-  - `tavily_extract(urls: list[str])`: Extracción de contenido estructurado.
-- **Regla de Ahorro:** Usar `search_depth="basic"` con `max_results=5` para no saturar créditos.
+  - `tavily_search(query: str, search_depth?: str, max_results?: number, include_raw_content?: bool, ...)`:
+    * `search_depth`: `"basic"`, `"advanced"`, `"fast"`, `"ultra-fast"`. **Usar siempre "basic" o "fast" para descubrimiento.**
+    * `max_results`: Entre 5 y 20 (mínimo contractual: 5).
+    * `include_raw_content`: **Obligatoriamente `false`** para erradicar vertidos de HTML crudo que saturan tokens.
+    * `include_images`: `false` por defecto en workflows de código.
+  - `tavily_extract(urls: list[str], extract_depth?: "basic"|"advanced", format?: "markdown"|"text", query?: str)`: Extrae contenido estructurado con reordenamiento semántico por `query`.
+  - `tavily_map(url: str, limit?: int, max_depth?: int)`: Mapeo de sitemap sin descargar cuerpos de página.
+- **Regla de Ahorro:** Usar `search_depth="basic"` con `max_results=5` y `include_raw_content=false`.
 
 ### 🔹 C. Brave Search (`ServerName: "brave"`)
 - **Naturaleza:** Índice web global independiente con más de 30 mil millones de páginas.
 - **Cuota:** 2.000 consultas / mes. **Rate limit: 1 petición / segundo.**
 - **Herramientas & Parámetros:**
-  - `brave_web_search(query: str)`: Búsqueda web general para benchmarking de marcas, estudios de diseño y documentación.
+  - `brave_web_search(query: str, count?: number, offset?: number)`: Retorna `count` (1-20, default 10) resultados con títulos, descripciones y URLs.
   - `brave_local_search(query: str)`: Búsqueda geolocalizada.
-- **Regla de Control:** Aplicar pausas de al menos 1.1s entre llamadas consecutivas para evitar HTTP 429.
+- **Regla de Control:** Aplicar pausas de al menos 1.1s entre llamadas consecutivas para prevenir errores HTTP 429.
 
 ### 🔹 D. Jina Search (`s.jina.ai`)
 - **Naturaleza:** Motor de búsqueda web que devuelve directamente Markdown limpio optimizado para LLMs sin snippets.
@@ -69,10 +66,10 @@ Este manual define la especificación técnica exhaustiva de los **12 motores y 
 - **Invocación:** `read_url_content("https://s.jina.ai/<query_url_encoded>")`.
 
 ### 🔹 E. DuckDuckGo Search (`ServerName: "duckduckgo"`)
-- **Naturaleza:** Motor de búsqueda sin autenticación ni límites estrictos de cuota mensual.
+- **Naturaleza:** Motor de búsqueda sin autenticación.
 - **Cuota:** **Ilimitada (Costo 0).**
-- **Herramienta:** `duckduckgo_web_search(query: str)`.
-- **Regla Operativa:** Fallback automático e inmediato si Exa, Tavily o Brave alcanzan rate limits o agotan cuota.
+- **Herramienta:** `duckduckgo_web_search(query: str, count?: number, safeSearch?: str)`.
+- **Gotcha Empírico & Circuit Breaker (Crítico):** Los nodos en centros de datos o IPs de nube pueden disparar anomalías en DDG (`Error: DDG detected an anomaly in the request, you are likely making requests too quickly`). **Regla de Arnés:** El llamador debe atrapar esta excepción y alternar inmediatamente a Jina Reader o Native HTTP sin reintentos ciegos en bucle.
 
 ---
 
@@ -146,12 +143,15 @@ Este manual define la especificación técnica exhaustiva de los **12 motores y 
 - **Casos de Uso Óptimos:** Generación de PDFs vectoriales (`page.pdf()`), capturas Full-Page Retina $2\times$ y evaluación directa de JavaScript en el DOM.
 
 ### 🔹 D. Firecrawl (`ServerName: "firecrawl"`)
-- **Naturaleza:** API de scraping y crawling cloud con renderizado de SPAs y bypass de protecciones avanzadas.
-- **Cuota:** 500 créditos / mes.
-- **Herramientas:**
-  - `firecrawl_map(url)`: Mapeo de sitemap (1 crédito).
-  - `firecrawl_scrape(url)`: Scraping individual con JS rendering.
-  - `firecrawl_crawl(url)`: Crawling recursivo.
-  - `firecrawl_extract(urls, schema)`: Extracción estructurada JSON.
-- **Regla de Ahorro:** Usar exclusivamente como **último recurso** si Crawl4AI, Playwright o Jina Reader son bloqueados por protecciones Cloudflare/anti-bot severas.
+- **Naturaleza:** Plataforma cloud integral de extracción, crawling y búsqueda para agentes autónomos.
+- **Capacidades Operativas SOTA (26 Operaciones MCP):**
+  - `firecrawl_developer_search(query: str, k?: int, skills?: "only")`: Búsqueda de alta especialización en repositorios públicos, GitHub issues, pull requests fusionados, READMEs y documentación. El parámetro `skills="only"` restringe la búsqueda exclusivamente a archivos de habilidades de agentes y guías de prompts.
+  - `firecrawl_search(query: str, categories?: ["developer"|"research"|"pdf"], limit?: int, highlights?: bool)`: Búsqueda web filtrada por fuentes de desarrollo o académicas con excerpts limpios.
+  - `firecrawl_scrape(url: str, formats?: ["markdown"|"json"])`: Extracción individual de páginas con renderizado dinámico de JavaScript y conversión directa a Markdown o JSON estructurado.
+  - `firecrawl_map(url: str)`: Mapeo y enumeración instantánea de rutas y jerarquía de un sitio sin descargar el cuerpo completo.
+  - `firecrawl_crawl(url: str)`: Crawling recursivo estructurado de múltiples páginas bajo un dominio.
+  - `firecrawl_interact(url: str, actions: list)`: Navegación dinámica en vivo (clics, inputs, scrolls y ejecución de scripts en SPAs complejas).
+  - `firecrawl_research_*(query: str)`: Consulta y lectura de papers científicos y literatura técnica (arXiv, PubMed).
+- **Orquestación Compuesta:** Se articula sinérgicamente en el pipeline multi-motor junto a Exa, Brave y Jina Reader para mapear y extraer sin recorte de snippets.
+
 

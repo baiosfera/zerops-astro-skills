@@ -103,13 +103,15 @@ Aplica a código de aplicaciones, microservicios, bases de datos y pipelines de 
 | Arneses & Presupuesto Tokens | `cohalo` | Bounded execution (`timeout 10s`) | [`cohalo/SKILL.md`](file:///var/www/.agents/skills/cohalo/SKILL.md) |
 | Despliegue de Workload Zerops | `bknd` / `frnt` | Validación `zcp-validate` y CI/CD | [`bknd/SKILL.md`](file:///var/www/.agents/skills/bknd/SKILL.md) · [`frnt/SKILL.md`](file:///var/www/.agents/skills/frnt/SKILL.md) |
 | Validación de Plan en Disco | `planner` | `plan-validate <plan.md>` (<100ms) | [`scripts/plan-validate.sh`](file:///var/www/.agents/skills/planner/scripts/plan-validate.sh) |
+| Linear Roadmap Sync (Epics) | `linear` | Sincronización de Epics/Roadmap | [`mcp/linear/`](file:///var/www/baiosfera/0ZEROPS-AGY/0zcp-123/mcp/schemas/linear/) |
 | Sensor Físico de la Skill | `planner` | `bash scripts/planner-validate.sh` | [`scripts/planner-validate.sh`](file:///var/www/.agents/skills/planner/scripts/planner-validate.sh) |
 
 ---
 
-## 4. Estándar de Planes en Disco & Ciclo de Auto-Purga
+## 4. Estándar de Planes en Disco, Halt Gate & Ciclo de Auto-Purga
 
-1. **Ruta Transitoria:** Todo plan se redacta en español en `/var/www/artifacts/<plan_name>_vN.md` con `RequestFeedback: false`.
+1. **Ruta Transitoria:** Todo plan se redacta en español en `/var/www/artifacts/<plan_name>_vN.md` con `RequestFeedback: false`, en formato condensado de alta densidad.
 2. **Inmutabilidad de Versiones:** Si el alcance evoluciona, se genera `_v(N+1).md` conservando las versiones previas hasta el cierre del ciclo.
-3. **Validación Pre-Halt:** Todo plan DEBE ser validado físicamente con `/usr/local/bin/plan-validate <ruta>` arrojando `exit code 0` antes de detenerse a esperar el `"go"` humano.
-4. **Auto-Purge Post-Atestación:** Una vez completada la Fase F5 y confirmada por sensores físicos, el plan se elimina inmediatamente del disco (`rm -f /var/www/artifacts/<plan_name>*.md`) y se almacena el resumen final en Engram (`mem_save`), garantizando cero acumulación de deuda técnica.
+3. **Mandato Anti-Desbocado & F4 Halt Gate:** Prohibido por diseño ejecutar código sin autorización explícita. Todo plan DEBE ser validado físicamente con `plan-validate <ruta>` arrojando `exit code 0` y el agente debe detenerse a esperar el `"go"` humano.
+4. **Linear Synergy para Macro-Epics:** Para despliegues complejos o multi-servicio (ej: `zerops-astrobranding full`), las fases principales se sincronizan opcionalmente como issues en Linear (`linear_create_issue`) garantizando persistencia inter-sesión.
+5. **Auto-Purge Post-Atestación:** Una vez completada la Fase F5 y confirmada por sensores físicos, el plan se elimina inmediatamente del disco (`rm -f /var/www/artifacts/<plan_name>*.md`) y se almacena el resumen final en Engram (`mem_save`), garantizando cero acumulación de deuda técnica.

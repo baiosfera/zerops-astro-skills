@@ -4,10 +4,10 @@ description: "Builds, evolves, certifies, and holistically audits deep Dual-RAG 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "8.2"
+  version: "8.3"
 ---
 
-# `docu` — Autonomous Dual-RAG Skill & Reference Architect (v8.2)
+# `docu` — Autonomous Dual-RAG Skill & Reference Architect (v8.3)
 
 ## Activation Contract
 Activate when authoring, updating, certifying, or auditing Dual-RAG skills across 4 functional archetypes (Framework, Infra, Domain, Cognitive) or executing Phase F2 under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Operates in: Scaffold, Refactor, and Certification modes.

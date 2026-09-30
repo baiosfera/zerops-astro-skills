@@ -149,3 +149,36 @@
 
 - **Source Standard:** Inherited from [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) (`references/certification.md`).
 - **Operational Heuristic:** When an audit determines that a skill or architecture already satisfies all 5 normative criteria (Anatomy, Token Budget, Lossless Integrity, Positive Guidance, Physical Sensors), the agent must declare the artifact **`Certified Optimal / Invariant / Anti-Fragile`**, run the sensor to confirm exit code 0, and perform 0 byte modifications on disk.
+
+---
+
+## 18. Anti-Desbocado Invariant & Mandatory F4 Halt Gate
+
+- **Core Principle:** Rushing into code execution without a structured blueprint is classified as undisciplined hacking (vibecoding) and is strictly banned. Planning is the supreme physical safeguard against hallucinations, forgotten dependencies, regressions, and context exhaustion.
+- **Mandatory Planning Scope:** For any non-trivial task, architectural refactor, multi-file change, or feature implementation, plan generation in `/var/www/artifacts/<plan_name>_vN.md` is strictly **MANDATORY**.
+- **The F4 Halt Contract & Univoque Go Predicate:** Once the versioned plan is synthesized and validated deterministically via `plan-validate` (exit code 0), the agent **MUST IMMEDIATELY HALT AND STOP CALLING TOOLS**, requesting explicit user confirmation ("Go") before mutating any project files in Phase F5.
+  1. **Strict Boolean Go Predicate:** Transitioning to F5 REQUIRES an explicit univoque affirmative token (`\b(go|adelante|procede|ejecuta|ejecutá|aprobado|dale|si)\b`) AND the total absence of interrogative punctuation (`?`, `¿`) or doubt phrases (`por qué`, `qué pasó`, `espera`).
+  2. **Interrogative / Diagnostic Hold:** If the user turn contains questions, status queries, or discussion, the agent strictly remains in F4, answers the inquiry, and DOES NOT mutate code.
+- **Single Active Plan & Artifact Lifecycle Invariant:**
+  1. Exactly ONE active plan resides in `/var/www/artifacts/<name>_vN.md`.
+  2. During evolutionary versioning (`_v1.md` $\to$ `_v2.md`), superseded drafts move immediately to `/var/www/artifacts/archive/<name>_v(N-1).superseded.md`.
+  3. At Node 8 closure in F5, the executed plan moves to `/var/www/artifacts/archive/<name>_vN.executed.md` or is purged (`rm -f`), eradicating the "zombie plans" security hole in `tool-guard.py`.
+
+---
+
+## 19. Condensed High-Density Plan Standard (CoHaLo Token Economy & Human Readability)
+
+- **Balanced Synthesis Law:** The antidote to execution bloat is NOT skipping planning, but designing ultra-condensed, high-density plans that minimize token spend while eliminating ambiguity.
+- **Human-Centric Clarity:** Plans are written in the user's natural language (warm, direct Spanish), structured for rapid 2-minute scanning without ceremonial rhetoric or repetitive filler.
+- **Agent Determinism:** Plans specify exact file paths, explicit CLI commands, concrete invariants, and physical sensors (`exit code 0`), providing an unassailable roadmap for flawless F5 execution.
+- **Cumulative Versioning:** Revisions increment suffixes immutably (`_v1.md` $\to$ `_v2.md` $\to$ `_v3.md`), never overwriting prior drafts, preserving the decision rationale across rounds.
+
+---
+
+## 20. Linear Dual-Track Synergy: Micro-Plans vs Macro-Roadmaps
+
+- **Bifurcated Issue Tracking Standard:**
+  1. **Micro-Tasks & Single Milestones (Local Disk Artifacts):** Scoped changes (1–5 files, single-session refactors) stay strictly local at `/var/www/artifacts/<plan_name>_vN.md`. Zero external API calls, instantaneous generation, zero round-trip latency, and zero token waste.
+  2. **Macro-Initiatives & Full Deployments (Linear Project Sync):** High-level roadmap initiatives, cross-service orchestrations (e.g. `zerops-astrobranding full deployment`), and multi-day epics are synchronized to Linear via Linear MCP (`linear_create_issue`, `linear_update_issue`) under the designated workspace project (e.g. `zerops-astrobranding`, Team `BAI`).
+- **Context Relief:** Offloading full epic roadmaps and milestones to Linear preserves precious LLM context window across compactions and session restarts, allowing the agent to query active issues on demand while giving the human visual dashboard oversight.
+

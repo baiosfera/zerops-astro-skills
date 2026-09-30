@@ -117,3 +117,14 @@
   4. **Positive Guidance**: Affirmative specifications, zero negative begs or emotional prohibitions.
   5. **Physical Harness Sensors**: Deterministic validator in `scripts/` returning `exit code 0`.
 - **Verdict**: Declare the skill **`Certified Optimal / Invariant / Anti-Fragile`**, attest with physical sensors, and preserve 0 byte modifications on disk.
+
+---
+
+## 8. Artifacts Lifecycle & Archive Retention Policy
+
+- **Core Principle:** Implementation and governance plans stored in `/var/www/artifacts/` serve strictly as construction scaffolds.
+- **Immediate Superseded Purge:** Under the Cumulative Evolutionary Truth Protocol, version `_v(N+1)` is a strict superset of `_vN`. As soon as a newer version is executed, all prior versions (`*.superseded.md`) are immediately purged from both `/var/www/artifacts/` and `/var/www/artifacts/archive/`.
+- **Active Session Retention for Executed Plans:** Upon successful completion of Phase F5, active plans are moved to `/var/www/artifacts/archive/<name>_vN.executed.md` and retained throughout the active session to provide immediate provenance, auditability, and context.
+- **Session-End Archive Purge:** During the session close protocol (`mem_session_end`), all `*.executed.md` files in `/var/www/artifacts/archive/` are automatically purged to prevent context contamination in subsequent cold starts.
+- **Handover Immunity Invariant:** Architectural assets matching `HANDOVER_PATTERN` (`_handover`, `_blueprint`, `_roadmap`, `_dossier`) are permanent and 100% immune to any automated purge or truncation routine.
+

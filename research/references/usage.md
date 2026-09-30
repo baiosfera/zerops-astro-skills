@@ -9,12 +9,14 @@ This manual provides the exhaustive operational guide for the **12 epistemic eng
 ### Modality A: Inline Compound Grounding (Turn-Level Inflow)
 Used directly within conversation turns during planning, auditing, coding, or technology comparison:
 1. **Recall LTM First (Tier 0):** Run `mem_search(query)` in Engram to retrieve internal decisions, prior benchmarks, and project gotchas.
-2. **Package/API Verification (Tier 1):** For package schemas, type signatures, or breaking changes in NPM/PyPI/Crates, query Context7 (`query-docs`).
+2. **Package/API Verification (Tier 1):** For package schemas, type signatures, or breaking changes in NPM/PyPI/Crates, query Context7 (`resolve-library-id` followed by `query-docs`).
 3. **Compound Search (Tier 2):**
-   - For code, GitHub repos, or architectural benchmarks: `web_search_exa(query, type="neural", category="github")`.
-   - For factual release dates, changelogs, CVEs: `tavily_search(query, search_depth="basic")`.
-   - For general fallback: `brave_web_search(query)` or `duckduckgo_web_search(query)`.
-4. **Verbatim Primary Source Grounding (Tier 3):** Read the actual raw documentation via Jina Reader (`read_url_content("https://r.jina.ai/<url>")`).
+   - For code, GitHub repos, or architectural benchmarks: `web_search_exa(query: "...", numResults: 3)`.
+   - For agent patterns, prompt engineering, or skill design: `firecrawl_developer_search(query: "...", k: 3, skills="only")`.
+   - For factual release dates, changelogs, CVEs: `tavily_search(query: "...", search_depth="basic", max_results=5, include_raw_content=false)`.
+   - For broad independent index and news: `brave_web_search(query: "...", count=3)`.
+   - For unmetered fallback: `duckduckgo_web_search(query: "...")` with circuit breaker for anomaly blocks.
+4. **Verbatim Primary Source Grounding (Tier 3):** Read the actual raw documentation via Jina Reader (`read_url_content("https://r.jina.ai/<url>")`) or `web_fetch_exa(urls=["<url>"], maxCharacters=3000)`.
 5. **Synthesis:** Deliver findings citing canonical URLs directly without gating behind cumbersome XML boilerplate.
 
 ### Modality B: Deep Research Dossier (Subagent Delegation)
@@ -56,11 +58,11 @@ Mandatory when analyzing large external codebases, synthesizing 10+ sources, or 
 #### 3. Exa Search (`ServerName: "exa"`)
 - **Nature:** Neural embeddings search engine optimized for code, GitHub repos, and research papers.
 - **Tools:**
-  - `web_search_exa(query: str, type: "neural" | "keyword", category?: "github" | "research paper" | "company", numResults: int)`: Discover canonical URLs.
-  - `web_fetch_exa(urls: list[str])`: Direct page fetch (prefer Jina Reader for token/credit savings).
+  - `web_search_exa(query: str, numResults?: int)`: Discover canonical URLs and clean semantic highlights.
+  - `web_fetch_exa(urls: list[str], maxCharacters?: int)`: Direct page fetch with token control (`maxCharacters: 2000-3000`).
 - **Recipe:**
   ```json
-  {"ServerName": "exa", "ToolName": "web_search_exa", "Arguments": {"query": "Astro 5 server islands directus SDK integration latest", "type": "neural", "numResults": 3}}
+  {"ServerName": "exa", "ToolName": "web_search_exa", "Arguments": {"query": "Astro 5 server islands directus SDK integration", "numResults": 3}}
   ```
 
 #### 4. Tavily Search (`ServerName: "tavily"`)
@@ -145,6 +147,7 @@ Mandatory when analyzing large external codebases, synthesizing 10+ sources, or 
 #### 12. Firecrawl (`ServerName: "firecrawl"`)
 - **Nature:** Cloud crawling API with anti-bot bypass and structured extraction across 27 MCP tools.
 - **Core Tools:**
+  - `firecrawl_developer_search(query: str, k?: int, skills?: "only")`: Specialized index over public repos, GitHub PRs, issues, READMEs, and agent skills.
   - `firecrawl_scrape(url: str, formats: ["markdown", "html"])`: Single-page scrape with JS rendering.
   - `firecrawl_crawl(url: str, limit: int, scrapeOptions?: dict)`: Recursive domain crawl.
   - `firecrawl_map(url: str)`: Fast sitemap mapping (1 credit).
@@ -162,10 +165,11 @@ Mandatory when analyzing large external codebases, synthesizing 10+ sources, or 
 
 | Task Nature | Primary Discovery | Verbatim Inflow | Scraper / Advanced |
 |---|---|---|---|
-| **Ecosystem & Types** | `context7` (`query-docs`) | `context7` · Jina Reader | Native HTTP |
-| **GitHub & Architecture** | `web_search_exa` (code) | Jina Reader (`r.jina.ai`) | Crawl4AI (`fit_markdown`) |
+| **Ecosystem & Types** | `context7` (`resolve-library-id` + `query-docs`) | `context7` · Jina Reader | Native HTTP |
+| **Agent Skills & Prompt Guides** | `firecrawl_developer_search` (`skills="only"`) | Jina Reader (`r.jina.ai`) | Exa AI (`web_fetch_exa`) |
+| **GitHub & Architecture** | `web_search_exa` (code/concepts) | Jina Reader (`r.jina.ai`) | Crawl4AI (`fit_markdown`) |
 | **Changelogs & Breaking Changes** | `tavily_search` (basic) | Jina Reader | Native HTTP |
 | **Brand & Design Research** | `brave_web_search` · Exa | Jina Reader | Playwright / Puppeteer |
 | **Deep Domain Crawling** | `tavily_map` · Firecrawl Map | Jina Reader | Firecrawl Crawl / Crawl4AI |
 | **Anti-Bot Protected SPAs** | Firecrawl Scrape | Firecrawl Extract | Zerops Browser |
-| **Zero-Quota Fallback** | `duckduckgo_web_search` | Native HTTP | Crawl4AI |
+| **Zero-Quota Fallback** | `duckduckgo_web_search` (with anomaly catch) | Native HTTP | Crawl4AI |

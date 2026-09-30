@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Deterministic Physical Validation Sensor for cohalo Architecture Suite (v8.2)
+# Deterministic Physical Validation Sensor for cohalo Architecture Suite (v8.3)
 # Standard: CoHaLo SOTA / Zero Tokens / Bounded Execution < 100ms
 # ==============================================================================
 set -euo pipefail
@@ -11,7 +11,7 @@ trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/nul
 ERRORS=0
 
 echo "============================================================"
-echo "  🔍 Validating cohalo Architecture Skill Integrity (v8.2)"
+echo "  🔍 Validating cohalo Architecture Skill Integrity (v8.3)"
 echo "============================================================"
 
 # 1. Check SKILL.md existence
@@ -23,10 +23,10 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "8\.2"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 8.2"
+if grep -Eq 'version: "8\.[2-9]"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is 8.x (>= 8.2)"
 else
-    echo "❌ Frontmatter version is not 8.2"
+    echo "❌ Frontmatter version is not 8.x (>= 8.2)"
     ERRORS=$((ERRORS + 1))
 fi
 
