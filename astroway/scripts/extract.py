@@ -69,34 +69,85 @@ async def extract_astroway(
         "ayanamsa": "fagan-bradley"
     }
 
+    bazi_base_payload = {
+        "date": date_str,
+        "time": time_str,
+        "timezoneOffset": tz_offset,
+        "language": "en"
+    }
+
+    bazi_luck_payload = {
+        "date": date_str,
+        "time": time_str,
+        "timezoneOffset": tz_offset,
+        "gender": client_data.get("gender", "female"),
+        "count": 10
+    }
+
+    dial90_payload = {
+        **base_payload,
+        "withTnp": True
+    }
+
+    zr_payload = {
+        **base_payload,
+        "years": 80
+    }
+
     endpoints = [
-        # Western Natal
+        # Western Natal & Arabic
         ("western_chart", f"{BASE_URL}/v1/chart", base_payload),
         ("western_chart_fagan_campanus", f"{BASE_URL}/v1/chart", fc_payload),
+        ("almuten_figuris", f"{BASE_URL}/v1/almuten", base_payload),
         # Vedic & Jaimini
-        ("jaimini_chara_karakas", f"{BASE_URL}/v1/vedic/jaimini/chara-karakas", base_payload),
+        ("vedic_varga_d1", f"{BASE_URL}/v1/vedic/varga/D1", base_payload),
         ("vedic_varga_d9", f"{BASE_URL}/v1/vedic/varga/d9", base_payload),
         ("vedic_varga_d10", f"{BASE_URL}/v1/vedic/varga/d10", base_payload),
+        ("vedic_varga_d60", f"{BASE_URL}/v1/vedic/varga/D60", base_payload),
+        ("jaimini_chara_karakas", f"{BASE_URL}/v1/vedic/jaimini/chara-karakas", base_payload),
         ("vedic_shadbala_full", f"{BASE_URL}/v1/vedic/shadbala/full", base_payload),
         ("vedic_dashas_maha", f"{BASE_URL}/v1/vedic/dashas/vimshottari/maha", base_payload),
         # Evolutionary & Nodal
         ("evolutionary_skipped_steps", f"{BASE_URL}/v1/evolutionary/skipped-steps", base_payload),
         ("evolutionary_nodal_axis", f"{BASE_URL}/v1/evolutionary/nodal-axis-detail", base_payload),
-        # Human Design & Cosmobiology
+        # Human Design
         ("human_design", f"{BASE_URL}/v1/human-design", base_payload),
         ("hd_circuitry", f"{BASE_URL}/v1/hd/circuitry", base_payload),
         ("hd_incarnation_cross", f"{BASE_URL}/v1/hd/incarnation-cross", base_payload),
         ("hd_sensitivity", f"{BASE_URL}/v1/hd/sensitivity", base_payload),
-        ("cosmobiology_dial90", f"{BASE_URL}/v1/cosmobiology/dial-90", base_payload),
+        ("hd_dream_rave", f"{BASE_URL}/v1/hd/dream-rave", base_payload),
+        # BaZi Chinese Metaphysics
+        ("bazi_four_pillars", f"{BASE_URL}/v1/bazi/four-pillars", bazi_base_payload),
+        ("bazi_ten_gods", f"{BASE_URL}/v1/bazi/ten-gods", bazi_base_payload),
+        ("bazi_day_master", f"{BASE_URL}/v1/bazi/day-master", bazi_base_payload),
+        ("bazi_luck_pillars", f"{BASE_URL}/v1/bazi/luck-pillars", bazi_luck_payload),
+        # Hellenistic (Brennan, Greenbaum, Hand)
+        ("hellenistic_lots_15", f"{BASE_URL}/v1/hellenistic/brennan/lots-15", base_payload),
+        ("hellenistic_zr_spirit", f"{BASE_URL}/v1/hellenistic/brennan/zodiacal-releasing-spirit", zr_payload),
+        ("hellenistic_zr_peaks", f"{BASE_URL}/v1/hellenistic/brennan/zr-peak-periods", zr_payload),
+        ("hellenistic_zr_loosing", f"{BASE_URL}/v1/hellenistic/brennan/zr-loosing-of-bond", zr_payload),
+        ("hellenistic_antiscia", f"{BASE_URL}/v1/hellenistic/greenbaum/antiscia-hellenistic", base_payload),
+        ("hellenistic_bounds", f"{BASE_URL}/v1/hellenistic/hand/bounds", base_payload),
+        # Cosmobiology & Hamburg School
+        ("cosmobiology_dial90", f"{BASE_URL}/v1/cosmobiology/dial-90", dial90_payload),
+        ("cosmobiology_midpoints", f"{BASE_URL}/v1/midpoint-trees", base_payload),
+        ("cosmobiology_uranian_tnps", f"{BASE_URL}/v1/cosmobiology/uranian-tnps", base_payload),
+        ("cosmobiology_witte_formulas", f"{BASE_URL}/v1/cosmobiology/witte-formulas", dial90_payload),
         # Astrocartography & Relocation
         ("geo_acg", f"{BASE_URL}/v1/acg", base_payload),
         ("geo_acg_best_places", f"{BASE_URL}/v1/acg/best-places", {**base_payload, "category": "career"}),
         ("geo_local_space", f"{BASE_URL}/v1/local-space", base_payload),
         # Modern Psychological Astrology (Arroyo, Greene, Rudhyar)
         ("psychological_arroyo_elements", f"{BASE_URL}/v1/modern/arroyo/element-integration", base_payload),
+        ("psychological_arroyo_water_trauma", f"{BASE_URL}/v1/modern/arroyo/water-houses-trauma", base_payload),
         ("psychological_greene_archetypes", f"{BASE_URL}/v1/modern/greene/archetypal-figures", base_payload),
         ("psychological_greene_shadow", f"{BASE_URL}/v1/modern/greene/saturn-shadow", base_payload),
+        ("psychological_greene_parental_imagos", f"{BASE_URL}/v1/modern/greene/parental-imagos", base_payload),
+        ("psychological_greene_lunar_myth", f"{BASE_URL}/v1/modern/greene/lunar-myth", base_payload),
+        ("psychological_greene_individuation", f"{BASE_URL}/v1/modern/greene/individuation-path", base_payload),
         ("psychological_rudhyar_lunation", f"{BASE_URL}/v1/modern/rudhyar/lunation-phase", base_payload),
+        ("psychological_rudhyar_sabian", f"{BASE_URL}/v1/modern/rudhyar/symbolic-degrees", base_payload),
+        ("psychological_rudhyar_keynote", f"{BASE_URL}/v1/modern/rudhyar/personality-keynote", base_payload),
     ]
 
     results: Dict[str, Any] = {

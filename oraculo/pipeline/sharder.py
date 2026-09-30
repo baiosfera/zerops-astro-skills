@@ -106,6 +106,11 @@ class SharderEngine:
         with open(self.dumps_dir / "manifest.json", "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2, ensure_ascii=False)
 
+        # Build and save 15-shard projection for PostgreSQL client_dumps table
+        dumps_15_record = self.map_to_client_dumps(shards, client_data)
+        with open(self.dumps_dir / "client_dumps_15_shards.json", "w", encoding="utf-8") as f:
+            json.dump(dumps_15_record, f, indent=2, ensure_ascii=False)
+
         # 3. Tier 2: 10 Feeds Gold (Fases 0 a 9)
         feeds = self._build_tier2_feeds(shards, client_data)
         for feed_filename, feed_content in feeds.items():
@@ -345,6 +350,66 @@ class SharderEngine:
                 "chinese/tcm_health": "chinese_tcm_health#/tcm_health",
                 "chinese/lifespan": "chinese_tcm_health#/lifespan_curve",
                 "vedic/vargas_d1_d60": "vedic_shodashavarga#/vargas_d1_d60"
+            }
+        }
+
+    def map_to_client_dumps(self, shards: Dict[str, Any], client_data: dict) -> Dict[str, Any]:
+        """
+        Projects bronze shards into the 15 canonical JSONB columns of `client_dumps` table.
+        Matches packages/database/src/schema.ts clientDumps table definition.
+        """
+        s1 = shards.get("shard_01_astro_western_tropical.json", {})
+        s2 = shards.get("shard_02_astro_western_sidereal.json", {})
+        s3 = shards.get("shard_03_astro_vedic_jyotish.json", {})
+        s4 = shards.get("shard_04_bazi_chinese_metaphysics.json", {})
+        s5 = shards.get("shard_05_kabbalah_tikkun.json", {})
+        s6 = shards.get("shard_06_human_design_cosmobiology.json", {})
+        s7 = shards.get("shard_07_numerology_multi_school.json", {})
+        s8 = shards.get("shard_08_timing_progressions_dashas.json", {})
+        s9 = shards.get("shard_09_relocation_acg.json", {})
+        s10 = shards.get("shard_10_electional_asteroids.json", {})
+        s11 = shards.get("shard_11_chinese_tcm_health_lifecurve.json", {})
+        s12 = shards.get("shard_12_vedic_shodashavarga_d1_d60.json", {})
+
+        return {
+            "birth_metadata": client_data,
+            "shard_western_tropical": s1,
+            "shard_western_sidereal": s2,
+            "shard_vedic_jyotish": {**s3, "shodashavarga": s12.get("vargas_d1_d60", {})},
+            "shard_vedic_dashas": {
+                "dashas_maha": s8.get("vedic_dashas_maha", {}),
+                "vedastro_dasa_range": s8.get("vedastro_dasa_range", {})
+            },
+            "shard_bazi_metaphysics": {**s4, "tcm_health": s11.get("tcm_health", {}), "lifespan": s11.get("lifespan_curve", {})},
+            "shard_ziwei_fengshui": {
+                "lucky_hours": s11.get("lunar_lucky_hours", {}),
+                "solar_to_lunar": s11.get("lunar_solar_to_lunar", {})
+            },
+            "shard_kabbalah_gematria": {
+                "hebcal_converter": s5.get("hebcal_converter", {}),
+                "numerology": s7
+            },
+            "shard_hebrew_zmanim": {
+                "hebcal_zmanim": s5.get("hebcal_zmanim", {}),
+                "zmanim_mcp": s5.get("zmanim_mcp", {})
+            },
+            "shard_human_design": {
+                "chart": s6.get("human_design", {}),
+                "circuitry": s6.get("hd_circuitry", {}),
+                "incarnation_cross": s6.get("hd_incarnation_cross", {}),
+                "sensitivity": s6.get("hd_sensitivity", {})
+            },
+            "shard_cosmobiology_midpoints": s6.get("cosmobiology_dial90", {}),
+            "shard_nasa_ephemerides": s10.get("asteroids", {}),
+            "shard_astrocartography_acg": s9,
+            "shard_business_penta_org": {
+                "penta_circuitry": s6.get("hd_circuitry", {}),
+                "vocational_artha": s3.get("vedic_varga_d10", {})
+            },
+            "shard_partner_synastry": s12.get("kundali_milan", {}),
+            "shard_predictive_electional": {
+                "timing_timeline": s8.get("timing_timeline", {}),
+                "skipped_steps": s5.get("evolutionary_skipped_steps", {})
             }
         }
 

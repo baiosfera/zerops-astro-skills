@@ -87,18 +87,33 @@ async def extract_freeastroapi(
         "include_interpretations": True
     }
 
+    sex_code = gender[0].upper() if gender else "M"
+
     payload_bazi = {
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
         "lat": lat, "lng": lng, "tz_str": tz_str,
-        "gender": gender
+        "sex": sex_code,
+        "time_standard": "true_solar",
+        "include_ten_gods": True,
+        "include_pinyin": True,
+        "include_stars": True,
+        "include_interactions": True,
+        "include_professional": True,
+        "include_current_flow": True
+    }
+
+    payload_bazi_flow = {
+        **payload_bazi,
+        "target_year": year,
+        "target_year_end": year + 9
     }
 
     payload_bazi_health = {
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
         "lat": lat, "lng": lng, "tz_str": tz_str,
-        "sex": gender[0].upper() if gender else "M",
+        "sex": sex_code,
         "time_standard": "true_solar",
         "include_timing": True,
         "timing_years_ahead": 10
@@ -108,7 +123,7 @@ async def extract_freeastroapi(
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
         "lat": lat, "lng": lng, "tz_str": tz_str,
-        "sex": gender[0].upper() if gender else "M",
+        "sex": sex_code,
         "time_standard": "true_solar",
         "max_age": 100,
         "cultivation_factor": 0.75
@@ -118,15 +133,17 @@ async def extract_freeastroapi(
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
         "lat": lat, "lng": lng, "tz_str": tz_str,
-        "ayanamsa": "kallam_krishnamurti"
+        "ayanamsha": "kp",
+        "dasha_levels": 3
     }
 
     payload_vargas = {
         "year": year, "month": month, "day": day,
-        "hour": hour, "minute": minute,
+        "hour": hour, "minute": minute, "second": 0,
         "lat": lat, "lng": lng, "tz_str": tz_str,
         "ayanamsha": "lahiri",
-        "divisions": [1, 2, 3, 4, 5, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]
+        "divisions": [1, 2, 3, 4, 5, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60],
+        "include_bhava_chalit": True
     }
 
     payload_acg = {
@@ -148,13 +165,14 @@ async def extract_freeastroapi(
         ("western_natal_tropical_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus),
         ("western_natal_sidereal_fagan_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc),
         ("western_natal_sidereal_lahiri", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri),
+        ("western_natal_insights", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus),
         ("numerology_profile_pythagorean", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
         ("chinese_bazi_true_solar", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
-        ("chinese_bazi_flow", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi),
+        ("chinese_bazi_flow", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow),
         ("chinese_bazi_health", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health),
         ("chinese_bazi_lifespan", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan),
         ("vedic_kp_v2", f"{BASE_URL}/api/v2/vedic/kp", payload_kp),
-        ("vedic_vargas", f"{BASE_URL}/api/v1/vedic/vargas", payload_vargas),
+        ("vedic_vargas", f"{BASE_URL}/api/v2/vedic/vargas", payload_vargas),
         ("astrocartography_lines", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg),
     ]
 

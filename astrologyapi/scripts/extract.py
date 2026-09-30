@@ -66,17 +66,28 @@ async def extract_astrologyapi(
         "target_date": today_str
     }
 
+    payload_positions_enhanced = {
+        "subject": {
+            "name": full_name,
+            "birth_data": birth_data_obj
+        }
+    }
+
     payload_numerology = {
         "subject": {
             "name": full_name,
-            "preferred_name": pref_name,
             "birth_data": birth_data_obj
+        },
+        "options": {
+            "language": "es",
+            "detail_level": "standard"
         }
     }
 
     endpoints = [
         ("timing_timeline", f"{BASE_URL}/timing/timeline", payload_timeline),
-        ("core_numerology", f"{BASE_URL}/numerology/core-numbers", payload_numerology),
+        ("positions_enhanced", f"{BASE_URL}/data/positions/enhanced", payload_positions_enhanced),
+        ("core_numerology", f"{BASE_URL}/numerology/comprehensive", payload_numerology),
     ]
 
     results: Dict[str, Any] = {

@@ -9,6 +9,7 @@ import asyncio
 import json
 import os
 import shutil
+import xml.etree.ElementTree as ET
 from typing import Any, Dict, Optional
 
 try:
@@ -21,6 +22,34 @@ except ImportError:
 
 from pipeline.config import config
 from pipeline.cache_manager import CacheManager
+
+
+def _xml_elem_to_dict(elem: ET.Element) -> Any:
+    """Recursively converts an XML ElementTree element into a python dict/list/str."""
+    d: Dict[str, Any] = {}
+    if elem.attrib:
+        d["@attributes"] = elem.attrib
+    text = (elem.text or "").strip()
+    children = list(elem)
+    if not children:
+        if elem.attrib:
+            if text:
+                d["#text"] = text
+            return d
+        return text
+
+    for child in children:
+        child_val = _xml_elem_to_dict(child)
+        if child.tag in d:
+            if isinstance(d[child.tag], list):
+                d[child.tag].append(child_val)
+            else:
+                d[child.tag] = [d[child.tag], child_val]
+        else:
+            d[child.tag] = child_val
+    if text:
+        d["#text"] = text
+    return d
 
 
 class UnifiedMcpClient:
@@ -84,17 +113,29 @@ class UnifiedMcpClient:
                     async with ClientSession(read, write) as session:
                         await session.initialize()
                         result = await session.call_tool(tool_name, arguments=arguments)
-                        
+
                         # Parse MCP Tool result
                         payload = {}
                         if hasattr(result, 'content') and result.content:
                             for item in result.content:
                                 if hasattr(item, 'text'):
+                                    text_raw = (item.text or "").strip()
                                     try:
-                                        payload = json.loads(item.text)
+                                        payload = json.loads(text_raw)
                                         break
                                     except Exception:
-                                        payload = {"text": item.text}
+                                        if text_raw.startswith("<"):
+                                            try:
+                                                root = ET.fromstring(text_raw)
+                                                payload = {
+                                                    "xml_parsed": {root.tag: _xml_elem_to_dict(root)},
+                                                    "_raw_xml": text_raw
+                                                }
+                                                break
+                                            except Exception:
+                                                payload = {"text": item.text}
+                                        else:
+                                            payload = {"text": item.text}
                         
                         if not payload:
                             payload = {"result": str(result)}

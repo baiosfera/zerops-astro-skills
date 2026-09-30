@@ -84,7 +84,8 @@ async def extract_vedastro(
             "StdTime": std_time,
             "Location": loc_obj
         },
-        "Ayanamsa": "LAHIRI"
+        "Ayanamsa": "LAHIRI",
+        "sortByWeight": True
     }
 
     payload_planet = {
@@ -119,7 +120,24 @@ async def extract_vedastro(
             "Location": loc_obj
         },
         "levels": 3,
+        "precision_hours": 100,
         "ayanamsa": "LAHIRI"
+    }
+
+    payload_jhora = {
+        "Time": {
+            "StdTime": std_time,
+            "Location": loc_obj
+        },
+        "Ayanamsa": "LAHIRI"
+    }
+
+    payload_kalasarpa = {
+        "Time": {
+            "StdTime": std_time,
+            "Location": loc_obj
+        },
+        "Ayanamsa": "LAHIRI"
     }
 
     endpoints = [
@@ -127,6 +145,8 @@ async def extract_vedastro(
         ("planet_data", f"{VEDASTRO_URL}/Calculate/AllPlanetData", payload_planet),
         ("house_data", f"{VEDASTRO_URL}/Calculate/AllHouseData", payload_house),
         ("dasa_range", f"{VEDASTRO_URL}/Calculate/DasaAtRange", payload_dasa),
+        ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_jhora),
+        ("kalasarpa_yoga", f"{VEDASTRO_URL}/Calculate/KalaSarpaYoga", payload_kalasarpa),
     ]
 
     results: Dict[str, Any] = {

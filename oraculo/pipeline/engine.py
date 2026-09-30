@@ -366,7 +366,7 @@ class ExtractionEngine:
                 try:
                     bazi_res = await mcp_client.call_tool(
                         "lunar", "calculate_bazi",
-                        {"birth_datetime": bazi_datetime_str, "timezone_offset": tz_offset, "longitude": lng}
+                        {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}
                     )
                     mcp_results["lunar_mcp_calculate_bazi"] = bazi_res
                     results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="calculate_bazi", status="SUCCESS", data=bazi_res, http_status=200))
@@ -410,7 +410,13 @@ class ExtractionEngine:
                 try:
                     kd_res = await mcp_client.call_tool(
                         "kundali", "kundali",
-                        {"year": year, "month": month, "day": day, "hour": hour, "minute": minute, "lat": lat, "lng": lng, "timezone": tz_str}
+                        {
+                            "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
+                            "latitude": float(lat),
+                            "longitude": float(lng),
+                            "school": "parashari",
+                            "locale": "en"
+                        }
                     )
                     mcp_results["kundali_mcp_kundali_calc"] = kd_res
                     results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_calc", status="SUCCESS", data=kd_res, http_status=200))
