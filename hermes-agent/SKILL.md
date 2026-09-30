@@ -1,21 +1,22 @@
 ---
 name: "hermes-agent"
-description: "Nous Research Hermes-Agent (CalVer 2026.8+) Dual-RAG orchestrator for Zerops Python (Ubuntu invariant), Telegram Bot Gateway, multi-service FRNT/BKND mesh control, and Antigravity (AGY) execution bridge."
-version: "2.0"
+description: "Nous Research Hermes-Agent (CalVer 2026.8+) Dual-RAG orchestrator for Zerops Python (Ubuntu invariant), Telegram Bot Gateway, Oráculo 15-Shard Astrological Computation Worker, multi-service FRNT/BKND mesh control, and Antigravity (AGY) execution bridge."
+version: "2.1"
 ---
 
-# Hermes-Agent Engine & Telegram-to-AGY Gateway (v2.0)
+# Hermes-Agent Engine, Telegram-to-AGY Gateway & Astrological Worker (v2.1)
 
-Autonomous AI agent runtime powered by Nous Research Hermes models, featuring native function calling (`<tool_call>`), secure Telegram Gateway with anti-flood batching, Zerops Python deployment, multi-service backend/frontend orchestration, and bidirectional Antigravity (AGY) bridge.
+Autonomous AI agent runtime powered by Nous Research Hermes models, featuring native function calling (`<tool_call>`), secure Telegram Gateway with anti-flood batching, Oráculo 15-shard astrological calculation worker on NATS JetStream, Zerops Python deployment, multi-service backend/frontend orchestration, and bidirectional Antigravity (AGY) bridge.
 
 ## Core Capabilities & Reference Map
 
 | Domain | Scope & Capabilities | Authoritative Guide |
 |---|---|---|
+| **Astrological Worker** | Oráculo 15-shard computation, NATS RPC (`astrology.requests`), 11 XML gold feeds, PostgreSQL 18 ingest | [`references/suite_integration.md`](file:///var/www/.agents/skills/hermes-agent/references/suite_integration.md) |
 | **Runtime & Loop** | ChatML `<tool_call>`, scratchpad execution, Telegram Bot API 22.8, RBAC, anti-flood batching | [`references/usage.md`](file:///var/www/.agents/skills/hermes-agent/references/usage.md) |
 | **Zerops Infra** | Python 3.12 Ubuntu invariant, vendor caching, persistent storage, systemd/supervisord daemon | [`references/infra.md`](file:///var/www/.agents/skills/hermes-agent/references/infra.md) |
 | **AGY Bridge** | Telegram-to-AGY bridge: NATS JetStream (recommended), ZCP MCP client, bounded SSH, REST plugin | [`references/bridge_agy.md`](file:///var/www/.agents/skills/hermes-agent/references/bridge_agy.md) |
-| **Suite Integration** | Directus, ERPNext, EvolutionGo, Astro, PostgreSQL, Valkey, NATS cluster orchestration | [`references/suite_integration.md`](file:///var/www/.agents/skills/hermes-agent/references/suite_integration.md) |
+| **Suite Integration** | Directus, ERPNext, EvolutionGo, Astro, PostgreSQL 18, Valkey 7.2, NATS cluster orchestration | [`references/suite_integration.md`](file:///var/www/.agents/skills/hermes-agent/references/suite_integration.md) |
 
 ## Operational State Machine (CoHaLo Protocol)
 

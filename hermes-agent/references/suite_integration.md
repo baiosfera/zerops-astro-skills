@@ -71,6 +71,14 @@ Hermes-Agent acts as an intelligent administrative controller across the service
 - **Valkey**: In-memory caching, rate-limit counters, and active session states.
 - **NATS**: Event distribution and asynchronous task queuing.
 
+### F. Oráculo Astrological Calculation Engine & 15-Shard PostgreSQL 18 Mesh
+- **Role**: Sovereign multi-tradition astrological calculation worker, generating 15 canonical JSONB shards and 11 feeds for each client.
+- **Protocol**: NATS Request-Reply and JetStream pub/sub (`astrology.requests` -> `astrology.calculate.v1` -> `astrology.completed`).
+- **Hermes Tool Capabilities**:
+  - `tool_astrology_calculate_chart(payload)`: Dispatches client birth data to the federated extraction pipeline (AstroWay, VedAstro, FreeAstroAPI, AstrologyAPI, HebCal, BaZi-Lunar, Zmanim, Kundali).
+  - `tool_astrology_get_client_dumps(client_id, shard_name)`: Reads client shard records (`shard_tropical`, `shard_sidereal`, `shard_vedic_kp`, `shard_dashas`, `shard_bazi`, `shard_ziwei`, `shard_kabbalah`, `shard_zmanim`, `shard_human_design`, `shard_cosmobiology`, `shard_nasa`, `shard_acg`, `shard_penta`, `shard_synastry`, `shard_timing`) directly from PostgreSQL 18 `client_dumps`.
+- **Python MCP Engine**: In-process execution of BaZi (`zhdate`) and Zmanim (`kosherjava`/NOAA) algorithms, eliminating subprocess latency while preserving pure Python stdlib portability.
+
 ---
 
 ## 3. Tool Definition Bundle for Multi-Service Orchestration

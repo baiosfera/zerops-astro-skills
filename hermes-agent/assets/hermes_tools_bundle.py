@@ -90,3 +90,65 @@ async def tool_astro_health() -> Dict[str, Any]:
             return {"status": "ok" if res.status_code == 200 else "degraded", "http_code": res.status_code}
         except Exception as err:
             return {"status": "unreachable", "error": str(err)}
+
+# ==============================================================================
+# 5. Astrological Calculation & Oraculo Shards Tools
+# ==============================================================================
+
+class AstrologyCalculateChartInput(BaseModel):
+    name: str = Field(..., description="Full legal or commercial name of the client")
+    date_str: str = Field(..., description="Birth date in YYYY-MM-DD format")
+    time_str: str = Field(..., description="Birth time in HH:MM format (24h)")
+    lat: float = Field(..., description="Birth geographic latitude (-90.0 to 90.0)")
+    lon: float = Field(..., description="Birth geographic longitude (-180.0 to 180.0)")
+    city: str = Field("Unknown", description="City of birth")
+    nation: str = Field("CO", description="Country code (ISO 3166-1 alpha-2)")
+    dry_run: bool = Field(False, description="Simulate extraction without live API costs")
+
+async def tool_astrology_calculate_chart(payload: AstrologyCalculateChartInput) -> Dict[str, Any]:
+    """Dispatch astrological calculation across federated engines via NATS or direct HTTP"""
+    nats_url = os.getenv("ZCP_NATS_URL", "nats://nats:4222")
+    task_id = str(uuid.uuid4())
+    message_data = {
+        "task_id": task_id,
+        "action": "astrology.calculate.v1",
+        "client": payload.model_dump(),
+        "timestamp": time.time()
+    }
+    try:
+        from nats.aio.client import Client as NATS
+        nc = NATS()
+        await nc.connect(nats_url)
+        js = nc.jetstream()
+        await js.publish(
+            "astrology.requests",
+            json.dumps(message_data).encode("utf-8"),
+            headers={"Nats-Msg-Id": task_id}
+        )
+        await nc.close()
+        return {"status": "dispatched", "task_id": task_id, "message": "Astrological calculation queued on NATS."}
+    except Exception as err:
+        return {"status": "error", "message": f"NATS dispatch failed: {str(err)}"}
+
+class AstrologyGetClientDumpsInput(BaseModel):
+    client_id: str = Field(..., description="UUID of the client in PostgreSQL 18")
+    shard_name: Optional[str] = Field(None, description="Optional specific shard name (e.g. 'shard_tropical', 'shard_dashas')")
+
+async def tool_astrology_get_client_dumps(client_id: str, shard_name: Optional[str] = None) -> Dict[str, Any]:
+    """Query 15-shard JSONB client dumps from PostgreSQL 18"""
+    db_url = os.getenv("DATABASE_URL", "")
+    if not db_url:
+        return {"status": "error", "message": "DATABASE_URL not configured"}
+    try:
+        import asyncpg
+        conn = await asyncpg.connect(db_url)
+        if shard_name:
+            row = await conn.fetchrow(f"SELECT {shard_name} FROM client_dumps WHERE client_id = $1", uuid.UUID(client_id))
+            await conn.close()
+            return {"status": "ok", "client_id": client_id, "shard": shard_name, "data": json.loads(row[0]) if row and row[0] else None}
+        else:
+            row = await conn.fetchrow("SELECT * FROM client_dumps WHERE client_id = $1", uuid.UUID(client_id))
+            await conn.close()
+            return {"status": "ok", "client_id": client_id, "data": dict(row) if row else None}
+    except Exception as err:
+        return {"status": "error", "message": f"PostgreSQL query failed: {str(err)}"}
