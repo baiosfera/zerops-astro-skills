@@ -235,7 +235,7 @@ def main():
 
     # Consolidar parámetros
     birth_name = file_data.get("birth_name") or file_data.get("nombre_nacimiento") or file_data.get("nombre de nacimiento") or args.name or file_data.get("name") or file_data.get("nombre") or "Consultant"
-    current_name = file_data.get("current_name") or file_data.get("nombre_actual") or file_data.get("nombre actual") or birth_name
+    current_name = file_data.get("current_name") or file_data.get("nombre_actual") or file_data.get("nombre actual") or file_data.get("nombre actual (cambio)") or birth_name
     names = args.name or file_data.get("name") or file_data.get("nombre") or current_name
     # Marcas
     brand_names_raw = file_data.get("brand_names") or file_data.get("marcas") or file_data.get("marca") or []
@@ -250,9 +250,9 @@ def main():
     if not spoken_name:
         matched_token = None
         context_str = f"{file_path.stem if file_path else ''} {' '.join(brand_list)}".lower()
-        for token in birth_name.split():
+        for token in (current_name + " " + birth_name).split():
             if len(token) > 2 and token.lower() in context_str:
-                matched_token = token
+                matched_token = token.capitalize()
                 break
         spoken_name = matched_token or (birth_name.split()[0] if birth_name != "Consultant" else "Consultant")
 
