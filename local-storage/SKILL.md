@@ -4,11 +4,11 @@ description: "Trigger: local-storage, storage, local disk, run.volume, persisten
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.4"
+  version: "1.5"
   cohalo-standard: "6.7"
 ---
 
-# Local Storage — Persistent Disk Volume & Single-Kernel POSIX Engine (v1.4)
+# Local Storage — Persistent Disk Volume & Single-Kernel POSIX Engine (v1.5)
 
 ## Activation Contract
 Activate when architecting, configuring, mounting, optimizing, or operating Zerops Local Storage (`local-storage:single@1`) persistent disk volumes across runtime services, embedded database workloads (SQLite, Prometheus TSDB), control-plane staging mounts, or migrating from legacy Shared Storage.
@@ -23,6 +23,7 @@ Activate when architecting, configuring, mounting, optimizing, or operating Zero
 7. **Volume Deletion Blocker**: Local Storage cannot be deleted while connected runtimes declare `run.volume`. Remove `run.volume` and redeploy first.
 8. **ZCP Control-Plane Mount Law**: When mounting to `/var/www/{hostname}` in ZCP, bind `/data` to `/var/www` on storage (`mount --bind /data /var/www` in `/etc/fstab`). Automate via `scripts/localstorage-mount-zcp.sh`.
 9. **Subdirectory Permission Bootstrap**: While the mount root is owned natively by the platform, new application subdirectories on the persistent volume (e.g. `/mnt/localstorage/<service>`) must be provisioned in `prepareCommands` via `sudo mkdir -p <dir> && sudo chown -R zerops:zerops <dir>` to prevent unprivileged runtime crashes during initial database creation.
+10. **Storage Tiering (POSIX vs S3)**: Use Local Storage for low-latency POSIX single-node filesystem needs (SQLite WAL, IPC sockets, temporary cache); use `object-storage` for large binary media, customer-facing downloads, multi-container static assets, and durable backups.
 
 ## Decision Matrix
 
