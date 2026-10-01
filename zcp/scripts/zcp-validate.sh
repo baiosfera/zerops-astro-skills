@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Deterministic Physical Validation Sensor for zcp Suite (v6.3)
+# Deterministic Physical Validation Sensor for zcp Suite (v6.4)
 # ==============================================================================
 set -euo pipefail
 
@@ -14,7 +14,7 @@ trap 'find "$SKILL_DIR" -name "__pycache__" -exec rm -rf {} + 2>/dev/null || tru
 ERRORS=0
 
 echo "============================================================"
-echo "  🔍 Validating zcp Skill Integrity (v6.3)"
+echo "  🔍 Validating zcp Skill Integrity (v6.4)"
 echo "============================================================"
 
 # 1. Check SKILL.md existence
@@ -27,10 +27,10 @@ fi
 
 # 2. Check frontmatter metadata.version
 VERSION=$(grep -E 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md" | head -n 1 | sed -E 's/.*version: "([^"]+)".*/\1/')
-if [ "$VERSION" = "6.3" ]; then
-    echo "✓ Frontmatter version is 6.3"
+if [ "$VERSION" = "6.4" ]; then
+    echo "✓ Frontmatter version is 6.4"
 else
-    echo "❌ Frontmatter version is not 6.3 (found: $VERSION)"
+    echo "❌ Frontmatter version is not 6.4 (found: $VERSION)"
     ERRORS=$((ERRORS + 1))
 fi
 

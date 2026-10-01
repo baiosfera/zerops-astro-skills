@@ -4,10 +4,10 @@ description: "Trigger: cloudflare, cloudflare api, turnstile, dns sync, purge ca
 license: MIT
 metadata:
   author: "gentleman-programming"
-  version: "2.0"
+  version: "2.1"
 ---
 
-# Cloudflare — Perimeter Ingress, Anycast DNS, WAF & Turnstile (v2.0)
+# Cloudflare — Perimeter Ingress, Anycast DNS, WAF & Turnstile (v2.1)
 
 ## Activation Contract
 Activate when provisioning or automating domains, DNS records (**A**, **AAAA**, **CNAME**, **TXT**, **MX**), Turnstile anti-bot in Astro, email authentication (SPF, DKIM, RFC 9989 DMARCbis), Edge CDN cache purging, SSL/TLS **Full (Strict)**, WAF rulesets, or Zero Trust tunnels (`cloudflared`) in Zerops.

@@ -4,10 +4,10 @@ description: "Trigger: ghcicd, git push, zerops deploy, github actions zerops, z
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "3.0"
+  version: "3.1"
 ---
 
-# `ghcicd` — Sovereign GitOps CI/CD & 3-Environment Delivery Engine (v3.0)
+# `ghcicd` — Sovereign GitOps CI/CD & 3-Environment Delivery Engine (v3.1)
 
 ## Activation Contract
 Activate for CI/CD pipelines, GitHub Actions (`zeropsio/actions@v1.0.2`), Git CLI operations (`gh auth login`, `gh pr`, `gh secret set`), Cloudflare API automation, or multi-environment workflows in Zerops.
@@ -15,7 +15,7 @@ Activate for CI/CD pipelines, GitHub Actions (`zeropsio/actions@v1.0.2`), Git CL
 ## Hard Rules & Positive Guidance
 - **Commit Discipline & Anti-Commit-Spam (MANDATORY)**: Local commits track atomic steps under Conventional Commits in `.git/`. Batched pushes or feature branches merged via **Squash & Merge** (`gh pr merge --squash --delete-branch`). No direct micro-pushes to `main`.
 - **Zero Live Edits on Production (MANDATORY)**: NEVER edit production files on `<app_domain>`. Production runs immutable releases via GitHub Actions or tags (`v*`).
-- **3-Environment Lifecycle**: Supports Multi-Service isolation (`<service>-stage` vs `<service>-prod`) and **Single-Runtime Host Router** (single container mapping `<zerops_subdomain>`, `<staging_domain>`, `<app_domain>` to port 3000, saving >70% RAM).
+- **3-Environment Lifecycle**: Enforces canonical **Multi-Service Architecture** (`<service>-stage` vs `<service>-prod`) for custom `astro-web` workloads deployed per Git branch (`stage` vs `main`), guaranteeing zero cache poisoning, failure isolation, and dedicated environment secrets. Base chasis templates (`zerops-astrobranding`) never execute direct deploy workflows.
 - **Agnostic Delivery Shield**: Disconnect Zerops GUI webhooks when using GitHub Actions.
 - **Kebab-Case CI/CD Contract**: `zeropsio/actions@v1.0.2` strictly requires `access-token` and `service-id` in kebab-case.
 - **Autonomous Provisioning**: Manage secrets via `gh secret set ZEROPS_TOKEN` and `gh secret set ZEROPS_SERVICE_ID`. Configure DNS and SSL Full Strict (`value: strict`) via Cloudflare API v4.

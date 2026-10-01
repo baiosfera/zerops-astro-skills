@@ -4,10 +4,10 @@ description: "Trigger: zcp, scaffold zerops, native runtime, deploy import.yaml,
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "6.3"
+  version: "6.4"
 ---
 
-# `zcp` — Zerops Platform & Infrastructure Master Suite (v6.3)
+# `zcp` — Zerops Platform & Infrastructure Master Suite (v6.4)
 
 ## Activation Contract
 Activate when provisioning or managing runtimes (Astro, Directus, FastAPI), data engines (PostgreSQL 18, Valkey 7.2, NATS 2.12), local storage (`local-storage:single@1`), Cloudflare ingress, or operating the 22 Zerops MCP tools.

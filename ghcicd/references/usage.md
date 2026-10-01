@@ -40,47 +40,25 @@ Para evitar confusiones entre el guardado local y el despliegue a la nube, Git o
 - **`gh` CLI (`/usr/bin/gh`)**: Herramienta de consola en el contenedor ZCP. Se usa para operar GitHub sin navegador (crear PRs con `gh pr create`, hacer merge con `gh pr merge`). **No compila contenedores ni despliega código**.
 - **GitHub Actions (`.github/workflows/deploy.yaml`)**: Motor de CI/CD que corre en la nube de GitHub. Requiere secrets (`ZEROPS_TOKEN`, `ZEROPS_SERVICE_ID`). Al recibir un push en `main` o un tag, llama a la API de Zerops (`zeropsio/actions@v1.0.2`) para compilar e iniciar el nuevo release.
 
-### C. Enrutamiento de Dominios en Zerops: Multi-Contenedor vs. Runtime Único por Host
+### C. Arquitectura Canónica de Ambientes en Zerops: Multi-Servicio vs. Riesgos de Host Routing
 
-Zerops admite dos modelos arquitectónicos para separar `dev`, `stage` y `prod`:
+Para el ciclo de vida `dev` -> `stage` -> `prod` en aplicaciones web personalizadas (`astro-web`):
 
-1. **Modelo Multi-Servicio (Contenedores Aislados)**:
+1. **Modelo Canónico Multi-Servicio (Recomendado & Estándar de Producción)**:
    - Se aprovisionan dos servicios independientes en Zerops: `<service>-stage` y `<service>-prod`.
-   - La rama `stage` despliega en `<service>-stage` (`<staging_domain>`).
-   - La rama `main` despliega en `<service>-prod` (`<app_domain>`).
-   - *Ventaja*: Aislamiento de procesos total.
-   - *Desventaja*: Duplica el consumo de RAM, vCPU y costo mensual.
+   - La rama `stage` despliega en `<service>-stage` (`<staging_domain>`) vía GitHub Actions con `ZEROPS_SERVICE_ID_STAGE`.
+   - La rama `main` despliega en `<service>-prod` (`<app_domain>`) vía GitHub Actions con `ZEROPS_SERVICE_ID_PROD`.
+   - *Aislamiento de Procesos Total*: Si un release experimental en `stage` falla o crashea, la tienda de producción (`prod`) sigue 100% activa.
+   - *Aislamiento de Secretos*: Staging utiliza credenciales sandbox (Stripe Test, Directus Staging, mock webhooks) sin riesgo de tocar dinero real.
+   - *Costo en Zerops*: En Bun (`bun@1.3.9`), un runtime Astro SSR consume apenas **~45 MB de RAM**. Dos contenedores consumen ~90 MB en total (costo marginal insignificante, centavos al mes).
+   - *Frontera de Repositorios*: Este pipeline pertenece exclusivamente a los repositorios de aplicación web (`astro-web`), **NUNCA** a la plantilla chasis `zerops-astrobranding`.
 
-2. **Modelo de Runtime Único por Host (Zero-RAM Waste — Recomendado)**:
-   - Se mantiene **un único contenedor de servicio** en Zerops ejecutando el runtime web (Astro, Bun, Node, Hono, Go, Python).
-   - En Zerops Ingress, se mapean múltiples dominios al **mismo puerto de escucha** (ej. puerto 3000):
-     * Dominio de desarrollo: `<zerops_subdomain>` (`*.zerops.app`).
-     * Dominio de staging / pruebas: `<staging_domain>` (ej. `staging.<app_domain>`).
-     * Dominio de producción: `<app_domain>`.
-   - El Ingress L7 de Zerops preserva y reenvía las cabeceras `Host` y `X-Forwarded-Host`.
-   - El middleware de la aplicación en el borde inspecciona el Host dinámicamente:
-     ```typescript
-     // src/middleware.ts (SSR Web Standard Request)
-     export const onRequest = async (context, next) => {
-       const host = context.request.headers.get("x-forwarded-host") || context.request.headers.get("host") || "";
-       
-       if (host.includes("<staging_domain>")) {
-         // Staging: Sandbox credentials, mock webhooks, test payments
-         context.locals.environment = "stage";
-         context.locals.isProduction = false;
-       } else if (host.includes("<app_domain>")) {
-         // Production: Live payment gateways, strict caching, Cloudflare CDN
-         context.locals.environment = "prod";
-         context.locals.isProduction = true;
-       } else {
-         // Dev (*.zerops.app o localhost): Debug logs, verbose stacktraces
-         context.locals.environment = "dev";
-         context.locals.isProduction = false;
-       }
-       return next();
-     };
-     ```
-   - *Ahorro*: Reduce el consumo de RAM en más del 70% sin perder aislamiento lógico ni pisar entornos.
+2. **Advertencia de Seguridad: Antipatrón de Simular Staging en Runtime Único**:
+   - Simular `stage` y `prod` en un solo contenedor inspeccionando cabeceras `Host` / `X-Forwarded-Host` en `middleware.ts` introduce graves riesgos arquitectónicos:
+     * **Blast Radius Total**: Al compartir el proceso Bun/Node, un crash o excepción no controlada en stage derriba producción instantáneamente.
+     * **Riesgo de Cache Poisoning (OWASP)**: Proxies de borde y CDNs (Cloudflare) pueden almacenar en caché respuestas generadas bajo contexto de staging y servirlas a usuarios de producción.
+     * **Incompatibilidad con Ramas Git**: Es físicamente imposible probar una rama de Git sin haberla desplegado en el contenedor único de producción.
+   - *Uso legítimo de Host-Routing*: Reservado únicamente para multi-tenancy de catálogo o multi-marca sobre un **mismo release estable**.
 
 ### D. Aprovisionamiento Autónomo de Secretos en GitHub (`gh secret set`)
 

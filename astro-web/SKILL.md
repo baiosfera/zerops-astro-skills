@@ -4,10 +4,10 @@ description: "Trigger: astro-web, astro-framework, astro 5, astro ssr, server is
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.1"
+  version: "2.2"
 ---
 
-# Astro 5 Web Framework — High-Performance SSR Engine (v2.1)
+# Astro 5 Web Framework — High-Performance SSR Engine (v2.2)
 
 ## Activation Contract
 Activate when architecting, building, optimizing, or deploying Astro 5 SSR applications on Zerops, implementing Content Layer loaders, Server Islands (`server:defer`), Astro Actions, 1-Click Google OAuth, or backend integrations with **`directus`**, **`nats`**, **`valkey`**, **`postgresql`**, and WhatsApp gateways ([`evolutiongo`](file:///var/www/.agents/skills/evolutiongo/SKILL.md) / [`evolution-api`](file:///var/www/.agents/skills/evolution-api/SKILL.md)).
@@ -15,7 +15,7 @@ Activate when architecting, building, optimizing, or deploying Astro 5 SSR appli
 ## Hard Rules
 - **Host Binding**: Servers MUST listen on `HOST: "0.0.0.0"` and `PORT: "3000"` (never `localhost`).
 - **Secret Isolation**: Client variables MUST use `PUBLIC_` prefix (e.g. `PUBLIC_DIRECTUS_URL`). Server secrets MUST use `astro:env/server` or server contexts and never reach client bundles.
-- **Server Islands Key**: In multi-container rolling deployments, MUST inject `ASTRO_KEY` in `project.envVariables` to prevent prop decryption errors.
+- **Server Islands Key & Multi-Service Topology**: In multi-container rolling deployments, MUST inject `ASTRO_KEY` in `project.envVariables` to prevent prop decryption errors. Multi-environment deployments (staging vs production) operate as independent Zerops services (`astro-stage` and `astro-prod`), not simulated inside a single container.
 - **Runtime Preference**: Default to `bun@1.3.9` for instant cold boot (<20ms) and low RAM (~45MB); use `nodejs@24` for C++ glibc addons.
 - **Fractal CoHaLo**: Enforce strict hygiene (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans (`manage_task action="kill"`), sensor (HTTP `200` on `/`).
 - **Zero Deletion**: Consult [`references/usage.md`](file:///var/www/.agents/skills/astro-web/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/astro-web/references/infra.md) for full lossless APIs.
