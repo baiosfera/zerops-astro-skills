@@ -251,28 +251,84 @@ try {
 
 ---
 
-## 7. 5 Production Patterns in Zerops
+## 7. Anti-Slop Craft and Design Gate
 
-### Pattern 1: High-Performance E-Commerce Checkout with Astro Actions + NATS RPC + Directus
-Astro Actions handles checkout with Zod validation, verifies inventory atomically via NATS RPC, creates records in Directus, and triggers WhatsApp alerts.
+The Pre-flight Craft Gate eradicates generic AI layouts (*AI Slop*). Before producing HTML/CSS, the engineer calibrates three fundamental dials:
 
-### Pattern 2: Customer Portal with Server Islands, Google OAuth & Directus SDK
-Static shell loads in <20ms while Server Islands stream user profiles and real-time business KPIs with zero client JavaScript bloat.
+1. **Variance Dial (Layout & Hierarchy)**:
+   - **High Asymmetry**: Break the predictable 3-card grid. Utilize editorial magazine grids, alternating column widths (e.g. 60/40, 70/30), overlapping z-index layers, and full-width display typography.
+   - **Display Typography**: Utilize expressive display fonts from `fontgen` for H1/H2, keeping body copy clean and legible.
+2. **Motion Dial (Kinetic Flow)**:
+   - **Hero Dynamism**: Confine rich GSAP animations to the Hero and key section reveals (scroll triggers).
+   - **Easing Discipline**: Strictly ban `bounce` or `elastic` easings. Use smooth cubic-bezier (`cubic-bezier(0.16, 1, 0.3, 1)`) or spring mechanics.
+3. **Density Dial (Spatial Rhythm)**:
+   - **Luxury / Minimalist**: High negative space, generous padding (`py-24`, `py-32`), understated contrast.
+   - **Technical / Industrial**: High information density, subtle borders, monospaced metadata badges.
 
-### Pattern 3: Dynamic Blog & Documentation with Content Layer & Incremental Directus Loader
-Builds lightning-fast static articles backed by Directus Content Layer with automatic invalidation via webhooks.
-
-### Pattern 4: Admin Dashboard with Real-Time Directus WebSockets & Valkey Cache
-Interactive dashboard islands subscribe directly to Directus WebSockets for live order and chat monitoring.
-
-### Pattern 5: WhatsApp Pairing & Chat Widget Island (Evolution Go)
-Real-time QR code display and live support chat widget integrated directly into Astro SSR pages.
+### The 44 Impeccable Deterministic Rules (Enforced)
+- **Never use untinted neutral gray**: Black must be tinted with the brand's primary OKLCH undertone (e.g. `oklch(0.12 0.02 260)` instead of `#000000`).
+- **Never use purple-on-black cards**: Eliminate the cliché dark card with purple gradient border.
+- **Strict Heading Hierarchy**: H1 must be followed by lead paragraph or H2; never jump directly to H3.
+- **Minimum Touch Targets**: All interactive elements must maintain >= 44x44px clickable areas on mobile.
 
 ---
 
-## 8. Anti-Patterns & Common Gotchas
+## 8. Brandbook Token Ingestion into Tailwind 4
 
-1. **Exposing Server Secrets**: Never prepend server-only credentials (e.g. `WOMPI_INTEGRITY_SECRET`, `DIRECTUS_STATIC_TOKEN`) with `PUBLIC_`.
-2. **Missing `ASTRO_KEY` in Rolling Deploys**: Deploying multi-container Astro services with Server Islands without a fixed `ASTRO_KEY` causes props decryption failures during rolling updates.
-3. **Blocking SSR with Slow Remote APIs**: Avoid synchronous 5-second fetch calls in the root Astro frontmatter. Use Server Islands (`server:defer`) with fallbacks.
-4. **Deploying without `node_modules` in Standalone Mode**: When deploying `@astrojs/node` in standalone mode, `node_modules` must be included in `deployFiles`.
+When a `brandbook.json` (W3C DTCG format) exists in the project or `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`, Astro 5 ingests tokens natively into `src/styles/global.css`:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Colors from brandbook.json (OKLCH) */
+  --color-brand-primary: var(--brand-color-primary);
+  --color-brand-surface: var(--brand-color-surface);
+  --color-brand-accent: var(--brand-color-accent);
+  
+  /* Typography from fontgen */
+  --font-display: var(--brand-font-display), sans-serif;
+  --font-body: var(--brand-font-body), sans-serif;
+  
+  /* Motion from kinetic */
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-reveal: 600ms;
+}
+```
+
+This ensures that UI components consume `--color-brand-primary` directly without manual color re-definitions.
+
+---
+
+## 9. Three Invisible Flaws Shield
+
+Every Astro 5 deployment must guard against the 3 invisible traps:
+
+1. **SEO & Social Preview Head (`SeoHead.astro`)**:
+   Mandatory `<head>` tags: OpenGraph (`og:image`, `og:title`, `og:description`), Twitter cards (`summary_large_image`), canonical URLs, and Schema.org JSON-LD.
+2. **Sovereign RGPD/GDPR Cookie Script-Blocker (`CookieConsent.astro`)**:
+   Analytics scripts are embedded with `<script type="text/plain" data-category="analytics">`. They execute strictly after explicit user acceptance, avoiding EU fines without third-party tracker fees.
+3. **Decoupled Form Processing (`ContactAction.ts`)**:
+   Forms submit via Astro Actions (`defineAction`) with Zod validation. The backend dispatches dynamically:
+   - Directus (if provisioned).
+   - PostgreSQL (if provisioned).
+   - Web3Forms API (free-tier static fallback without servers).
+   - NATS JetStream (if asynchronous event queueing is active).
+
+---
+
+## 10. Production Patterns & Anti-Patterns
+
+### 5 Production Patterns in Zerops:
+1. **High-Performance E-Commerce**: Astro Actions + NATS RPC + Directus/PostgreSQL.
+2. **Customer Portal**: Server Islands + Google OAuth + Valkey cache.
+3. **Dynamic Content Hub**: Content Layer + incremental caching.
+4. **Real-Time Admin**: Directus WebSockets / NATS PubSub.
+5. **WhatsApp Support**: Live pairing QR island (`evolutiongo`).
+
+### Anti-Patterns:
+1. **Hardcoding Directus**: Assuming Directus is mandatory for simple landings.
+2. **Token Bloat 3D (`img to 3js`)**: Burning 500k tokens to generate raw Three.js geometry instead of using lightweight canvas shaders or SVG animations.
+3. **Fake Contact Forms**: Handling forms with empty `alert()` calls that drop customer inquiries.
+4. **Untinted Flat Grays**: Using generic `#111111` or `#808080` without chromatic personality.
+
