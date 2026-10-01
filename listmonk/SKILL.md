@@ -15,7 +15,8 @@ Activate whenever deploying, configuring, integrating, or managing Listmonk news
 ## Hard Rules
 - **Zerops Native Architecture**: Deploy Listmonk as a native Go service (`type: go@1.22` or binary on `os: alpine`) connected to managed PostgreSQL (`type: postgresql@16:single` or `:ha`).
 - **Atomic Migrations (`zsc execOnce`)**: Always execute `./listmonk --install --idempotent --yes --config=""` and `./listmonk --upgrade --yes --config=""` wrapped inside `zsc execOnce ${appVersionId}` to prevent concurrent migration race conditions.
-- **Double Underscore Env Mapping**: Pass configuration dynamically via Zerops environment variables using double underscores (`LISTMONK_db__host: ${db_hostname}`).
+- **PostgreSQL 18 Schema Pre-Creation**: When configuring `LISTMONK_db__params: "search_path=listmonk"`, execute `CREATE SCHEMA IF NOT EXISTS listmonk;` before `./listmonk --install` to prevent schema selection failures.
+- **Double Underscore Env Mapping & API Auth**: Pass configuration dynamically via Zerops environment variables using double underscores (`LISTMONK_admin__username: "admin"`). In Listmonk v5, REST API endpoints require a dedicated bot account with `type = 'api'` and `user_role_id = 1` in `listmonk.users`.
 - **Fractal CoHaLo Execution**: Enforce strict process hygiene (`timeout 10s`), synchronous wait (`WaitMsBeforeAsync: 10000`), zero orphaned tasks (`manage_task action="kill"`), and sensor verification (HTTP `200` on `/admin`).
 - **Zero Deletion Invariant**: Consult [`references/usage.md`](file:///var/www/.agents/skills/listmonk/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/listmonk/references/infra.md) for complete lossless APIs, schemas, and recipes.
 

@@ -21,6 +21,7 @@ Activate when provisioning or managing runtimes (Astro, Directus, FastAPI), data
   - *Arranque Frugal*: `cpuMode: SHARED` obligatorio (cero `DEDICATED` en arranque), `startCpuCoreCount: 1` o no declarado, `minContainers: 1`, `maxContainers: 2` como seguro de saturación.
   - *Límites Omitidos*: Omitir `minCpu`, `maxCpu`, `minRam`, `maxRam` en manifiestos y GUI. Zerops gestiona la elasticidad nativa (0.125-48 GB RAM, 1-8 vCPUs) sin límites artificiales ni OOMKilled por techos bajos.
   - *Colchón Dual Dinámico*: `minFreeRamGB: 0.25` y `minFreeRamPercent: 10` para prevenir OOM sin inflar reposo.
+  - *Herencia Modular Obligatoria*: Toda composición modular o importación ad-hoc DEBE incluir `verticalAutoscaling` completo.
   - *Mutación en Caliente*: Ajustar en runtime con `zerops_scale` sin reiniciar contenedores.
   - *Circuit Breaker Financiero*: `maxRam` (ej. 4 u 8 GB) opcional contra memory leaks desatendidos.
 - **Custom Domain**: Enforce Cloudflare Full (Strict) SSL/TLS.

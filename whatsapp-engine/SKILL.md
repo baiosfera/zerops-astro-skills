@@ -18,7 +18,7 @@ Activate when deploying, configuring, or integrating Evolution Go (`whatsmeow`),
 - **Asynchronous Webhook Decoupling**: NEVER run synchronous LLM calls or database lookups inside the HTTP webhook handler. Incoming messages MUST be published to NATS JetStream subject `events.whatsapp.incoming` (<20ms acknowledgment).
 - **Anti-Ban Warmup Protocol**: New or rotated WhatsApp lines MUST strictly follow [`assets/anti_ban_warmup_guide.md`](file:///var/www/.agents/skills/whatsapp-engine/assets/anti_ban_warmup_guide.md) to prevent spam flags or number bans by Meta.
 - **Valkey Idempotency & Sliding Windows**: Enforce message deduplication locks (`SET lock:wa:msg:${id} 1 NX EX 3600`) and conversational history cache in Valkey.
-- **Zerops Native Footprint**: Deploy Evolution Go as a native Go service (`alpine/go@1.22`) connected to managed PostgreSQL schemas (`evogo_auth`, `evogo_users`), consuming ~25-45 MB RAM idle.
+- **Zerops Native Footprint & Dashboard**: Deploy Evolution Go as a native Go service (`alpine/go@1.22`) with PostgreSQL schemas (`evogo_auth`, `evogo_users`), consuming ~25-45 MB RAM. EvolutionGo serves an HTML status dashboard on `GET /` (`/server/ok`, `/health`, `/message/sendText/`, `/webhook`) and JSON on `Accept: application/json`.
 - **Strict Credential Protection**: API keys (`$GLOBAL_API_KEY`) and database credentials MUST be referenced via environment variable names.
 - **Fractal CoHaLo Execution**: Enforce command hygiene (`timeout 10s`), wait limits (`WaitMsBeforeAsync: 10000`), zero orphan tasks, and sensor verification (`GET /health`).
 
