@@ -1,15 +1,27 @@
 {
   "name": "astro",
-  "version": "2.0.0",
-  "description": "Production Zerops deployment recipes, multi-service topologies, Astro Actions with NATS RPC, and Directus Content Layer loaders for Astro 5 SSR",
+  "version": "3.0.0",
+  "description": "Production Zerops deployment recipes, multi-service topologies, Astro Actions with NATS JetStream, Tailwind CSS 4, and Universal Content Layer loaders for Astro 5 SSR",
   "recipes": {
-    "zerops_yaml_astro": {
-      "description": "Production zerops.yaml for Astro 5 SSR on Bun 1.3.9 with Directus, NATS, Valkey, and PostgreSQL",
-      "yaml": "zerops:\n  - setup: astro\n    build:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl ca-certificates\n        - bun install --frozen-lockfile\n        - bun run build\n      deployFiles:\n        - dist\n        - node_modules\n        - package.json\n      cache:\n        - node_modules\n    run:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl ca-certificates tzdata\n      start: bun ./dist/server/entry.mjs\n      ports:\n        - port: 3000\n          httpSupport: true\n      envVariables:\n        HOST: \"0.0.0.0\"\n        PORT: \"3000\"\n        ASTRO_KEY: \"${ASTRO_KEY}\"\n        PUBLIC_DIRECTUS_URL: \"https://cms.yourdomain.com\"\n        DIRECTUS_URL: \"http://directus:8055\"\n        NATS_URL: \"${nats_url}\"\n        VALKEY_URL: \"${cache_connectionString}\"\n        DATABASE_URL: \"${db_connectionString}\""
+    "zerops_yaml_astro_bun": {
+      "description": "Production zerops.yaml for Astro 5 SSR on Bun 1.3.9 with Ubuntu base, NATS JetStream, Valkey, and PostgreSQL",
+      "yaml": "zerops:\n  - setup: web\n    build:\n      base: ubuntu/bun@1.3.9\n      envVariables:\n        BUN_INSTALL: ./.bun\n      buildCommands:\n        - bun install --frozen-lockfile\n        - bun run build\n      deployFiles:\n        - dist\n        - node_modules\n        - package.json\n      cache:\n        - node_modules\n        - .bun/install/cache\n    deploy:\n      readinessCheck:\n        httpGet:\n          port: 3000\n          path: /\n    run:\n      base: ubuntu/bun@1.3.9\n      ports:\n        - port: 3000\n          httpSupport: true\n      start: bun run ./dist/server/entry.mjs\n      envVariables:\n        HOST: \"0.0.0.0\"\n        PORT: \"3000\"\n        NODE_ENV: \"production\"\n        ASTRO_KEY: \"${ASTRO_KEY}\"\n        DATABASE_URL: \"${db_connectionString}\"\n        VALKEY_URL: \"${cache_connectionString}\"\n        NATS_URL: \"${queue_connectionString}\"\n        S3_ENDPOINT: \"${storage_apiUrl}\"\n        S3_ACCESS_KEY: \"${storage_accessKeyId}\"\n        S3_SECRET_KEY: \"${storage_secretAccessKey}\"\n        S3_BUCKET: \"${storage_bucketName}\""
     },
-    "directus_content_loader": {
-      "description": "Custom Directus Content Layer loader for Astro 5 src/content.config.ts",
-      "code": "import { defineCollection } from 'astro:content';\nimport { z } from 'astro/zod';\n\nexport function directusLoader({ collectionName, directusUrl }: { collectionName: string; directusUrl: string }) {\n  return {\n    name: `directus-${collectionName}`,\n    load: async ({ store, logger, parseData }: any) => {\n      const res = await fetch(`${directusUrl}/items/${collectionName}?filter[status][_eq]=published`);\n      const { data } = await res.json();\n      store.clear();\n      for (const item of data) {\n        const parsed = await parseData({ id: String(item.id), data: item });\n        store.set({ id: String(item.id), data: parsed });\n      }\n    }\n  };\n}"
+    "tailwind4_vite_config": {
+      "description": "Complete astro.config.mjs integrating Tailwind CSS v4 via @tailwindcss/vite and @astrojs/node standalone",
+      "code": "import { defineConfig } from 'astro/config';\nimport node from '@astrojs/node';\nimport react from '@astrojs/react';\nimport tailwindcss from '@tailwindcss/vite';\n\nexport default defineConfig({\n  output: 'server',\n  adapter: node({ mode: 'standalone' }),\n  server: { host: '0.0.0.0', port: 3000 },\n  integrations: [react()],\n  vite: {\n    plugins: [tailwindcss()]\n  }\n});"
+    },
+    "universal_content_loader": {
+      "description": "Generic reusable Content Layer loader with caching for src/content.config.ts",
+      "code": "import { defineCollection } from 'astro:content';\nimport { z } from 'astro/zod';\n\nexport function universalLoader({ endpoint, collectionName }: { endpoint: string; collectionName: string }) {\n  return {\n    name: `universal-${collectionName}`,\n    load: async ({ store, logger, parseData }: any) => {\n      const res = await fetch(endpoint);\n      if (!res.ok) throw new Error(`Fetch failed: ${res.statusText}`);\n      const items = await res.json();\n      store.clear();\n      for (const item of (Array.isArray(items) ? items : items.data)) {\n        const id = String(item.id || item.slug || crypto.randomUUID());\n        const parsed = await parseData({ id, data: item });\n        store.set({ id, data: parsed });\n      }\n    }\n  };\n}"
+    },
+    "astro_action_nats_valkey": {
+      "description": "Production Astro Action with sliding window rate limiting and NATS JetStream event publishing",
+      "code": "import { defineAction, ActionError } from 'astro:actions';\nimport { z } from 'astro/zod';\nimport { connect, JSONCodec } from 'nats';\nimport Redis from 'ioredis';\n\nconst jc = JSONCodec();\nconst valkey = new Redis(process.env.VALKEY_URL || 'redis://valkey:6379');\n\nexport const server = {\n  submitInquiry: defineAction({\n    accept: 'json',\n    input: z.object({\n      email: z.string().email(),\n      name: z.string().min(2),\n      message: z.string().min(10)\n    }),\n    handler: async (input, context) => {\n      const ip = context.clientAddress || '127.0.0.1';\n      const hits = await valkey.incr(`rate:inquiry:${ip}`);\n      if (hits === 1) await valkey.expire(`rate:inquiry:${ip}`, 60);\n      if (hits > 10) throw new ActionError({ code: 'TOO_MANY_REQUESTS', message: 'Rate limit exceeded.' });\n      const nc = await connect({ servers: process.env.NATS_URL || 'nats://nats:4222' });\n      nc.publish('events.inquiry.created', jc.encode({ id: crypto.randomUUID(), data: input }));\n      await nc.drain();\n      return { success: true };\n    }\n  })\n};"
+    },
+    "container_api_vitest": {
+      "description": "Unit test suite using Astro experimental Container API and Vitest",
+      "code": "import { experimental_AstroContainer as AstroContainer } from 'astro/container';\nimport { expect, test } from 'vitest';\nimport OAuthButton from '../components/OAuthButton.astro';\n\ntest('OAuthButton renders with custom label', async () => {\n  const container = await AstroContainer.create();\n  const result = await container.renderToString(OAuthButton, {\n    props: { label: 'Iniciar sesión' }\n  });\n  expect(result).toContain('Iniciar sesión');\n});"
     }
   }
 }

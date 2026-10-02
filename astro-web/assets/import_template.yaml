@@ -1,21 +1,21 @@
 #zeropsPreprocessor=on
 project:
-  name: gentle-astro-suite
+  name: app-astro-suite
   corePackage: LIGHT
   envVariables:
     ASTRO_KEY: <@generateRandomString(<32>)|sha256>
 
 services:
   # ==========================================
-  # ASTRO 5 SSR RUNTIME (BUN 1.3.9)
+  # ASTRO 5 SSR RUNTIME (BUN 1.3.9 ON UBUNTU)
   # ==========================================
-  - hostname: astroapp
-    type: bun@1.3.9
+  - hostname: web
+    type: ubuntu/bun@1.3.9
     priority: 5
     enableSubdomainAccess: true
     startWithoutCode: true
     minContainers: 1
-    maxContainers: 4
+    maxContainers: 3
     verticalAutoscaling:
       cpuMode: SHARED
       minCpu: 1
@@ -24,11 +24,18 @@ services:
       maxRam: 2.0
       minDisk: 1.0
       maxDisk: 10.0
-    mount:
-      - storage
 
   # ==========================================
-  # VALKEY 7.2 (SSR FRAGMENT CACHE)
+  # NATS JETSTREAM 2.12 (EVENT BUS & RPC)
+  # ==========================================
+  - hostname: queue
+    type: nats:single@2.12
+    priority: 10
+    verticalAutoscaling:
+      cpuMode: SHARED
+
+  # ==========================================
+  # VALKEY 7.2 (CACHE & RATE LIMITING)
   # ==========================================
   - hostname: cache
     type: valkey:single@7.2
@@ -36,11 +43,17 @@ services:
     priority: 10
 
   # ==========================================
-  # SHARED POSIX STORAGE (PERSISTENT CACHE)
+  # POSTGRESQL 18 (MANAGED DATABASE)
+  # ==========================================
+  - hostname: db
+    type: postgresql:single@18
+    profile: oltp-hobby
+    priority: 10
+
+  # ==========================================
+  # S3 OBJECT STORAGE (MEDIA & ASSETS)
   # ==========================================
   - hostname: storage
-    type: shared-storage:single
+    type: object-storage
+    objectStorageSize: 10
     priority: 10
-    verticalAutoscaling:
-      minDisk: 5.0
-      maxDisk: 50.0

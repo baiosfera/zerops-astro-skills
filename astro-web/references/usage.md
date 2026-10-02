@@ -1,10 +1,10 @@
-# Astro 5 Developer Manual: SSR, Content Layer, Actions, Directus, NATS & Full-Stack Engine (v2.0)
+# Astro 5 Developer Manual: SSR, Content Layer, Actions, Tailwind 4 & Container API (v3.0)
 
-Astro 5 (`astro`) is the premier server-first web framework and Server-Side Rendering (SSR) engine for ultra-high-performance web applications. In Zerops, Astro serves as the sovereign frontend and client portal layer, leveraging Islands Architecture, Server Islands (`server:defer`), Content Layer APIs, type-safe Astro Actions (`astro:actions`), and sub-millisecond inter-service communication with **Directus 11+**, **NATS JetStream**, **Valkey**, **PostgreSQL 18**, and **WhatsApp gateways** ([`evolutiongo`](file:///var/www/.agents/skills/evolutiongo/SKILL.md) / [`evolution-api`](file:///var/www/.agents/skills/evolution-api/SKILL.md)).
+Astro 5 (`astro`) is the premier server-first web framework and Server-Side Rendering (SSR) engine for ultra-high-performance web applications. In Zerops, Astro serves as the sovereign frontend and client portal layer, leveraging Islands Architecture, Server Islands (`server:defer`), Content Layer APIs, type-safe Astro Actions (`astro:actions`), and sub-millisecond inter-service communication with decoupled backends (**NATS JetStream 2.12**, **Valkey 7.2**, **PostgreSQL 18**, and S3 **Object Storage**).
 
 ---
 
-## 1. 4D Comparative Architectural Matrix
+## 1. Matrix: 4D Comparative Architectural Matrix {#1-matrix}
 
 | Dimension | Astro 5 SSR (Target) | Next.js 15 (App Router) | Remix / React Router v7 | Nuxt 3 (Vue) |
 |---|---|---|---|---|
@@ -30,55 +30,69 @@ Astro 5 (`astro`) is the premier server-first web framework and Server-Side Rend
 
 ---
 
-## 2. Content Layer API with Directus Custom Loader (`src/content.config.ts`)
+## 2. Content Layer: Universal Content Loader API (`src/content.config.ts`) {#2-content-layer}
 
-The Astro 5 Content Layer API allows fetching, validating, and caching content collections from Directus with incremental builds:
+The Astro 5 Content Layer API allows fetching, validating, and caching content collections from any headless CMS, database, or API with incremental builds:
 
 ```typescript
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 
-export function directusLoader({ collectionName, directusUrl }: { collectionName: string; directusUrl: string }) {
+export function universalContentLoader({
+  endpoint,
+  collectionName,
+  authToken
+}: {
+  endpoint: string;
+  collectionName: string;
+  authToken?: string;
+}) {
   return {
-    name: `directus-${collectionName}`,
+    name: `universal-loader-${collectionName}`,
     load: async ({ store, logger, parseData }: any) => {
-      logger.info(`Loading collection '${collectionName}' from Directus at ${directusUrl}...`);
-      const res = await fetch(`${directusUrl}/items/${collectionName}?filter[status][_eq]=published`);
-      if (!res.ok) throw new Error(`Directus fetch failed: ${res.statusText}`);
-      
-      const { data } = await res.json();
+      logger.info(`Loading collection '${collectionName}' from ${endpoint}...`);
+      const headers: Record<string, string> = { 'Accept': 'application/json' };
+      if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+      const res = await fetch(endpoint, { headers });
+      if (!res.ok) throw new Error(`Fetch failed for ${collectionName}: ${res.statusText}`);
+
+      const raw = await res.json();
+      const items = Array.isArray(raw) ? raw : (raw.data || []);
       store.clear();
-      
-      for (const item of data) {
-        const parsed = await parseData({ id: String(item.id), data: item });
-        store.set({ id: String(item.id), data: parsed });
+
+      for (const item of items) {
+        const id = String(item.id || item.slug || crypto.randomUUID());
+        const parsed = await parseData({ id, data: item });
+        store.set({ id, data: parsed });
       }
-      logger.info(`Loaded ${data.length} items from Directus collection '${collectionName}'.`);
+      logger.info(`Loaded ${items.length} items for collection '${collectionName}'.`);
     }
   };
 }
 
-const posts = defineCollection({
-  loader: directusLoader({
-    collectionName: 'posts',
-    directusUrl: process.env.PUBLIC_DIRECTUS_URL || 'http://directus:8055'
+const articles = defineCollection({
+  loader: universalContentLoader({
+    endpoint: process.env.CMS_API_URL || 'http://localhost:8055/items/articles',
+    collectionName: 'articles',
+    authToken: process.env.CMS_API_KEY
   }),
   schema: z.object({
     id: z.string(),
     title: z.string(),
     slug: z.string(),
     content: z.string(),
-    status: z.enum(['published', 'draft']),
+    status: z.enum(['published', 'draft']).default('published'),
     published_at: z.string().nullable().optional()
   })
 });
 
-export const collections = { posts };
+export const collections = { articles };
 ```
 
 ---
 
-## 3. Server Islands (`server:defer`) & Clave `ASTRO_KEY`
+## 3. Server Islands: Server Islands (`server:defer`) & Clave `ASTRO_KEY` {#3-server-islands}
 
 Server Islands defer dynamic server components on the page, streaming fallbacks instantly while decrypting encrypted props securely with `ASTRO_KEY`:
 
@@ -87,8 +101,8 @@ Server Islands defer dynamic server components on the page, streaming fallbacks 
 // src/pages/dashboard.astro
 import UserProfile from '../components/UserProfile.astro';
 import ProfileSkeleton from '../components/ProfileSkeleton.astro';
-import LiveKpiIsland from '../components/LiveKpiIsland.astro';
-import KpiSkeleton from '../components/KpiSkeleton.astro';
+import LiveMetricsIsland from '../components/LiveMetricsIsland.astro';
+import MetricsSkeleton from '../components/MetricsSkeleton.astro';
 ---
 
 <main class="container mx-auto px-4 py-8">
@@ -99,27 +113,37 @@ import KpiSkeleton from '../components/KpiSkeleton.astro';
     <ProfileSkeleton slot="fallback" />
   </UserProfile>
 
-  <!-- Server Island 2: Real-Time Commercial KPI Widget -->
+  <!-- Server Island 2: Real-Time Dynamic Widget -->
   <div class="mt-8">
-    <LiveKpiIsland server:defer>
-      <KpiSkeleton slot="fallback" />
-    </LiveKpiIsland>
+    <LiveMetricsIsland server:defer>
+      <MetricsSkeleton slot="fallback" />
+    </LiveMetricsIsland>
   </div>
 </main>
 ```
 
 ---
 
-## 4. 1-Click Google OAuth Component (`GoogleLoginButton.astro`)
+## 4. OAuth: Universal OAuth Component (`OAuthButton.astro`) {#4-oauth}
+
+Agnostic OAuth 2.0 / OIDC component configurable via environment variables without hardcoded provider coupling:
 
 ```astro
 ---
 interface Props {
+  provider?: "google" | "github" | "oidc";
+  label?: string;
   redirectPath?: string;
 }
-const { redirectPath = "/dashboard" } = Astro.props;
-const directusUrl = import.meta.env.PUBLIC_DIRECTUS_URL || "https://cms.yourdomain.com";
-const loginUrl = `${directusUrl}/auth/login/google?redirect=${encodeURIComponent(`https://yourdomain.com${redirectPath}`)}`;
+const {
+  provider = "google",
+  label = "Continuar con Google",
+  redirectPath = "/dashboard"
+} = Astro.props;
+
+const authBaseUrl = import.meta.env.PUBLIC_AUTH_URL || "https://auth.yourdomain.com";
+const returnUrl = encodeURIComponent(`${Astro.url.origin}${redirectPath}`);
+const loginUrl = `${authBaseUrl}/login/${provider}?redirect=${returnUrl}`;
 ---
 
 <a
@@ -132,78 +156,60 @@ const loginUrl = `${directusUrl}/auth/login/google?redirect=${encodeURIComponent
     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
   </svg>
-  <span>Continuar con Google</span>
+  <span>{label}</span>
 </a>
 ```
 
 ---
 
-## 5. Astro Actions with NATS RPC, Directus SDK & Valkey
+## 5. Actions: Astro Actions with NATS RPC & Valkey Rate Limit {#5-actions}
 
 ```typescript
 // src/actions/index.ts
 import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro/zod';
 import { connect, JSONCodec } from 'nats';
-import { createDirectus, rest, createItem, staticToken } from '@directus/sdk';
 import Redis from 'ioredis';
 
 const jc = JSONCodec();
-const valkey = new Redis(process.env.VALKEY_URL || 'redis://cache:6379');
+const valkey = new Redis(process.env.VALKEY_URL || 'redis://valkey:6379');
 
-const directus = createDirectus(process.env.DIRECTUS_URL || 'http://directus:8055')
-  .with(staticToken(process.env.DIRECTUS_STATIC_TOKEN || ''))
-  .with(rest());
+let natsConn: any = null;
+async function getNats() {
+  if (!natsConn || natsConn.isClosed()) {
+    natsConn = await connect({ servers: process.env.NATS_URL || 'nats://nats:4222' });
+  }
+  return natsConn;
+}
 
 export const server = {
-  processOrder: defineAction({
+  submitInquiry: defineAction({
     accept: 'json',
     input: z.object({
-      customerEmail: z.string().email(),
-      customerName: z.string().min(2),
-      customerPhone: z.string().min(10),
-      items: z.array(z.object({ productId: z.string(), quantity: z.number().int().positive() })),
-      totalAmount: z.number().positive(),
+      email: z.string().email(),
+      name: z.string().min(2),
+      message: z.string().min(10)
     }),
     handler: async (input, context) => {
       // 1. Sliding Window Rate Limiting in Valkey
       const clientIp = context.clientAddress || '127.0.0.1';
-      const rateKey = `rate:checkout:${clientIp}`;
+      const rateKey = `rate:inquiry:${clientIp}`;
       const hits = await valkey.incr(rateKey);
       if (hits === 1) await valkey.expire(rateKey, 60);
       if (hits > 10) {
         throw new ActionError({ code: 'TOO_MANY_REQUESTS', message: 'Rate limit exceeded. Please wait a minute.' });
       }
 
-      // 2. Invoke Atomic Inventory Lock RPC via NATS (<0.3ms P99)
-      const nc = await connect({ servers: process.env.NATS_URL || 'nats://nats:4222' });
-      const rpcRes = await nc.request('inventory.lock', jc.encode({ items: input.items }), { timeout: 2000 });
-      const lockData = jc.decode(rpcRes.data) as { success: boolean; lockId?: string; reason?: string };
+      // 2. Publish Domain Event via NATS JetStream
+      const nc = await getNats();
+      const eventPayload = {
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        data: input
+      };
+      nc.publish('events.inquiry.created', jc.encode(eventPayload));
 
-      if (!lockData.success) {
-        throw new ActionError({ code: 'PRECONDITION_FAILED', message: lockData.reason || 'Inventory unavailable.' });
-      }
-
-      // 3. Persist Order in Directus 11+
-      const order = await directus.request(
-        createItem('orders', {
-          customer_email: input.customerEmail,
-          customer_name: input.customerName,
-          customer_phone: input.customerPhone,
-          total_amount: input.totalAmount,
-          status: 'pending_payment',
-          inventory_lock_id: lockData.lockId,
-        })
-      );
-
-      // 4. Trigger Outbound WhatsApp Notification via NATS
-      await nc.publish('events.whatsapp.outbound', jc.encode({
-        phone: input.customerPhone,
-        text: `Hello ${input.customerName}! Your order #${order.id} is confirmed. 🚀`
-      }));
-
-      await nc.drain();
-      return { success: true, orderId: order.id };
+      return { success: true, eventId: eventPayload.id };
     }
   })
 };
@@ -211,53 +217,36 @@ export const server = {
 
 ---
 
-## 6. WhatsApp Live QR Pairing Island (`WhatsAppQrIsland.astro`)
+## 6. Container API: Container API Testing with Vitest {#6-container-api}
 
-```astro
----
-// src/components/WhatsAppQrIsland.astro
-const evogoUrl = process.env.EVOGO_URL || 'http://evolutiongo:8080';
-let qrBase64 = null;
-let status = 'disconnected';
+Astro 5 introduces the experimental Container API to render and test Astro components in unit testing environments:
 
-try {
-  const res = await fetch(`${evogoUrl}/instance/connect/sales-main`, {
-    headers: { 'apikey': process.env.EVOGO_API_KEY || 'key' },
-    signal: AbortSignal.timeout(3000)
+```typescript
+// src/test/container.test.ts
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { expect, test } from 'vitest';
+import OAuthButton from '../components/OAuthButton.astro';
+
+test('OAuthButton renders with custom label', async () => {
+  const container = await AstroContainer.create();
+  const result = await container.renderToString(OAuthButton, {
+    props: { label: 'Iniciar sesión empresarial' }
   });
-  if (res.ok) {
-    const data = await res.json();
-    qrBase64 = data.base64 || data.qrcode;
-    status = data.state || 'connecting';
-  }
-} catch (e) {
-  status = 'error';
-}
----
 
-<div class="p-6 bg-white rounded-xl shadow-md border border-gray-100 max-w-sm mx-auto text-center">
-  <h3 class="text-lg font-bold text-gray-800 mb-2">WhatsApp Gateway Status</h3>
-  <p class="text-sm text-gray-500 mb-4">Estado: <span class="font-semibold text-emerald-600 uppercase">{status}</span></p>
-  
-  {qrBase64 ? (
-    <div class="p-2 border rounded-lg bg-gray-50 inline-block">
-      <img src={qrBase64} alt="WhatsApp QR Code" class="w-64 h-64 object-contain" />
-    </div>
-  ) : (
-    <p class="text-sm text-gray-400 py-8">Instancia conectada o código no disponible.</p>
-  )}
-</div>
+  expect(result).toContain('Iniciar sesión empresarial');
+  expect(result).toContain('svg');
+});
 ```
 
 ---
 
-## 7. Anti-Slop Craft and Design Gate
+## 7. Anti-Slop: Anti-Slop Craft and Design Gate {#7-anti-slop}
 
 The Pre-flight Craft Gate eradicates generic AI layouts (*AI Slop*). Before producing HTML/CSS, the engineer calibrates three fundamental dials:
 
 1. **Variance Dial (Layout & Hierarchy)**:
    - **High Asymmetry**: Break the predictable 3-card grid. Utilize editorial magazine grids, alternating column widths (e.g. 60/40, 70/30), overlapping z-index layers, and full-width display typography.
-   - **Display Typography**: Utilize expressive display fonts from `fontgen` for H1/H2, keeping body copy clean and legible.
+   - **Display Typography**: Utilize expressive display fonts for H1/H2, keeping body copy clean and legible.
 2. **Motion Dial (Kinetic Flow)**:
    - **Hero Dynamism**: Confine rich GSAP animations to the Hero and key section reveals (scroll triggers).
    - **Easing Discipline**: Strictly ban `bounce` or `elastic` easings. Use smooth cubic-bezier (`cubic-bezier(0.16, 1, 0.3, 1)`) or spring mechanics.
@@ -273,30 +262,30 @@ The Pre-flight Craft Gate eradicates generic AI layouts (*AI Slop*). Before prod
 
 ---
 
-## 8. Brandbook Token Ingestion into Tailwind 4
+## 8. Brand Tokens: Brandbook Token Ingestion into Tailwind 4 {#8-brand-tokens}
 
-When a `brandbook.json` (W3C DTCG format) exists in the project or `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`, Astro 5 ingests tokens natively into `src/styles/global.css`:
+When a `brandbook.json` (W3C DTCG format) exists in the project root, Astro 5 ingests tokens natively into `src/styles/global.css`:
 
 ```css
 @import "tailwindcss";
 
 @theme {
   /* Colors from brandbook.json (OKLCH) */
-  --color-brand-primary: var(--brand-color-primary);
-  --color-brand-surface: var(--brand-color-surface);
-  --color-brand-accent: var(--brand-color-accent);
+  --color-brand-primary: var(--brand-color-primary, oklch(0.2 0.05 250));
+  --color-brand-surface: var(--brand-color-surface, oklch(0.98 0.01 250));
+  --color-brand-accent: var(--brand-color-accent, oklch(0.7 0.15 140));
   
-  /* Typography from fontgen */
-  --font-display: var(--brand-font-display), sans-serif;
-  --font-body: var(--brand-font-body), sans-serif;
+  /* Typography tokens */
+  --font-display: var(--brand-font-display, system-ui, sans-serif);
+  --font-body: var(--brand-font-body, system-ui, sans-serif);
   
-  /* Motion from kinetic */
+  /* Motion tokens */
   --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-reveal: 600ms;
 }
 ```
 
-This ensures that UI components consume `--color-brand-primary` directly without manual color re-definitions.
+Components consume `--color-brand-primary` directly without manual color re-definitions.
 
 ---
 
@@ -307,28 +296,6 @@ Every Astro 5 deployment must guard against the 3 invisible traps:
 1. **SEO & Social Preview Head (`SeoHead.astro`)**:
    Mandatory `<head>` tags: OpenGraph (`og:image`, `og:title`, `og:description`), Twitter cards (`summary_large_image`), canonical URLs, and Schema.org JSON-LD.
 2. **Sovereign RGPD/GDPR Cookie Script-Blocker (`CookieConsent.astro`)**:
-   Analytics scripts are embedded with `<script type="text/plain" data-category="analytics">`. They execute strictly after explicit user acceptance, avoiding EU fines without third-party tracker fees.
+   Analytics scripts are embedded with `<script type="text/plain" data-category="analytics">`. They execute strictly after explicit user acceptance.
 3. **Decoupled Form Processing (`ContactAction.ts`)**:
-   Forms submit via Astro Actions (`defineAction`) with Zod validation. The backend dispatches dynamically:
-   - Directus (if provisioned).
-   - PostgreSQL (if provisioned).
-   - Web3Forms API (free-tier static fallback without servers).
-   - NATS JetStream (if asynchronous event queueing is active).
-
----
-
-## 10. Production Patterns & Anti-Patterns
-
-### 5 Production Patterns in Zerops:
-1. **High-Performance E-Commerce**: Astro Actions + NATS RPC + Directus/PostgreSQL.
-2. **Customer Portal**: Server Islands + Google OAuth + Valkey cache.
-3. **Dynamic Content Hub**: Content Layer + incremental caching.
-4. **Real-Time Admin**: Directus WebSockets / NATS PubSub.
-5. **WhatsApp Support**: Live pairing QR island (`evolutiongo`).
-
-### Anti-Patterns:
-1. **Hardcoding Directus**: Assuming Directus is mandatory for simple landings.
-2. **Token Bloat 3D (`img to 3js`)**: Burning 500k tokens to generate raw Three.js geometry instead of using lightweight canvas shaders or SVG animations.
-3. **Fake Contact Forms**: Handling forms with empty `alert()` calls that drop customer inquiries.
-4. **Untinted Flat Grays**: Using generic `#111111` or `#808080` without chromatic personality.
-
+   Forms submit via Astro Actions (`defineAction`) with Zod validation, dispatching dynamically to PostgreSQL, NATS, or fallback HTTP webhooks.
