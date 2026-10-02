@@ -1,4 +1,4 @@
-# Planner Reference Manual: Operational Usage & Dual-RAG Architecture (v3.6)
+# Planner Reference Manual: Operational Usage & Dual-RAG Architecture (v3.7)
 
 > **SSoT Reference Document:** `/var/www/.agents/skills/planner/references/usage.md`  
 > **Meta-Skill:** [`planner`](file:///var/www/.agents/skills/planner/SKILL.md)  
@@ -68,13 +68,13 @@ La meta-skill `planner` no es un documento estático ni un receptor pasivo de te
 
 ---
 
-## 2. Gobernanza Dual-Track SSoT & Máquina de Estados F0–F5
+## 2. Gobernanza Tri-Track SSoT & Máquina de Estados F0–F5
 
-Todo plan generado bajo `planner` se bifurca formalmente en una de dos pistas operativas:
+Todo plan generado bajo `planner` se bifurca formalmente en una de tres pistas operativas:
 
 ### 2.1 Track A: Skill Governance & SSoT Tooling
-Aplica a cambios en el ecosistema de habilidades (`.agents/skills/`), scripts de sistema (`scripts/`) y directivas de gobernanza.
-Ejecuta de forma irrevocable la **Topología Cerrada de 8 Nodos**:
+Aplica a cambios en el ecosistema de habilidades (`.agents/skills/`), scripts Python de plataforma, scripts aprovisionadores (`setup-*.sh`, `unisetup.sh`, `iniciar.sh`) y directivas de gobernanza maestras.
+Ejecuta de forma rigurosa la **Topología Cerrada de 8 Nodos**:
 1. **$N_1$ (Backup Pre-Mutación):** Snapshot plano $O(1)$ en `0zcp-123/bak/skills/<name>_v<ver>_<date>.bak/` o `0zcp-123/bak/scripts/<name>_<date>.bak`.
 2. **$N_2$ (Mapeo SSoT unisetup.sh):** Registro del activo en `unisetup.sh` y scripts provisionadores correspondientes.
 3. **$N_3$ (SemVer Invariant):** Incremento semántico en YAML frontmatter y cabeceras de script.
@@ -85,10 +85,17 @@ Ejecuta de forma irrevocable la **Topología Cerrada de 8 Nodos**:
 8. **$N_8$ (Auto-Purge & LTM):** Purga de planes temporales en `/var/www/artifacts/` y persistencia en Engram mediante `mem_save`.
 
 ### 2.2 Track B: Zerops Workload Deployment
-Aplica a código de aplicaciones, microservicios, bases de datos y pipelines de CI/CD en Zerops.
+Aplica a código de aplicaciones, microservicios, bases de datos y pipelines de CI/CD en Zerops (`/var/www/{service}/`).
 - Consume [`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) y [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md) como tablas de enrutamiento.
+- **Rollback y versionado NATIVO en Git/GitHub:** El control de versiones y rollback de código se delega soberanamente a Git/GitHub (ramas, tags y commits), eliminando respaldos monolíticos de repositorios hacia carpetas `.bak`.
+- **Exención de 8 Nodos y Backups Redundantes:** Despliegues greenfield (servicios nuevos) o cambios en repositorios prescinden de respaldo pre-mutación en `bak/` y pasos de `unisetup.sh`.
 - Validación pre-vuelo estricta con `zcp-validate yaml <import.yaml>`.
 - Despliegue GitOps y verificación en vivo vía subdominio Zerops (`HTTP 200 OK`).
+
+### 2.3 Track C: Direct SSoT Data, Content & Business Assets
+Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de configuración de negocio, plantillas de correo y assets en Google Drive (`/var/www/baiosfera/...`).
+- **Cero ceremonias de plataforma:** Prescinde de respaldos en `bak/` (Google Drive provee historial nativo de versiones y papelera), `unisetup.sh`, SemVer en frontmatter y refresco de `skill-registry`.
+- **Ciclo ágil:** Paso 1 (Grounding e Inspección), Paso 2 (Mutación Quirúrgica / Transformación), Paso 3 (Validación de Integridad de Esquemas / Links) y Paso 4 (Persistencia en Engram LTM vía `mem_save`).
 
 ---
 

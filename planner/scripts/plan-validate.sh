@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Deterministic Physical Plan Linter & Validation Sensor (plan-validate.sh)
-# Version: 2.3 (Physical 8-Node Loop, Root Uniqueness & Zero-Omission Standard)
+# Version: 2.4 (Tri-Track Decoupled Lifecycle & Monolithic Backup Guard)
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
@@ -72,10 +72,21 @@ else
 fi
 
 # 2. Declaración de Track
-if grep -qE "Track A|Track B" "$PLAN_PATH"; then
-    echo "✓ Clasificación de Track validada (Track A / Track B)"
+IS_TRACK_A=0
+IS_TRACK_B=0
+IS_TRACK_C=0
+
+if grep -qiE "Track A" "$PLAN_PATH"; then
+    IS_TRACK_A=1
+    echo "✓ Clasificación de Track validada: Track A (Gobernanza, Skills & Platform Tooling)"
+elif grep -qiE "Track B" "$PLAN_PATH"; then
+    IS_TRACK_B=1
+    echo "✓ Clasificación de Track validada: Track B (Zerops Workloads & App Repos)"
+elif grep -qiE "Track C" "$PLAN_PATH"; then
+    IS_TRACK_C=1
+    echo "✓ Clasificación de Track validada: Track C (Direct SSoT Data & Content Ops)"
 else
-    echo "❌ Falta declaración explícita de Track (Track A o Track B)"
+    echo "❌ Falta declaración explícita de Track (Track A, Track B o Track C)"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -105,76 +116,113 @@ fi
 
 # 6. Sección 4: Nodos / Pasos de Ejecución
 if grep -q "## 4. Plan de Ejecución" "$PLAN_PATH"; then
-    echo "✓ Sección 4 (Plan de Ejecución Paso a Paso) presente"
-    # 6.1 Bucle Canónico de 8 Nodos en Sección 4 (Regla 5 de Planner & Zero-Omission Gate)
+    echo "✓ Sección 4 (Plan de Ejecución) presente"
     SECTION_4_TEXT=$(sed -n '/## 4\. Plan de Ejecución/,/## 5/p' "$PLAN_PATH")
-    MISSING_NODES=0
-    for i in {1..8}; do
-        if echo "$SECTION_4_TEXT" | grep -qiE "(Nodo $i|Paso $i)"; then
-            continue
-        else
-            echo "❌ Violación de Regla 5 de Planner: Falta el Nodo $i (o Paso $i) en Sección 4"
-            MISSING_NODES=$((MISSING_NODES + 1))
-            ERRORS=$((ERRORS + 1))
-        fi
-    done
-    if [ "$MISSING_NODES" -eq 0 ]; then
-        echo "✓ Topología cerrada de 8 Nodos canónicos (N1 a N8) validada en Sección 4"
-    fi
-else
-    echo "❌ Falta Sección 4 (Plan de Ejecución Paso a Paso)"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# 7. Regla 2 de Planner: Respaldo Pre-Mutación Versionado y Fechado
-if grep -qiE "(Nodo 1|Paso 1).*Backup" "$PLAN_PATH"; then
-    # Verificar que no contenga .bak sin versión ni fecha
-    if grep -qE '\.bak([[:space:]]|$|/|`|\*)' "$PLAN_PATH"; then
-        UNVERSIONED_BAKS=$(grep -oE '[a-zA-Z0-9_\.\-\$\(\)\+%:~]+(\.bak|\.bak/)' "$PLAN_PATH" | grep -vE '(_v[0-9]|\$|date|_202[0-9]|%Y|%m|\+|[0-9]{8}_[0-9]{6}|_bak|\.bak/)' || true)
-        if [ -n "$UNVERSIONED_BAKS" ]; then
-            echo "❌ Violación de Regla 2 de Planner: Se detectaron respaldos .bak planos sin versionamiento semántico (_v) ni fecha:"
-            echo "$UNVERSIONED_BAKS" | while read -r line; do echo "    - $line"; done
-            ERRORS=$((ERRORS + 1))
-        else
-            echo "✓ Respaldos pre-mutación cumplen sintaxis versionada y fechada (Regla 2)"
+    if [ "$IS_TRACK_A" -eq 1 ]; then
+        # 6.1 Bucle Canónico de 8 Nodos en Sección 4 (Regla 5 de Planner para Track A)
+        MISSING_NODES=0
+        for i in {1..8}; do
+            if echo "$SECTION_4_TEXT" | grep -qiE "(Nodo $i|Paso $i)"; then
+                continue
+            else
+                echo "❌ Violación de Regla 5 de Planner: Falta el Nodo $i (o Paso $i) en Sección 4 para Track A"
+                MISSING_NODES=$((MISSING_NODES + 1))
+                ERRORS=$((ERRORS + 1))
+            fi
+        done
+        if [ "$MISSING_NODES" -eq 0 ]; then
+            echo "✓ Topología cerrada de 8 Nodos canónicos (N1 a N8) validada en Sección 4 (Track A)"
         fi
     else
-        echo "✓ Respaldos pre-mutación formalizados con nomenclatura canónica"
+        # Para Track B y Track C: validar pasos/hitos modulares (mínimo 2 pasos o secciones)
+        STEP_COUNT=$(echo "$SECTION_4_TEXT" | grep -ciE "(###|Paso|Nodo|Fase|Hito)" || true)
+        if [ "$STEP_COUNT" -ge 2 ]; then
+            echo "✓ Estructura de ejecución modular validada en Sección 4 ($STEP_COUNT pasos/hitos detectados)"
+        else
+            echo "❌ Sección 4 carece de pasos o hitos de ejecución suficientes (mínimo 2 requeridos)"
+            ERRORS=$((ERRORS + 1))
+        fi
     fi
 else
-    echo "❌ Falta declaración explícita de Nodo/Paso 1 de Respaldos Pre-Mutación (N1)"
+    echo "❌ Falta Sección 4 (Plan de Ejecución)"
     ERRORS=$((ERRORS + 1))
 fi
 
-# 8. SSoT Indivisibility & unisetup.sh Mapping
-if grep -qiE "(unisetup|0zcp-123/scripts|0zcp-123)" "$PLAN_PATH"; then
-    echo "✓ Mapeo SSoT a unisetup.sh y Google Drive validado"
-else
-    echo "❌ Violación SSoT: El plan no contempla sincronización hacia unisetup.sh ni Google Drive"
+# 6.2 Prohibición Estricta de Backups Monolíticos de Repositorios (Universal)
+if grep -qiE '(cp\s+-[a-zA-Z]*r[a-zA-Z]*\s+[^[:space:]]*(\.git|/var/www/zerops-astrobranding|/var/www/elplacerdc)\s+.*bak|bak/(repos?|monorepos?)/|bak/[a-zA-Z0-9_-]+_repo)' "$PLAN_PATH"; then
+    echo "❌ Violación de Soberanía Git: Prohibido respaldar repositorios enteros hacia carpetas .bak. El control de versiones y rollback de código es nativo de Git/GitHub."
     ERRORS=$((ERRORS + 1))
+else
+    echo "✓ Cero respaldos monolíticos de repositorios en el plan (Soberanía Git validada)"
+fi
+
+# 7. Regla 2 de Planner: Respaldo Pre-Mutación Versionado y Fechado (Obligatorio en Track A, Exento en Track B/C)
+if [ "$IS_TRACK_A" -eq 1 ]; then
+    if grep -qiE "(Nodo 1|Paso 1).*Backup" "$PLAN_PATH"; then
+        # Verificar que no contenga .bak sin versión ni fecha
+        if grep -qE '\.bak([[:space:]]|$|/|`|\*)' "$PLAN_PATH"; then
+            UNVERSIONED_BAKS=$(grep -oE '[a-zA-Z0-9_\.\-\$\(\)\+%:~]+(\.bak|\.bak/)' "$PLAN_PATH" | grep -vE '(_v[0-9]|\$|date|_202[0-9]|%Y|%m|\+|[0-9]{8}_[0-9]{6}|_bak|\.bak/)' || true)
+            if [ -n "$UNVERSIONED_BAKS" ]; then
+                echo "❌ Violación de Regla 2 de Planner: Se detectaron respaldos .bak planos sin versionamiento semántico (_v) ni fecha:"
+                echo "$UNVERSIONED_BAKS" | while read -r line; do echo "    - $line"; done
+                ERRORS=$((ERRORS + 1))
+            else
+                echo "✓ Respaldos pre-mutación cumplen sintaxis versionada y fechada (Regla 2)"
+            fi
+        else
+            echo "✓ Respaldos pre-mutación formalizados con nomenclatura canónica"
+        fi
+    else
+        echo "❌ Falta declaración explícita de Nodo/Paso 1 de Respaldos Pre-Mutación (N1) para Track A"
+        ERRORS=$((ERRORS + 1))
+    fi
+else
+    echo "✓ Track B/C: Exención de respaldo pre-mutación en bak/ validada (versionado nativo Git / Drive SSoT)"
+fi
+
+# 8. SSoT Indivisibility & unisetup.sh Mapping (Obligatorio en Track A)
+if [ "$IS_TRACK_A" -eq 1 ]; then
+    if grep -qiE "(unisetup|0zcp-123/scripts|0zcp-123)" "$PLAN_PATH"; then
+        echo "✓ Mapeo SSoT a unisetup.sh y Google Drive validado para Track A"
+    else
+        echo "❌ Violación SSoT: Los planes de Track A deben contemplar sincronización hacia unisetup.sh y Google Drive"
+        ERRORS=$((ERRORS + 1))
+    fi
+else
+    echo "✓ Track B/C: Mapeo de SSoT desacoplado a su entorno correspondiente"
 fi
 
 # 9. Sección 5: Matriz de Control de Atestación
 if grep -q "## 5.*Matriz de Control" "$PLAN_PATH"; then
-    if grep -qiE "(exit code 0|exit 0)" "$PLAN_PATH"; then
+    if grep -qiE "(exit code 0|exit 0|HTTP 200|200 OK|exitcode 0)" "$PLAN_PATH"; then
         echo "✓ Sección 5 (Matriz de Control con sensores de atestación física) presente"
-        # 9.1 Atestación de los 8 Nodos en Matriz de Control (Sección 5)
         SECTION_5_TEXT=$(sed -n '/## 5.*Matriz de Control/,/## 6/p' "$PLAN_PATH")
-        MISSING_MATRIX_NODES=0
-        for i in {1..8}; do
-            if echo "$SECTION_5_TEXT" | grep -qiE "(\\\$N_$i\\\$|Nodo $i|Paso $i|N$i\b)"; then
-                continue
+        if [ "$IS_TRACK_A" -eq 1 ]; then
+            # 9.1 Atestación de los 8 Nodos en Matriz de Control (Track A)
+            MISSING_MATRIX_NODES=0
+            for i in {1..8}; do
+                if echo "$SECTION_5_TEXT" | grep -qiE "(\\\$N_$i\\\$|Nodo $i|Paso $i|N$i\b)"; then
+                    continue
+                else
+                    echo "❌ Falta fila de control para el Nodo $i (N$i) en Matriz de Control (Sección 5) para Track A"
+                    MISSING_MATRIX_NODES=$((MISSING_MATRIX_NODES + 1))
+                    ERRORS=$((ERRORS + 1))
+                fi
+            done
+            if [ "$MISSING_MATRIX_NODES" -eq 0 ]; then
+                echo "✓ Matriz de Control atestigua formalmente los 8 Nodos canónicos (N1 a N8) para Track A"
+            fi
+        else
+            # Para Track B y Track C: validar que contenga tabla Markdown estructurada
+            if echo "$SECTION_5_TEXT" | grep -qiE "(\|.*\|.*\|)"; then
+                echo "✓ Matriz de Control estructurada en tabla Markdown validada (Track B/C)"
             else
-                echo "❌ Falta fila de control para el Nodo $i (N$i) en Matriz de Control (Sección 5)"
-                MISSING_MATRIX_NODES=$((MISSING_MATRIX_NODES + 1))
+                echo "❌ La Matriz de Control debe contener una tabla estructurada de criterios de aceptación"
                 ERRORS=$((ERRORS + 1))
             fi
-        done
-        if [ "$MISSING_MATRIX_NODES" -eq 0 ]; then
-            echo "✓ Matriz de Control atestigua formalmente los 8 Nodos canónicos (N1 a N8)"
         fi
     else
-        echo "❌ La Matriz de Control no especifica sensores deterministas (exit 0)"
+        echo "❌ La Matriz de Control no especifica sensores deterministas (exit 0 / HTTP 200)"
         ERRORS=$((ERRORS + 1))
     fi
 else

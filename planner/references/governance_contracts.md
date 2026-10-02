@@ -1,4 +1,4 @@
-# Planner Reference Manual: Governance Contracts, SSoT & Backups Policy (v2.0)
+# Planner Reference Manual: Governance Contracts, SSoT & Backups Policy (v2.1)
 
 > **SSoT Reference Document:** `/var/www/.agents/skills/planner/references/governance_contracts.md`  
 > **Meta-Skill:** [`planner`](file:///var/www/.agents/skills/planner/SKILL.md)  
@@ -22,7 +22,8 @@
   * Skill snapshots are preserved strictly as uncompressed individual directories directly in:
     `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<version>.bak/`
   * Taxonomy is strictly flat and individual: each skill snapshot resides directly under `bak/skills/` without grouping folders, task-named directories, or archive formats (`.tar.gz`, `.zip`).
-  * **Track B Exemption:** Application code and Zerops service deployments (Track B) deploy through Git/SSH and follow application runtime release practices.
+  * **Strict Prohibition of Monolithic Repository Backups:** Code repositories (`zerops-astrobranding`, `elplacerdc`, etc.) and entire project folders rely exclusively on native Git/GitHub version control (`git commit`, `git tag`, `git checkout`). Creating `.bak` snapshots of whole repositories or monorepos to `bak/` or Google Drive is strictly prohibited to prevent storage bloat and workflow contamination.
+  * **Track B and C Exemption:** Application code, Zerops service deployments (Track B), and direct Google Drive content/data ops (Track C) are exempt from `bak/` snapshots.
 
 ---
 
@@ -85,12 +86,12 @@
 
 ---
 
-## 6. Dual-Track Governance Contract & Mandatory Closed-Topology Sensor Gate
+## 6. Tri-Track Governance Contract & Mandatory Closed-Topology Sensor Gate
 
 - **Track A (Skill Governance & SSoT Tooling):**
-  * Applies to: Skills, rules, provisioning scripts.
+  * Applies to: Skills (`.agents/skills/`), Python platform scripts (`.bin/hooks/tool-guard.py`, etc.), provisioning scripts (`setup-*.sh`, `unisetup.sh`, `iniciar.sh`), core rules (`AGENTS.md`, `00-SUPREME-DIRECTIVE.md`).
   * Mandatory Closed Sequence (Rule 5): Plans instantiate all 8 canonical nodes:
-    1. $N_1$: Flat uncompressed pre-mutation backup in `bak/skills/<skill>_v<version>.bak/`.
+    1. $N_1$: Flat uncompressed pre-mutation backup in `bak/skills/<skill>_v<version>.bak/` or `bak/scripts/<name>_<date>.bak`.
     2. $N_2$: `unisetup.sh-first` parity and Google Drive mirror synchronization.
     3. $N_3$: Semver version bump in YAML frontmatter and internal scripts.
     4. $N_4$: Zero Deletion Invariant audit via `skill-improver` and CoHaLo positive guidance.
@@ -100,10 +101,16 @@
     8. $N_8$: Clean auto-purge (`rm -f /var/www/artifacts/...`) and Engram LTM commit (`mem_save`).
   * Rejection Invariant: Delegating $N_7$ to installer side-effects or omitting any of the 8 nodes in Section 4 or Section 5 triggers immediate plan rejection.
 - **Track B (Zerops Workload Deployment):**
-  * Applies to: Application code, Zerops services, database migrations, CI/CD pipelines.
+  * Applies to: Application code, Zerops services, database migrations, CI/CD pipelines (`/var/www/{service}/`).
+  * Versioning & Rollback: Native Git/GitHub commits, tags, and branches. Zero whole-repo `.bak` copies.
+  * Agile Lifecycle: Structured execution steps adapted to the workload (e.g. Topology / Manifests, Provision / Migrations, Build / Deploy, E2E Verification & Healthcheck HTTP 200).
   * Mandatory Pre-Condition: `zcp-validate yaml <import.yaml>`.
   * Master Dispatch Umbrella Rule: Umbrella skills ([`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) and [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md)) operate strictly as routing tables, never as hostnames.
   * Domain Isolation: Operates exclusively on application code and Zerops service runtimes, isolating tooling files and SSoT infrastructure from application deploys.
+- **Track C (Direct SSoT Data & Content Ops):**
+  * Applies to: Direct modifications of business data, Markdown documents, brandbooks, JSON configurations, email templates, and assets in Google Drive (`/var/www/baiosfera/...`).
+  * Versioning & Rollback: Google Drive native version history and trash. Zero `bak/` requirements.
+  * Agile Content Lifecycle: Inspection / Grounding, Surgical Mutation, Integrity & Links Validation, LTM Commit via `mem_save`.
 
 ---
 

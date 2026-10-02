@@ -4,20 +4,20 @@ description: "Trigger: planner, plan, master-plan, planificar, crear plan, dise�
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "8.7"
+  version: "8.8"
 ---
 
-# Planner — Universal Master Planning & SSoT Governance Orchestrator (v8.7)
+# Planner — Universal Master Planning & SSoT Governance Orchestrator (v8.8)
 
 ## Activation Contract
 Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Bounded tasks execute inline without ceremonial plans. Eradicates checklist theater.
 
 ## Hard Rules (Positive Guidance)
 - **Rule 1 (CoHaLo Positive Guidance & Continuous Present Inflow)**: Anchors decisions to live runtime state (`date -u`). Grounding follows [`research`](file:///var/www/.agents/skills/research/SKILL.md) inline or via subagent. Details in [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md).
-- **Rule 2 (Dual-Track SSoT Governance & Lifecycle Bifurcation)**: Track A (Skills) executes via [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) through the 8-node harness, preserving snapshots at `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<current_version>.bak/`. Track B governs Zerops monorepos.
+- **Rule 2 (Dual-Track SSoT Governance & Lifecycle Bifurcation)**: Tri-Track lifecycle: Track A (Skills, Python platform scripts, setup-*) executes via [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) through the 8-node harness with atomic snapshots in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<current_version>.bak/`. Track B governs Zerops workloads with native Git/GitHub rollback (zero whole-repo bak). Track C governs direct SSoT data and content ops.
 - **Rule 3 (Immutable Plan Versions, Anti-Amnesia Consolidation & Token Economy)**: In `/var/www/artifacts/` there is strictly EXACTLY ONE active plan per workflow (`<name>_vN.md`, 50–80 lines). Prior drafts are atomically moved to `artifacts/archive/<name>_v(N-1).md` via the deterministic CLI `plan-archive`. F4 validates via `plan-validate` and HALTS. Resumption requires explicit user Go (`Go`, `si`). On execution completion in F5, `plan-archive <plan> --executed` archives the final executed plan, leaving the active root clean. Handover assets (`_handover`, `_blueprint`, `_roadmap`, `_dossier`) are permanent and immune. Epics sync to Linear.
 - **Rule 4 (SSoT Indivisibility & Universal Clean-Room Virgin ZCP Law)**: Tooling assets reside in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/` and provision via `unisetup.sh`. Clean-room benchmark requires 0 drift (`ssot-parity-check` exit 0).
-- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: Executes the closed 8-node sequence ($N_1$ Backup $\to$ $N_2$ `unisetup.sh` SSoT $\to$ $N_3$ SemVer $\to$ $N_4$ Zero Deletion / CoHaLo $\to$ $N_5$ Drive Mirror $\to$ $N_6$ Physical Sensors $\to$ $N_7$ Skill Registry $\to$ $N_8$ Auto-Purge & LTM).
+- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: Executes the closed 8-node sequence ($N_1$ Backup $\to$ $N_2$ `unisetup.sh` SSoT $\to$ $N_3$ SemVer $\to$ $N_4$ Zero Deletion / CoHaLo $\to$ $N_5$ Drive Mirror $\to$ $N_6$ Physical Sensors $\to$ $N_7$ Skill Registry $\to$ $N_8$ Auto-Purge & LTM) strictly on Track A. Track B and C execute domain-native agile steps.
 
 ## Decision Gates
 
@@ -37,7 +37,7 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 3. **F2 (Dual-RAG Pre-Plan)**: Verify [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) and map closed 8-node sequence.
 4. **F3 (Validation Feedforward)**: Validate topology with static linters (`zcp-validate`).
 5. **F4 (Plan Offload & Halt)**: Write condensed plan to `/var/www/artifacts/<plan_name>_v1.md`, archive prior versions via `plan-archive`, validate with `plan-validate` (exit 0), and HALT for user Go.
-6. **F5 (Execution & Purge)**: Execute 8 nodes ($N_1$ to $N_8$). Bounded execution (`timeout 10s`). Archive plan via `plan-archive <plan> --executed`, verify root artifacts cleanliness, and commit (`mem_save`).
+6. **F5 (Execution & Purge)**: Execute Track steps (8 nodes $N_1$ to $N_8$ for Track A; agile deployment/verification milestones for Track B/C). Bounded execution (`timeout 10s`). Archive plan via `plan-archive <plan> --executed`, verify root artifacts cleanliness, and commit (`mem_save`).
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)

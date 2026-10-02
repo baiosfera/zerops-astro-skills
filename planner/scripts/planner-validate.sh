@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Planner Skill Validation Harness & Structure Sensor (v3.7 — Standard v3.1)
+# Planner Skill Validation Harness & Structure Sensor (v3.8 — Standard v3.1)
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
@@ -12,7 +12,7 @@ trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/nul
 ERRORS=0
 
 echo "============================================================"
-echo "  [Planner v3.7] Sensor de Validación CoHaLo SOTA (v3.1)"
+echo "  [Planner v3.8] Sensor de Validación CoHaLo SOTA (v3.1)"
 echo "============================================================"
 
 # 1. Validar integridad de archivos SSoT
@@ -138,7 +138,7 @@ echo "  ✓ Enlaces físicos file:/// validados en disco sin 404s."
 
 echo "============================================================"
 if [ "$ERRORS" -eq 0 ]; then
-    echo "  ✅ Validación EXITOSA: Skill Planner v3.7 al 100% de integridad física."
+    echo "  ✅ Validación EXITOSA: Skill Planner v3.8 al 100% de integridad física."
     exit 0
 else
     echo "  ❌ Validación FALLIDA con $ERRORS errores."

@@ -1,4 +1,4 @@
-# Planner Reference Manual: Control Matrix & Attestation Standard (v1.1)
+# Planner Reference Manual: Control Matrix & Attestation Standard (v1.2)
 
 Este manual establece la estructura normativa obligatoria para la **Matriz de Control y Criterios de Aceptación** que debe incluirse al final de cada plan maestro.
 
@@ -9,8 +9,8 @@ Este manual establece la estructura normativa obligatoria para la **Matriz de Co
 Todo plan diseñado bajo la skill `planner` DEBE culminar con una tabla estructurada que defina:
 1. **Entregable / Componente:** El elemento técnico que se creará, mutará o eliminará.
 2. **Ruta SSoT:** La ruta absoluta del archivo en el workspace (`/var/www/...`).
-3. **Backup Pre-Mutación en `bak/`:** La ruta exacta del archivo individual `.bak` generado antes de mutar ($N_1$).
-4. **Versión Semver:** La versión resultante del archivo (`v1.0`, `v5.3`, `v6.0`, etc.) ($N_3$).
+3. **Backup Pre-Mutación en `bak/`:** La ruta exacta del archivo individual `.bak` generado antes de mutar ($N_1$, obligatorio exclusivamente en Track A).
+4. **Versión Semver:** La versión resultante del archivo (`v1.0`, `v5.3`, `v6.0`, etc.) ($N_3$, obligatorio en Track A).
 5. **Sensor de Atestación Física:** El comando determinista que atestará el éxito de la operación (`exit code 0`, prueba CLI, `zerops_verify`) ($N_6, N_7$).
 
 ---
@@ -44,5 +44,19 @@ Todo plan diseñado bajo la skill `planner` DEBE culminar con una tabla estructu
 | Manifiesto Zerops | `/var/www/{service}/zerops.yaml` | `zcp-validate yaml` | `zerops_deploy` | Despliegue exitoso sin errores |
 | Runtime de Servicio | `/var/www/{service}/` | Lint / Build local | `ssh {service} "npm test"` | Tests internos pasando (exit 0) |
 | Healthcheck de Red | URL de Subdominio Zerops | `zerops_subdomain` | `curl -f -s -o /dev/null -w "%{http_code}" <url>` | HTTP 200 OK |
+| Limpieza & LTM | `/var/www/artifacts/<plan>*.md` | N/A | `mem_save` | Auto-Purge ejecutado & LTM commit |
+```
+
+---
+
+## 4. Esquema Estándar en Markdown (Track C: Direct SSoT Data & Content Ops)
+
+```markdown
+## 5. 🚦 Matriz de Control y Criterios de Aceptación
+
+| Archivo / Asset | Ruta en Google Drive | Validación Previa | Sensor de Atestación | Criterio de Aceptación |
+|---|---|---|---|---|
+| Esquema / Configuración | `/var/www/baiosfera/...` | Linter / JSON Parser | `python3 -m json.tool <file>` | Sintaxis válida (exit 0) |
+| Documento / Markdown | `/var/www/baiosfera/...` | Verificación de Enlaces | `test -f <file>` | Archivo íntegro en disco |
 | Limpieza & LTM | `/var/www/artifacts/<plan>*.md` | N/A | `mem_save` | Auto-Purge ejecutado & LTM commit |
 ```

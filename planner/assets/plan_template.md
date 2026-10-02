@@ -8,7 +8,7 @@
 > - [`Ley de Indivisibilidad SSoT (unisetup.sh-first)`](file:///var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/unisetup.sh) (Replicabilidad Limpia Soberana en Contenedor Virgen)  
 > - *[Skills Especializadas Adicionales]: Declarar ÚNICAMENTE si la tarea ejecuta su arnés físico y cuenta con un sensor determinista en la Matriz de Control (Sección 5).*  
 >  
-> **Plan Track:** `[Track A: Skill Governance & SSoT Tooling | Track B: Zerops Workload Deployment]`  
+> **Plan Track:** `[Track A: Skill Governance & SSoT Tooling | Track B: Zerops Workload Deployment | Track C: Direct SSoT Data & Content Ops]`  
 > **Linear Roadmap Sync (Opcional Epics):** `[Linear Issue ID / URL o N/A para tareas locales]`  
 > **Estado de Aprobación:** `[Pendiente de Aprobación Human-in-the-Loop (F4 Halt Gate) | En Ejecución]`
 
@@ -34,7 +34,7 @@ flowchart TD
     B --> C["F2: Pre-Plan Dual-RAG"]
     C --> D["F3: Validación Feedforward"]
     D --> E["F4: Plan Offloading & Halt"]
-    E --> F["F5: Ejecución Cerrada de 8 Nodos"]
+    E --> F["F5: Ejecución Cerrada de 8 Nodos (Track A) / Hitos Ágiles (Track B/C)"]
 ```
 
 ---
@@ -42,9 +42,10 @@ flowchart TD
 ## 3. Invariantes y Reglas No Negociables
 
 1. **Invariante de Dominio:** [Regla de arquitectura o negocio].
-2. **Clasificación Dual-Track:**
-   - **Track A (Skills):** Modificación de tooling. Requiere `bak/skills/`, 100% Technical English, Semver bump, SSoT mirror a `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/` y refresco obligatorio de `skill-registry`.
-   - **Track B (Zerops):** Despliegue de workloads. [`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) y [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md) operan estrictamente como tablas de enrutamiento y despacho hacia servicios con nombres de host específicos.
+2. **Clasificación Tri-Track:**
+   - **Track A (Skills & Tooling):** Modificación de tooling/skills/python/scripts. Requiere `bak/skills/`, 100% Technical English, Semver bump, SSoT mirror a `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/` y refresco obligatorio de `skill-registry`.
+   - **Track B (Zerops Workloads):** Despliegue de workloads. [`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) y [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md) operan como tablas de enrutamiento. Versionado nativo en Git/GitHub (cero bak de repositorios enteros).
+   - **Track C (Direct SSoT Data/Content):** Ediciones directas en Google Drive (`/var/www/baiosfera/...`). Cero ceremonias de 8 nodos; validación basada en integridad y links.
 3. **Invariante de Cero Eliminación (Skill-Improver):** Toda lógica previa, heurística o especificación técnica se preserva íntegramente mediante modularización a `references/` o `assets/`.
 4. **Dual-Anchor Pattern:** Rutas absolutas navegables obligatorias (`file:///`) en encabezado y cuerpo.
 5. **Principio unisetup.sh-first & Contenedor Virgen (Track A):** La solución de gobernanza/tooling debe integrarse y ser reproducible en una corrida limpia de `unisetup.sh` en un proyecto virgen sin drift.
@@ -54,9 +55,11 @@ flowchart TD
 
 ---
 
-## 4. Plan de Ejecución Inmediato (Paso a Paso — Track A: 8 Nodos Cerrados)
+## 4. Plan de Ejecución Inmediato (Paso a Paso)
 
-### 🔹 Nodo 1: Backup Pre-Mutación Versionado y Fechado ($N_1$)
+> *Nota de Arquitectura:* Track A ejecuta estrictamente los 8 Nodos cerrados ($N_1$ a $N_8$). Para Track B (Workloads) y Track C (Data & Content Ops), los pasos son modulares y adaptados al dominio (mínimo 2 pasos/hitos, ej: Configuración/Topología, Despliegue/Transformación, Healthchecks HTTP 200/Integridad).
+
+### 🔹 Nodo 1: Backup Pre-Mutación Versionado y Fechado ($N_1$ — Obligatorio en Track A)
 - Crear respaldo plano individual en `0zcp-123/bak/skills/<name>_v<ver>_<date>.bak/`.
 
 ### 🔹 Nodo 2: Mapeo SSoT unisetup.sh & Generadores Indivisibles ($N_2$)
@@ -83,6 +86,8 @@ flowchart TD
 ---
 
 ## 5. 🚦 Matriz de Control y Criterios de Aceptación (Correspondencia Estricta)
+
+> *Nota de Arquitectura:* Track A atestigua los 8 Nodos ($N_1$ a $N_8$). Para Track B y Track C, estructurar según `control_matrix_standard.md` (Servicio/Componente o Archivo/Asset + Validación + Sensor exit 0/HTTP 200).
 
 | Nodo / Componente | Ruta SSoT | Backup en `bak/` | Versión Semver | Sensor de Atestación Física | Criterio de Aceptación |
 |---|---|---|---|---|---|
