@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 import { getAutoConfiguredCloudflareClient } from "../assets/cloudflare_client";
-import { CloudflareDnsRecordInput } from "../assets/dns_zod_schemas";
+import { CloudflareDnsRecordInput, DesiredDnsTopologySchema } from "../assets/dns_zod_schemas";
+import fs from "node:fs";
 
 async function main() {
   console.log("============================================================");
-  console.log("  🌐 Cloudflare & Zerops DNS Declarative Synchronizer (v1.0)");
+  console.log("  🌐 Cloudflare Declarative DNS & Edge Synchronizer (v2.0)");
   console.log("============================================================");
 
   const baseDomain = process.env.CLOUDFLARE_BASE_DOMAIN;
@@ -17,95 +18,79 @@ async function main() {
   const zoneId = await client.getZoneId(baseDomain);
   console.log(`• Connected to Zone: ${baseDomain} (Zone ID: ${zoneId})`);
 
-  // Target Zerops Ingress / Subdomains from environment or defaults
-  const astroTarget = process.env.ASTRO_SUBDOMAIN || process.env.ZEROPS_SUBDOMAIN || `@`;
-  const directusTarget = process.env.DIRECTUS_SUBDOMAIN || `api`;
-  const evolutionTarget = process.env.EVOLUTION_SUBDOMAIN || `wa`;
-  const sgtmTarget = process.env.SGTM_SUBDOMAIN || `sgtm`;
+  let desiredRecords: CloudflareDnsRecordInput[] = [];
 
-  // Zerops Dedicated IPv4 if configured
-  const dedicatedIpv4 = process.env.ZEROPS_DEDICATED_IPV4;
-  const dedicatedIpv6 = process.env.ZEROPS_DEDICATED_IPV6;
+  // Check if a topology JSON file was provided as argument
+  const topologyPath = process.argv[2];
+  if (topologyPath && fs.existsSync(topologyPath)) {
+    console.log(`• Loading declarative topology manifest: ${topologyPath}`);
+    const raw = JSON.parse(fs.readFileSync(topologyPath, "utf-8"));
+    const parsed = DesiredDnsTopologySchema.parse(raw);
+    desiredRecords = parsed.records;
+  } else {
+    // Dynamic synthesis from environment variables
+    const dedicatedIpv4 = process.env.ZEROPS_DEDICATED_IPV4;
+    const dedicatedIpv6 = process.env.ZEROPS_DEDICATED_IPV6;
 
-  const desiredRecords: CloudflareDnsRecordInput[] = [];
+    if (dedicatedIpv4) {
+      desiredRecords.push({
+        type: "A",
+        name: "@",
+        content: dedicatedIpv4,
+        proxied: true,
+        comment: "Apex - Zerops Dedicated IPv4",
+      });
+    }
+    if (dedicatedIpv6) {
+      desiredRecords.push({
+        type: "AAAA",
+        name: "@",
+        content: dedicatedIpv6,
+        proxied: true,
+        comment: "Apex - Zerops Dedicated IPv6",
+      });
+    }
 
-  // 1. Frontend Apex & WWW
-  if (dedicatedIpv4) {
-    desiredRecords.push({
-      type: "A",
-      name: "@",
-      content: dedicatedIpv4,
-      proxied: true,
-      comment: "Astro Frontend Apex - Zerops Dedicated IPv4",
-    });
-  }
-  if (dedicatedIpv6) {
-    desiredRecords.push({
-      type: "AAAA",
-      name: "@",
-      content: dedicatedIpv6,
-      proxied: true,
-      comment: "Astro Frontend Apex - Zerops Dedicated IPv6",
-    });
-  }
-
-  desiredRecords.push({
-    type: "CNAME",
-    name: "www",
-    content: baseDomain,
-    proxied: true,
-    comment: "Astro Frontend WWW Canonical Alias",
-  });
-
-  // 2. Directus CMS API
-  if (process.env.DIRECTUS_SUBDOMAIN) {
     desiredRecords.push({
       type: "CNAME",
-      name: "api",
-      content: process.env.DIRECTUS_SUBDOMAIN,
+      name: "www",
+      content: baseDomain,
       proxied: true,
-      comment: "Directus Headless CMS API - Zerops Routing",
+      comment: "WWW Canonical Alias",
     });
-  }
 
-  // 3. Evolution API / WhatsApp Gateway
-  if (process.env.EVOLUTION_SUBDOMAIN) {
+    // Custom subdomains if provided in environment
+    if (process.env.APP_SUBDOMAIN) {
+      desiredRecords.push({
+        type: "CNAME",
+        name: process.env.APP_SUBDOMAIN_NAME || "app",
+        content: process.env.APP_SUBDOMAIN,
+        proxied: true,
+        comment: "Application Subdomain",
+      });
+    }
+
+    // RFC 9989 Compliant DMARC Policy (No 'pct' tag)
+    const dmarcReportEmail = process.env.DMARC_REPORT_EMAIL || `dmarc-reports@${baseDomain}`;
     desiredRecords.push({
-      type: "CNAME",
-      name: "wa",
-      content: process.env.EVOLUTION_SUBDOMAIN,
-      proxied: true,
-      comment: "Evolution API Sovereign WhatsApp Gateway",
+      type: "TXT",
+      name: "_dmarc",
+      content: `v=DMARC1; p=reject; sp=reject; np=reject; t=n; rua=mailto:${dmarcReportEmail};`,
+      proxied: false,
+      comment: "RFC 9989 Compliant DMARCbis Policy",
     });
+
+    // SPF Policy if defined
+    if (process.env.SPF_RECORD_VALUE) {
+      desiredRecords.push({
+        type: "TXT",
+        name: "@",
+        content: process.env.SPF_RECORD_VALUE,
+        proxied: false,
+        comment: "Authoritative SPF Record",
+      });
+    }
   }
-
-  // 4. Server-Side GTM (sGTM)
-  if (process.env.SGTM_SUBDOMAIN) {
-    desiredRecords.push({
-      type: "CNAME",
-      name: "sgtm",
-      content: process.env.SGTM_SUBDOMAIN,
-      proxied: true,
-      comment: "Server-Side Google Tag Manager Tracking",
-    });
-  }
-
-  // 5. Email Deliverability Authentication (SPF, DKIM, DMARCbis)
-  desiredRecords.push({
-    type: "TXT",
-    name: "@",
-    content: "v=spf1 include:zeptomail.net include:amazonses.com ~all",
-    proxied: false,
-    comment: "Unified SPF Policy for ZeptoMail and Amazon SES v2",
-  });
-
-  desiredRecords.push({
-    type: "TXT",
-    name: "_dmarc",
-    content: `v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@${baseDomain}; sp=quarantine`,
-    proxied: false,
-    comment: "DMARCbis RFC 9989 Policy with Quarantine Enforcement",
-  });
 
   console.log(`• Synchronizing ${desiredRecords.length} desired DNS records...`);
   const result = await client.syncDnsRecords(zoneId, desiredRecords, baseDomain);

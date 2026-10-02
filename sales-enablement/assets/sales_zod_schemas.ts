@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const BantDetailsSchema = z.object({
   budgetStatus: z.enum(["confirmed", "elastic", "insufficient", "unknown"]),
-  budgetAmount: z.number().optional(),
-  currency: z.enum(["COP", "USD"]).default("COP"),
+  budgetAmount: z.number().nonnegative().optional(),
+  currency: z.string().length(3).default("USD"),
   authorityLevel: z.enum([
     "sole_decision_maker",
     "economic_buyer",
@@ -19,10 +19,21 @@ export const BantDetailsSchema = z.object({
 
 export const ChampDetailsSchema = z.object({
   challenges: z.array(z.string()).min(1),
-  primaryChallenge: z.string(),
-  authorityProcess: z.string(),
-  moneyPath: z.string(),
+  primaryChallenge: z.string().min(3),
+  authorityProcess: z.string().min(3),
+  moneyPath: z.string().min(3),
   prioritizationLevel: z.enum(["top_1", "top_3", "backlog", "low"])
+});
+
+export const MeddpiccDetailsSchema = z.object({
+  metrics: z.array(z.string()).min(1),
+  economicBuyer: z.string().min(3),
+  decisionCriteria: z.array(z.string()).min(1),
+  decisionProcess: z.string().min(3),
+  paperProcess: z.string().min(3),
+  identifiedPain: z.string().min(3),
+  champion: z.string().min(3),
+  competition: z.array(z.string()).default([])
 });
 
 export const LeadScoreBreakdownSchema = z.object({
@@ -34,7 +45,7 @@ export const LeadScoreBreakdownSchema = z.object({
 });
 
 export const BattlecardObjectionSchema = z.object({
-  objectionType: z.enum(["price", "competitor", "trust", "guarantee", "payment_methods"]),
+  objectionType: z.enum(["price", "competitor", "trust", "guarantee", "timing", "features"]),
   detectedKeywords: z.array(z.string()),
   coreAngle: z.string(),
   script: z.string(),
@@ -43,10 +54,24 @@ export const BattlecardObjectionSchema = z.object({
 
 export const HandoverBriefingSchema = z.object({
   leadId: z.string().uuid(),
-  contactName: z.string(),
-  contactPhone: z.string(),
-  totalScore: z.number(),
+  contactName: z.string().min(1),
+  contactEmail: z.string().email().optional(),
+  contactPhone: z.string().min(5),
+  totalScore: z.number().min(0).max(100),
   grade: z.enum(["A_HOT", "B_WARM", "C_NURTURE", "D_COLD"]),
-  summary: z.string(),
-  recommendedOffer: z.string()
+  qualificationFramework: z.enum(["BANT", "CHAMP", "MEDDPICC"]),
+  summary: z.string().min(10),
+  recommendedOffer: z.string().min(3)
+});
+
+export const CrmDealPayloadSchema = z.object({
+  leadId: z.string(),
+  title: z.string(),
+  status: z.enum(["new", "qualified", "in_progress", "won", "lost"]).default("qualified"),
+  priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
+  notes: z.string(),
+  phone: z.string(),
+  email: z.string().optional(),
+  recommendedOffer: z.string(),
+  score: z.number()
 });

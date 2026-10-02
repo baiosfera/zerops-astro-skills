@@ -1,16 +1,21 @@
 import { z } from "zod";
 import {
   CloudflareApiResponseSchema,
-  CloudflareDnsRecord,
   CloudflareDnsRecordInput,
+  CloudflareDnsRecordInputSchema,
+  CloudflareDnsRecord,
   CloudflareDnsRecordSchema,
 } from "./dns_zod_schemas";
 
 export interface CloudflareClientConfig {
   apiToken: string;
   zoneId?: string;
-  accountId?: string;
-  baseDomain?: string;
+}
+
+export interface DnsSyncSummary {
+  created: number;
+  updated: number;
+  untouched: number;
 }
 
 export class CloudflareV4Client {
@@ -22,7 +27,7 @@ export class CloudflareV4Client {
       throw new Error(
         `[F1 CLARIFICATION GATE - cloudflare]\n` +
         `CLOUDFLARE_API_TOKEN is missing in environment.\n` +
-        `Please configure CLOUDFLARE_API_TOKEN in Zerops environment or keys.md.`
+        `Please configure CLOUDFLARE_API_TOKEN in Zerops environment.`
       );
     }
     this.headers = {
@@ -31,11 +36,11 @@ export class CloudflareV4Client {
     };
   }
 
-  private async request<T>(
+  private async request<TSchema extends z.ZodTypeAny>(
     endpoint: string,
     options: RequestInit = {},
-    schema: z.ZodType<T>
-  ): Promise<T> {
+    schema: TSchema
+  ): Promise<z.infer<TSchema>> {
     const url = `${this.baseUrl}${endpoint}`;
     const response = await fetch(url, {
       ...options,
@@ -108,7 +113,7 @@ export class CloudflareV4Client {
     );
   }
 
-  /** Deletes a DNS record */
+  /** Deletes a DNS record by ID */
   async deleteDnsRecord(zoneId: string, recordId: string): Promise<{ id: string }> {
     return this.request(
       `/zones/${zoneId}/dns_records/${recordId}`,
@@ -117,36 +122,62 @@ export class CloudflareV4Client {
     );
   }
 
-  /** Declarative and idempotent DNS synchronization */
+  /** Idempotently synchronizes a single DNS record */
+  async syncDnsRecord(zoneId: string, desired: CloudflareDnsRecordInput): Promise<CloudflareDnsRecord> {
+    const existingRecords = await this.listDnsRecords(zoneId);
+    const existing = existingRecords.find(
+      (r) => r.type === desired.type && (r.name === desired.name || r.name.startsWith(`${desired.name}.`))
+    );
+
+    if (!existing) {
+      console.log(`[Cloudflare DNS] Creating [${desired.type}] ${desired.name} -> ${desired.content}`);
+      return this.createDnsRecord(zoneId, desired);
+    }
+
+    const needsUpdate =
+      existing.content !== desired.content ||
+      existing.proxied !== desired.proxied ||
+      (desired.ttl && existing.ttl !== desired.ttl) ||
+      (desired.priority !== undefined && existing.priority !== desired.priority);
+
+    if (needsUpdate) {
+      console.log(`[Cloudflare DNS] Updating [${desired.type}] ${desired.name} -> ${desired.content} (Proxy: ${desired.proxied})`);
+      return this.updateDnsRecord(zoneId, existing.id, desired);
+    }
+
+    console.log(`[Cloudflare DNS] In Sync [${desired.type}] ${desired.name}`);
+    return existing;
+  }
+
+  /** Synchronizes a collection of desired DNS records */
   async syncDnsRecords(
     zoneId: string,
-    desiredRecords: CloudflareDnsRecordInput[],
+    desiredList: CloudflareDnsRecordInput[],
     baseDomain: string
-  ): Promise<{ created: number; updated: number; untouched: number }> {
-    const liveRecords = await this.listDnsRecords(zoneId);
+  ): Promise<DnsSyncSummary> {
+    const existingRecords = await this.listDnsRecords(zoneId);
     let created = 0;
     let updated = 0;
     let untouched = 0;
 
-    for (const desired of desiredRecords) {
-      const fqdn = desired.name === "@" ? baseDomain : desired.name.includes(".") ? desired.name : `${desired.name}.${baseDomain}`;
-      const existing = liveRecords.find((r) => r.name.toLowerCase() === fqdn.toLowerCase() && r.type === desired.type);
+    for (const desired of desiredList) {
+      const matchName = desired.name === "@" ? baseDomain : (desired.name.includes(".") ? desired.name : `${desired.name}.${baseDomain}`);
+      const existing = existingRecords.find(
+        (r) => r.type === desired.type && (r.name === matchName || r.name === desired.name)
+      );
 
       if (!existing) {
-        await this.createDnsRecord(zoneId, { ...desired, name: fqdn });
+        await this.createDnsRecord(zoneId, desired);
         created++;
       } else {
         const needsUpdate =
           existing.content !== desired.content ||
-          existing.proxied !== (desired.proxied ?? false) ||
-          (desired.ttl && existing.ttl !== desired.ttl);
+          existing.proxied !== desired.proxied ||
+          (desired.ttl && existing.ttl !== desired.ttl) ||
+          (desired.priority !== undefined && existing.priority !== desired.priority);
 
         if (needsUpdate) {
-          await this.updateDnsRecord(zoneId, existing.id, {
-            content: desired.content,
-            proxied: desired.proxied ?? false,
-            ttl: desired.ttl ?? 1,
-          });
+          await this.updateDnsRecord(zoneId, existing.id, desired);
           updated++;
         } else {
           untouched++;
@@ -157,59 +188,55 @@ export class CloudflareV4Client {
     return { created, updated, untouched };
   }
 
-  /** Enforces SSL/TLS Full Strict mode */
-  async setSslModeStrict(zoneId: string): Promise<{ value: string }> {
-    return this.request(
+  /** Enforces Full (Strict) SSL/TLS encryption */
+  async setSslMode(zoneId: string, mode: "strict" | "full" | "off" = "strict"): Promise<void> {
+    const schema = z.object({ id: z.string(), value: z.string() });
+    await this.request(
       `/zones/${zoneId}/settings/ssl`,
       {
         method: "PATCH",
-        body: JSON.stringify({ value: "strict" }),
+        body: JSON.stringify({ value: mode }),
       },
-      z.object({ value: z.string() })
+      schema
     );
   }
 
-  /** Enables Always Use HTTPS */
-  async enableAlwaysUseHttps(zoneId: string): Promise<{ value: string }> {
-    return this.request(
+  async setSslModeStrict(zoneId: string): Promise<void> {
+    return this.setSslMode(zoneId, "strict");
+  }
+
+  /** Enforces Always Use HTTPS redirect */
+  async setAlwaysUseHttps(zoneId: string, enabled = true): Promise<void> {
+    const schema = z.object({ id: z.string(), value: z.string() });
+    await this.request(
       `/zones/${zoneId}/settings/always_use_https`,
       {
         method: "PATCH",
-        body: JSON.stringify({ value: "on" }),
+        body: JSON.stringify({ value: enabled ? "on" : "off" }),
       },
-      z.object({ value: z.string() })
+      schema
     );
   }
 
-  /** Purges CDN cache */
-  async purgeCache(zoneId: string, purgeEverything = true, files?: string[]): Promise<{ id: string }> {
-    const payload = purgeEverything ? { purge_everything: true } : { files };
+  async enableAlwaysUseHttps(zoneId: string): Promise<void> {
+    return this.setAlwaysUseHttps(zoneId, true);
+  }
+
+  /** Purges Cloudflare Edge Cache */
+  async purgeCache(zoneId: string, options: { purge_everything?: boolean; files?: string[] }): Promise<{ id: string }> {
     return this.request(
       `/zones/${zoneId}/purge_cache`,
       {
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(options),
       },
       z.object({ id: z.string() })
     );
   }
 }
 
-/** Resolves auto-configured Cloudflare client from environment */
 export function getAutoConfiguredCloudflareClient(): CloudflareV4Client {
-  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-  if (!apiToken) {
-    throw new Error(
-      `[F1 CLARIFICATION GATE - cloudflare]\n` +
-      `CLOUDFLARE_API_TOKEN is not defined in process.env / zerops_env.\n` +
-      `Please provide your Cloudflare API Token in keys.md.`
-    );
-  }
-
-  return new CloudflareV4Client({
-    apiToken,
-    zoneId: process.env.CLOUDFLARE_ZONE_ID,
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-    baseDomain: process.env.CLOUDFLARE_BASE_DOMAIN,
-  });
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN || "";
+  const zoneId = process.env.CLOUDFLARE_ZONE_ID;
+  return new CloudflareV4Client({ apiToken, zoneId });
 }

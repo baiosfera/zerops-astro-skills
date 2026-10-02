@@ -21,7 +21,7 @@ export const deadLetterQueue = new Queue("dead-letter-queue", { connection });
 export const eventWorker = new Worker(
   "main-events-queue",
   async (job: Job) => {
-    console.log(`[Event Worker] Procesando trabajo ${job.name} (ID: ${job.id})`);
+    console.log(`[Event Worker] Processing job ${job.name} (ID: ${job.id})`);
     return { success: true };
   },
   { connection, concurrency: 10 }
@@ -30,7 +30,7 @@ export const eventWorker = new Worker(
 eventWorker.on("failed", async (job, error) => {
   if (!job) return;
   if (job.attemptsMade >= (job.opts.attempts || 1)) {
-    console.error(`[DLQ ALERT] Trabajo ${job.id} falló definitivamente tras ${job.attemptsMade} intentos. Transfiriendo a DLQ.`);
+    console.error(`[DLQ ALERT] Job ${job.id} definitively failed after ${job.attemptsMade} attempts. Routing to DLQ.`);
     await deadLetterQueue.add("dlq-event", {
       deadLetterId: crypto.randomUUID(),
       queueName: job.queueName,

@@ -70,8 +70,8 @@ This manual provides production-grade infrastructure blueprints, DNS deliverabil
 # ZOHO ZEPTOMAIL (REST API & SMTP)
 # ============================================================================
 ZEPTOMAIL_SEND_MAIL_TOKEN="Zoho-enczapikey wSsVR61...=="
-ZEPTOMAIL_DEFAULT_FROM_EMAIL="hola@yourdomain.com"
-ZEPTOMAIL_DEFAULT_FROM_NAME="Baiosfera"
+ZEPTOMAIL_DEFAULT_FROM_EMAIL="noreply@yourdomain.com"
+ZEPTOMAIL_DEFAULT_FROM_NAME="Store Notifications"
 ZEPTOMAIL_BOUNCE_ADDRESS="bounce@bounce.yourdomain.com"
 ZEPTOMAIL_REGION="com"
 
@@ -81,14 +81,21 @@ ZEPTOMAIL_REGION="com"
 AWS_REGION="us-east-1"
 AWS_ACCESS_KEY_ID="AKIA..."
 AWS_SECRET_ACCESS_KEY="secret..."
-AWS_SES_CONFIGURATION_SET="baiosfera-deliverability"
-AWS_SES_DEFAULT_FROM="Baiosfera <hola@yourdomain.com>"
+AWS_SES_CONFIGURATION_SET="deliverability-set"
+AWS_SES_DEFAULT_FROM="Store <noreply@yourdomain.com>"
 
 # ============================================================================
 # RESEND API
 # ============================================================================
 RESEND_API_KEY="re_123456789..."
-RESEND_DEFAULT_FROM="Baiosfera <hola@yourdomain.com>"
+RESEND_DEFAULT_FROM="Store <noreply@yourdomain.com>"
+
+# ============================================================================
+# LISTMONK (SELF-HOSTED IN ZEROPS)
+# ============================================================================
+LISTMONK_URL="http://listmonk:9000"
+LISTMONK_API_USER="admin"
+LISTMONK_API_PASSWORD="listmonk_secure_password"
 
 # ============================================================================
 # ZEROPS QUEUE & NATS INFRASTRUCTURE
@@ -115,7 +122,7 @@ NATS_URL="nats://nats:4222"
 
 ### 🟣 Runbook 2: Zoho ZeptoMail (`zeptomail.zoho.com`)
 1. Log in to [Zoho ZeptoMail Console](https://zeptomail.zoho.com).
-2. Create a Mail Agent (e.g. `Baiosfera Production`).
+2. Create a Mail Agent (e.g. `Production Mail Agent`).
 3. In **Domains**, add domain and configure DNS records (SPF, DKIM, Bounce CNAME).
 4. Copy the **Send Mail Token** (`Zoho-enczapikey wSsVR61...==`) into `ZEPTOMAIL_SEND_MAIL_TOKEN` in Zerops.
 

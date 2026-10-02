@@ -1,20 +1,23 @@
 import { Worker, Job } from "bullmq";
 import Redis from "ioredis";
-import { sendResendEmail } from "./email_dispatcher";
+import { UnifiedEmailDispatcher, UnifiedEmailPayload } from "./email_dispatcher";
 
 const connection = new Redis(process.env.VALKEY_CONNECTION_STRING || "redis://valkey:6379", {
   maxRetriesPerRequest: null,
   enableReadyCheck: false
 });
 
+const dispatcher = new UnifiedEmailDispatcher();
+
 export const emailWorker = new Worker(
   "emailDispatchQueue",
-  async (job: Job) => {
-    console.log(`[Email Worker] Procesando envío para ${job.data.to}`);
+  async (job: Job<UnifiedEmailPayload>) => {
+    console.log(`[Email Worker] Processing email dispatch to ${job.data.to?.join(", ")} (Job: ${job.id})`);
     try {
-      return await sendResendEmail(job.data);
+      return await dispatcher.dispatch(job.data);
     } catch (error: any) {
       if (error?.status === 429) {
+        console.warn(`[Email Worker] Rate limit encountered. Pausing queue for 5000ms.`);
         await emailWorker.rateLimit(5000);
         throw Worker.RateLimitError();
       }
@@ -25,8 +28,8 @@ export const emailWorker = new Worker(
     connection,
     concurrency: 5,
     limiter: {
-      max: 10,       // 10 emails máximo
-      duration: 1000 // por cada 1 segundo (1000ms)
+      max: 10,       // Max 10 emails
+      duration: 1000 // per 1000ms
     }
   }
 );

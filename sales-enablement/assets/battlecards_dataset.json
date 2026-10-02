@@ -1,0 +1,30 @@
+[
+  {
+    "objectionType": "price",
+    "detectedKeywords": ["expensive", "price", "budget", "discount", "cost", "too high"],
+    "coreAngle": "Cost of Inaction (COI) & Rapid Return on Investment (ROI)",
+    "script": "I completely understand budget scrutiny. When looking at the baseline operational loss or delayed revenue of X per week without this system, the solution historically pays for itself within 45 days. Would it make sense to structure a phased pilot with measurable milestones?",
+    "proofPoints": ["Proven average ROI within 45 days", "Phased deployment with zero upfront lock-in"]
+  },
+  {
+    "objectionType": "trust",
+    "detectedKeywords": ["security", "trust", "guarantee", "compliance", "references", "safety"],
+    "coreAngle": "Enterprise compliance, data isolation, and verified track record",
+    "script": "Security and reliability are non-negotiable. Our architecture runs in isolated tenant containers with end-to-end cryptographic verification, zero third-party data leaks, and SOC2/ISO-aligned infrastructure. We are happy to provide our security whitepaper and reference customer audits.",
+    "proofPoints": ["Dedicated tenant isolation", "Full audit logs and cryptographic data integrity"]
+  },
+  {
+    "objectionType": "competitor",
+    "detectedKeywords": ["alternative", "competitor", "incumbent", "already use", "evaluating another"],
+    "coreAngle": "Architectural differentiation, lower latency, and zero vendor lock-in",
+    "script": "That makes complete sense—they are an established name. Where teams transition to our platform is the eliminated latency overhead, sovereign data ownership on private infrastructure, and an open decoupled SPI that avoids proprietary lock-in. Have you experienced any friction with their current API limits?",
+    "proofPoints": ["Sub-millisecond internal latency", "Zero proprietary vendor lock-in"]
+  },
+  {
+    "objectionType": "timing",
+    "detectedKeywords": ["later", "next quarter", "busy", "no time", "not now"],
+    "coreAngle": "Pre-configured scaffolding & immediate time-to-value",
+    "script": "Timing is critical. The advantage of our decoupled architecture is that initial setup takes under 30 minutes with our ready-to-run recipes. We can run the foundation in parallel with zero disruption to your daily sprint.",
+    "proofPoints": ["Under 30-minute deployment", "Zero downtime migration"]
+  }
+]

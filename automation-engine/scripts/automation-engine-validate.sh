@@ -11,69 +11,102 @@ echo "============================================================"
 echo "  🔍 Validating automation-engine Skill Integrity (v2.0)"
 echo "============================================================"
 
-# 1. Check SKILL.md existence
+# 1. Frontmatter and Word Count Validation
 if [ ! -f "$SKILL_DIR/SKILL.md" ]; then
     echo "❌ Missing SKILL.md in $SKILL_DIR"
     ERRORS=$((ERRORS + 1))
 else
     echo "✓ SKILL.md exists"
-fi
-
-# 2. Check frontmatter metadata.version
-if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 2.0"
-else
-    echo "❌ Frontmatter version is not 2.0"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# 3. Check token count of SKILL.md
-WORD_COUNT=$(wc -w < "$SKILL_DIR/SKILL.md")
-EST_TOKENS=$((WORD_COUNT * 13 / 10))
-if [ "$EST_TOKENS" -le 750 ]; then
-    echo "✓ Token budget compliant: ~$EST_TOKENS tokens (word count: $WORD_COUNT, limit 750)"
-else
-    echo "⚠️ Warning: SKILL.md exceeds recommended token budget (~$EST_TOKENS tokens)"
-fi
-
-# 4. Check Dual-RAG references
-for ref in \
-    "references/usage.md" \
-    "references/infra.md" \
-    "references/bullmq_valkey.md" \
-    "references/nats_jetstream.md" \
-    "references/scheduled_crons.md" \
-    "assets/automation_engine_recipes.json"; do
-    if [ -f "$SKILL_DIR/$ref" ] && [ -s "$SKILL_DIR/$ref" ]; then
-        echo "✓ Required reference exists and non-empty: $ref"
+    
+    WORD_COUNT=$(wc -w < "$SKILL_DIR/SKILL.md")
+    if [ "$WORD_COUNT" -le 480 ]; then
+        echo "✓ Router word count budget compliant: $WORD_COUNT words (limit 480)"
     else
-        echo "❌ Missing or empty reference: $ref"
+        echo "❌ Router word count exceeded: $WORD_COUNT words (limit 480)"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    VERSION=$(python3 -c "
+import yaml
+with open('$SKILL_DIR/SKILL.md') as f:
+    content = f.read()
+parts = content.split('---')
+if len(parts) >= 3:
+    meta = yaml.safe_load(parts[1])
+    print(meta.get('metadata', {}).get('version', ''))
+")
+
+    if [ "$VERSION" = "2.0" ]; then
+        echo "✓ Canonical frontmatter version validated: v$VERSION"
+    else
+        echo "❌ Invalid or missing frontmatter version: found '$VERSION', expected '2.0'"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
+
+# 2. Dual-RAG Reference Files & Canonical Links Integrity
+REQUIRED_REFS=(
+    "references/usage.md"
+    "references/infra.md"
+    "assets/automation_zod_schemas.ts"
+    "assets/circuit_breaker.ts"
+    "assets/nats_jetstream_client.ts"
+    "assets/bullmq_worker.ts"
+    "assets/automation_engine_recipes.json"
+    "scripts/automation-engine-validate.sh"
+)
+
+for ref in "${REQUIRED_REFS[@]}"; do
+    if [ -f "$SKILL_DIR/$ref" ] && [ -s "$SKILL_DIR/$ref" ]; then
+        echo "✓ Reference file exists and non-empty: $ref"
+    else
+        echo "❌ Missing or empty reference file: $ref"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    if grep -q "file:///var/www/.agents/skills/automation-engine/$ref" "$SKILL_DIR/SKILL.md"; then
+        echo "✓ Canonical file link verified: $ref"
+    else
+        echo "❌ Missing canonical file link in SKILL.md: $ref"
         ERRORS=$((ERRORS + 1))
     fi
 done
 
-# 5. Check JSON validity
-if python3 -m json.tool "$SKILL_DIR/assets/automation_engine_recipes.json" >/dev/null 2>&1; then
-    echo "✓ automation_engine_recipes.json is valid JSON"
-else
-    echo "❌ Syntax error in automation_engine_recipes.json"
-    ERRORS=$((ERRORS + 1))
+# 3. Deterministic JSON Validation (No silent suppression)
+python3 -c "
+import json
+with open('$SKILL_DIR/assets/automation_engine_recipes.json') as f:
+    data = json.load(f)
+assert data.get('version') == '2.0', 'Recipes version must be 2.0'
+assert len(data.get('recipes', [])) >= 2, 'Must contain at least 2 recipes'
+print('✓ JSON syntax and schema structure valid: assets/automation_engine_recipes.json')
+" || { echo "❌ JSON validation failed"; ERRORS=$((ERRORS + 1)); }
+
+# 4. TypeScript & JavaScript Asset Structural Integrity
+for ts_file in "assets/automation_zod_schemas.ts" "assets/circuit_breaker.ts" "assets/nats_jetstream_client.ts" "assets/bullmq_worker.ts"; do
+    python3 -c "
+with open('$SKILL_DIR/$ts_file') as f:
+    content = f.read()
+assert len(content) > 100, 'File $ts_file is too small'
+assert 'export ' in content, 'File $ts_file must have exports'
+print('✓ Code structural assertion passed: $ts_file')
+" || { echo "❌ Code structural error in $ts_file"; ERRORS=$((ERRORS + 1)); }
+done
+
+if [ -f "$SKILL_DIR/assets/directus_flow_transformer.js" ]; then
+    node --check "$SKILL_DIR/assets/directus_flow_transformer.js" && echo "✓ JavaScript syntax valid: directus_flow_transformer.js" || { echo "❌ Syntax error in directus_flow_transformer.js"; ERRORS=$((ERRORS + 1)); }
 fi
 
-# 6. Check file links
-for link in \
-    "references/usage.md" \
-    "references/infra.md" \
-    "references/bullmq_valkey.md" \
-    "references/nats_jetstream.md" \
-    "references/scheduled_crons.md" \
-    "assets/automation_engine_recipes.json" \
-    "scripts/automation-engine-validate.sh"; do
-    if grep -q "file:///var/www/.agents/skills/automation-engine/$link" "$SKILL_DIR/SKILL.md"; then
-        echo "✓ Absolute file link verified: $link"
-    else
-        echo "❌ Missing absolute file link in SKILL.md: $link"
+# 5. Zero Single-Tenant Debt Invariant (Banned Leak Scanner)
+BANNED_LEAKS=("baiosfera" "total_cop" "0zcp-123" "sales-main")
+for leak in "${BANNED_LEAKS[@]}"; do
+    FOUND_LEAKS=$(grep -rn "$leak" "$SKILL_DIR" --exclude="*.bak*" --exclude="automation-engine-validate.sh" || true)
+    if [ -n "$FOUND_LEAKS" ]; then
+        echo "❌ Single-tenant leak detected for '$leak':"
+        echo "$FOUND_LEAKS"
         ERRORS=$((ERRORS + 1))
+    else
+        echo "✓ Zero single-tenant leak for '$leak'"
     fi
 done
 

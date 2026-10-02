@@ -10,51 +10,37 @@ metadata:
 # `email-marketing` — Deliverability & Multi-Provider Engine (v2.0)
 
 ## Activation Contract
-Activate when designing, sending, or automating email flows, transactional emails, React Email 3.0 templates, deliverability (**DMARCbis RFC 9989**, **DKIM 2048**, **SPF**, **RFC 8058 One-Click**, **Spam Rate < 0.10%**), Zoho ZeptoMail, Amazon SES v2, Resend, Listmonk, `brandbook.json` token transpilation, or SMTP dispatchers on Valkey 7.2 and Directus 11+.
+Activate when designing, sending, or automating email flows, transactional emails, React Email 3.0 templates, deliverability (**DMARCbis RFC 9989**, **DKIM 2048**, **SPF**, **RFC 8058 One-Click**, **Spam Rate < 0.10%**), Zoho ZeptoMail, Amazon SES v2, Resend, Listmonk, `brandbook.json` token transpilation, or SMTP dispatchers on Valkey 7.2.
 
-## Hard Rules
-- **RFC 8058 One-Click**: Marketing emails MUST include `List-Unsubscribe` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers signed under DKIM.
-- **DMARCbis & Spam Rates**: Maintain 2048-bit DKIM keys and `p=quarantine`/`p=reject` DMARC. Keep spam complaints below **0.10%** in Google Postmaster.
-- **`brandbook.json` SSoT**: Transpile colors, SVG marks, and progressive font stacks directly from `brandbook.json`.
-- **Anti-Clipping & Inline CSS**: HTML size MUST NOT exceed **85 KB** (Gmail limit). All styles MUST compile inline. Zero Base64 in HTML/CSS.
-- **Language Resguard**: Include `<meta name="google" content="notranslate" />` and `<html lang="es" translate="no" class="notranslate">`.
-- **Queue Throttling**: Broadcasts MUST be throttled through BullMQ on Valkey 7.2 (`10 emails/sec`).
-- **Fractal CoHaLo**: Enforce hygiene (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans (`manage_task action="kill"`), sensor (relay ping probe).
-- **Zero Deletion**: Consult [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) for full lossless APIs.
+## Hard Rules & Technical Invariants
+- **RFC 8058 One-Click Unsubscribe**: Marketing emails MUST include `List-Unsubscribe` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers signed under DKIM.
+- **DMARCbis RFC 9989 & 2048-bit DKIM**: Maintain 2048-bit DKIM keys and `p=quarantine`/`p=reject` DMARC records without the obsoleted `pct` tag. Maintain spam complaints below **0.10%** in Google Postmaster Tools.
+- **Anti-Clipping & Inline CSS**: Total compiled HTML size MUST stay below **85 KB** to prevent Gmail message clipping and preserve footer unsubscribe links. All CSS styles MUST compile 100% inline without Base64 assets.
+- **Multi-Provider Failover**: Route transactional emails through `UnifiedEmailDispatcher` supporting Listmonk (self-hosted), ZeptoMail, AWS SES v2, and Resend with automatic cascade.
+- **Rate-Limited Queueing**: Bulk marketing blasts MUST be throttled through BullMQ workers on Valkey 7.2 with a concurrency limit of 10 emails/sec.
+- **Brandbook Token Transpilation**: Load palette, font stacks, and SVG marks dynamically from `brandbook.json` using `loadEmailBrandTokens()`.
 
 ## Decision Gates
 
-| Task / Objective | Action / Protocol | Reference / Asset |
+| Objective | Action / Protocol | Reference / Asset |
 |---|---|---|
-| 4D Matrix & Relays | ZeptoMail vs AWS SES v2, Resend, Listmonk, SMTP | [`references/usage.md#1-4d-comparative-architectural-matrix-email-relays--providers`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
-| Brandbook Bridge | Transpile colors, fonts & monogram from brandbook.json | [`references/usage.md#2-deterministic-connection-with-brandbookjson-w3c-dtcg-ssot`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
-| HTML Hygiene | Gmail 102 KB limit, CSS inline, no Base64 | [`references/usage.md#3-html-hygiene--email-rendering-invariants`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
-| Anti-SPAM Compliance | DMARCbis RFC 9989, DKIM 2048, spam rate < 0.10% | [`references/usage.md#6-2026-deliverability--anti-spam-compliance-standards`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
-| NATS Consumer | Reactive email delivery on purchase/magic link | [`references/usage.md#7-nats-jetstream-event-consumer-for-reactive-emails`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
-| Multi-Service Topology | Connect Directus, NATS, Valkey BullMQ, and Relays | [`references/infra.md#1-multi-service-email-dispatch-topology-in-zerops`](file:///var/www/.agents/skills/email-marketing/references/infra.md) |
-| DNS Setup Runbooks | Amazon SES v2 and Zoho ZeptoMail DKIM/SPF setup | [`references/infra.md#4-third-party-console-setup-runbooks`](file:///var/www/.agents/skills/email-marketing/references/infra.md) |
-| BullMQ Worker Asset | Rate-limited worker on Valkey 7.2 (10 emails/sec) | [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) |
-| Production Recipes JSON | Dispatcher and NATS listener recipes | [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) |
-| Physical Validation Sensor | Attest skill structure, frontmatter, tokens & links | [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) |
-
-## Execution Steps
-1. Configure relay credentials in Zerops environment.
-2. Verify DNS records (SPF, DKIM 2048, DMARCbis RFC 9989).
-3. Transpile tokens from `brandbook.json` and compile React Email template.
-4. Launch BullMQ rate-limited worker and NATS consumer.
-5. Verify relay connectivity via physical sensor check.
-
-## Output Contract
-- High-deliverability multi-provider email engine running on Zerops.
-- Validated RFC 8058 headers, anti-clipping compliant HTML, and passing physical sensors.
+| Multi-Provider Engine | Listmonk, ZeptoMail, AWS SES, Resend dispatcher | [`assets/email_dispatcher.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_dispatcher.ts) |
+| Transactional Template | Polymorphic React Email 3.0 component (<85 KB) | [`assets/GenericTransactionalEmail.tsx`](file:///var/www/.agents/skills/email-marketing/assets/GenericTransactionalEmail.tsx) |
+| Brandbook Bridge | Dynamic W3C DTCG design token transpiler | [`assets/email_brandbook_bridge.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_brandbook_bridge.ts) |
+| Schemas & Contracts | Payload validation & webhook events schemas | [`assets/email_zod_schemas.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_zod_schemas.ts) |
+| Throttled BullMQ Worker | Valkey queue consumer with rate limiting | [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) |
+| Production Recipes | Dispatcher and reactive NATS listener recipes | [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) |
+| Usage & 4D Matrix | Deliverability guide, Bun SSR streaming & RFC 8058 | [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
+| Topology & DNS | Zerops Listmonk setup, DKIM, SPF & SES runbooks | [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) |
+| Physical Validation | Deterministic integrity sensor | [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) |
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) — 4D matrix, brandbook bridge, HTML hygiene, deliverability, and 5 production patterns.
-- [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) — Multi-service topology, DNS standards, console runbooks, and CoHaLo harness.
-- [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) — Production dispatchers and NATS consumer recipes.
-- [`assets/email_brandbook_bridge.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_brandbook_bridge.ts) — SSoT bridge connecting `brandbook.json` with inline email tokens.
-- [`assets/WelcomeLatAmEmail.tsx`](file:///var/www/.agents/skills/email-marketing/assets/WelcomeLatAmEmail.tsx) — React Email 3.0 responsive template component.
-- [`assets/email_dispatcher.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_dispatcher.ts) — Unified TypeScript sending service with multi-provider strategy.
-- [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) — Rate-limited BullMQ worker on Valkey 7.2.
-- [`assets/email_zod_schemas.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_zod_schemas.ts) — Strict Zod validation schemas for email payloads.
-- [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) — Deterministic quality & token validation sensor.
+- [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) — Multi-provider matrix, Bun SSR streaming, and RFC 8058.
+- [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) — Zerops Listmonk topology, BullMQ worker configuration, and DNS setup.
+- [`assets/GenericTransactionalEmail.tsx`](file:///var/www/.agents/skills/email-marketing/assets/GenericTransactionalEmail.tsx) — Agnostic transactional React Email template.
+- [`assets/email_dispatcher.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_dispatcher.ts) — Multi-provider failover dispatcher with Listmonk support.
+- [`assets/email_brandbook_bridge.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_brandbook_bridge.ts) — W3C DTCG design token transpiler.
+- [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) — Throttled BullMQ queue worker on Valkey.
+- [`assets/email_zod_schemas.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_zod_schemas.ts) — Zod email validation schemas.
+- [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) — Production code recipes.
+- [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) — Deterministic physical validator.

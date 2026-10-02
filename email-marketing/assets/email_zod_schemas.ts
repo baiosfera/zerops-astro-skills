@@ -5,10 +5,13 @@ export const SendEmailPayloadSchema = z.object({
   to: z.array(z.string().email()).min(1).max(50),
   replyTo: z.string().email().optional(),
   subject: z.string().min(1).max(200),
-  templateId: z.enum(["welcome_latam", "cart_recovery", "flash_sale", "reengagement"]),
-  props: z.record(z.unknown()),
-  unsubscribeUrl: z.string().url(),
-  campaignId: z.string().uuid().optional(),
+  templateId: z.string().min(1).default("transactional"),
+  html: z.string().optional(),
+  text: z.string().optional(),
+  props: z.record(z.unknown()).default({}),
+  unsubscribeUrl: z.string().url().optional(),
+  unsubscribeMailto: z.string().regex(/^mailto:/).optional(),
+  campaignId: z.string().optional(),
   tags: z.record(z.string()).default({})
 });
 

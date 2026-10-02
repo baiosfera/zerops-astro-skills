@@ -24,16 +24,17 @@ All email templates must be dynamically styled using tokens from `brandbook.json
 import { loadEmailBrandTokens } from "../assets/email_brandbook_bridge";
 
 // 1. Load and transpile brand tokens to inline CSS-safe values
-const brand = loadEmailBrandTokens("/var/www/baiosfera/ASTROLOGÍA/DIAG/CATALINA_GLAMUR/brandbook.json");
+const brandbookPath = process.env.BRANDBOOK_PATH || "./brandbook.json";
+const brand = loadEmailBrandTokens(brandbookPath);
 
 // Ready-to-use inline styles:
-// brand.palette.primary       ➔ #E2C974 (Champagne Gold)
-// brand.palette.background    ➔ #0F172A (Obsidian Black)
-// brand.palette.surface       ➔ #1E293B (Deep Slate)
-// brand.palette.secondary     ➔ #10B981 (Emerald Green)
-// brand.typography.display    ➔ 'Rising', 'Playfair Display', Georgia, serif
-// brand.typography.body       ➔ 'Plus Jakarta Sans', 'Segoe UI', -apple-system, sans-serif
-// brand.monogramSvg           ➔ <svg>...</svg> (Vector monogram mark)
+// brand.palette.primary       ➔ Primary brand accent
+// brand.palette.background    ➔ Obsidian / dark background
+// brand.palette.surface       ➔ Surface container background
+// brand.palette.secondary     ➔ Secondary brand accent
+// brand.typography.display    ➔ Display heading font stack
+// brand.typography.body       ➔ Body text font stack
+// brand.monogramSvg           ➔ Vector monogram mark
 ```
 
 ---
@@ -53,6 +54,11 @@ Every visual style (colors, paddings, borders, buttons, backgrounds) MUST compil
 2. **H1/H2 Display Headings:** `font-family: 'Rising', 'Playfair Display', Georgia, 'Times New Roman', serif;`
 3. **Body Text & Buttons:** `font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;`
 
+### 3.4. Bun SSR React Email 3.0 Streaming Quirk
+In Bun 1.3+, `react-dom/server` resolves to `server.bun.js` which can emit incomplete HTML shells when `<Tailwind>` compiles asynchronously. To guarantee complete HTML generation:
+- Use `await render(element)` directly in server runtime.
+- For streaming contexts, ensure `await stream.allReady` completes before passing chunks to email transport.
+
 ---
 
 ## 4. Language Resguard & Anti-Translation Invariant
@@ -69,18 +75,19 @@ To prevent Gmail from displaying unwanted "Translate to Spanish" banners:
 
 ```typescript
 import {
-  getAutoConfiguredDispatcher,
+  UnifiedEmailDispatcher,
+  ListmonkProvider,
   ZeptoMailRestProvider,
   AwsSesV2Provider,
   ResendProvider,
-  GenericSmtpProvider,
   UnifiedEmailPayload
 } from "../assets/email_dispatcher";
 
+const dispatcher = new UnifiedEmailDispatcher();
+
 // Automatic transactional dispatch resolving credentials from environment
 export async function dispatchTransactionalEmail(payload: UnifiedEmailPayload) {
-  const dispatcher = getAutoConfiguredDispatcher();
-  return await dispatcher.send(payload);
+  return await dispatcher.dispatch(payload);
 }
 ```
 
@@ -113,9 +120,9 @@ export async function startEmailEventConsumer() {
     const order = jc.decode(msg.data) as any;
     await dispatchTransactionalEmail({
       to: [order.customer_email],
-      subject: `Order Confirmation #${order.id} — Baiosfera`,
+      subject: `Order Confirmation #${order.id}`,
       html: `<h1>Thank you for your purchase, ${order.customer_name}!</h1>`,
-      tags: [{ name: 'category', value: 'order_receipt' }]
+      tags: { category: 'order_receipt' }
     });
   }
 }
@@ -126,7 +133,7 @@ export async function startEmailEventConsumer() {
 ## 8. 5 Production Patterns in Zerops
 
 ### Pattern 1: Multi-Provider Transactional Dispatcher with Dynamic Fallbacks
-Resolves ZeptoMail for Colombian/LatAm orders and falls back to AWS SES v2 or Resend if primary limits are hit.
+Resolves Listmonk or ZeptoMail for transactional orders and falls back to AWS SES v2 or Resend if primary limits are hit.
 
 ### Pattern 2: Throttled Bulk Broadcast Queue with BullMQ in Valkey
 Enqueues mass marketing campaigns through `emailDispatchQueue`, enforcing a hard rate limit of `10 emails/sec`.

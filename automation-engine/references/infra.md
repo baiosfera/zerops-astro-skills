@@ -1,29 +1,30 @@
-# Automation Engine: Topología & Infraestructura Zerops (v1.0)
+# Automation Engine: Topology & Infrastructure Manual (v2.0)
 
 > **SSoT Reference Document:** `.agents/skills/automation-engine/references/infra.md`  
-> **Ámbito:** Despliegue de NATS Server 2.12 en Zerops Incus LXC, puertos de comunicación, integración con Valkey 7.2 y Directus 11+.
+> **Scope:** NATS Server 2.12 deployment in Zerops Incus LXC, Valkey 7.2 clustering, BullMQ memory tuning, and private service discovery.
 
 ---
 
-## 1. Topología del Bus de Eventos en Zerops Incus LXC
+## 1. Event Mesh Topology in Zerops Incus LXC {#1-infra}
 
-El clúster de automatización corre íntegramente sobre la red privada de Zerops con un consumo inferior a 250MB de RAM total:
+The automation cluster operates on Zerops private network with < 250 MB total RAM footprint across messaging and in-memory caches:
 
 ```mermaid
 graph TD
-    subgraph Zerops_Incus_Network["Red Privada del Proyecto Zerops"]
-        NatsServer["Servicio NATS Server 2.12 (Incus LXC)<br/>• JetStream Storage: File / Storage Volume<br/>• Puertos: 4222 (Cliente), 8222 (Monitoring)"]
+    subgraph Zerops_Incus_Network["Zerops Private Project Network"]
+        NatsServer["NATS Server 2.12 (Incus LXC)<br/>• JetStream Storage: File Engine<br/>• Ports: 4222 (Client), 8222 (Monitoring)"]
         
-        Directus["Servicio Directus 11+ (Headless CRM/CMS)<br/>• Flows In-Process Engine<br/>• Puerto: 8055"]
+        AppService["Frontend / Microservices<br/>• Core NATS RPC (<0.3ms P99)<br/>• Publishes CloudEvents v1.0"]
         
-        Valkey["Servicio Valkey 7.2<br/>• Backend de Colas BullMQ & DLQ<br/>• Puerto: 6379"]
+        Valkey["Valkey 7.2 In-Memory Service<br/>• BullMQ Job Store & DLQ<br/>• maxmemory-policy: noeviction<br/>• Port: 6379"]
         
-        Workers["Servicio Background Workers (Node 24)<br/>• Consumidores Pull NATS & Workers BullMQ<br/>• Puerto: 3006"]
+        Workers["Distributed Worker Pools<br/>• JetStream Pull Consumers<br/>• BullMQ Concurrent Workers"]
     end
 
-    Directus -->|POST CloudEvents 1.0| NatsServer
-    NatsServer -->|Pull Consumer (<1ms)| Workers
-    Workers -->|Encolado de Tareas Pesadas| Valkey
+    AppService -->|Core RPC / JetStream Publish| NatsServer
+    NatsServer -->|Durable Pull Batch| Workers
+    Workers -->|Enqueue Asynchronous Jobs| Valkey
+    Valkey -->|Job Processing & Locking| Workers
 ```
 
 ---
@@ -35,19 +36,28 @@ graph TD
 # NATS JETSTREAM 2.12
 # ============================================================================
 NATS_URL="nats://nats:4222"
-NATS_CLUSTER_ID="gentle-cluster"
 NATS_MONITORING_URL="http://nats:8222"
 
 # ============================================================================
 # VALKEY 7.2 & BULLMQ
 # ============================================================================
+VALKEY_URL="redis://valkey:6379"
 VALKEY_HOST="valkey"
 VALKEY_PORT="6379"
-VALKEY_CONNECTION_STRING="redis://valkey:6379"
 
 # ============================================================================
-# DIRECTUS 11+ FLOWS
+# EVENT FABRIC TRACING & IDENTITY
 # ============================================================================
-DIRECTUS_URL="http://directus:8055"
-DIRECTUS_SERVER_TOKEN="directus_admin_token_2026"
+EVENT_SOURCE="app.services.core"
+EVENT_CLUSTER_REGION="us-east-1"
+```
+
+---
+
+## 3. Valkey Memory Tuning Invariant
+
+When running BullMQ on Valkey 7.2, the eviction policy MUST be set to `noeviction`. Under memory pressure, LRU/LFU eviction policies silently delete queue meta-keys and lock keys, causing jobs to hang or duplicate:
+
+```ini
+maxmemory-policy noeviction
 ```

@@ -1,28 +1,27 @@
 /**
  * @file email_brandbook_bridge.ts
- * @description Bridge determinista para la ingesta y transpilación de Design Tokens (W3C DTCG)
- * desde brandbook.json hacia plantillas de correo electrónico con estilos 100% Inline.
- * @version 1.0.0 (Vigencia 2025/2026)
+ * @description Ingests and transpiles Design Tokens (W3C DTCG)
+ * from brandbook.json into email template palettes with inline styling.
+ * @version 2.0.0
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { z } from "zod";
 
 export interface EmailBrandPalette {
-  primary: string;       // Hex sRGB (ej. #E2C974 Oro Champagne)
-  secondary: string;     // Hex sRGB (ej. #10B981 Verde Esmeralda)
-  accent: string;        // Hex sRGB (ej. #34D399 Esmeralda Luminosa)
-  background: string;    // Hex sRGB (ej. #0F172A Negro Obsidiana)
-  surface: string;       // Hex sRGB (ej. #1E293B Pizarra Profunda)
-  textPrimary: string;   // Hex sRGB (ej. #F8FAFC Blanco Titanio)
-  textMuted: string;     // Hex sRGB (ej. #94A3B8 Gris Platino)
-  border: string;        // Hex sRGB
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  surface: string;
+  textPrimary: string;
+  textMuted: string;
+  border: string;
 }
 
 export interface EmailTypographyStack {
-  display: string;       // Stack de Titulares con fallback (ej. 'Rising', 'Playfair Display', Georgia, serif)
-  body: string;          // Stack de Párrafos con fallback (ej. 'Plus Jakarta Sans', 'Segoe UI', -apple-system, sans-serif)
-  googleFontImportUrl?: string; // URL opcional para clientes con soporte @import (Apple Mail)
+  display: string;
+  body: string;
+  googleFontImportUrl?: string;
 }
 
 export interface EmailBrandTokens {
@@ -36,11 +35,11 @@ export interface EmailBrandTokens {
 }
 
 /**
- * Carga y transpila un archivo brandbook.json (W3C DTCG) para uso en emails
+ * Loads and transpiles a brandbook.json (W3C DTCG) file for email usage
  */
 export function loadEmailBrandTokens(brandbookPath: string): EmailBrandTokens {
   if (!existsSync(brandbookPath)) {
-    throw new Error(`[EmailBrandBridge] brandbook.json no encontrado en: ${brandbookPath}`);
+    throw new Error(`[EmailBrandBridge] brandbook.json not found at: ${brandbookPath}`);
   }
 
   const raw = readFileSync(brandbookPath, "utf-8");
@@ -48,32 +47,32 @@ export function loadEmailBrandTokens(brandbookPath: string): EmailBrandTokens {
 
   const brandName = data.brand?.name?.$value || data.name || "Brand";
   const slogan = data.brand?.slogan?.$value || "";
-  const archetype = data.brand?.archetype?.$value || "La Gobernante / Lujo Silencioso";
+  const archetype = data.brand?.archetype?.$value || "Sovereign / Enterprise";
 
-  // Transpilación de Colores (Priorizando Hex del bloque dark o extensions)
-  const darkColors = data.color?.dark || {};
+  // Color Transpilation
+  const darkColors = data.color?.dark || data.color?.light || {};
   const palette: EmailBrandPalette = {
-    primary: darkColors.primary?.hex || "#E2C974",
-    secondary: darkColors.secondary?.hex || "#10B981",
-    accent: darkColors.accent?.hex || "#34D399",
-    background: darkColors.background?.hex || "#0F172A",
-    surface: darkColors.surface?.hex || "#1E293B",
-    textPrimary: darkColors.text_primary?.hex || "#F8FAFC",
-    textMuted: darkColors.text_muted?.hex || "#94A3B8",
+    primary: darkColors.primary?.hex || "#2563eb",
+    secondary: darkColors.secondary?.hex || "#059669",
+    accent: darkColors.accent?.hex || "#3b82f6",
+    background: darkColors.background?.hex || "#0f172a",
+    surface: darkColors.surface?.hex || "#1e293b",
+    textPrimary: darkColors.text_primary?.hex || "#f8fafc",
+    textMuted: darkColors.text_muted?.hex || "#94a3b8",
     border: "#334155",
   };
 
-  // Pilas Tipográficas Seguras para Email
-  const fontDisplayRaw = data.typography?.display?.$value || "Rising";
-  const fontBodyRaw = data.typography?.body?.$value || "Plus Jakarta Sans";
+  // Safe Email Typography Stacks
+  const fontDisplayRaw = data.typography?.display?.$value || "Inter";
+  const fontBodyRaw = data.typography?.body?.$value || "Inter";
 
   const typography: EmailTypographyStack = {
-    display: `'${fontDisplayRaw}', 'Playfair Display', Georgia, 'Times New Roman', serif`,
-    body: `'${fontBodyRaw}', 'Segoe UI', -apple-system, BlinkMacSystemFont, Tahoma, Geneva, Verdana, sans-serif`,
-    googleFontImportUrl: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap",
+    display: `'${fontDisplayRaw}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`,
+    body: `'${fontBodyRaw}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`,
+    googleFontImportUrl: "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
   };
 
-  // Vectores SVG
+  // SVG Vectors
   const monogramSvg = data.vectors?.monogram?.svg_raw || undefined;
   const logoSvg = data.vectors?.logo_primary?.svg_raw || undefined;
 

@@ -1,16 +1,18 @@
-# Automation Engine: Usage & Development Guide (v1.0)
+# Automation Engine: Usage & Architecture Guide (v2.0)
 
 > **SSoT Reference Document:** `.agents/skills/automation-engine/references/usage.md`  
-> **Ámbito:** Broker de eventos NATS JetStream 2.12, Directus Flows 11+, CloudEvents 1.0 y BullMQ sobre Valkey 7.2 con Dead Letter Queue (DLQ).
+> **Scope:** NATS JetStream 2.12 Message Broker, Core NATS Request-Reply (<0.3ms P99), CNCF CloudEvents v1.0, BullMQ 6.x on Valkey 7.2 with Dead Letter Queue (DLQ), and Tri-State Circuit Breakers.
 
 ---
 
-## 1. NATS JetStream 2.12: Configuración de Streams & Consumo Pull
+## 1. NATS JetStream 2.12: Stream Configuration, Pull Consumer Pools & Core RPC {#1-nats}
+
+NATS Server 2.12 enforces the Strict JetStream API, preventing extraneous schema fields and providing durable pull consumers with queue groups for horizontally scalable worker pools:
 
 ```typescript
 import { connect, JetStreamClient, JetStreamManager, headers, StorageType, RetentionPolicy, AckPolicy } from "nats";
 
-export class NatsEngine {
+export class NatsEventMesh {
   private js!: JetStreamClient;
   private jsm!: JetStreamManager;
 
@@ -18,29 +20,39 @@ export class NatsEngine {
     const nc = await connect({ servers: serverUrl, name: "automation-engine" });
     this.js = nc.jetstream();
     this.jsm = await nc.jetstreamManager();
+    return nc;
   }
 
-  async setupCommerceStream() {
+  async declareStream(streamName: string, subjects: string[]) {
     await this.jsm.streams.add({
-      name: "COMMERCE",
-      subjects: ["orders.*", "payments.*", "fulfillment.*"],
+      name: streamName,
+      subjects: subjects,
       storage: StorageType.File,
       retention: RetentionPolicy.Limits,
       max_bytes: 1024 * 1024 * 1024, // 1GB
-      duplicate_window: 120 * 1_000_000_000 // 2 min
+      duplicate_window: 120 * 1_000_000_000 // 2 minutes deduplication window
     });
   }
 
-  async publishCloudEvent(subject: string, event: { id: string; type: string; data: Record<string, unknown> }) {
+  async publishCloudEvent(subject: string, event: {
+    id: string;
+    type: string;
+    source: string;
+    data: Record<string, unknown>;
+    traceparent?: string;
+  }) {
     const h = headers();
-    // Invariante: Deduplicación atómica en NATS con Nats-Msg-Id
+    // Atomic deduplication via Nats-Msg-Id header
     h.set("Nats-Msg-Id", event.id);
+    if (event.traceparent) {
+      h.set("traceparent", event.traceparent);
+    }
 
     const payload = {
       specversion: "1.0",
       id: event.id,
       type: event.type,
-      source: "gentle.automation.engine",
+      source: event.source,
       time: new Date().toISOString(),
       datacontenttype: "application/json",
       data: event.data
@@ -49,14 +61,14 @@ export class NatsEngine {
     return await this.js.publish(subject, Buffer.from(JSON.stringify(payload)), { headers: h });
   }
 
-  async startOrderConsumer(handler: (event: any) => Promise<void>) {
-    const consumer = await this.js.consumers.get("COMMERCE", "order-processor").catch(async () => {
-      return await this.jsm.consumers.add("COMMERCE", {
-        durable_name: "order-processor",
-        filter_subject: "orders.*",
+  async startDurablePullConsumer(stream: string, consumerName: string, filterSubject: string, handler: (event: any) => Promise<void>) {
+    const consumer = await this.js.consumers.get(stream, consumerName).catch(async () => {
+      return await this.jsm.consumers.add(stream, {
+        durable_name: consumerName,
+        filter_subject: filterSubject,
         ack_policy: AckPolicy.Explicit,
         max_deliver: 5
-      }).then(() => this.js.consumers.get("COMMERCE", "order-processor"));
+      }).then(() => this.js.consumers.get(stream, consumerName));
     });
 
     return await consumer.consume({
@@ -66,7 +78,12 @@ export class NatsEngine {
           await handler(event);
           msg.ack();
         } catch (err) {
-          msg.nak();
+          // If max deliveries reached, terminate poison pill to route to advisory stream
+          if (msg.info.deliveryCount >= 5) {
+            msg.term();
+          } else {
+            msg.nak();
+          }
         }
       }
     });
@@ -76,50 +93,20 @@ export class NatsEngine {
 
 ---
 
-## 2. Directus Flows 11+: Transformación in-process a CloudEvents
+## 2. BullMQ on Valkey 7.2: Deduplication, Debouncing & Dead Letter Queue (DLQ) {#2-bullmq}
 
-```javascript
-// Directus Flow: Operation "Run Script" (Sandbox JS)
-module.exports = function (data) {
-  const trigger = data.$trigger;
-  const payload = trigger.payload;
-
-  if (!payload.total_cop || payload.total_cop <= 0) {
-    throw new Error("Transacción inválida: total_cop debe ser mayor a 0");
-  }
-
-  return {
-    id: crypto.randomUUID(),
-    specversion: "1.0",
-    type: "commerce.order.created",
-    source: "directus.flows.orders",
-    subject: `orders.${trigger.keys?.[0] || 'new'}`,
-    time: new Date().toISOString(),
-    datacontenttype: "application/json",
-    data: {
-      orderId: trigger.keys?.[0],
-      customerEmail: payload.customer_email,
-      totalCop: payload.total_cop,
-      paymentMethod: payload.payment_method || "WOMPI_PSE"
-    }
-  };
-};
-```
-
----
-
-## 3. BullMQ Bridge con Valkey 7.2 & Dead Letter Queue (DLQ)
+BullMQ 6.x running on Valkey 7.2 provides high-throughput background processing with exponential backoff and DLQ routing:
 
 ```typescript
 import { Queue, Worker, Job } from "bullmq";
 import Redis from "ioredis";
 
-const connection = new Redis(process.env.VALKEY_CONNECTION_STRING || "redis://valkey:6379", {
+const connection = new Redis(process.env.VALKEY_URL || "redis://valkey:6379", {
   maxRetriesPerRequest: null,
   enableAutoPipelining: true
 });
 
-export const commerceQueue = new Queue("commerce-jobs", {
+export const taskQueue = new Queue("background-tasks", {
   connection,
   defaultJobOptions: {
     attempts: 5,
@@ -128,22 +115,22 @@ export const commerceQueue = new Queue("commerce-jobs", {
   }
 });
 
-export const commerceDlq = new Queue("commerce-dlq", { connection });
+export const deadLetterQueue = new Queue("tasks-dlq", { connection });
 
-export const commerceWorker = new Worker(
-  "commerce-jobs",
+export const taskWorker = new Worker(
+  "background-tasks",
   async (job: Job) => {
-    // Procesamiento de tarea pesada
-    return { success: true };
+    // Process heavy asynchronous workload
+    return { success: true, processedAt: new Date().toISOString() };
   },
   { connection, concurrency: 10 }
 );
 
-commerceWorker.on("failed", async (job, error) => {
+taskWorker.on("failed", async (job, error) => {
   if (!job) return;
   if (job.attemptsMade >= (job.opts.attempts || 1)) {
-    console.error(`[DLQ ALERT] Trabajo ${job.id} agotó intentos. Moviendo a DLQ.`);
-    await commerceDlq.add("dead-letter-item", {
+    console.error(`[DLQ EXHAUSTION] Job ${job.id} failed after ${job.attemptsMade} attempts. Routing to DLQ.`);
+    await deadLetterQueue.add("dead-letter-task", {
       jobId: job.id,
       jobName: job.name,
       attemptsMade: job.attemptsMade,
@@ -153,4 +140,50 @@ commerceWorker.on("failed", async (job, error) => {
     });
   }
 });
+```
+
+---
+
+## 3. CNCF CloudEvents v1.0 Transformation Pipeline
+
+Agnostic transformation pipeline converting any incoming trigger or mutation payload into a strictly compliant CloudEvents v1.0 structure:
+
+```typescript
+export function toCloudEvent<T extends Record<string, unknown>>(
+  eventType: string,
+  source: string,
+  data: T,
+  subject?: string
+) {
+  return {
+    specversion: "1.0" as const,
+    id: crypto.randomUUID(),
+    type: eventType,
+    source: source,
+    subject: subject || undefined,
+    time: new Date().toISOString(),
+    datacontenttype: "application/json",
+    data: data
+  };
+}
+```
+
+---
+
+## 4. Standalone Tri-State Circuit Breaker Integration
+
+To prevent cascade failures across downstreams:
+
+```typescript
+import { CircuitBreaker } from "../assets/circuit_breaker";
+
+const externalApiBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  cooldownPeriodMs: 30000,
+  halfOpenMaxSuccesses: 2
+});
+
+export async function resilientDispatch(fn: () => Promise<any>) {
+  return await externalApiBreaker.execute(fn);
+}
 ```
