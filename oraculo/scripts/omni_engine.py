@@ -381,6 +381,7 @@ def main():
             print("=" * 70)
             print("✅ Extracción finalizada con éxito (--extract).")
             print(f"  • Caché JSON persistida en: {cache_dir}")
+            print(f"  • Micro-auditorías atómicas en: {Path(client_dir) / 'raw' / 'json' / 'audit'}")
             print("=" * 70)
             return 0
 
@@ -393,14 +394,16 @@ def main():
         master_dump_path = lake.export_master_dump()
 
         print("=" * 70)
-        print("✅ Pipeline ejecutado con éxito total y paridad de calidad SSoT:")
+        print("✅ Pipeline ejecutado con éxito total y paridad de calidad SSoT (Canon 12-15-10):")
         print(f"  • Directorio base: {client_dir}")
-        print(f"  • Shards JSON: {client_dir}/raw/json/dumps/ ({shard_summary['shards_count']} shards)")
+        print(f"  • 12 Shards Físicos JSON: {client_dir}/raw/json/dumps/ ({shard_summary['shards_count']} shards)")
+        print(f"  • 15 Shards Relacionales: {client_dir}/raw/json/dumps/client_dumps_15_shards.json")
+        print(f"  • 10 Feeds Gold Markdown: {client_dir}/raw/feeds/ ({shard_summary['feeds_count']} feeds)")
         print(f"  • Silver Manifest: {client_dir}/raw/json/dumps/manifest.json")
         print(f"  • Master Dump: {master_dump_path}")
-        print(f"  • Feeds Quirúrgicos: {client_dir}/raw/feeds/ ({shard_summary['feeds_count']} feeds)")
-        print(f"  • Auditoría de Salud: {client_dir}/raw/json/extraction_health_audit.md")
-        print(f"  • Health Ledger: {client_dir}/raw/json/health_ledger.json")
+        print(f"  • Micro-Auditorías Atómicas: {client_dir}/raw/json/audit/")
+        print(f"  • Auditoría Forense Macro: {client_dir}/raw/json/extraction_health_audit.md")
+        print(f"  • Health Ledger Consolidado: {client_dir}/raw/json/audit/health_ledger.json")
         print("=" * 70)
         return 0
 

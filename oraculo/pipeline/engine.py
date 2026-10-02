@@ -57,6 +57,59 @@ class ExtractionEngine:
     def __init__(self, cache_dir: str = "raw/json/cache", refresh_pro: bool = False):
         self.cache = CacheManager(cache_dir=cache_dir)
         self.refresh_pro = refresh_pro
+        self.audit_dir = Path(cache_dir).parent / "audit"
+        self.audit_dir.mkdir(parents=True, exist_ok=True)
+
+    def _save_micro_audit(
+        self,
+        provider: str,
+        status: str,
+        results_list: List[ExtractionResult],
+        credit_stats: dict,
+        client_data: dict,
+        latency_ms: float = 0.0,
+        is_cached: bool = False
+    ) -> None:
+        try:
+            self.audit_dir.mkdir(parents=True, exist_ok=True)
+            audit_file = self.audit_dir / f"audit_{provider}.json"
+            if is_cached and audit_file.exists():
+                return
+            prov_results = [
+                r for r in results_list
+                if r.provider == provider or (provider == "freeastro" and r.provider in ("freeastro", "freeastroapi")) or (provider == "mcp" and "mcp" in r.provider)
+            ]
+            audit_record = {
+                "provider": provider,
+                "consultant": client_data.get("name", "Unknown"),
+                "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                "status": status,
+                "is_cached": is_cached,
+                "total_endpoints": len(prov_results),
+                "success_count": len([r for r in prov_results if r.status in ("SUCCESS", "CACHED")]),
+                "failure_count": len([r for r in prov_results if r.status == "FAILED"]),
+                "latency_ms": round(latency_ms, 2),
+                "credits_audit": {
+                    "astroway_credits_remaining": credit_stats.get("astroway_credits_remaining"),
+                    "astroway_credits_used": credit_stats.get("astroway_credits_used"),
+                    "freeastro_report_credits": credit_stats.get("freeastro_report_credits"),
+                    "calls_made": credit_stats.get("calls_made", {}).get(provider, 0)
+                },
+                "endpoints": [
+                    {
+                        "endpoint": r.endpoint_key,
+                        "status": r.status,
+                        "http_status": r.http_status,
+                        "latency_ms": round(r.latency_ms, 2),
+                        "error": r.error
+                    }
+                    for r in prov_results
+                ]
+            }
+            with open(audit_file, "w", encoding="utf-8") as f:
+                json.dump(audit_record, f, indent=2, ensure_ascii=False)
+        except Exception as exc:
+            logger.warning(f"Could not write micro audit for {provider}: {exc}")
 
     async def execute_extraction(
         self,
@@ -167,9 +220,12 @@ class ExtractionEngine:
                                     provider="freeastro", endpoint_key=ep_k,
                                     status="CACHED", data=ep_data, http_status=200, latency_ms=0.0
                                 ))
+                            self._save_micro_audit("freeastro", "CACHED", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=True)
                             return
 
                     t0 = asyncio.get_event_loop().time()
+                    elapsed = 0.0
+                    has_err = False
                     try:
                         res = await fn_freeastro(client_data, client=http_client)
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
@@ -196,10 +252,12 @@ class ExtractionEngine:
                                 error=ep_data.get("error") if is_err else None
                             ))
                     except Exception as exc:
+                        has_err = True
                         results_list.append(ExtractionResult(
                             provider="freeastro", endpoint_key="all", status="FAILED",
                             data={}, http_status=500, error=str(exc)
                         ))
+                    self._save_micro_audit("freeastro", "FAILED" if has_err else "SUCCESS", results_list, credit_stats, client_data, latency_ms=elapsed, is_cached=False)
 
             # 2. Dispatch AstroWay
             async def _run_astroway():
@@ -223,9 +281,12 @@ class ExtractionEngine:
                                     provider="astroway", endpoint_key=ep_k,
                                     status="CACHED", data=ep_data, http_status=200, latency_ms=0.0
                                 ))
+                            self._save_micro_audit("astroway", "CACHED", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=True)
                             return
 
                     t0 = asyncio.get_event_loop().time()
+                    elapsed = 0.0
+                    has_err = False
                     try:
                         res = await fn_astroway(client_data, client=http_client)
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
@@ -254,10 +315,12 @@ class ExtractionEngine:
                                 error=ep_data.get("error") if is_err else None
                             ))
                     except Exception as exc:
+                        has_err = True
                         results_list.append(ExtractionResult(
                             provider="astroway", endpoint_key="all", status="FAILED",
                             data={}, http_status=500, error=str(exc)
                         ))
+                    self._save_micro_audit("astroway", "FAILED" if has_err else "SUCCESS", results_list, credit_stats, client_data, latency_ms=elapsed, is_cached=False)
 
             # 3. Dispatch AstrologyAPI
             async def _run_astrology():
@@ -277,9 +340,12 @@ class ExtractionEngine:
                                     provider="astrologyapi", endpoint_key=ep_k,
                                     status="CACHED", data=ep_data, http_status=200, latency_ms=0.0
                                 ))
+                            self._save_micro_audit("astrologyapi", "CACHED", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=True)
                             return
 
                     t0 = asyncio.get_event_loop().time()
+                    elapsed = 0.0
+                    has_err = False
                     try:
                         res = await fn_astrology(client_data, client=http_client)
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
@@ -304,10 +370,12 @@ class ExtractionEngine:
                                 error=ep_data.get("error") if is_err else None
                             ))
                     except Exception as exc:
+                        has_err = True
                         results_list.append(ExtractionResult(
                             provider="astrologyapi", endpoint_key="all", status="FAILED",
                             data={}, http_status=500, error=str(exc)
                         ))
+                    self._save_micro_audit("astrologyapi", "FAILED" if has_err else "SUCCESS", results_list, credit_stats, client_data, latency_ms=elapsed, is_cached=False)
 
             # 4. Dispatch VedAstro
             async def _run_vedastro():
@@ -327,9 +395,12 @@ class ExtractionEngine:
                                     provider="vedastro", endpoint_key=ep_k,
                                     status="CACHED", data=ep_data, http_status=200, latency_ms=0.0
                                 ))
+                            self._save_micro_audit("vedastro", "CACHED", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=True)
                             return
 
                     t0 = asyncio.get_event_loop().time()
+                    elapsed = 0.0
+                    has_err = False
                     try:
                         res = await fn_vedastro(client_data, client=http_client)
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
@@ -354,10 +425,12 @@ class ExtractionEngine:
                                 error=ep_data.get("error") if is_err else None
                             ))
                     except Exception as exc:
+                        has_err = True
                         results_list.append(ExtractionResult(
                             provider="vedastro", endpoint_key="all", status="FAILED",
                             data={}, http_status=500, error=str(exc)
                         ))
+                    self._save_micro_audit("vedastro", "FAILED" if has_err else "SUCCESS", results_list, credit_stats, client_data, latency_ms=elapsed, is_cached=False)
 
             # 5. Dispatch HebCal & NASA
             async def _run_hebcal_nasa():
@@ -394,6 +467,7 @@ class ExtractionEngine:
                         
                         if rest_results["hebcal"].get("converter") and rest_results["hebcal"].get("zmanim"):
                             self.cache.set("hebcal", "combined", client_cache_key, rest_results["hebcal"], http_status=200)
+                    self._save_micro_audit("hebcal", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=bool(cached_heb))
 
                 if run_nasa:
                     cached_nasa = self.cache.get("nasa", "asteroids", client_cache_key) if not self.refresh_pro else None
@@ -435,6 +509,7 @@ class ExtractionEngine:
                                 results_list.append(ExtractionResult(provider="nasa", endpoint_key=f"asteroid_{ast_name}", status="FAILED", data={}, error=str(e)))
                         if rest_results["nasa"]:
                             self.cache.set("nasa", "asteroids", client_cache_key, rest_results["nasa"], http_status=200)
+                    self._save_micro_audit("nasa", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=bool(cached_nasa))
 
             # 6. Dispatch MCPs
             async def _run_mcps():
@@ -519,6 +594,8 @@ class ExtractionEngine:
                         results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="SUCCESS", data=km_res, http_status=200))
                     except Exception as e:
                         results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="FAILED", data={}, error=str(e)))
+
+                self._save_micro_audit("mcp", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=False)
 
             # Execute all tasks concurrently in TaskGroup
             async with asyncio.TaskGroup() as tg:

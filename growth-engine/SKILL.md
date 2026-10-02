@@ -27,6 +27,7 @@ Activate when designing conversion funnels, generating high-converting sales cop
 | Objective | Action | Reference / Asset |
 |---|---|---|
 | Complete Usage Guide | Cart fencing, copy formulas & linter | [`references/usage.md`](file:///var/www/.agents/skills/growth-engine/references/usage.md) |
+| Copywriting Formulas | Neurocopywriting, Hormozi offer & StoryBrand | [`references/copywriting_usage.md`](file:///var/www/.agents/skills/growth-engine/references/copywriting_usage.md) |
 | Zerops & Bun Infra | Private DNS, ports & deployment | [`references/infra.md`](file:///var/www/.agents/skills/growth-engine/references/infra.md) |
 | Zod Schemas | Multi-locale, typed copy contracts | [`assets/copywriting_zod_schemas.ts`](file:///var/www/.agents/skills/growth-engine/assets/copywriting_zod_schemas.ts) |
 | AI Atomizer Engine | Structured inference via Bifrost | [`assets/copy_atomizer_engine.ts`](file:///var/www/.agents/skills/growth-engine/assets/copy_atomizer_engine.ts) |

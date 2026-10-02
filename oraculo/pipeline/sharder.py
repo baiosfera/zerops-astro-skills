@@ -184,10 +184,12 @@ class SharderEngine:
         self.dumps_dir = self.raw_dir / "json" / "dumps"
         self.feeds_dir = self.raw_dir / "feeds"
         self.llm_dir = self.raw_dir / "llm"
+        self.audit_dir = self.raw_dir / "json" / "audit"
 
         self.dumps_dir.mkdir(parents=True, exist_ok=True)
         self.feeds_dir.mkdir(parents=True, exist_ok=True)
         self.llm_dir.mkdir(parents=True, exist_ok=True)
+        self.audit_dir.mkdir(parents=True, exist_ok=True)
 
     def verify_and_shard(self, extraction_output: Dict[str, Any]) -> Dict[str, Any]:
         client_data = extraction_output.get("client_data", {})
@@ -205,7 +207,7 @@ class SharderEngine:
         if health_report["is_fatal"]:
             raise ExtractionFatalError(f"Fatal Extraction Failure (Fail-Fast Gate): {health_report['fatal_reason']}")
 
-        # 2. Tier 1: 10 Raw Atomic Shards (Bronze Tier)
+        # 2. Tier 1: 12 Raw Atomic Shards (Bronze Tier - Canon 12-15-10)
         shards = self._build_tier1_shards(rest_data, mcp_data, client_data)
         for shard_filename, shard_content in shards.items():
             shard_path = self.dumps_dir / shard_filename
@@ -1504,13 +1506,41 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 
     def _write_health_audit_md(self, health: dict, credit_stats: dict, client: dict, results_list: list):
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+        # 1. Scan micro-audits in self.audit_dir
+        micro_audits = {}
+        if self.audit_dir.exists():
+            for audit_path in sorted(self.audit_dir.glob("audit_*.json")):
+                try:
+                    with open(audit_path, "r", encoding="utf-8") as af:
+                        m_data = json.load(af)
+                        prov = m_data.get("provider", audit_path.stem.replace("audit_", ""))
+                        micro_audits[prov] = m_data
+                except Exception:
+                    pass
+
+        # Index telemetries from micro-audits by (provider, endpoint)
+        endpoint_telemetry = {}
+        for prov, m_data in micro_audits.items():
+            for ep in m_data.get("endpoints", []):
+                ep_key = ep.get("endpoint")
+                if ep_key:
+                    endpoint_telemetry[(prov, ep_key)] = ep
+
         rows = []
         for idx, res in enumerate(results_list, start=1):
             prov = res.provider
             endpoint = res.endpoint_key
             status_badge = "⚡ CACHED" if res.status == "CACHED" else ("✅ OK" if res.status == "SUCCESS" else "❌ FAIL")
             http_code = res.http_status if res.http_status else ("200 (CACHE)" if res.status == "CACHED" else ("200 (MCP)" if res.status == "SUCCESS" else "ERR"))
-            latency = f"{res.latency_ms:.1f} ms"
+
+            # Enrich from micro-audit if available
+            ep_tel = endpoint_telemetry.get((prov, endpoint)) or endpoint_telemetry.get(("freeastro" if prov in ("freeastro", "freeastroapi") else prov, endpoint))
+            if ep_tel and res.status == "CACHED" and ep_tel.get("latency_ms") and ep_tel.get("latency_ms") > 0:
+                latency = f"{res.latency_ms:.1f} ms (orig: {ep_tel['latency_ms']:.1f} ms)"
+            else:
+                latency = f"{res.latency_ms:.1f} ms"
+
             try:
                 payload_len = len(json.dumps(res.data))
                 payload_size = f"{payload_len:,} B"
@@ -1525,7 +1555,18 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 
             rows.append(f"| {idx:02d} | **{prov}** | `{endpoint}` | `{method}` | `{http_code}` | {latency} | {payload_size} | {status_badge} |")
 
-        table_content = "\n".join(rows)
+        table_content = "\n".join(rows) if rows else "| 01 | **N/A** | `none` | `N/A` | `200` | 0.0 ms | 0 B | ⚡ CACHED |"
+
+        # Table of registered micro-audits
+        micro_audit_rows = []
+        for p_idx, (m_prov, m_data) in enumerate(sorted(micro_audits.items()), start=1):
+            m_status = m_data.get("status", "UNKNOWN")
+            m_status_badge = "⚡ CACHED" if m_data.get("is_cached") else ("✅ OK" if m_status == "SUCCESS" else "❌ FAIL")
+            m_ts = m_data.get("timestamp_utc", "N/A")
+            m_eps = f"{m_data.get('success_count', 0)}/{m_data.get('total_endpoints', 0)}"
+            m_lat = f"{m_data.get('latency_ms', 0.0):.1f} ms"
+            micro_audit_rows.append(f"| {p_idx:02d} | **{m_prov}** | `{m_status}` | {m_status_badge} | {m_eps} eps | {m_lat} | `{m_ts}` |")
+        micro_audit_table = "\n".join(micro_audit_rows) if micro_audit_rows else "| 01 | **N/A** | `Sin micro-auditorías previas` | ⚪ N/A | 0 eps | 0.0 ms | N/A |"
 
         rem = credit_stats.get("astroway_credits_remaining", "N/A")
         used = credit_stats.get("astroway_credits_used", "N/A")
@@ -1533,10 +1574,11 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
         freeastro_rep = credit_stats.get("freeastro_report_credits", {})
         rep_avail = freeastro_rep.get("available", 2) if isinstance(freeastro_rep, dict) else 2
 
-        audit_md = f"""# 🏥 Auditoría Forense de Extracción Multidimensional SOTA (v4.2)
+        audit_md = f"""# 🏥 Auditoría Forense de Extracción Multidimensional SOTA (v4.9)
 **Consultante**: `{client.get('name', 'Consultant')}`  
 **Fecha y Hora**: `{timestamp}`  
 **Estado General**: {'🟢 COMPLETA / SIN ERRORES CRÍTICOS' if not health['is_fatal'] else '🔴 FALLO CRÍTICO'}  
+**Arquitectura de Shards**: Canon 12-15-10 (12 Físicos JSON en `dumps/`, 15 Relacionales en `client_dumps_15_shards.json`, 10 Feeds Gold en `feeds/`)
 
 ---
 
@@ -1548,7 +1590,15 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 
 ---
 
-## 2. 💳 Saldos y Auditoría de Créditos por Proveedor
+## 2. 📑 Micro-Auditorías Atómicas Registradas (`raw/json/audit/`)
+
+| # | Proveedor | Status | Badge | Endpoints Exitosos | Latencia Red | Timestamp UTC |
+|---|---|---|---|---|---|---|
+{micro_audit_table}
+
+---
+
+## 3. 💳 Saldos y Auditoría de Créditos por Proveedor
 
 | Proveedor | Plan Contratado | Cuota / Saldo Restante | Consumo Sesión | Estado de Cuenta |
 |---|---|---|---|---|
@@ -1560,15 +1610,32 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 
 ---
 
-## 3. 🛡️ Resumen de Salud y Sensores Físicos
+## 4. 🛡️ Resumen de Salud y Sensores Físicos
 - **Llamadas Totales**: {health['total_calls']}
 - **Exitosas**: {health['success_count']}
 - **Fallidas**: {health['failure_count']}
+- **Micro-Audits Acumulados**: {len(micro_audits)}
 - **Detección de Mocks (0.0°)**: {'❌ ALERTA MOCK' if health['mock_detected'] else '✅ Cero Mocks (Datos Físicos Verificados)'}
 - **Veredicto Fatal**: {'SÍ' if health['is_fatal'] else 'NO'}
 """
         with open(self.raw_dir / "json" / "extraction_health_audit.md", "w", encoding="utf-8") as f:
             f.write(audit_md)
+
+        # 4. Export consolidated health_ledger.json
+        health_ledger = {
+            "timestamp_utc": timestamp,
+            "consultant": client.get("name", "Consultant"),
+            "health": health,
+            "credit_stats": credit_stats,
+            "micro_audits": micro_audits,
+            "shards_architecture": {
+                "physical_shards_dumps": 12,
+                "relational_jsonb_shards": 15,
+                "gold_feeds_markdown": 10
+            }
+        }
+        with open(self.audit_dir / "health_ledger.json", "w", encoding="utf-8") as f:
+            json.dump(health_ledger, f, indent=2, ensure_ascii=False)
 
     def _write_astrobranding_handoff_md(self, shards: Dict[str, Any], client: dict):
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")

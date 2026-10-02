@@ -37,7 +37,7 @@ Activate when designing, sending, or automating email flows, transactional email
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) — Multi-provider matrix, Bun SSR streaming, and RFC 8058.
 - [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) — Zerops Listmonk topology, BullMQ worker configuration, and DNS setup.
-- [`assets/GenericTransactionalEmail.tsx`](file:///var/www/.agents/skills/email-marketing/assets/GenericTransactionalEmail.tsx) — Agnostic transactional React Email template.
+- [`assets/WelcomeLatAmEmail.tsx`](file:///var/www/.agents/skills/email-marketing/assets/WelcomeLatAmEmail.tsx) — LatAm transactional React Email template.
 - [`assets/email_dispatcher.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_dispatcher.ts) — Multi-provider failover dispatcher with Listmonk support.
 - [`assets/email_brandbook_bridge.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_brandbook_bridge.ts) — W3C DTCG design token transpiler.
 - [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) — Throttled BullMQ queue worker on Valkey.

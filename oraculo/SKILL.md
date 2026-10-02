@@ -4,28 +4,29 @@ description: "Trigger: oraculo, fase 0, fase0, carta natal, astrologia. Ejecuta 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.8"
+  version: "4.9"
 ---
 
-# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v4.8)
+# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v4.9)
 
 ## Activation Contract
 Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y puente semiótico a `orchesbrand`.
 
 ### Fast-Path Inmediato para Fase 0:
 Ante cualquier solicitud de "fase 0", "fase0", "carta natal": la ausencia de `raw/` es normal. Ejecutar de inmediato:
-`python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py --file <ruta>`
+`python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py <ruta>`
 o mediante el wrapper directo:
 `bash /var/www/.agents/skills/oraculo/scripts/fase0.sh <ruta>`
-Compila atómicamente la totalidad de Fase 0 (10 shards, feeds XML, Ficha Técnica y `fase0_author_psychology.md`).
+Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards PostgreSQL, 10 feeds Gold, Ficha Técnica y `fase0_author_psychology.md`).
 
 ## Hard Rules (CoHaLo Positive Guidance)
 - **Regla 1 (Arquitectura Federada):** Cada sub-skill astrológica mantiene su extractor canónico y referencias oficiales. Oráculo actúa como conductor asíncrono y sintetizador.
 - **Regla 2 (Motor Matemático):** Python extrae cómputos exactos y literatura clásica verbatim. Cero textos inventados en el motor.
-- **Regla 3 (Virtual Data Lakehouse):**
-  - **Bronze**: 10 Shards JSON en `raw/json/dumps/` sin directorios residuales.
-  - **Silver**: `manifest.json` con punteros RFC 6901 y `VirtualDataLake`.
-  - **Gold**: Feeds en `raw/feeds/`, incluyendo `feed_fase0_author_dossier.md` (XML).
+- **Regla 3 (Virtual Data Lakehouse & Canon 12-15-10):**
+  - **Bronze**: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
+  - **Silver**: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json` con punteros RFC 6901.
+  - **Gold**: 10 Feeds Quirúrgicos en `raw/feeds/` para agentes de marca downstream.
+  - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
   - **LLM**: `fase0_author_psychology.md` (>8 KB) y `coach_technical_sheet.md` (12 secciones en español).
 - **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
 - **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
