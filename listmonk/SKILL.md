@@ -4,48 +4,40 @@ description: "Trigger: listmonk, newsletter, mailing list, transactional email, 
 license: AGPL-3.0
 metadata:
   author: "gentleman-programming"
-  version: "1.0"
+  version: "2.0"
 ---
 
-# Listmonk — Sovereign Email Marketing & Transactional Engine (v1.0)
+# `listmonk` — Sovereign Email Marketing & Transactional Engine (v2.0)
 
 ## Activation Contract
-Activate whenever deploying, configuring, integrating, or managing Listmonk newsletter campaigns, mailing lists, transactional emails (`/api/tx`), Go template engines, subscriber APIs, or bounce webhooks inside Zerops services.
+Activate when provisioning, deploying, or orchestrating Listmonk (v6.2.0+) within Zerops Incus LXC containers, executing transactional email dispatch (`POST /api/tx`), managing subscribers and lists via the REST API v6, rendering Go/Sprig templates with RFC 8058 One-Click Unsubscribe headers, or architecting multi-container horizontal scaling with PostgreSQL 18 and S3 Object Storage.
 
-## Hard Rules
-- **Zerops Native Architecture**: Deploy Listmonk as a native Go service (`type: go@1.22` or binary on `os: alpine`) connected to managed PostgreSQL (`type: postgresql@16:single` or `:ha`).
-- **Atomic Migrations (`zsc execOnce`)**: Always execute `./listmonk --install --idempotent --yes --config=""` and `./listmonk --upgrade --yes --config=""` wrapped inside `zsc execOnce ${appVersionId}` to prevent concurrent migration race conditions.
-- **PostgreSQL 18 Schema Pre-Creation**: When configuring `LISTMONK_db__params: "search_path=listmonk"`, execute `CREATE SCHEMA IF NOT EXISTS listmonk;` before `./listmonk --install` to prevent schema selection failures.
-- **Double Underscore Env Mapping & API Auth**: Pass configuration dynamically via Zerops environment variables using double underscores (`LISTMONK_admin__username: "admin"`). In Listmonk v5, REST API endpoints require a dedicated bot account with `type = 'api'` and `user_role_id = 1` in `listmonk.users`.
-- **Fractal CoHaLo Execution**: Enforce strict process hygiene (`timeout 10s`), synchronous wait (`WaitMsBeforeAsync: 10000`), zero orphaned tasks (`manage_task action="kill"`), and sensor verification (HTTP `200` on `/admin`).
-- **Zero Deletion Invariant**: Consult [`references/usage.md`](file:///var/www/.agents/skills/listmonk/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/listmonk/references/infra.md) for complete lossless APIs, schemas, and recipes.
+## Hard Rules & Positive Guidance
+- **Native Go Architecture & Upstream v6.2.0**: Deploy official static binary (`v6.2.0_linux_amd64`) on `os: alpine` connecting to managed PostgreSQL 18 (`postgresql:single@18` or `postgresql:ha@18`).
+- **PostgreSQL 18 Schema & Search Path Invariant**: Always execute `CREATE SCHEMA IF NOT EXISTS listmonk;` and set `LISTMONK_db__params: "search_path=listmonk,public"` to guarantee extension and `pgcrypto` resolution.
+- **Atomic Migrations via `zsc execOnce`**: Wrap `./listmonk --install --idempotent --yes --config=""` and `./listmonk --upgrade --yes --config=""` inside `zsc execOnce ${appVersionId}` to prevent concurrent migration collisions.
+- **Split-Brain Prevention in Horizontal Scaling (`--passive`)**: When running 2+ containers for high availability, start the primary container with `./listmonk --config=""` and auxiliary HTTP replicas with `./listmonk --config="" --passive` to prevent duplicate campaign job execution.
+- **Decoupled S3 Media Storage**: Use Zerops Object Storage (`upload.provider: "s3"`) with Listmonk native reverse proxying, eliminating single-tenant local disk paths.
+- **REST API Bot Token Authentication**: Authenticate service-to-service calls using dedicated API service accounts (`type = 'api'`) via header `Authorization: token <api_token>` against internal DNS `http://listmonk:9000`.
 
 ## Decision Gates
 
-| Task / Objective | Action / Protocol | Reference / Asset |
+| Objective | Action | Reference / Asset |
 |---|---|---|
-| 4D Matrix & Benchmarks | Contrast Listmonk vs Ghost, Mailcoach, Sendy, Resend | [`references/usage.md#1-4d-comparative-architectural-matrix`](file:///var/www/.agents/skills/listmonk/references/usage.md) |
-| Subscriber REST APIs | Query with SQL expressions, create, update, blocklist | [`references/usage.md#3-subscribers-management-api`](file:///var/www/.agents/skills/listmonk/references/usage.md) |
-| High-Throughput `/api/tx` | Dispatch transactional emails with dynamic JSON data | [`references/usage.md#4-high-performance-transactional-engine-post-apitx`](file:///var/www/.agents/skills/listmonk/references/usage.md) |
-| Go Template & Sprig Engine | Render `{{ UnsubscribeURL }}`, `{{ TrackView }}`, `{{ .Tx.Data.* }}` | [`references/usage.md#5-templating-engine-syntax--sprig-functions`](file:///var/www/.agents/skills/listmonk/references/usage.md) |
-| Zerops `import.yaml` & `zerops.yaml` | Production deployment lifecycle, LXC Alpine, FUSE storage | [`references/infra.md#2-provisioning-blueprint-importyaml`](file:///var/www/.agents/skills/listmonk/references/infra.md) |
-| JSON Production Recipes | Pre-built `zerops.yaml` blueprints & API payloads | [`assets/listmonk_production_recipes.json`](file:///var/www/.agents/skills/listmonk/assets/listmonk_production_recipes.json) |
-| Physical Validation Sensor | Attest skill structure, frontmatter, tokens & links | [`scripts/listmonk-validate.sh`](file:///var/www/.agents/skills/listmonk/scripts/listmonk-validate.sh) |
+| Complete API & Templates | REST API v6 endpoints, `/api/tx`, Sprig & RFC 8058 | [`references/usage.md`](file:///var/www/.agents/skills/listmonk/references/usage.md) |
+| Zerops Topology & Infra | `import.yaml`, `zerops.yaml`, PG18 & `--passive` scaling | [`references/infra.md`](file:///var/www/.agents/skills/listmonk/references/infra.md) |
+| Typed TypeScript Client | Polymorphic API client with bot token authentication | [`assets/listmonk_client.ts`](file:///var/www/.agents/skills/listmonk/assets/listmonk_client.ts) |
+| Production Recipes | Zerops YAML blueprints and JSON transactional payloads | [`assets/listmonk_production_recipes.json`](file:///var/www/.agents/skills/listmonk/assets/listmonk_production_recipes.json) |
+| Physical Validation Sensor | Attest skill integrity, schema validation & algorithms | [`scripts/listmonk-validate.sh`](file:///var/www/.agents/skills/listmonk/scripts/listmonk-validate.sh) |
 
 ## Execution Steps
-1. Provision PostgreSQL database and Listmonk service via Zerops `import.yaml`.
+1. Provision PostgreSQL 18 database and Listmonk service container via Zerops `import.yaml`.
 2. Configure `zerops.yaml` with pre-compiled static binary on `os: alpine` and `zsc execOnce` migrations.
-3. Inject dynamic database connection environment variables (`LISTMONK_db__host: ${db_hostname}`).
-4. Mount persistent upload storage to `/mnt/baiostorage/listmonk/uploads` with `chmod -R 777`.
-5. Integrate application code with Listmonk REST API (`/api/subscribers` and `/api/tx`) over internal Zerops DNS.
+3. Wire dynamic database environment variables and set `search_path=listmonk,public`.
+4. Configure S3 Object Storage provider credentials for campaign media uploads.
+5. Integrate Astro 5 SSR actions using typed `listmonk_client.ts` over internal Zerops DNS.
 6. Verify deployment health via physical sensor check (`curl -f http://listmonk:9000/admin`).
 
 ## Output Contract
-- Operational Listmonk service running on Zerops Incus LXC with sub-second cold boot and ~20 MB RAM footprint.
-- Validated REST API integration with passing physical sensor checks.
-
-## References
-- [`references/usage.md`](file:///var/www/.agents/skills/listmonk/references/usage.md) — Complete REST API guide, transactional dispatch, Sprig templates, and 5 production patterns.
-- [`references/infra.md`](file:///var/www/.agents/skills/listmonk/references/infra.md) — Zerops topology, `import.yaml`, `zerops.yaml` lifecycle, environment dictionary, and CoHaLo harness.
-- [`assets/listmonk_production_recipes.json`](file:///var/www/.agents/skills/listmonk/assets/listmonk_production_recipes.json) — Production deployment recipes and JSON payloads.
-- [`scripts/listmonk-validate.sh`](file:///var/www/.agents/skills/listmonk/scripts/listmonk-validate.sh) — Deterministic quality & token validation sensor.
+- Sovereign, sub-second Listmonk v6.2.0 service running on Zerops with ~20 MB RAM footprint.
+- Robust transactional email and campaign pipelines passing all physical validation sensors (Exit 0).

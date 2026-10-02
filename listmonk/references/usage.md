@@ -1,6 +1,6 @@
-# Listmonk Developer & Agent API Manual (v1.0)
+# Listmonk Developer & Agent API Manual (v2.0)
 
-Listmonk is a self-hosted, high-performance newsletter, mailing list manager, and transactional email engine written in Go with a PostgreSQL backend (>= 12). This manual covers complete REST API interactions, templating syntax, transactional dispatch, bounce webhooks, production patterns, and deep integration with Zerops runtime environments (**PostgreSQL**, **NATS JetStream**, and **Valkey**).
+Listmonk is a self-hosted, high-performance newsletter, mailing list manager, and transactional email engine written in Go with a PostgreSQL 18 backend. This manual covers complete REST API interactions, templating syntax, transactional dispatch, bounce webhooks, production patterns, and deep integration with Zerops runtime environments (**PostgreSQL 18**, **NATS 2.12**, and **Valkey 7.2**).
 
 ---
 
@@ -32,10 +32,11 @@ Listmonk is a self-hosted, high-performance newsletter, mailing list manager, an
 
 ## 2. Authentication & Core Conventions
 
-All Listmonk administrative endpoints (`/api/*`) require HTTP Basic Authentication using Super Admin credentials or API tokens created in the dashboard.
+All Listmonk administrative endpoints (`/api/*`) accept either HTTP Basic Authentication or API bot token headers (`Authorization: token ...`).
 
 * **Base URL**: `http://<listmonk-hostname>:9000` (internal Zerops DNS) or `https://<custom-domain>`
 * **HTTP Basic Auth**: `Authorization: Basic <base64(username:password)>` or `curl -u 'username:password'`
+* **API Token Header (Preferred for Microservices)**: `Authorization: token <bot_api_token>`
 * **Headers**: `Content-Type: application/json`
 * **Response Envelope**:
   ```json

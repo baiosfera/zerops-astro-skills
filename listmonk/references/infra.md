@@ -1,36 +1,36 @@
-# Listmonk Infrastructure, Zerops Topology & Lifecycle Manual (v1.0)
+# Listmonk Infrastructure, Zerops Topology & Lifecycle Manual (v2.0)
 
-This manual provides production-grade infrastructure blueprints, multi-service `import.yaml` provisioning recipes (including **PostgreSQL**, **NATS**, and **Valkey**), `zerops.yaml` pipeline lifecycles, environment variable mapping, and the Fractal CoHaLo operational harness for Listmonk in Zerops.
+This manual provides production-grade infrastructure blueprints, multi-service `import.yaml` provisioning recipes (including **PostgreSQL 18**, **NATS 2.12**, and **Valkey 7.2**), `zerops.yaml` pipeline lifecycles, environment variable mapping, horizontal multi-container scaling with the `--passive` flag, and the Fractal CoHaLo operational harness for Listmonk in Zerops.
 
 ---
 
 ## 1. Zerops Multi-Service Architecture & Topology
 
-Listmonk operates within a secure, high-speed internal Zerops virtual network alongside PostgreSQL (storage), NATS (event messaging), and Valkey (caching/rate limiting):
+Listmonk operates within a secure, high-speed internal Zerops virtual network alongside PostgreSQL 18 (storage), NATS 2.12 (event messaging), Valkey 7.2 (caching/rate limiting), and Zerops Object Storage (S3):
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │ Zerops Project Topology                                                │
 │                                                                        │
 │   ┌────────────────────────┐          ┌────────────────────────────┐   │
-│   │ Listmonk Service       │          │ Managed PostgreSQL (db)    │   │
-│   │ (go@1.22 / os: alpine) │─────────▶│ (postgresql@16:single/:ha) │   │
+│   │ Listmonk Primary       │          │ Managed PostgreSQL (db)    │   │
+│   │ (go@1.22 / os: alpine) │─────────▶│ (postgresql:single@18)    │   │
 │   │ Port 9000 (HTTP)       │          │ Port 5432 (Internal)       │   │
 │   └───────────▲────────────┘          └────────────────────────────┘   │
 │               │                                                        │
 │               │ HTTP POST /api/tx                                      │
 │               │                                                        │
 │   ┌───────────┴────────────┐          ┌────────────────────────────┐   │
-│   │ App / Email Worker     │─────────▶│ NATS JetStream (nats)      │   │
-│   │ (nodejs / bun / go)    │          │ Port 4222 (Internal)       │   │
+│   │ App / Astro 5 SSR      │─────────▶│ NATS JetStream (nats)      │   │
+│   │ (bun@1.3 / webdev:3000)│          │ Port 4222 (Internal)       │   │
 │   └───────────┬────────────┘          └────────────────────────────┘   │
 │               │                                                        │
 │               │ Rate-Limit & Locks                                     │
 │               ▼                                                        │
 │   ┌────────────────────────┐          ┌────────────────────────────┐   │
-│   │ Valkey Cache (cache)   │          │ Shared Storage (NFS)       │   │
-│   │ (valkey@7.2 / redis)   │          │ /mnt/baiostorage/listmonk/ │   │
-│   │ Port 6379 (Internal)   │          │ (Persistent uploads)       │   │
+│   │ Valkey Cache (cache)   │          │ S3 Object Storage (object) │   │
+│   │ (valkey:single@7.2)    │          │ Campaign Media & Assets    │   │
+│   │ Port 6379 (Internal)   │          │ (Uploads Proxy Provider)   │   │
 │   └────────────────────────┘          └────────────────────────────┘   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -41,35 +41,36 @@ Listmonk operates within a secure, high-speed internal Zerops virtual network al
 
 ```yaml
 services:
-  # 1. Managed PostgreSQL for Listmonk SSoT Data & Subscribers
+  # 1. Managed PostgreSQL 18 for Listmonk SSoT Data & Subscribers
   - hostname: db
-    type: postgresql@16:single
+    type: postgresql:single@18
     mode: NON_HA
 
   # 2. Managed Valkey In-Memory Cache (Rate limiting & Idempotency)
   - hostname: cache
-    type: valkey@7.2:single
+    type: valkey:single@7.2
     mode: NON_HA
 
   # 3. NATS JetStream Message Broker (Event-Driven Dispatch)
   - hostname: nats
-    type: nats@2.10
+    type: nats:single@2.12
 
   # 4. Listmonk Native Go / Web Application
   - hostname: listmonk
     type: go@1.22
     enableSubdomainAccess: true
 
-  # 5. Shared Storage for Campaign Uploads & Attachments
-  - hostname: baiostorage
-    type: shared-storage
+  # 5. S3-Compatible Object Storage for Campaign Media Uploads
+  - hostname: objectstorage
+    type: object-storage
 ```
-
-*Note: Zerops automatically scales CPU and RAM vertically and elastically according to live traffic across all managed services.*
 
 ---
 
 ## 3. Production Deployment Lifecycle (`zerops.yaml`)
+
+### Multi-Container Horizontal Scaling & `--passive` Flag
+When running 2 or more containers of Listmonk to handle high API traffic, only **one** instance should execute the campaign scheduler. Auxiliary replica containers must pass the `--passive` flag to prevent duplicate email job execution across campaigns:
 
 ```yaml
 zerops:
@@ -78,8 +79,7 @@ zerops:
       os: alpine
       prepareCommands:
         - sudo apk add --no-cache curl tar ca-certificates
-        # Download official static Listmonk release binary for Linux amd64
-        - curl -sSL https://github.com/knadh/listmonk/releases/download/v5.1.0/listmonk_5.1.0_linux_amd64.tar.gz -o listmonk.tar.gz
+        - curl -sSL https://github.com/knadh/listmonk/releases/download/v6.2.0/listmonk_6.2.0_linux_amd64.tar.gz -o listmonk.tar.gz
         - tar -xzf listmonk.tar.gz
         - chmod +x listmonk
       deployFiles:
@@ -88,88 +88,68 @@ zerops:
         - i18n
       cache:
         - listmonk.tar.gz
-
     run:
       os: alpine
       prepareCommands:
-        - sudo apk add --no-cache ca-certificates tzdata curl
-        # Ensure uploads storage directory permissions on FUSE mount
-        - sudo mkdir -p /mnt/baiostorage/listmonk/uploads 2>/dev/null || true
-        - sudo chmod -R 777 /mnt/baiostorage/listmonk/uploads 2>/dev/null || true
-
+        - sudo apk add --no-cache ca-certificates tzdata curl postgresql-client
       initCommands:
-        # Atomic, idempotent schema install and upgrade on every release
+        # Pre-create schema in PostgreSQL 18 before running install
+        - PGPASSWORD="${db_password}" psql -h "${db_hostname}" -U "${db_user}" -d "${db_database}" -c "CREATE SCHEMA IF NOT EXISTS listmonk;"
+        # Idempotent database migrations wrapped in zsc execOnce
         - zsc execOnce ${appVersionId} -- ./listmonk --install --idempotent --yes --config=""
         - zsc execOnce ${appVersionId} -- ./listmonk --upgrade --yes --config=""
-
+      # Primary container runs active scheduler; horizontal scaling replicas should run with --passive
       start: ./listmonk --config=""
-
       ports:
         - port: 9000
           httpSupport: true
-
       envVariables:
-        # Server listen address
         LISTMONK_app__address: "0.0.0.0:9000"
-        
-        # PostgreSQL dynamic connection string binding from Zerops
         LISTMONK_db__host: ${db_hostname}
         LISTMONK_db__port: ${db_port}
         LISTMONK_db__user: ${db_user}
         LISTMONK_db__password: ${db_password}
         LISTMONK_db__database: ${db_database}
         LISTMONK_db__ssl_mode: disable
-        LISTMONK_db__max_open: 50
-        LISTMONK_db__max_idle: 25
+        LISTMONK_db__params: "search_path=listmonk,public"
+        LISTMONK_db__max_open: "50"
+        LISTMONK_db__max_idle: "25"
         LISTMONK_db__max_lifetime: "300s"
-
-        # Admin initial bootstrap credentials
-        LISTMONK_ADMIN_USER: "admin"
-        LISTMONK_ADMIN_PASSWORD: "CHANGE_ME_IN_PRODUCTION"
+        # S3 Media Upload Provider
+        LISTMONK_upload__provider: "s3"
+        LISTMONK_upload__s3__url: ${objectstorage_apiUrl}
+        LISTMONK_upload__s3__public_url: ${objectstorage_apiUrl}/${objectstorage_bucket}
+        LISTMONK_upload__s3__aws_access_key_id: ${objectstorage_accessKeyId}
+        LISTMONK_upload__s3__aws_secret_access_key: ${objectstorage_secretAccessKey}
+        LISTMONK_upload__s3__aws_default_region: "us-east-1"
+        LISTMONK_upload__s3__bucket: ${objectstorage_bucket}
 ```
 
 ---
 
-## 4. Environment Variables Reference Dictionary
+## 4. Environment Variables Dictionary (Double Underscore Mapping)
 
-Listmonk parses any variable prefixed with `LISTMONK_` by converting double underscores (`__`) to nested TOML table fields:
-
-| Environment Variable | Target Configuration Key | Description |
-|---|---|---|
-| `LISTMONK_app__address` | `app.address` | Binding host and port (default `"0.0.0.0:9000"`) |
-| `LISTMONK_app__root_url` | `app.root_url` | Public canonical base URL for link tracking |
-| `LISTMONK_app__logo_url` | `app.logo_url` | URL of the logo displayed in emails and login UI |
-| `LISTMONK_db__host` | `db.host` | PostgreSQL server hostname (`${db_hostname}`) |
-| `LISTMONK_db__port` | `db.port` | PostgreSQL server port (`${db_port}`) |
-| `LISTMONK_db__user` | `db.user` | PostgreSQL username (`${db_user}`) |
-| `LISTMONK_db__password` | `db.password` | PostgreSQL password (`${db_password}`) |
-| `LISTMONK_db__database` | `db.database` | PostgreSQL database name (`${db_database}`) |
-| `LISTMONK_db__ssl_mode` | `db.ssl_mode` | SSL connection mode (`disable`, `prefer`, `require`) |
-| `LISTMONK_db__max_open` | `db.max_open` | Max open pool connections (recommended: `25–50`) |
-| `LISTMONK_db__max_idle` | `db.max_idle` | Max idle pool connections (recommended: `10–25`) |
-| `LISTMONK_ADMIN_USER` | CLI bootstrap env | Initial Super Admin username during `--install` |
-| `LISTMONK_ADMIN_PASSWORD` | CLI bootstrap env | Initial Super Admin password during `--install` |
+| Variable | Zerops Source | Target Property | Description |
+|---|---|---|---|
+| `LISTMONK_app__address` | Literal | `app.address` | Bind interface and port (`0.0.0.0:9000`) |
+| `LISTMONK_db__host` | `${db_hostname}` | `db.host` | PostgreSQL 18 internal host |
+| `LISTMONK_db__port` | `${db_port}` | `db.port` | PostgreSQL port (5432) |
+| `LISTMONK_db__user` | `${db_user}` | `db.user` | Database user |
+| `LISTMONK_db__password` | `${db_password}` | `db.password` | Database password |
+| `LISTMONK_db__database` | `${db_database}` | `db.database` | Database name |
+| `LISTMONK_db__params` | Literal | `db.params` | Must include `search_path=listmonk,public` |
+| `LISTMONK_upload__provider` | Literal | `upload.provider` | Set to `"s3"` for agnostic media storage |
 
 ---
 
-## 5. Storage & FUSE Volume Mounting
+## 5. PostgreSQL 18 Schema Pre-Creation & pgcrypto Resolution
 
-When persisting uploaded assets, media, and campaign images:
+In PostgreSQL 18, extension installation requires explicit schema placement. Running:
+```sql
+CREATE SCHEMA IF NOT EXISTS listmonk;
+```
+prior to `./listmonk --install` coupled with `search_path=listmonk,public` prevents:
+- `ERROR: relation "settings" does not exist`
+- `ERROR: function gen_random_uuid() does not exist`
 
-1. Create directory on shared storage: `/mnt/baiostorage/listmonk/uploads`
-2. Apply permission shield: `sudo chmod -R 777 /mnt/baiostorage/listmonk/uploads`
-3. In Listmonk Settings UI (`Settings -> Media`): Set upload provider to `Filesystem` with upload path `/mnt/baiostorage/listmonk/uploads`.
-
----
-
-## 6. Process Hygiene, Bounded Execution & Circuit Breakers (CoHaLo)
-
-All operations with Listmonk must comply with the Fractal CoHaLo standards:
-
-* **Bounded Timeouts**: All health check and API probe invocations must be wrapped with strict timeouts (`timeout 10s curl -f http://listmonk:9000/admin`).
-* **Synchronous Wait Enforcement**: For CLI operations and API verifications, specify `WaitMsBeforeAsync: 10000`.
-* **Zero Orphan Tasks**: Always terminate background test servers and dangling workers via `manage_task action="kill"`.
-* **Physical Sensor Attestation**:
-  * Health verification: `curl -s -o /dev/null -w "%{http_code}" http://listmonk:9000/admin` $\implies$ Expected: `200` or `302`.
-  * Database connectivity: `psql "$db_connectionString" -c 'SELECT count(*) FROM subscribers;'`.
-* **Circuit Breaker Policy**: If database migrations fail or return exit code $\ne 0$, retry a maximum of 2 times. If the second retry fails, trigger escalation and halt execution without muting errors.
+The `zsc execOnce` wrapper ensures only the first container executes the migration step during multi-container rolling deployments.

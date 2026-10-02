@@ -1,35 +1,37 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "listmonk",
-  "version": "1.0.0",
-  "description": "Production Zerops deployment recipes and API integration payloads for Listmonk",
+  "version": "2.0.0",
+  "description": "Production Zerops deployment blueprints, horizontal scaling recipes and API payloads for Listmonk v6.2.0",
   "recipes": {
     "zerops_yaml_static_binary": {
-      "description": "Zerops production recipe using pre-compiled official Listmonk static binary on Alpine LXC",
-      "yaml": "zerops:\n  - setup: listmonk\n    build:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl tar ca-certificates\n        - curl -sSL https://github.com/knadh/listmonk/releases/download/v5.1.0/listmonk_5.1.0_linux_amd64.tar.gz -o listmonk.tar.gz\n        - tar -xzf listmonk.tar.gz\n        - chmod +x listmonk\n      deployFiles:\n        - listmonk\n        - static\n        - i18n\n      cache:\n        - listmonk.tar.gz\n    run:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache ca-certificates tzdata curl\n        - sudo mkdir -p /mnt/baiostorage/listmonk/uploads 2>/dev/null || true\n        - sudo chmod -R 777 /mnt/baiostorage/listmonk/uploads 2>/dev/null || true\n      initCommands:\n        - zsc execOnce ${appVersionId} -- ./listmonk --install --idempotent --yes --config=\"\"\n        - zsc execOnce ${appVersionId} -- ./listmonk --upgrade --yes --config=\"\"\n      start: ./listmonk --config=\"\"\n      ports:\n        - port: 9000\n          httpSupport: true\n      envVariables:\n        LISTMONK_app__address: \"0.0.0.0:9000\"\n        LISTMONK_db__host: ${db_hostname}\n        LISTMONK_db__port: ${db_port}\n        LISTMONK_db__user: ${db_user}\n        LISTMONK_db__password: ${db_password}\n        LISTMONK_db__database: ${db_database}\n        LISTMONK_db__ssl_mode: disable"
+      "description": "Zerops production recipe using official Listmonk v6.2.0 static binary on Alpine LXC with PostgreSQL 18 and S3 media storage",
+      "yaml": "zerops:\n  - setup: listmonk\n    build:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache curl tar ca-certificates\n        - curl -sSL https://github.com/knadh/listmonk/releases/download/v6.2.0/listmonk_6.2.0_linux_amd64.tar.gz -o listmonk.tar.gz\n        - tar -xzf listmonk.tar.gz\n        - chmod +x listmonk\n      deployFiles:\n        - listmonk\n        - static\n        - i18n\n      cache:\n        - listmonk.tar.gz\n    run:\n      os: alpine\n      prepareCommands:\n        - sudo apk add --no-cache ca-certificates tzdata curl postgresql-client\n      initCommands:\n        - PGPASSWORD=\"${db_password}\" psql -h \"${db_hostname}\" -U \"${db_user}\" -d \"${db_database}\" -c \"CREATE SCHEMA IF NOT EXISTS listmonk;\"\n        - zsc execOnce ${appVersionId} -- ./listmonk --install --idempotent --yes --config=\"\"\n        - zsc execOnce ${appVersionId} -- ./listmonk --upgrade --yes --config=\"\"\n      start: ./listmonk --config=\"\"\n      ports:\n        - port: 9000\n          httpSupport: true\n      envVariables:\n        LISTMONK_app__address: \"0.0.0.0:9000\"\n        LISTMONK_db__host: ${db_hostname}\n        LISTMONK_db__port: ${db_port}\n        LISTMONK_db__user: ${db_user}\n        LISTMONK_db__password: ${db_password}\n        LISTMONK_db__database: ${db_database}\n        LISTMONK_db__ssl_mode: disable\n        LISTMONK_db__params: \"search_path=listmonk,public\"\n        LISTMONK_upload__provider: \"s3\"\n        LISTMONK_upload__s3__url: ${objectstorage_apiUrl}\n        LISTMONK_upload__s3__public_url: ${objectstorage_apiUrl}/${objectstorage_bucket}\n        LISTMONK_upload__s3__aws_access_key_id: ${objectstorage_accessKeyId}\n        LISTMONK_upload__s3__aws_secret_access_key: ${objectstorage_secretAccessKey}\n        LISTMONK_upload__s3__aws_default_region: \"us-east-1\"\n        LISTMONK_upload__s3__bucket: ${objectstorage_bucket}"
+    },
+    "horizontal_scaling_passive_replica": {
+      "description": "Start command for auxiliary horizontal replicas to prevent split-brain campaign duplicate sending",
+      "command": "./listmonk --config=\"\" --passive"
     },
     "transactional_email_payload": {
-      "description": "Payload for sending high-throughput transactional emails via POST /api/tx",
+      "description": "Payload for sending high-throughput transactional emails via POST /api/tx with altbody",
       "endpoint": "/api/tx",
       "method": "POST",
       "payload": {
         "subscriber_mode": "external",
         "subscriber_emails": ["user@example.com"],
         "template_id": 1,
-        "subject": "Your Order Confirmation",
+        "subject": "Order Confirmation",
+        "altbody": "Hello Jane, your order has been confirmed. Total: $89.50",
         "data": {
           "customer_name": "Jane Doe",
           "order_id": "ORD-2026-9912",
-          "total": "$89.50",
-          "items": [
-            {"title": "Zerops LXC Container", "price": "$50.00"},
-            {"title": "Valkey In-Memory Cache", "price": "$39.50"}
-          ]
+          "total": "$89.50"
         },
         "content_type": "html"
       }
     },
     "subscriber_creation_payload": {
-      "description": "Payload for creating or updating a subscriber in Listmonk",
+      "description": "Payload for creating or updating a subscriber in Listmonk v6.x",
       "endpoint": "/api/subscribers",
       "method": "POST",
       "payload": {
@@ -39,8 +41,7 @@
         "lists": [1],
         "attribs": {
           "tier": "enterprise",
-          "country": "ES",
-          "signup_source": "landing_page"
+          "signup_source": "checkout_island"
         },
         "preconfirm_subscriptions": true
       }
