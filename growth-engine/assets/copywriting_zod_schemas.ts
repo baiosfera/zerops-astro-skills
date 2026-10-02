@@ -9,7 +9,7 @@ export const PillarContentInputSchema = z.object({
     industry: z.string(),
     primaryPainPoint: z.string(),
     dreamOutcome: z.string(),
-    marketRegion: z.enum(["Colombia", "LatAm_General"]).default("Colombia")
+    locale: z.string().default("en-US")
   }),
   framework: z.enum(["HOOK_STORY_OFFER", "STORYBRAND_SB7", "HORMOZI_VALUE", "PASTOR"]),
   keyInsights: z.array(z.string()).min(3).max(7),
@@ -25,13 +25,14 @@ export const PillarContentInputSchema = z.object({
     riskReversalGuarantee: z.string(),
     ctaText: z.string(),
     ctaUrlOrKeyword: z.string(),
-    priceCopOrUsd: z.string().optional()
+    price: z.number().nonnegative().optional(),
+    currency: z.string().length(3).default("USD")
   })
 });
 
 export const OmnichannelAtomizationBundleSchema = z.object({
   pillarId: z.string().uuid(),
-  whatsapp: z.object({
+  conversational: z.object({
     broadcastMessage: z.object({
       hookOpening: z.string().max(120),
       storySnippet: z.string().max(350),
@@ -48,7 +49,7 @@ export const OmnichannelAtomizationBundleSchema = z.object({
   email: z.object({
     subjectLineOptions: z.array(z.string().min(5).max(70)).length(3),
     previewText: z.string().min(10).max(100),
-    salutation: z.string().default("Hola, {{first_name}}"),
+    salutation: z.string().default("Hello, {{first_name}}"),
     heroHook: z.string(),
     amplifiedPainStory: z.string(),
     frameworkLesson: z.array(z.string()).min(2),
@@ -61,13 +62,13 @@ export const OmnichannelAtomizationBundleSchema = z.object({
     }),
     postScriptum: z.string()
   }),
-  xThread: z.object({
-    hookTweet: z.string().max(280),
-    bodyTweets: z.array(z.string().max(280)).min(4).max(8),
-    summaryTweet: z.string().max(280),
-    ctaTweet: z.string().max(280)
+  socialThread: z.object({
+    hookPost: z.string().max(280),
+    bodyPosts: z.array(z.string().max(280)).min(3).max(8),
+    summaryPost: z.string().max(280),
+    ctaPost: z.string().max(280)
   }),
-  linkedinCarousel: z.object({
+  professionalCarousel: z.object({
     postCaption: z.string().min(50).max(1500),
     slides: z.array(
       z.object({
@@ -76,7 +77,7 @@ export const OmnichannelAtomizationBundleSchema = z.object({
         mainBody: z.string().max(180),
         visualNote: z.string()
       })
-    ).min(5).max(10),
+    ).min(4).max(10),
     closingSlideCta: z.string()
   }),
   shortVideo: z.object({
@@ -106,5 +107,20 @@ export const OmnichannelAtomizationBundleSchema = z.object({
   })
 });
 
+export const CartLeadCaptureSchema = z.object({
+  cartId: z.string().uuid(),
+  email: z.string().email().optional(),
+  phone: z.string().min(7).max(20).optional(),
+  cartItems: z.array(z.object({
+    sku: z.string(),
+    title: z.string(),
+    quantity: z.number().int().positive(),
+    unitPrice: z.number().nonnegative()
+  })),
+  currency: z.string().length(3).default("USD"),
+  grossMargin: z.number().min(0).max(1).default(0.4)
+});
+
 export type PillarContentInput = z.infer<typeof PillarContentInputSchema>;
 export type OmnichannelAtomizationBundle = z.infer<typeof OmnichannelAtomizationBundleSchema>;
+export type CartLeadCapture = z.infer<typeof CartLeadCaptureSchema>;
