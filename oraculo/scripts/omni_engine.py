@@ -220,6 +220,10 @@ def main():
     parser.add_argument("--lon", type=float, help="Longitud decimal")
     parser.add_argument("--tz", help="Zona horaria IANA (ej: America/Bogota)")
     parser.add_argument("--client-dir", help="Directorio destino del consultante")
+    parser.add_argument("--apis", help="Lista de APIs a ejecutar separadas por coma (ej: astrologyapi,astroway,freeastro,vedastro). Por defecto: todas.")
+    parser.add_argument("--exclude", help="Lista de APIs a excluir separadas por coma.")
+    parser.add_argument("-x", "--extract", action="store_true", help="Solo ejecutar extracción y persistencia en caché (no compilar feeds).")
+    parser.add_argument("-c", "--compile", action="store_true", help="Solo compilar shards, feeds y reportes desde caché (auto-extrae si falta caché).")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
     parser.add_argument("--dry-run", action="store_true", help="Dry run offline")
 
@@ -289,14 +293,18 @@ def main():
 
     # Directorio de salida
     client_dir = args.client_dir or file_data.get("client_dir")
+    base_diag = Path(os.getenv("OUTPUT_ROOT", "/var/www/baiosfera/ASTROLOGÍA/DIAG"))
+    if not base_diag.exists():
+        base_diag = Path("/var/www/output")
+
     if not client_dir:
         if file_path and file_path.parent.name.endswith("_AGY"):
             client_dir = str(file_path.parent)
         else:
             folder_slug = re.sub(r'[^a-zA-Z0-9]+', '_', (current_name or names).upper()).strip('_')
-            client_dir = f"/var/www/baiosfera/ASTROLOGÍA/DIAG/{folder_slug}_AGY"
+            client_dir = str(base_diag / f"{folder_slug}_AGY")
     elif not client_dir.startswith("/"):
-        client_dir = f"/var/www/baiosfera/ASTROLOGÍA/DIAG/{client_dir}"
+        client_dir = str(base_diag / client_dir)
 
     # Validar campos obligatorios
     missing = []
@@ -347,15 +355,36 @@ def main():
         "brand_names": brand_list
     }
 
+    apis_list = [a.strip() for a in args.apis.split(",")] if args.apis else None
+    exclude_list = [e.strip() for e in args.exclude.split(",")] if args.exclude else None
+
     try:
-        # Ejecutar extracción asíncrona concurrente
+        cache_dir = Path(client_dir) / "raw" / "json" / "cache"
         engine = ExtractionEngine(
-            cache_dir=str(Path(client_dir) / "raw" / "json" / "cache"),
+            cache_dir=str(cache_dir),
             refresh_pro=args.refresh_pro
         )
-        extraction_output = asyncio.run(engine.execute_extraction(client_payload))
 
-        # Ejecutar verificación de salud, sharding de 10 shards y 9 feeds puros
+        if args.compile:
+            client_hash = engine.cache.generate_client_hash(client_payload)
+            has_cache = any(cache_dir.glob(f"*{client_hash}*")) if cache_dir.exists() else False
+            if not has_cache:
+                print("⚠️ Caché no encontrada para --compile. Auto-extrayendo primero con validación...")
+                extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+            else:
+                print("📦 Compilando feeds y shards directamente desde caché verificada...")
+                extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+        else:
+            extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+
+        if args.extract:
+            print("=" * 70)
+            print("✅ Extracción finalizada con éxito (--extract).")
+            print(f"  • Caché JSON persistida en: {cache_dir}")
+            print("=" * 70)
+            return 0
+
+        # Ejecutar verificación de salud, sharding de 12 shards y feeds
         sharder = SharderEngine(output_root=client_dir)
         shard_summary = sharder.verify_and_shard(extraction_output)
 

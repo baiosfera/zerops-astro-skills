@@ -2,7 +2,7 @@
 """
 Autonomous Extractor for FreeAstroAPI Engine (v2.2)
 Extracts Western Tropical, Sidereal Fagan-Campanus, Numerology, BaZi True Solar, Vedic KP V2,
-and audits available PDF report credits.
+Western Profections, Progressions, and audits available PDF report credits.
 """
 
 import argparse
@@ -46,6 +46,7 @@ async def extract_freeastroapi(
     lng = float(client_data.get("lng", 0.0))
     tz_str = client_data.get("tz_str", "UTC")
     gender = client_data.get("gender", "female")
+    current_year = datetime.now(timezone.utc).year
 
     base_western_payload = {
         "year": year, "month": month, "day": day,
@@ -103,10 +104,10 @@ async def extract_freeastroapi(
         "include_current_flow": True
     }
 
+    # Flow payload uses single target_year to conform with OpenAPI 3.1 schema
     payload_bazi_flow = {
         **payload_bazi,
-        "target_year": year,
-        "target_year_end": year + 9
+        "target_year": current_year
     }
 
     payload_bazi_health = {
@@ -160,12 +161,18 @@ async def extract_freeastroapi(
         "include_crossings": False
     }
 
+    payload_profections = {
+        **base_western_payload,
+        "target_year": current_year
+    }
+
     post_endpoints = [
         ("western_natal_tropical", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_placidus),
         ("western_natal_tropical_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus),
         ("western_natal_sidereal_fagan_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc),
         ("western_natal_sidereal_lahiri", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri),
         ("western_natal_insights", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus),
+        ("western_profections_annual", f"{BASE_URL}/api/v1/western/profections/annual", payload_profections),
         ("numerology_profile_pythagorean", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
         ("chinese_bazi_true_solar", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
         ("chinese_bazi_flow", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow),
@@ -253,12 +260,12 @@ def main():
     args = parser.parse_args()
 
     client_data = {
-        "name": "Laura Catalina Tamayo Perez",
-        "preferred_name": "Catalina",
-        "year": 1986, "month": 1, "day": 18,
-        "hour": 3, "minute": 0,
-        "lat": 6.2340437, "lng": -75.5731248,
-        "tz_str": "America/Bogota"
+        "name": "Consultant",
+        "preferred_name": "Consultant",
+        "year": 1990, "month": 1, "day": 1,
+        "hour": 12, "minute": 0,
+        "lat": 0.0, "lng": 0.0,
+        "tz_str": "UTC"
     }
 
     if args.client_file and Path(args.client_file).exists():

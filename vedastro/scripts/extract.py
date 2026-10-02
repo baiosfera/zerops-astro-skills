@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Autonomous Extractor for VedAstro PRO API (Standard v2.2)
-Fetches HoroscopePredictions, AllPlanetData, AllHouseData, and DasaAtRange.
-Validates semantic status ('Pass' vs 'Fail') and enforces numeric timezone offset (+/-HH:MM).
+Fetches HoroscopePredictions, AllPlanetData, AllHouseData, DasaAtRange, JHoraYogaList, and KalaSarpaYoga.
+Validates semantic status ('Pass' vs 'Fail'), enforces numeric timezone offset (+/-HH:MM),
+and uses canonical 'inputTime' for atomic calculators with polite pacing (anti-throttling).
 """
 
 import argparse
@@ -16,7 +17,7 @@ from typing import Any, Dict, Optional
 import httpx
 
 VEDASTRO_URL = os.getenv("VEDASTRO_URL", "https://api.vedastro.org/api")
-DEFAULT_TIMEOUT = 12.0
+DEFAULT_TIMEOUT = 15.0
 
 
 def format_timezone_offset(tz_offset: float) -> str:
@@ -124,8 +125,9 @@ async def extract_vedastro(
         "ayanamsa": "LAHIRI"
     }
 
+    # Atomic calculators strictly require 'inputTime'
     payload_jhora = {
-        "Time": {
+        "inputTime": {
             "StdTime": std_time,
             "Location": loc_obj
         },
@@ -133,7 +135,7 @@ async def extract_vedastro(
     }
 
     payload_kalasarpa = {
-        "Time": {
+        "inputTime": {
             "StdTime": std_time,
             "Location": loc_obj
         },
@@ -154,7 +156,7 @@ async def extract_vedastro(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "status": "SUCCESS",
         "is_unlimited": True,
-        "calls_made": len(endpoints),
+        "calls_made": 0,
         "data": {},
         "raw_responses": {},
         "failures": []
@@ -166,15 +168,20 @@ async def extract_vedastro(
         close_client = True
 
     try:
-        for key_name, url, body in endpoints:
+        for idx, (key_name, url, body) in enumerate(endpoints):
+            if idx > 0:
+                # Polite pacing to avoid API throttling
+                await asyncio.sleep(0.5)
+
             try:
                 resp = await client.post(url, headers=headers, json=body)
+                results["calls_made"] += 1
                 if resp.status_code == 200:
                     data = resp.json()
                     results["raw_responses"][key_name] = data
                     
                     if isinstance(data, dict):
-                        status_field = data.get("Status", "").lower()
+                        status_field = str(data.get("Status", "")).lower()
                         if status_field == "pass":
                             results["data"][key_name] = data.get("Payload", data)
                         elif status_field == "fail":

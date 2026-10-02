@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Autonomous Extractor for Astrology-API.io (V3 API)
-Extracts Hellenistic timing timeline, core numerology, and natal/vedic charts.
-Enforces nested subject.birth_data schema and rate limit pacing (anti-429).
+Extracts Hellenistic timing timeline, positions enhanced, core numerology,
+Kabbalah birth angels, tikkun, tree of life, fixed stars, traditional analysis, and almuten.
+Enforces flat birth_data schema for Kabbalah endpoints and nested subject.birth_data for others.
 """
 
 import argparse
@@ -16,7 +17,7 @@ from typing import Any, Dict, Optional
 import httpx
 
 BASE_URL = os.getenv("ASTROLOGY_API_URL", "https://api.astrology-api.io/api/v3")
-DEFAULT_TIMEOUT = 12.0
+DEFAULT_TIMEOUT = 15.0
 
 
 async def extract_astrologyapi(
@@ -25,7 +26,7 @@ async def extract_astrologyapi(
     client: Optional[httpx.AsyncClient] = None
 ) -> Dict[str, Any]:
     """
-    Extracts Hellenistic timing timeline and core numerology with rate pacing.
+    Extracts complete 9-endpoint suite from Astrology-API.io with rate pacing.
     """
     key = api_key or os.getenv("ASTROLOGY_API_IO") or os.getenv("ASTROLOGY_API_KEY") or os.getenv("astrology_apiKey")
     headers = {
@@ -58,6 +59,7 @@ async def extract_astrologyapi(
         "timezone": tz_str
     }
 
+    # Standard nested payloads
     payload_timeline = {
         "subject": {
             "name": full_name,
@@ -66,7 +68,7 @@ async def extract_astrologyapi(
         "target_date": today_str
     }
 
-    payload_positions_enhanced = {
+    payload_subject_only = {
         "subject": {
             "name": full_name,
             "birth_data": birth_data_obj
@@ -84,10 +86,31 @@ async def extract_astrologyapi(
         }
     }
 
+    payload_fixed_stars = {
+        "subject": {
+            "name": full_name,
+            "birth_data": birth_data_obj
+        },
+        "options": {
+            "max_orb": 1.0
+        }
+    }
+
+    # Flat birth_data payloads for Kabbalah endpoints (OpenAPI 3.1 requirement)
+    payload_kabbalah = {
+        "birth_data": birth_data_obj
+    }
+
     endpoints = [
         ("timing_timeline", f"{BASE_URL}/timing/timeline", payload_timeline),
-        ("positions_enhanced", f"{BASE_URL}/data/positions/enhanced", payload_positions_enhanced),
+        ("positions_enhanced", f"{BASE_URL}/data/positions/enhanced", payload_subject_only),
         ("core_numerology", f"{BASE_URL}/numerology/comprehensive", payload_numerology),
+        ("kabbalah_birth_angels", f"{BASE_URL}/kabbalah/birth-angels", payload_kabbalah),
+        ("kabbalah_tikkun", f"{BASE_URL}/kabbalah/tikkun", payload_kabbalah),
+        ("kabbalah_tree_of_life", f"{BASE_URL}/kabbalah/tree-of-life-chart", payload_kabbalah),
+        ("fixed_stars_conjunctions", f"{BASE_URL}/fixed-stars/conjunctions", payload_fixed_stars),
+        ("traditional_analysis", f"{BASE_URL}/traditional/analysis", payload_subject_only),
+        ("traditional_almuten", f"{BASE_URL}/traditional/almuten", payload_subject_only),
     ]
 
     results: Dict[str, Any] = {
@@ -108,8 +131,8 @@ async def extract_astrologyapi(
     try:
         for idx, (key_name, url, body) in enumerate(endpoints):
             if idx > 0:
-                # Polite pacing to respect free-tier rate limits and prevent 429
-                await asyncio.sleep(1.2)
+                # Polite pacing to respect monthly quota and avoid 429
+                await asyncio.sleep(1.0)
 
             for attempt in range(2):
                 try:
@@ -135,6 +158,7 @@ async def extract_astrologyapi(
                         err_msg = "Rate limit exceeded (429)"
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
                         results["data"][key_name] = {"error": err_msg}
+                        break
                     else:
                         err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
@@ -165,12 +189,12 @@ def main():
     args = parser.parse_args()
 
     client_data = {
-        "name": "Laura Catalina Tamayo Perez",
-        "preferred_name": "Catalina",
-        "year": 1986, "month": 1, "day": 18,
-        "hour": 3, "minute": 0,
-        "lat": 6.2340437, "lng": -75.5731248,
-        "tz_str": "America/Bogota"
+        "name": "Consultant",
+        "preferred_name": "Consultant",
+        "year": 1990, "month": 1, "day": 1,
+        "hour": 12, "minute": 0,
+        "lat": 0.0, "lng": 0.0,
+        "tz_str": "UTC"
     }
 
     if args.client_file and Path(args.client_file).exists():

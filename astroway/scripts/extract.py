@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Autonomous Extractor for AstroWay REST Engine (v2.2)
-Extracts Western, Vedic, BaZi, Human Design, Astrocartography, Modern Psychology, and Dashas.
+Extracts Western, Vedic, BaZi, Human Design, Astrocartography, Modern Psychology, Dashas, Yogas & Doshas.
 Captures real-time credit audit headers (X-Credits-Remaining, X-Credits-Used, X-Credits-Limit).
 """
 
@@ -107,6 +107,12 @@ async def extract_astroway(
         ("jaimini_chara_karakas", f"{BASE_URL}/v1/vedic/jaimini/chara-karakas", base_payload),
         ("vedic_shadbala_full", f"{BASE_URL}/v1/vedic/shadbala/full", base_payload),
         ("vedic_dashas_maha", f"{BASE_URL}/v1/vedic/dashas/vimshottari/maha", base_payload),
+        # Parashari Yogas & Doshas
+        ("vedic_yogas_raja", f"{BASE_URL}/v1/vedic/yogas/raja", base_payload),
+        ("vedic_yogas_dhana", f"{BASE_URL}/v1/vedic/yogas/dhana", base_payload),
+        ("vedic_yogas_gajakesari", f"{BASE_URL}/v1/vedic/yogas/gajakesari", base_payload),
+        ("vedic_doshas_kaal_sarp", f"{BASE_URL}/v1/vedic/doshas/kaal-sarp", base_payload),
+        ("vedic_doshas_mangal", f"{BASE_URL}/v1/vedic/doshas/mangal", base_payload),
         # Evolutionary & Nodal
         ("evolutionary_skipped_steps", f"{BASE_URL}/v1/evolutionary/skipped-steps", base_payload),
         ("evolutionary_nodal_axis", f"{BASE_URL}/v1/evolutionary/nodal-axis-detail", base_payload),

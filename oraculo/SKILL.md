@@ -4,10 +4,10 @@ description: "Trigger: oraculo, fase 0, fase0, carta natal, astrologia. Ejecuta 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.7"
+  version: "4.8"
 ---
 
-# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v4.7)
+# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v4.8)
 
 ## Activation Contract
 Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y puente semiótico a `orchesbrand`.

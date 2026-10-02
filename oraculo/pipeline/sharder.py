@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+import unicodedata
 
 
 ZODIAC_SIGNS = [
@@ -66,6 +67,112 @@ def format_zodiac_pos(deg: Any) -> str:
     return f"{ZODIAC_SIGNS[sign_idx]} {d}°{m:02d}' ({f_deg:.2f}°)"
 
 
+TRANSLATION_MAP = {
+    "jia": "Jia (Madera Yang)", "yi": "Yi (Madera Yin)",
+    "bing": "Bing (Fuego Yang)", "ding": "Ding (Fuego Yin)",
+    "wu": "Wu (Tierra Yang)", "ji": "Ji (Tierra Yin)",
+    "geng": "Geng (Metal Yang)", "xin": "Xin (Metal Yin)",
+    "ren": "Ren (Agua Yang)", "gui": "Gui (Agua Yin)",
+    "zi": "Zi (Rata / Agua)", "chou": "Chou (Buey / Tierra)",
+    "yin": "Yin (Tigre / Madera)", "mao": "Mao (Conejo / Madera)",
+    "chen": "Chen (Dragón / Tierra)", "si": "Si (Serpiente / Fuego)",
+    "wu_branch": "Wu (Caballo / Fuego)", "wei": "Wei (Cabra / Tierra)",
+    "shen": "Shen (Mono / Metal)", "you": "You (Gallo / Metal)",
+    "xu": "Xu (Perro / Tierra)", "hai": "Hai (Cerdo / Agua)",
+    "direct_officer": "Oficial Directo (Zheng Guan)",
+    "seven_killings": "Siete Asesinatos / Poder Indirecto (Qi Sha)",
+    "direct_wealth": "Riqueza Directa (Zheng Cai)",
+    "indirect_wealth": "Riqueza Indirecta (Pian Cai)",
+    "eating_god": "Dios Comedor / Talento Expresivo (Shi Shen)",
+    "hurting_officer": "Oficial Herido / Innovador Rebelde (Shang Guan)",
+    "friend": "Amigo / Compañero (Bi Jian)",
+    "rob_wealth": "Robador de Riqueza / Competidor (Jie Cai)",
+    "direct_resource": "Recurso Directo / Sabiduría (Zheng Yin)",
+    "indirect_resource": "Recurso Indirecto / Intuición (Pian Yin)",
+    "keter": "Kéter (Corona)", "chokhmah": "Jojmá (Sabiduría)", "binah": "Biná (Entendimiento)",
+    "chesed": "Jésed (Misericordia)", "gevurah": "Gevurá (Fuerza/Rigor)", "tiferet": "Tiféret (Belleza/Armonía)",
+    "netzach": "Nétzaj (Victoria/Eternidad)", "hod": "Hod (Esplendor/Reverberación)", "yesod": "Yesod (Fundamento)",
+    "malkhut": "Maljut (Reino/Manifestación)"
+}
+
+
+def reduce_pythagorean(n: int, preserve_master: bool = True) -> int:
+    while n > 9:
+        if preserve_master and n in (11, 22, 33):
+            break
+        n = sum(int(d) for d in str(n))
+    return n
+
+
+def check_karmic_debt(raw_sum: int) -> Optional[int]:
+    return raw_sum if raw_sum in (13, 14, 16, 19) else None
+
+
+def calculate_pythagorean_name(name_str: str) -> Dict[str, Any]:
+    chart = {
+        'A': 1, 'J': 1, 'S': 1,
+        'B': 2, 'K': 2, 'T': 2,
+        'C': 3, 'L': 3, 'U': 3,
+        'D': 4, 'M': 4, 'V': 4,
+        'E': 5, 'N': 5, 'W': 5,
+        'F': 6, 'O': 6, 'X': 6,
+        'G': 7, 'P': 7, 'Y': 7,
+        'H': 8, 'Q': 8, 'Z': 8,
+        'I': 9, 'R': 9
+    }
+    vowels = set("AEIOU")
+    clean = unicodedata.normalize('NFKD', name_str or "").encode('ASCII', 'ignore').decode('ASCII').upper()
+    clean_alpha = "".join(c for c in clean if c.isalpha())
+
+    expr_raw = sum(chart.get(c, 0) for c in clean_alpha)
+    soul_raw = sum(chart.get(c, 0) for c in clean_alpha if c in vowels)
+    pers_raw = sum(chart.get(c, 0) for c in clean_alpha if c not in vowels)
+
+    return {
+        "raw_name": name_str,
+        "expression": reduce_pythagorean(expr_raw),
+        "expression_raw": expr_raw,
+        "expression_karmic": check_karmic_debt(expr_raw),
+        "soul_urge": reduce_pythagorean(soul_raw),
+        "soul_urge_raw": soul_raw,
+        "soul_karmic": check_karmic_debt(soul_raw),
+        "personality": reduce_pythagorean(pers_raw),
+        "personality_raw": pers_raw,
+        "personality_karmic": check_karmic_debt(pers_raw)
+    }
+
+
+def calculate_pythagorean_profile(
+    year: int, month: int, day: int,
+    full_name: str, preferred_name: str = "",
+    brands: Optional[List[str]] = None
+) -> Dict[str, Any]:
+    d_red = reduce_pythagorean(day)
+    m_red = reduce_pythagorean(month)
+    y_red = reduce_pythagorean(sum(int(c) for c in str(year)))
+    lp_sum = d_red + m_red + y_red
+    life_path = reduce_pythagorean(lp_sum)
+    lp_karmic = check_karmic_debt(lp_sum)
+
+    current_name_calc = calculate_pythagorean_name(preferred_name or full_name)
+    birth_name_calc = calculate_pythagorean_name(full_name)
+
+    brand_calcs = {}
+    if brands:
+        for b in brands:
+            if b and isinstance(b, str) and b.strip():
+                brand_calcs[b.strip()] = calculate_pythagorean_name(b.strip())
+
+    return {
+        "life_path": life_path,
+        "life_path_raw": lp_sum,
+        "life_path_karmic": lp_karmic,
+        "current_name": current_name_calc,
+        "birth_name": birth_name_calc,
+        "brands": brand_calcs
+    }
+
+
 class ExtractionFatalError(Exception):
     pass
 
@@ -91,8 +198,12 @@ class SharderEngine:
 
         # 1. Verify Health & Detect Mocks/Semantic Failures
         health_report = self._verify_health(rest_data, mcp_data, results_list)
+        try:
+            self._write_health_audit_md(health_report, credit_stats, client_data, results_list)
+        except Exception:
+            pass
         if health_report["is_fatal"]:
-            raise ExtractionFatalError(f"Fatal Extraction Failure: {health_report['fatal_reason']}")
+            raise ExtractionFatalError(f"Fatal Extraction Failure (Fail-Fast Gate): {health_report['fatal_reason']}")
 
         # 2. Tier 1: 10 Raw Atomic Shards (Bronze Tier)
         shards = self._build_tier1_shards(rest_data, mcp_data, client_data)
@@ -171,7 +282,11 @@ class SharderEngine:
 
         is_fatal = False
         fatal_reason = ""
-        if not freeastro_ok and not astroway_ok:
+        if len(failures) > 0:
+            is_fatal = True
+            failed_eps = [f"{f.provider}/{f.endpoint_key}" for f in failures]
+            fatal_reason = f"Fail-Fast Invariant: Detected {len(failures)} endpoint failure(s): {', '.join(failed_eps[:10])}"
+        elif not freeastro_ok and not astroway_ok:
             is_fatal = True
             fatal_reason = "Both primary Western engines (FreeAstroAPI and AstroWay) failed."
         elif mock_detected:
@@ -238,9 +353,19 @@ class SharderEngine:
                 },
                 "jaimini_chara_karakas": astroway.get("jaimini_chara_karakas", {}),
                 "vedic_kp_v2": freeastro.get("vedic_kp_v2", {}),
+                "vedic_vargas": freeastro.get("vedic_vargas", {}),
                 "vedic_varga_d9": astroway.get("vedic_varga_d9", {}),
                 "vedic_varga_d10": astroway.get("vedic_varga_d10", {}),
-                "vedic_shadbala_full": astroway.get("vedic_shadbala_full", {})
+                "vedic_shadbala_full": astroway.get("vedic_shadbala_full", {}),
+                "vedic_yogas": {
+                    "astroway_raja": astroway.get("vedic_yogas_raja", {}),
+                    "astroway_dhana": astroway.get("vedic_yogas_dhana", {}),
+                    "astroway_gajakesari": astroway.get("vedic_yogas_gajakesari", {}),
+                    "astroway_kaal_sarp": astroway.get("vedic_doshas_kaal_sarp", {}),
+                    "astroway_mangal": astroway.get("vedic_doshas_mangal", {}),
+                    "vedastro_jhora": vedastro.get("jhora_yogas", {}),
+                    "vedastro_kalasarpa": vedastro.get("kalasarpa_yoga", {})
+                }
             },
             "shard_04_bazi_chinese_metaphysics.json": {
                 "metadata": client,
@@ -252,6 +377,9 @@ class SharderEngine:
             "shard_05_kabbalah_tikkun.json": {
                 "metadata": client,
                 "system": "kabbalah_tikkun",
+                "kabbalah_birth_angels": astrology.get("kabbalah_birth_angels", {}),
+                "kabbalah_tikkun": astrology.get("kabbalah_tikkun", {}),
+                "kabbalah_tree_of_life": astrology.get("kabbalah_tree_of_life", {}),
                 "hebcal_converter": hebcal.get("converter", {}),
                 "hebcal_zmanim": hebcal.get("zmanim", {}),
                 "zmanim_mcp": mcp.get("zmanim_mcp_daily_times", {}),
@@ -726,6 +854,8 @@ class SharderEngine:
         s8 = shards.get("shard_08_timing_progressions_dashas.json", {})
         s9 = shards.get("shard_09_relocation_acg.json", {})
         s10 = shards.get("shard_10_electional_asteroids.json", {})
+        s11 = shards.get("shard_11_chinese_tcm_health_lifecurve.json", {})
+        s12 = shards.get("shard_12_vedic_shodashavarga_d1_d60.json", {})
 
         # 1. Numerología
         fa_num = s7.get("freeastro_pythagorean", {}).get("data", {})
@@ -829,7 +959,7 @@ class SharderEngine:
                     break
 
         # 5. Shodashavargas
-        vargas = s3.get("vargas", {}) or {}
+        vargas = s12.get("vargas_d1_d60", {}) or s3.get("vedic_vargas", {}) or s3.get("vargas", {}) or {}
         v_lines = []
         for v_name, v_data in vargas.items():
             if isinstance(v_data, dict):
@@ -968,9 +1098,19 @@ class SharderEngine:
         sn = nodal.get("southNode", {})
 
         # 11. Cosmobiología & ACG
-        acg = s9.get("relocation_acg", {})
-        best_places = acg.get("best_places", [])
-        place_lines = [f"- **{p.get('city', p.get('name', 'Ciudad'))}**: Línea {p.get('line', 'MC')} ({p.get('influence', 'Éxito profesional')})" for p in best_places[:5] if isinstance(p, dict)]
+        acg = s9.get("geo_acg_best_places", {})
+        best_places = acg.get("data", []) if isinstance(acg, dict) else []
+        if isinstance(best_places, dict):
+            best_places = best_places.get("places", best_places.get("cities", []))
+        place_lines = []
+        if isinstance(best_places, list):
+            for p in best_places[:5]:
+                if isinstance(p, dict):
+                    c_c = p.get('city') or p.get('name') or 'Ciudad'
+                    l_l = p.get('line') or p.get('angle') or 'MC'
+                    s_s = p.get('score', '')
+                    s_txt = f" (Score: {s_s})" if s_s else ""
+                    place_lines.append(f"- **{c_c}**: Línea {l_l}{s_txt}")
         if not place_lines:
             place_lines = ["- **Líneas Angulares ACG**: Coordenadas geodésicas de máxima resonancia calculadas en Shard 09."]
 
@@ -1581,15 +1721,7 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 - **Líneas de Poder Comercial**: Top 5 ciudades de proyección para `{brand_name}`: `{', '.join(top_cities)}`.
 - Convergencia favorable para eventos de lanzamiento, registros marcarios y pauta segmentada de alta conversión.
 """
-        # Save canonical handoff in output root and feeds
-        handoff_path = self.root_dir / f"astrobranding_{brand_slug}.md"
-        with open(handoff_path, "w", encoding="utf-8") as f:
-            f.write(handoff_content)
-
-        generic_path = self.root_dir / "astrobranding_specification.md"
-        with open(generic_path, "w", encoding="utf-8") as f:
-            f.write(handoff_content)
-
+        # Invariant 11: Save canonical handoff ONLY in raw/feeds to eliminate token redundancy (DRY)
         feed_path = self.feeds_dir / f"feed_astrobranding_{brand_slug}.md"
         with open(feed_path, "w", encoding="utf-8") as f:
             f.write(handoff_content)
