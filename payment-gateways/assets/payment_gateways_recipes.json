@@ -1,23 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "1.0",
+  "version": "2.0",
   "name": "payment_gateways_recipes",
   "recipes": [
     {
       "id": "wompi_checkout_url_recipe",
       "description": "Recipe for generating a secure Wompi checkout session URL with SHA-256 integrity hash",
       "gateway": "wompi",
-      "required_params": ["orderId", "amountInCents", "currency", "publicKey", "integritySecret", "redirectUrl"],
-      "formula": "SHA256(orderId + amountInCents + currency + integritySecret)"
-    },
-    {
-      "id": "wompi_webhook_handler_recipe",
-      "description": "Server-to-server webhook route for Wompi with checksum verification and Valkey atomic lock",
-      "gateway": "wompi",
-      "route": "/api/webhooks/wompi",
-      "method": "POST",
-      "idempotency_key_pattern": "lock:payment:{transaction.id}",
-      "success_event": "order.payment.settled"
+      "required_params": ["orderId", "amountInMinorUnits", "currency", "publicKey", "integritySecret", "redirectUrl"],
+      "formula": "SHA256(orderId + amountInMinorUnits + currency + integritySecret)"
     },
     {
       "id": "stripe_webhook_handler_recipe",
@@ -29,12 +20,37 @@
       "success_event": "order.payment.settled"
     },
     {
+      "id": "bold_webhook_handler_recipe",
+      "description": "Server-to-server webhook route for Bold with x-bold-signature HMAC verification",
+      "gateway": "bold",
+      "route": "/api/webhooks/bold",
+      "method": "POST",
+      "header": "x-bold-signature",
+      "success_event": "order.payment.settled"
+    },
+    {
+      "id": "mercadopago_webhook_handler_recipe",
+      "description": "Server-to-server webhook route for Mercado Pago with x-signature manifest verification",
+      "gateway": "mercadopago",
+      "route": "/api/webhooks/mercadopago",
+      "method": "POST",
+      "header": "x-signature",
+      "success_event": "order.payment.settled"
+    },
+    {
       "id": "cod_otp_dispatch_recipe",
       "description": "Recipe for Cash on Delivery 6-digit WhatsApp OTP dispatch and Valkey TTL storage",
       "gateway": "cod",
       "otp_length": 6,
       "valkey_ttl_seconds": 600,
       "nats_subject": "events.whatsapp.otp"
+    },
+    {
+      "id": "valkey_distributed_locking_recipe",
+      "description": "Recipe for Valkey atomic distributed locking with cryptographic owner tokens and Lua release script",
+      "key_pattern": "lock:payment:{transactionId}",
+      "ttl_seconds": 60,
+      "release_mechanism": "lua_eval_token_verification"
     }
   ]
 }
