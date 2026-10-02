@@ -1,4 +1,4 @@
-# `ghcicd`: Universal CI/CD, Git, GitHub Actions & Zerops Delivery Manual (v2.0)
+# `ghcicd`: Universal CI/CD, Git, GitHub Actions & Zerops Delivery Manual (v3.2)
 
 `ghcicd` is the sovereign continuous integration, continuous delivery (CI/CD), Git repository synchronization, and automated deployment engine for Zerops. Operating under the **Agnostic Delivery Contract**, it establishes a deterministic strategy across **GitHub Actions (`zeropsio/actions@v1.0.2`)**, **`gh` CLI authentication**, **`zcli` push**, and native **`zerops_deploy` / `zerops_dev_server`** MCP tools.
 
@@ -40,25 +40,34 @@ Para evitar confusiones entre el guardado local y el despliegue a la nube, Git o
 - **`gh` CLI (`/usr/bin/gh`)**: Herramienta de consola en el contenedor ZCP. Se usa para operar GitHub sin navegador (crear PRs con `gh pr create`, hacer merge con `gh pr merge`). **No compila contenedores ni despliega código**.
 - **GitHub Actions (`.github/workflows/deploy.yaml`)**: Motor de CI/CD que corre en la nube de GitHub. Requiere secrets (`ZEROPS_TOKEN`, `ZEROPS_SERVICE_ID`). Al recibir un push en `main` o un tag, llama a la API de Zerops (`zeropsio/actions@v1.0.2`) para compilar e iniciar el nuevo release.
 
-### C. Arquitectura Canónica de Ambientes en Zerops: Multi-Servicio vs. Riesgos de Host Routing
+### C. Arquitectura Canónica de Ambientes en Zerops: Opción B (Dev/Prod) Prioritaria & Staging Opcional
 
-Para el ciclo de vida `dev` -> `stage` -> `prod` en aplicaciones web personalizadas (`astro-web`):
+Para aplicaciones web (`astro-web`, Bun, Node):
 
-1. **Modelo Canónico Multi-Servicio (Recomendado & Estándar de Producción)**:
-   - Se aprovisionan dos servicios independientes en Zerops: `<service>-stage` y `<service>-prod`.
-   - La rama `stage` despliega en `<service>-stage` (`<staging_domain>`) vía GitHub Actions con `ZEROPS_SERVICE_ID_STAGE`.
-   - La rama `main` despliega en `<service>-prod` (`<app_domain>`) vía GitHub Actions con `ZEROPS_SERVICE_ID_PROD`.
-   - *Aislamiento de Procesos Total*: Si un release experimental en `stage` falla o crashea, la tienda de producción (`prod`) sigue 100% activa.
-   - *Aislamiento de Secretos*: Staging utiliza credenciales sandbox (Stripe Test, Directus Staging, mock webhooks) sin riesgo de tocar dinero real.
-   - *Costo en Zerops*: En Bun (`bun@1.3.9`), un runtime Astro SSR consume apenas **~45 MB de RAM**. Dos contenedores consumen ~90 MB en total (costo marginal insignificante, centavos al mes).
+1. **Modelo Soberano Dev/Prod (Opción B — Estándar Canónico Prioritario)**:
+   - **Ambiente Dev (`webdev`)**:
+     * Espacio de trabajo iterativo montado en `/var/www/{service}`.
+     * Supervisado en tiempo real con `zerops_dev_server action="start"` o verificado con `zerops_deploy`.
+     * Accesible inmediatamente a través del subdominio de Zerops (`https://{hostname}-{port}.ny1.zerops.app`) con hot-reload instantáneo y **0 commits de spam** en Git.
+   - **Ambiente Prod (`elplacerdecompartir.com` / `<service>-prod`)**:
+     * Contenedor Bun independiente e inmutable, conectado a su dominio oficial a través de Cloudflare (SSL Full Strict).
+     * El release a producción se dispara de forma 100% automatizada únicamente cuando el trabajo en `dev` está probado y se hace push a la rama `main` en GitHub, activando GitHub Actions (`zeropsio/actions@v1.0.2`) con `ZEROPS_PROD_SERVICE_ID`.
+   - **Workspaces Dev Efímeros y Desechables ($0 Costo en Reposo)**:
+     * La Fuente Única de la Verdad (SSoT) del código reside en el repositorio GitHub (`main`), no en el contenedor.
+     * Dado que el código final está en `main` y producción corre aislada, el contenedor de desarrollo (`webdev`) es **100% desechable**: si el hito está terminado y no se va a programar activamente durante días o semanas, el servicio `webdev` puede pausarse o eliminarse en Zerops, reduciendo el consumo de desarrollo a **$0**.
+     * Cuando se requiere una nueva funcionalidad o bugfix, el agente AGY aprovisiona un nuevo `webdev` en segundos clonando desde `main`.
+
+2. **Capa Opcional de Staging (Para Auditoría QA Multi-Usuario)**:
+   - En proyectos con equipos distribuidos o clientes que exijan aprobación previa antes de fusionar a `main`, se puede incorporar de forma opcional un servicio `<service>-stage` desplegado desde la rama `stage`.
+   - Staging corre en su propio contenedor independiente con variables sandbox (Stripe Test, Directus Test). Es una extensión opcional y no bloquea el ciclo prioritario Dev/Prod.
    - *Frontera de Repositorios*: Este pipeline pertenece exclusivamente a los repositorios de aplicación web (`astro-web`), **NUNCA** a la plantilla chasis `zerops-astrobranding`.
 
-2. **Advertencia de Seguridad: Antipatrón de Simular Staging en Runtime Único**:
-   - Simular `stage` y `prod` en un solo contenedor inspeccionando cabeceras `Host` / `X-Forwarded-Host` en `middleware.ts` introduce graves riesgos arquitectónicos:
-     * **Blast Radius Total**: Al compartir el proceso Bun/Node, un crash o excepción no controlada en stage derriba producción instantáneamente.
-     * **Riesgo de Cache Poisoning (OWASP)**: Proxies de borde y CDNs (Cloudflare) pueden almacenar en caché respuestas generadas bajo contexto de staging y servirlas a usuarios de producción.
-     * **Incompatibilidad con Ramas Git**: Es físicamente imposible probar una rama de Git sin haberla desplegado en el contenedor único de producción.
-   - *Uso legítimo de Host-Routing*: Reservado únicamente para multi-tenancy de catálogo o multi-marca sobre un **mismo release estable**.
+3. **Advertencia de Seguridad: Antipatrón de Simular Dev/Prod en Runtime Único**:
+   - Intentar usar un solo contenedor Bun para servir dev y producción asignándole dos dominios DNS (`dev.dominio.com` y `dominio.com`) introduce graves fallas arquitectónicas:
+     * **Blast Radius Total**: Un error de sintaxis o excepción no capturada en desarrollo crashea el proceso Bun y derriba la tienda de producción en ese mismo instante.
+     * **Riesgo de Cache Poisoning (OWASP)**: Proxies de borde y CDNs (Cloudflare) pueden almacenar en caché respuestas de prueba o datos sandbox y servirlas a clientes reales.
+     * **Incompatibilidad de Secretos**: Un solo contenedor solo puede cargar un juego de variables de entorno, impidiendo aislar pasarelas de pago reales vs. pruebas.
+   - *Costo en Zerops*: En Bun (`bun@1.3.9`), un runtime Astro SSR consume apenas **~45 MB de RAM**. Dos contenedores independientes consumen ~90 MB en total (costo marginal insignificante, centavos al mes). La separación física es mandatoria.
 
 ### D. Aprovisionamiento Autónomo de Secretos en GitHub (`gh secret set`)
 
@@ -219,20 +228,31 @@ jobs:
 
 ---
 
-## 4. Multi-Environment Branching Lifecycle (`dev` ➔ `stage` ➔ `prod`)
+## 4. Lifecycle Canónico de Entrega: Opción B (Dev ➔ Prod) & Staging Opcional
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Multi-Environment Delivery Pipeline                                                                           │
+│ Opción B: Flujo Canónico Prioritario (Dev Ágil ZCP ➔ Prod Inmutable GitHub Actions)                            │
 │                                                                                                                │
-│   ┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐          │
-│   │ Development (`dev`)       │      │ Staging (`stage`)         │      │ Production (`main` / Tag) │          │
-│   ├───────────────────────────┤      ├───────────────────────────┤      ├───────────────────────────┤          │
-│   │ • Workspace: /var/www/{h} │      │ • Branch: `stage`         │      │ • Branch: `main` / `v*`   │          │
-│   │ • Supervisor: dev_server  │─────▶│ • Pipeline: GitHub Action │─────▶│ • Pipeline: GitHub Action │          │
-│   │ • Ports: 3000 / 8000      │      │ • Service: `appstage`     │      │ • Service: `appprod`      │          │
-│   │ • URL: *.zerops.app       │      │ • URL: stage.domain.com   │      │ • URL: domain.com (SSL)   │          │
-│   └───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘          │
+│   ┌────────────────────────────────────────────────┐          ┌────────────────────────────────────────────┐   │
+│   │ Development Workspace (`webdev`)              │          │ Production Runtime (`appprod` / Dominio)   │   │
+│   ├────────────────────────────────────────────────┤          ├────────────────────────────────────────────┤   │
+│   │ • Ubicación: /var/www/{service} en Zerops      │          │ • Contenedor Bun independiente y blindado  │   │
+│   │ • Supervisor: zerops_dev_server action="start" │ git push │ • Dominio público vía Cloudflare SSL Strict│   │
+│   │ • Hot-reload instantáneo en subdominio Zerops  │  `main`  │ • CI/CD: zeropsio/actions@v1.0.2 en GitHub │   │
+│   │ • Cero commits spam en GitHub para probar CSS  │─────────▶│ • Despliegue inmutable 100% automatizado   │   │
+│   │ • 100% Desechable: se apaga o borra para $0    │          │ • Secretos y pagos reales aislados         │   │
+│   └────────────────────────────────────────────────┘          └────────────────────────────────────────────┘   │
+│                                   │                                                                            │
+│                     (Opcional para QA multi-usuario)                                                           │
+│                                   ▼                                                                            │
+│                       ┌────────────────────────────┐                                                           │
+│                       │ Staging Preview (`stage`)  │ (Opcional: solo si el equipo requiere                    │
+│                       ├────────────────────────────┤  aprobación previa multi-dev antes de merge)              │
+│                       │ • Branch: `stage`          │                                                           │
+│                       │ • Service: `appstage`      │                                                           │
+│                       │ • URL: stage.domain.com    │                                                           │
+│                       └────────────────────────────┘                                                           │
 └────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -259,8 +279,9 @@ zcli service deploy <serviceHostname> --setup prod
 | **1. Local hot-reload without commits** | Edit `/var/www/{hostname}/` + `zerops_dev_server action="start"` | 0 Git commits, hot-reload active | `localhost:3000`/`8000` / `*.zerops.app` |
 | **2. Test build in Zerops without GitHub** | `zerops_deploy targetService="{hostname}" setup="prod"` | Deploys directly in Zerops container | Service subdominio `*.zerops.app` |
 | **3. Save local Git checkpoint** | `git commit -m "feat: description"` | Work unit recorded locally | No remote server impact |
-| **4. Deliver changes to Staging (QA / Preview)** | `git push origin stage` | Triggers GitHub Actions ➔ Deploys `appstage` | `https://stage.domain.com` |
-| **5. Deploy final release to Production** | `git push origin main` (or `git push --tags`) | Triggers GitHub Actions ➔ Deploys `appprod` | `https://domain.com` (Cloudflare Strict) |
+| **4. Deliver changes to Staging (Opcional QA)** | `git push origin stage` | Triggers GitHub Actions ➔ Deploys `appstage` | `https://stage.domain.com` |
+| **5. Deploy release to Production (Opción B)** | `git push origin main` (or `git push --tags`) | Triggers GitHub Actions ➔ Deploys `appprod` | `https://domain.com` (Cloudflare Strict) |
+| **6. Save $0 resources after release (Efímero)** | Stop or delete `webdev` service in Zerops | SSoT in `main`, prod keeps running intact | $0 active compute cost in dev |
 
 ---
 

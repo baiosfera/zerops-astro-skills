@@ -1,4 +1,4 @@
-# `ghcicd`: CI/CD Infrastructure, Secret Management & Port Catalog Manual (v1.0)
+# `ghcicd`: CI/CD Infrastructure, Secret Management & Port Catalog Manual (v3.2)
 
 This manual provides technical specifications for managing deployment tokens (`ZEROPS_TOKEN`), mapping service ports and environment URLs, preventing CI/CD race conditions, and executing the Fractal CoHaLo operational harness in Zerops.
 
@@ -37,8 +37,8 @@ To connect GitHub Actions with Zerops securely:
    - In GitHub: **Repository Settings ➔ Secrets and variables ➔ Actions ➔ New repository secret**.
    - Add:
      - `ZEROPS_TOKEN`: The access token from Step 1.
-     - `ZEROPS_PROD_SERVICE_ID`: The production runtime service ID.
-     - `ZEROPS_STAGE_SERVICE_ID`: The staging runtime service ID (if using separate services).
+     - `ZEROPS_PROD_SERVICE_ID`: The production runtime service ID (Opción B Mandatoria).
+     - `ZEROPS_STAGE_SERVICE_ID`: The staging runtime service ID (Solo si se habilita la capa opcional de Staging).
 
 ---
 

@@ -1,14 +1,14 @@
 {
   "name": "ghcicd",
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "Production GitHub Actions workflows for Zerops, branch delivery pipelines, Git authentication helpers, and zcli commands",
   "recipes": {
     "github_actions_prod_deploy": {
-      "description": "GitHub Actions workflow for deploying to Zerops production on push to main",
+      "description": "GitHub Actions workflow for deploying to Zerops production on push to main (Opción B Prioritaria)",
       "path": ".github/workflows/deploy.yaml"
     },
     "github_actions_stage_deploy": {
-      "description": "GitHub Actions workflow for deploying to Zerops staging on push to stage",
+      "description": "GitHub Actions workflow for deploying to Zerops staging on push to stage (Opcional)",
       "path": ".github/workflows/stage.yaml"
     },
     "github_actions_tag_release": {

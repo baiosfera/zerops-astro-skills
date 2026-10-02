@@ -20,10 +20,10 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 2.0"
+if grep -Eq 'version: "3\.2"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is 3.2"
 else
-    echo "❌ Frontmatter version is not 2.0"
+    echo "❌ Frontmatter version is not 3.2"
     ERRORS=$((ERRORS + 1))
 fi
 
