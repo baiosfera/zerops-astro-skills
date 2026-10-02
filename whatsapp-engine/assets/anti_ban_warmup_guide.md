@@ -1,19 +1,21 @@
-# Protocolo Anti-Bloqueo (Anti-Ban) para Números WhatsApp en Colombia (+57)
+# Universal WhatsApp Anti-Ban & Number Warmup Protocol (v2.0)
 
 ---
 
-## 1. Fase de Calentamiento Gradual (Warm-up)
+## 1. Gradual Warmup Schedule (Multi-Tier Volume Ramp)
 
-| Período | Volumen Diario Recomendado | Tipo de Interacción |
+| Period | Daily Volume Budget | Interaction Type |
 |---|---|---|
-| **Días 1 a 3** | 0 automatizados | Uso manual en celular, chats con amigos/familiares, unirse a 2-3 grupos reales, recibir llamadas. |
-| **Días 4 a 7** | 20 – 40 mensajes/día | Solo respuestas a clientes que escriban primero (inbound) o clientes altamente calificados. |
-| **Días 8 a 14** | 80 – 120 mensajes/día | Mensajes con delays aleatorios (2s a 5s) y simulación de escritura `composing`. |
-| **Madurez (>14 Días)** | 150 – 250 conversaciones/día | Operación regular con Typebot o agentes de IA. |
+| **Days 1 to 3** | 0 automated messages | Manual mobile usage, personal conversations, join 2-3 active groups, receive incoming calls. |
+| **Days 4 to 7** | 20 – 40 messages / day | Strictly inbound responses to customer-initiated conversations or high-intent leads. |
+| **Days 8 to 14** | 80 – 120 messages / day | Randomized dispatch delays (2s – 5s) and realistic `composing` typing state simulation. |
+| **Maturity (>14 Days)** | 150 – 350 conversations / day | Regular production traffic with AI conversational agents and CRM automations. |
 
 ---
 
-## 2. Invariantes Técnicos Anti-Ban
-1. **Simulación de Presencia:** Emitir siempre `composing` durante 1.5s - 3s antes de enviar un mensaje de texto.
-2. **Notas de Voz Nativas:** Usar siempre `sendWhatsAppAudio` con `audio/ogg; codecs=opus` simulando `recording`.
-3. **Manejo de Opt-Out:** Pausar inmediatamente si el usuario escribe `SALIR`, `CANCELAR` o `NO MAS`.
+## 2. Technical Anti-Ban Invariants
+1. **Presence Simulation**: Always emit `composing` (typing state) for 1.5s – 3s before sending text messages.
+2. **Native Voice Notes**: Send voice messages using standard Opus audio (`audio/ogg; codecs=opus`) while simulating `recording` state.
+3. **Automated Opt-Out Handlers**: Immediately pause automation and unsubscribe phone numbers if the user sends opt-out keywords (`STOP`, `UNSUBSCRIBE`, `CANCEL`, `QUIT`, `BAJA`, `SALIR`, `NO MAS`).
+4. **Sliding Window Rate Limiting**: Limit outbound message bursts using Valkey token buckets (maximum 15 messages/minute per instance).
+5. **Session Monitoring**: Track socket disconnection frequency. If 2 consecutive disconnections occur, cycle instance state cleanly.

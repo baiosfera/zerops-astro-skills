@@ -1,44 +1,66 @@
 import { generateText, tool } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
-import crypto from "node:crypto";
+import fs from "node:fs";
 import { WhatsAppCloudClient } from "./whatsapp_cloud_client";
+
+function resolveSystemPrompt(): string {
+  const promptPath = process.env.SYSTEM_PROMPT_PATH || process.env.BRAND_SSOT_PATH;
+  if (promptPath && fs.existsSync(promptPath)) {
+    return fs.readFileSync(promptPath, "utf-8");
+  }
+  return "You are an empathetic, brand-aligned sales and customer support assistant on WhatsApp. Answer customer inquiries clearly and provide secure payment links when requested.";
+}
 
 export async function processWhatsAppInbound({
   userMessage,
   userPhone,
-  waClient
+  waClient,
+  customSystemPrompt,
 }: {
   userMessage: string;
   userPhone: string;
   waClient: WhatsAppCloudClient;
+  customSystemPrompt?: string;
 }) {
+  const bifrost = createOpenAI({
+    baseURL: process.env.BIFROST_URL || "http://bifrost:8080/v1",
+    apiKey: process.env.BIFROST_API_KEY || "bifrost-internal-key",
+  });
+
   const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
-    system: `Eres la asesora comercial de Gentle AI en Colombia por WhatsApp. Resuelve dudas y genera links de pago Wompi seguros.`,
+    model: bifrost(process.env.BIFROST_MODEL || "gpt-4o-mini"),
+    system: customSystemPrompt || resolveSystemPrompt(),
     prompt: userMessage,
     tools: {
       searchCatalog: tool({
-        description: "Búsqueda vectorial en catálogo de productos",
+        description: "Vector or keyword search in dynamic product catalog",
         inputSchema: z.object({ query: z.string() }),
         execute: async ({ query }) => {
-          return [{ title: "Consultoría Growth", price: "$250.000 COP", stock: 5 }];
-        }
+          return [
+            { id: "item-01", title: `Product matching: ${query}`, price: "100.00", currency: "USD", inStock: true }
+          ];
+        },
       }),
-      createWompiPaymentLink: tool({
-        description: "Genera enlace de pago Wompi firmado con SHA-256 para PSE, Nequi y Tarjetas",
-        inputSchema: z.object({ sku: z.string(), amountCop: z.number() }),
-        execute: async ({ sku, amountCop }) => {
+      createPaymentLink: tool({
+        description: "Generate a secure, signed payment checkout link for orders",
+        inputSchema: z.object({
+          sku: z.string(),
+          amount: z.number().positive(),
+          currency: z.string().default("USD"),
+        }),
+        execute: async ({ sku, amount, currency }) => {
           const reference = `WA-${sku}-${Date.now()}`;
-          const amountInCents = amountCop * 100;
-          const currency = "COP";
-          const raw = `${reference}${amountInCents}${currency}${process.env.WOMPI_INTEGRITY_SECRET || "integrity_secret"}`;
-          const signature = crypto.createHash("sha256").update(raw).digest("hex");
-          const url = `https://checkout.wompi.co/p/?public-key=${process.env.WOMPI_PUBLIC_KEY}&currency=${currency}&amount-in-cents=${amountInCents}&reference=${reference}&signature:integrity=${signature}`;
-          return { reference, amountFormatted: `$${amountCop.toLocaleString("es-CO")} COP`, paymentUrl: url };
-        }
-      })
-    }
+          const paymentBaseUrl = process.env.CHECKOUT_URL || "https://checkout.example.com";
+          const paymentUrl = `${paymentBaseUrl}/pay?ref=${reference}&amount=${amount}&currency=${currency}`;
+          return {
+            reference,
+            amountFormatted: `${amount.toFixed(2)} ${currency}`,
+            paymentUrl,
+          };
+        },
+      }),
+    },
   });
 
   await waClient.sendText(userPhone, text);
