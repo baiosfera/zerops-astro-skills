@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Deterministic Physical Validation Sensor for seo-aeo-geo Suite (v1.2)
+# Deterministic Physical Validation Sensor for seo-aeo-geo Suite (v2.0)
 # ==============================================================================
 set -euo pipefail
 
@@ -8,7 +8,7 @@ SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ERRORS=0
 
 echo "============================================================"
-echo "  🔍 Validating seo-aeo-geo Skill Integrity (v1.2)"
+echo "  🔍 Validating seo-aeo-geo Skill Integrity (v2.0)"
 echo "============================================================"
 
 # 1. Check SKILL.md existence
@@ -20,30 +20,33 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 1.2"
+if grep -Eq 'version: "2\.0"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is 2.0"
 else
-    echo "❌ Frontmatter version is not 1.2"
+    echo "❌ Frontmatter version is not 2.0"
     ERRORS=$((ERRORS + 1))
 fi
 
-# 3. Check token count of SKILL.md
+# 3. Check token count of SKILL.md (CoHaLo Level 2 limit <= 480 words)
 WORD_COUNT=$(wc -w < "$SKILL_DIR/SKILL.md")
 EST_TOKENS=$((WORD_COUNT * 13 / 10))
-if [ "$EST_TOKENS" -le 750 ]; then
-    echo "✓ Token budget compliant: ~$EST_TOKENS tokens (word count: $WORD_COUNT, limit 750)"
+if [ "$WORD_COUNT" -le 480 ]; then
+    echo "✓ Token budget compliant: ~$EST_TOKENS tokens (word count: $WORD_COUNT, limit 480)"
 else
-    echo "⚠️ Warning: SKILL.md exceeds recommended token budget (~$EST_TOKENS tokens)"
+    echo "⚠️ Warning: SKILL.md exceeds recommended token budget ($WORD_COUNT words > 480)"
+    ERRORS=$((ERRORS + 1))
 fi
 
-# 4. Check Dual-RAG references
+# 4. Check Dual-RAG references and new visual assets
 for ref in \
     "references/usage.md" \
     "references/infra.md" \
     "assets/SEO.astro" \
+    "assets/FaviconSuite.astro" \
     "assets/SchemaGraph.astro" \
     "assets/llms.txt.ts" \
-    "assets/robots.txt.ts"; do
+    "assets/robots.txt.ts" \
+    "scripts/generate-visual-assets.py"; do
     if [ -f "$SKILL_DIR/$ref" ] && [ -s "$SKILL_DIR/$ref" ]; then
         echo "✓ Required reference exists and non-empty: $ref"
     else
@@ -52,14 +55,16 @@ for ref in \
     fi
 done
 
-# 5. Check file links
+# 5. Check file links in SKILL.md
 for link in \
     "references/usage.md" \
     "references/infra.md" \
     "assets/SEO.astro" \
+    "assets/FaviconSuite.astro" \
     "assets/SchemaGraph.astro" \
     "assets/llms.txt.ts" \
     "assets/robots.txt.ts" \
+    "scripts/generate-visual-assets.py" \
     "scripts/seo-aeo-geo-validate.sh"; do
     if grep -q "file:///var/www/.agents/skills/seo-aeo-geo/$link" "$SKILL_DIR/SKILL.md"; then
         echo "✓ Absolute file link verified: $link"
@@ -71,9 +76,9 @@ done
 
 echo "------------------------------------------------------------"
 if [ "$ERRORS" -eq 0 ]; then
-    echo "✅ seo-aeo-geo v1.2 validation passed successfully with exit code 0."
+    echo "✅ seo-aeo-geo v2.0 validation passed successfully with exit code 0."
     exit 0
 else
-    echo "❌ seo-aeo-geo v1.2 validation failed with $ERRORS error(s)."
+    echo "❌ seo-aeo-geo v2.0 validation failed with $ERRORS error(s)."
     exit 1
 fi

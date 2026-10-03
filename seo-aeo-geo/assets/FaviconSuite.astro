@@ -1,0 +1,24 @@
+---
+export interface Props {
+  themeColor?: string;
+  manifestUrl?: string;
+  svgIconUrl?: string;
+  appleTouchIconUrl?: string;
+}
+
+const {
+  themeColor = "#050505",
+  manifestUrl = "/site.webmanifest",
+  svgIconUrl = "/favicon.svg",
+  appleTouchIconUrl = "/apple-touch-icon.png",
+} = Astro.props;
+---
+
+<!-- Favicon Suite SOTA 2026 -->
+<link rel="icon" type="image/svg+xml" href={svgIconUrl} />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href={appleTouchIconUrl} />
+<link rel="manifest" href={manifestUrl} />
+<meta name="theme-color" content={themeColor} />
