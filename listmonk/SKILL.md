@@ -10,16 +10,16 @@ metadata:
 # `listmonk` — Sovereign Email Marketing & Transactional Engine (v2.0)
 
 ## Activation Contract
-Activate when provisioning, deploying, or orchestrating Listmonk (v6.2.0+) within Zerops Incus LXC containers, executing transactional email dispatch (`POST /api/tx`), managing subscribers and lists via the REST API v6, rendering Go/Sprig templates with RFC 8058 One-Click Unsubscribe headers, or architecting multi-container horizontal scaling with PostgreSQL 18 and S3 Object Storage.
+Activate when provisioning, deploying, or orchestrating Listmonk (v6.2.0+) in Zerops Incus LXC, executing transactional emails (`POST /api/tx`), managing subscribers via REST API v6, rendering Go/Sprig templates with RFC 8058, or scaling horizontally with PostgreSQL 18 and S3.
 
 ## Hard Rules & Positive Guidance
 - **Native Go Architecture & Upstream v6.2.0**: Deploy official static binary (`v6.2.0_linux_amd64`) on `os: alpine` connecting to managed PostgreSQL 18 (`postgresql:single@18` or `postgresql:ha@18`).
 - **PostgreSQL 18 Schema & Search Path Invariant**: Always execute `CREATE SCHEMA IF NOT EXISTS listmonk;` and set `LISTMONK_db__params: "search_path=listmonk,public"` to guarantee extension and `pgcrypto` resolution.
-- **Atomic Migrations via `zsc execOnce`**: Wrap `./listmonk --install --idempotent --yes --config=""` and `./listmonk --upgrade --yes --config=""` inside `zsc execOnce ${appVersionId}` to prevent concurrent migration collisions.
-- **Split-Brain Prevention in Horizontal Scaling (`--passive`)**: When running 2+ containers for high availability, start the primary container with `./listmonk --config=""` and auxiliary HTTP replicas with `./listmonk --config="" --passive` to prevent duplicate campaign job execution.
+- **Atomic Migrations via `zsc execOnce`**: Wrap `./listmonk --install --idempotent --yes --config=""` and `./listmonk --upgrade --yes --config=""` in `zsc execOnce ${appVersionId}` to prevent concurrent collisions.
+- **Split-Brain Prevention in Horizontal Scaling (`--passive`)**: For 2+ containers, start primary with `./listmonk --config=""` and auxiliary HTTP replicas with `./listmonk --config="" --passive` to prevent duplicate jobs.
 - **Decoupled S3 Media Storage**: Use Zerops Object Storage (`upload.provider: "s3"`) with Listmonk native reverse proxying, eliminating single-tenant local disk paths.
 - **REST API Bot Token Authentication**: Authenticate service-to-service calls using dedicated API service accounts (`type = 'api'`) via header `Authorization: token <api_token>` against internal DNS `http://listmonk:9000`.
-- **React Email 3.0 & Sprig Bridge**: Compile React Email 3.0 templates to HTML containing Sprig variables (`{{ .Subscriber.Attribs... }}`) and register them via `POST /api/templates` to deliver brand-consistent, anti-slop campaigns without raw HTML authoring.
+- **React Email 3.0 & Sprig Bridge**: Compile React Email 3.0 to HTML with Sprig variables (`{{ .Subscriber.Attribs... }}`) and register via `POST /api/templates` for brand-consistent, anti-slop campaigns.
 
 ## Decision Gates
 
