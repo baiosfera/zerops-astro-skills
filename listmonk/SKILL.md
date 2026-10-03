@@ -19,6 +19,7 @@ Activate when provisioning, deploying, or orchestrating Listmonk (v6.2.0+) withi
 - **Split-Brain Prevention in Horizontal Scaling (`--passive`)**: When running 2+ containers for high availability, start the primary container with `./listmonk --config=""` and auxiliary HTTP replicas with `./listmonk --config="" --passive` to prevent duplicate campaign job execution.
 - **Decoupled S3 Media Storage**: Use Zerops Object Storage (`upload.provider: "s3"`) with Listmonk native reverse proxying, eliminating single-tenant local disk paths.
 - **REST API Bot Token Authentication**: Authenticate service-to-service calls using dedicated API service accounts (`type = 'api'`) via header `Authorization: token <api_token>` against internal DNS `http://listmonk:9000`.
+- **React Email 3.0 & Sprig Bridge**: Compile React Email 3.0 templates to HTML containing Sprig variables (`{{ .Subscriber.Attribs... }}`) and register them via `POST /api/templates` to deliver brand-consistent, anti-slop campaigns without raw HTML authoring.
 
 ## Decision Gates
 

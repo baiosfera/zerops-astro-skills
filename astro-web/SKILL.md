@@ -17,6 +17,7 @@ Activate for Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actio
 - **Server Islands Key**: In rolling zero-downtime deploys, inject `ASTRO_KEY` across replicas for prop decryption.
 - **Runtime & Base**: Build on `ubuntu/bun@1.3.9` to prevent Alpine musl binding failures in Rolldown; deploy with `[dist, node_modules, package.json]`.
 - **Decoupled Backend**: Astro Actions handle mutations agnostically with Zod validation. Connect via Zerops internal DNS and wire connection strings via shell env (`$queue_connectionString`, `${cache_connectionString}`, `${db_connectionString}`).
+- **Decoupled Staging (Ghcicd Option B)**: Base recipe `06-astro-web.yaml` provisions production exclusively. Staging is strictly opt-in via decoupled `06b-astro-web-staging.yaml`.
 - **Tailwind CSS 4**: Integrate via `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` design tokens.
 - **Pre-flight Craft Gate**: Calibrate 3 Dials: *Variance* (asymmetric layout), *Motion* (smooth reveals), *Density* (brand-calibrated). Prohibit untinted gray and dark purple gradients.
 - **Hygiene & Sensors**: Strict timeouts (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans, sensor HTTP 200 on `/`. Consult [`references/usage.md`](file:///var/www/.agents/skills/astro-web/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/astro-web/references/infra.md).
