@@ -28,6 +28,7 @@ Activate when implementing or auditing payment gateways (**Stripe**, **Mercado P
 | Wompi Colombia | SHA-256 integrity & checksum | [`references/gateways/wompi.md`](file:///var/www/.agents/skills/payment-gateways/references/gateways/wompi.md) |
 | Stripe Global | Elements & HMAC verification | [`references/gateways/stripe.md`](file:///var/www/.agents/skills/payment-gateways/references/gateways/stripe.md) |
 | Bold Colombia | Button & webhook verification | [`references/gateways/bold.md`](file:///var/www/.agents/skills/payment-gateways/references/gateways/bold.md) |
+| dLocal Go LatAm | Dynamic sandbox/live & webhook authority | [`references/gateways/dlocal_go.md`](file:///var/www/.agents/skills/payment-gateways/references/gateways/dlocal_go.md) |
 | COD WhatsApp | 6-digit OTP verification | [`references/gateways/cod.md`](file:///var/www/.agents/skills/payment-gateways/references/gateways/cod.md) |
 | Zerops & APIRoute Infra | Raw body preservation, ingress & env vars | [`references/infra.md`](file:///var/www/.agents/skills/payment-gateways/references/infra.md) |
 | Valkey Distributed Lock | Atomic Lua acquisition and safe release | [`assets/valkey_lock.ts`](file:///var/www/.agents/skills/payment-gateways/assets/valkey_lock.ts) |

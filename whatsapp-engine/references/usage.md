@@ -102,21 +102,19 @@ When WhatsApp servers enforce passkey authentication (*Shortcake / CRSC flow*):
 
 ### A. Send Text Message (`POST /send/text`)
 
+En Zerops Incus LXC, el servicio Evolution Go expone su API HTTP de forma canónica en el puerto **`:8085`** (bajo el hostname `http://evolution:8085`).
+
 ```bash
-curl -s -X POST http://evolutiongo:8080/send/text \
+# Payload nativo Go (/send/text)
+curl -s -X POST http://evolution:8085/send/text \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
-    "instance": "sales-bot",
-    "to": "34611223344",
-    "text": "Hello *Alex*! Your order *#9821* has been dispatched. 🚀",
-    "quoted": {
-      "key": {
-        "id": "MSG_ID_TO_REPLY_TO"
-      }
-    }
+    "number": "573100000000",
+    "text": "Hello *Alex*! Your order *#9821* has been dispatched. 🚀"
   }'
 ```
+*También soporta el formato con selector de instancia:* `{"instance": "sales-bot", "to": "573100000000", "text": "..."}`.
 
 ### B. Send Media & Audio PTT (`POST /send/media`)
 

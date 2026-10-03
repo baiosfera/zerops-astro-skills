@@ -322,6 +322,9 @@ Protects public APIs against brute-force attacks using atomic Valkey Redis pipel
 ### Pattern 5: Deterministic pg_dump Backup Execution
 Runs scheduled database backups to POSIX shared storage (`/mnt/baiostorage/backups/`) with automated 7-day retention pruning.
 
+### Pattern 6: Resilient PostgreSQL Upsert & Phone Variant Normalization
+Prevents raw PostgreSQL unique constraint violations (`leads_email_key` / `leads_whatsapp_key`) during user checkout or registration. Generates phone variants (+57, 57, 10-digit), performs multi-variant queries, updates existing records without colliding on unique keys, and guarantees zero HTTP 500 errors in digital payment flows.
+
 ---
 
 ## 9. Anti-Patterns & Common Gotchas
