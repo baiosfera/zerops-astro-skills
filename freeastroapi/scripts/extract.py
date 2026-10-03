@@ -161,9 +161,18 @@ async def extract_freeastroapi(
         "include_crossings": False
     }
 
+    raw_city = client_data.get("city") or "Medellin"
+    clean_city = unicodedata.normalize("NFKD", str(raw_city)).encode("ASCII", "ignore").decode("utf-8")
+    clean_city = re.sub(r"[,\(\)].*$", "", clean_city).strip().split()[0] if clean_city.strip() else "Medellin"
+
     payload_profections = {
-        **base_western_payload,
-        "target_year": current_year
+        "year": year, "month": month, "day": day,
+        "hour": hour, "minute": minute,
+        "lat": lat, "lng": lng,
+        "city": clean_city,
+        "annual_profection": {
+            "year": current_year
+        }
     }
 
     post_endpoints = [

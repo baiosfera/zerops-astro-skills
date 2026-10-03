@@ -200,9 +200,13 @@ def resolve_geo(city_name: str, raw_lat=None, raw_lon=None):
     if raw_lat is not None and raw_lon is not None:
         tz = "America/Bogota"
         c_low = city_name.lower().strip() if city_name else ""
-        if c_low in CITY_GEO_LOOKUP:
-            tz = CITY_GEO_LOOKUP[c_low]["tz"]
-        return float(raw_lat), float(raw_lon), tz, city_name or "Desconocido"
+        resolved_city = city_name or "Desconocido"
+        for k, v in CITY_GEO_LOOKUP.items():
+            if k in c_low:
+                tz = v["tz"]
+                resolved_city = v["city"]
+                break
+        return float(raw_lat), float(raw_lon), tz, resolved_city
 
     c_norm = city_name.lower().strip() if city_name else ""
     for k, v in CITY_GEO_LOOKUP.items():
@@ -228,7 +232,8 @@ def main():
     parser.add_argument("--apis", help="Lista de APIs a ejecutar separadas por coma (ej: astrologyapi,astroway,freeastro,vedastro). Por defecto: todas.")
     parser.add_argument("--exclude", help="Lista de APIs a excluir separadas por coma.")
     parser.add_argument("-x", "--extract", action="store_true", help="Solo ejecutar extracción y persistencia en caché (no compilar feeds).")
-    parser.add_argument("-c", "--compile", action="store_true", help="Solo compilar shards, feeds y reportes desde caché (auto-extrae si falta caché).")
+    parser.add_argument("-c", "--compile", action="store_true", help="Compilar shards, feeds y reportes desde caché verificado.")
+    parser.add_argument("--allow-partial", action="store_true", help="Permitir compilación parcial ignorando la compuerta estricta de cobertura completa.")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
     parser.add_argument("--dry-run", action="store_true", help="Dry run offline")
 
@@ -303,11 +308,12 @@ def main():
         base_diag = Path("/var/www/output")
 
     if not client_dir:
-        if file_path and file_path.parent.name.endswith("_AGY"):
+        if file_path:
+            # Soberanía de ruta: respetar directamente la carpeta del archivo de entrada suministrado
             client_dir = str(file_path.parent)
         else:
             folder_slug = re.sub(r'[^a-zA-Z0-9]+', '_', (current_name or names).upper()).strip('_')
-            client_dir = str(base_diag / f"{folder_slug}_AGY")
+            client_dir = str(base_diag / folder_slug)
     elif not client_dir.startswith("/"):
         client_dir = str(base_diag / client_dir)
 
@@ -370,25 +376,72 @@ def main():
             refresh_pro=args.refresh_pro
         )
 
-        if args.compile:
-            client_hash = engine.cache.generate_client_hash(client_payload)
-            has_cache = any(cache_dir.glob(f"*{client_hash}*")) if cache_dir.exists() else False
-            if not has_cache:
-                print("⚠️ Caché no encontrada para --compile. Auto-extrayendo primero con validación...")
-                extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
-            else:
-                print("📦 Compilando feeds y shards directamente desde caché verificada...")
-                extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
-        else:
-            extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+        is_extraction_only = args.extract or (bool(args.apis) and not args.compile)
 
-        if args.extract:
+        if is_extraction_only:
             print("=" * 70)
-            print("✅ Extracción finalizada con éxito (--extract).")
+            print("🚀 MODO EXTRACCIÓN PURA (-x / --apis) — CERO SHARDING PREMATURO")
+            print("=" * 70)
+            extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+            cov = engine.get_coverage_status(client_payload)
+            print("=" * 70)
+            print("✅ Extracción y persistencia en caché finalizadas con éxito:")
+            print(f"  • Directorio base: {client_dir}")
             print(f"  • Caché JSON persistida en: {cache_dir}")
-            print(f"  • Micro-auditorías atómicas en: {Path(client_dir) / 'raw' / 'json' / 'audit'}")
+            print(f"  • Hash del consultante: {cov['client_hash']}")
+            print(f"  • Cobertura acumulada en lago de datos: {cov['pct']}% ({len(cov['coverage']) - len(cov['missing'])}/{len(cov['coverage'])} proveedores)")
+            for prov_k, prov_ok in cov['coverage'].items():
+                status_icon = "🟢" if prov_ok else "⚪"
+                status_txt = "EN CACHÉ" if prov_ok else "PENDIENTE"
+                print(f"    {status_icon} {prov_k.ljust(15)} : {status_txt}")
+            if cov['missing']:
+                print(f"\n⚠️  Aún faltan proveedores por extraer antes de compilar (-c): {', '.join(cov['missing'])}")
+                print(f"   Podés continuar extrayendo modularmente con: python3 omni_engine.py {input_file} --apis <proveedor>")
+            else:
+                print("\n🎉 ¡Universo astrológico 100% completo en caché! Listo para compilar con: -c")
             print("=" * 70)
             return 0
+
+        # MODO COMPILACIÓN (-c o ejecución completa por defecto)
+        cov = engine.get_coverage_status(client_payload)
+
+        # Revisar si existe manifiesto de exclusión justificada
+        exclusion_file = Path(client_dir) / "raw" / "json" / "audit" / "exclusion_manifest.json"
+        excluded_providers = []
+        if exclusion_file.exists():
+            try:
+                with open(exclusion_file, "r", encoding="utf-8") as f:
+                    exc_manifest = json.load(f)
+                    excluded_providers = [p.lower().strip() for p in exc_manifest.get("excluded_providers", [])]
+            except Exception:
+                pass
+
+        unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
+
+        if unjustified_missing and not args.allow_partial:
+            # Si es corrida automática por defecto (sin -c explícito), intentar auto-extraer faltantes
+            if not args.compile:
+                print(f"ℹ️ Auto-extrayendo proveedores pendientes en lago de datos: {unjustified_missing}...")
+                asyncio.run(engine.execute_extraction(client_payload, apis=unjustified_missing, exclude=exclude_list))
+                cov = engine.get_coverage_status(client_payload)
+                unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
+
+            if unjustified_missing and not args.allow_partial:
+                print("=" * 70, file=sys.stderr)
+                print("❌ COMPILACIÓN BLOQUEADA (Strict Multi-Tradition Gate):", file=sys.stderr)
+                print(f"El universo astrológico está incompleto para este consultante ({cov['pct']}% en caché).", file=sys.stderr)
+                print(f"Proveedores ausentes sin justificación: {', '.join(unjustified_missing)}", file=sys.stderr)
+                print("\nPor contrato de calidad, la compilación de shards y Fase 0 no procede con datos faltantes", file=sys.stderr)
+                print("para evitar corromper la matriz downstream de branding (orchesbrand).", file=sys.stderr)
+                print("\nAcciones disponibles:", file=sys.stderr)
+                print(f"  1. Extraer faltantes: python3 omni_engine.py {input_file} -x --apis {','.join(unjustified_missing)}", file=sys.stderr)
+                print(f"  2. Justificar exclusión por cuota/caída en: {exclusion_file}", file=sys.stderr)
+                print(f"  3. Forzar compilación parcial deliberada pasando: --allow-partial", file=sys.stderr)
+                print("=" * 70, file=sys.stderr)
+                return 2
+
+        print(f"📦 Compilando feeds y shards desde lago de datos (Cobertura: {cov['pct']}%)...")
+        extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
 
         # Ejecutar verificación de salud, sharding de 12 shards y feeds
         sharder = SharderEngine(output_root=client_dir)

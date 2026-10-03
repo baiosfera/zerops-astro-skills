@@ -576,9 +576,9 @@ class SharderEngine:
 
         psy = s1.get("modern_psychology", {})
         greene = psy.get("greene_archetypes", {}).get("data", {})
-        greene_arch = greene.get("primary_archetype", "Soberano Creador")
+        greene_arch = greene.get("primary_archetype") or "No determinado por API"
         arroyo = psy.get("arroyo_elements", {}).get("data", {})
-        arroyo_elem = arroyo.get("summary", "Balance armónico")
+        arroyo_elem = arroyo.get("summary") or "No determinado por API"
 
         sid = s2.get("variants", {}).get("fagan_campanus", {})
         sid_angles = sid.get("angles", {})
@@ -588,11 +588,11 @@ class SharderEngine:
         ak = jaimini.get("atmakaraka", {})
         amk = jaimini.get("amatyakaraka", {})
         v_lagna = s3.get("vedic_lagna", {}) or {}
-        v_lagna_sign = v_lagna.get("sign", "Lahiri")
-        v_lagna_nak = v_lagna.get("nakshatra", "Anuradha")
-        v_lagna_pada = v_lagna.get("pada", 1)
-        v_lagna_deity = v_lagna.get("deity", "Mitra")
-        v_lagna_shakti = v_lagna.get("shakti", "Radhan Shakti")
+        v_lagna_sign = v_lagna.get("sign") or "No determinado"
+        v_lagna_nak = v_lagna.get("nakshatra") or "No determinado"
+        v_lagna_pada = v_lagna.get("pada") or "N/A"
+        v_lagna_deity = v_lagna.get("deity") or "No provisto"
+        v_lagna_shakti = v_lagna.get("shakti") or "No provisto"
 
         sb = s3.get("vedic_shadbala_full", {}) or s3.get("shadbala", {}) or {}
         sb_items = sb.get("data", {}).get("items", []) if isinstance(sb, dict) and "data" in sb else (sb.get("items", []) if isinstance(sb, dict) else [])
@@ -1667,45 +1667,43 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
         mars_p = p_map.get("mars", {})
         ven_p = p_map.get("venus", {})
         psy = s1.get("modern_psychology", {})
-        greene_arch = psy.get("greene_archetypes", {}).get("data", {}).get("primary_archetype", "Arquitecto Soberano")
-        arroyo_elem = psy.get("arroyo_elements", {}).get("data", {}).get("summary", "Balance armónico")
+        greene_arch = psy.get("greene_archetypes", {}).get("data", {}).get("primary_archetype") or "No determinado por API"
+        arroyo_elem = psy.get("arroyo_elements", {}).get("data", {}).get("summary") or "No determinado por API"
 
         # S3 & S12 Vedic & Vargas
         v_lagna = s3.get("vedic_lagna", {}) or {}
-        v_lagna_sign = v_lagna.get("sign", "Lahiri")
-        v_lagna_nak = v_lagna.get("nakshatra", "Anuradha")
+        v_lagna_sign = v_lagna.get("sign") or "No determinado"
+        v_lagna_nak = v_lagna.get("nakshatra") or "No determinado"
         jaimini = s3.get("jaimini_chara_karakas", {}).get("data", {})
         ak = jaimini.get("atmakaraka", {})
         amk = jaimini.get("amatyakaraka", {})
         sb = s3.get("vedic_shadbala_full", {}) or s3.get("shadbala", {}) or {}
         sb_items = sb.get("data", {}).get("items", []) if isinstance(sb, dict) and "data" in sb else (sb.get("items", []) if isinstance(sb, dict) else [])
-        sb_p1 = "Júpiter"
-        sb_rup = 1.45
+        sb_p1 = "No disponible"
+        sb_rup = 0.0
         if sb_items:
             sb_sorted = sorted(sb_items, key=lambda x: x.get("totalRupa", x.get("total_rupas", 0.0)), reverse=True)
-            sb_p1 = sb_sorted[0].get("planetName") or sb_sorted[0].get("planet", "Júpiter")
-            sb_rup = sb_sorted[0].get("totalRupa", sb_sorted[0].get("total_rupas", 1.45))
+            sb_p1 = sb_sorted[0].get("planetName") or sb_sorted[0].get("planet") or "No disponible"
+            sb_rup = sb_sorted[0].get("totalRupa", sb_sorted[0].get("total_rupas", 0.0))
 
         # S4 BaZi & S11 TCM 5 Elements
         bazi_ts = s4.get("chinese_bazi_true_solar", {})
         dm = bazi_ts.get("day_master", {})
-        dm_stem = dm.get("name", "Yang Wood")
-        dm_elem = dm.get("info", {}).get("element", "Madera")
+        dm_stem = dm.get("name") or "No provisto"
+        dm_elem = dm.get("info", {}).get("element") or "No provisto"
         tcm = s11.get("tcm_health", {}) or s11.get("bazi_five_elements", {})
-        five_elem = tcm.get("elements_balance", {
-            "wood": 30, "fire": 25, "earth": 20, "metal": 15, "water": 10
-        }) if isinstance(tcm, dict) else {"wood": 30, "fire": 25, "earth": 20, "metal": 15, "water": 10}
+        five_elem = tcm.get("elements_balance", {}) if isinstance(tcm, dict) else {}
         favorable_elem = tcm.get("favorable_element", dm_elem) if isinstance(tcm, dict) else dm_elem
 
         # S7 Numerology
         fa_num = s7.get("freeastro_pythagorean", {}).get("data", {})
         core_num = fa_num.get("core", {})
-        lp = core_num.get("life_path", {}).get("value_display", "7")
-        expr = fa_num.get("name_analysis", {}).get("expression", {}).get("value_display", "1")
+        lp = core_num.get("life_path", {}).get("value_display", "N/A")
+        expr = fa_num.get("name_analysis", {}).get("expression", {}).get("value_display", "N/A")
 
         # S9 ACG Power Cities
         acg_best = s9.get("geo_acg_best_places", {}).get("data", {}).get("cities", [])
-        top_cities = [c.get("cityName", "Global Hub") for c in acg_best[:5]] if acg_best else ["Bogotá", "Madrid", "Miami", "Buenos Aires", "Londres"]
+        top_cities = [c.get("cityName", "Global Hub") for c in acg_best[:5]] if acg_best else []
 
         handoff_content = f"""# Especificación de Diseño AstroBranding (SSoT Semiótico): {brand_name} 🎨
 *Puente estructurado de inteligencia semiótica sintetizado en Fase 0 — Destino: Suite de Diseño Orchesbrand*  
@@ -1718,8 +1716,8 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
 
 ## 1. 🌌 Génesis Astrológica & Autoridad Arquetípica
 - **Arquetipo Rector Dominante (Liz Greene)**: `{greene_arch}` (Fundamentado en Sol en {format_zodiac_pos(sun_p)} y Medio Cielo en {format_zodiac_pos(mc)}).
-- **Arquetipo Secundario de Balance (Jyotish & BaZi)**: `Guardián Sabio` (Derivado de Lagna Védico `{v_lagna_sign}` en Nakshatra `{v_lagna_nak}`, Amatyakaraka `{amk.get('grahaName', 'Mercurio')}` y Day Master BaZi **{dm_stem}** [{dm_elem}]).
-- **Arquetipo de Sombra a Trascender**: Polaridad inconsciente de la Luna en `{format_zodiac_pos(moon_p)}` y Atmakaraka `{ak.get('grahaName', 'Saturno')}`.
+- **Arquetipo Secundario de Balance (Jyotish & BaZi)**: `Equilibrio Arquetípico` (Derivado de Lagna Védico `{v_lagna_sign}` en Nakshatra `{v_lagna_nak}`, Amatyakaraka `{amk.get('grahaName') or 'No disponible'}` y Day Master BaZi **{dm_stem}** [{dm_elem}]).
+- **Arquetipo de Sombra a Trascender**: Polaridad inconsciente de la Luna en `{format_zodiac_pos(moon_p)}` y Atmakaraka `{ak.get('grahaName') or 'No disponible'}`.
 - **Tensión Mitológica Central**: Transformar la complejidad multidimensional en rigor arquitectónico tangible, soberano y sin fricción operativa.
 - **Vibración Numérica del Vehículo**: Camino de Vida **{lp}** convergente con Expresión **{expr}** para `{brand_name}`.
 
