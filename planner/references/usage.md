@@ -1,9 +1,9 @@
-# Planner Reference Manual: Operational Usage & Dual-RAG Architecture (v3.7)
+# Planner Reference Manual: Operational Usage & Dual-RAG Architecture (v9.1)
 
 > **SSoT Reference Document:** `/var/www/.agents/skills/planner/references/usage.md`  
 > **Meta-Skill:** [`planner`](file:///var/www/.agents/skills/planner/SKILL.md)  
 > **Archetype:** Cognitive, Planning & Governance Methodology  
-> **Standard:** Dual-RAG Pattern (Docu v7.0), Fractal CoHaLo v7.0 & Supreme Directive v7.8.
+> **Standard:** Dual-RAG Pattern (Docu v8.2), Fractal CoHaLo v8.4 & Supreme Directive v8.3.
 
 ---
 
@@ -15,7 +15,7 @@ La meta-skill `planner` no es un documento estático ni un receptor pasivo de te
    - **Entrada Blindada:** [`research`](file:///var/www/.agents/skills/research/SKILL.md) garantiza Inflow Epistémico sin asunciones estáticas (Anti-AMN).
    - **Salida Blindada:** [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md) garantiza Cero Eliminación y No-Mutilación de directivas previas en Track A.
 2. **Skills Especializadas JIT (Bajo Demanda Real & Sensor Físico):**
-   - [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md), [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) y [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) se activan únicamente cuando la tarea ejecuta su arnés físico y corre un sensor determinista en la Matriz de Control (Sección 5). Queda terminantemente prohibido su uso como membrete cosmético ("compliance theater").
+   - [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md), [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) y [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) se activan únicamente cuando la tarea ejecuta su arnés físico y corre un sensor determinista en la Matriz de Control (Sección 5). Se vetan usos como membrete cosmético ("compliance theater"); cada skill invocada atestigua una aserción física real.
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -118,7 +118,7 @@ Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de co
 ## 4. Estándar de Planes en Disco, Halt Gate & Ciclo de Auto-Purga
 
 1. **Ruta Transitoria:** Todo plan se redacta en español en `/var/www/artifacts/<plan_name>_vN.md` con `RequestFeedback: false`, en formato condensado de alta densidad.
-2. **Inmutabilidad de Versiones:** Si el alcance evoluciona, se genera `_v(N+1).md` conservando las versiones previas hasta el cierre del ciclo.
-3. **Mandato Anti-Desbocado & F4 Halt Gate:** Prohibido por diseño ejecutar código sin autorización explícita. Todo plan DEBE ser validado físicamente con `plan-validate <ruta>` arrojando `exit code 0` y el agente debe detenerse a esperar el `"go"` humano.
-4. **Linear Synergy para Macro-Epics:** Para despliegues complejos o multi-servicio (ej: `zerops-astrobranding full`), las fases principales se sincronizan opcionalmente como issues en Linear (`linear_create_issue`) garantizando persistencia inter-sesión.
-5. **Auto-Purge Post-Atestación:** Una vez completada la Fase F5 y confirmada por sensores físicos, el plan se elimina inmediatamente del disco (`rm -f /var/www/artifacts/<plan_name>*.md`) y se almacena el resumen final en Engram (`mem_save`), garantizando cero acumulación de deuda técnica.
+2. **Invariante de Versionamiento Evolutivo Acumulativo (Anti-Amnesia):** Toda nueva versión `_v(N+1).md` es obligatoriamente un superset estricto de `_vN.md`. Preserva el 100% de requerimientos funcionales, tareas, rutas y descubrimientos previos, depurando exclusivamente lo erróneo y sumando el nuevo alcance sin pérdida de contexto.
+3. **Mandato Anti-Desbocado & F4 Halt Gate:** La ejecución de código de aplicación requiere autorización explícita previa ('Go' del usuario). Todo plan debe ser validado físicamente con `plan-validate <ruta>` arrojando `exit code 0` y el agente debe detenerse a esperar el `"go"` humano.
+4. **Política Cuantitativa de Linear:** Linear es obligatorio para macro-tareas (>10k tokens, multi-archivo, multi-sesión) asegurando persistencia de estado inter-sesión sin saturar la ventana de contexto. Las micro-tareas (fixes puntuales o modificaciones de un solo archivo) ejecutan directamente sin emisión de tickets en Linear para economía de tokens.
+5. **Archival & Purga Post-Atestación:** Una vez completada la Fase F5 y confirmada por sensores físicos, el plan se archiva mediante `plan-archive <plan> --executed`, purga automáticamente borradores superseded obsoletos en `artifacts/archive/` y se almacena el resumen final en Engram (`mem_save`), garantizando cero acumulación de deuda técnica.
