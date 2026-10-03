@@ -16,11 +16,20 @@ class CacheManager:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def _compute_hash(self, key_data: Any) -> str:
+        if isinstance(key_data, str) and len(key_data) == 16 and all(c in "0123456789abcdefABCDEF" for c in key_data):
+            return key_data.lower()
         if isinstance(key_data, (dict, list)):
             normalized = json.dumps(key_data, sort_keys=True, ensure_ascii=False)
         else:
             normalized = str(key_data)
         return hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:16]
+
+    def generate_client_hash(self, client_data: Any) -> str:
+        """
+        Generates a deterministic 16-character SHA-256 fingerprint for a client profile.
+        Used as the client cache key and in cached dump filenames.
+        """
+        return self._compute_hash(client_data)
 
     def _get_path(self, provider: str, endpoint: str, key_data: Any) -> Path:
         safe_endpoint = endpoint.strip("/").replace("/", "_").replace("-", "_")

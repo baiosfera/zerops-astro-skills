@@ -56,7 +56,12 @@ CITY_GEO_LOOKUP = {
 def parse_client_file(file_path: Path) -> dict:
     """Parse client birth data from text, markdown, or JSON files."""
     if not file_path.exists():
-        raise FileNotFoundError(f"Archivo de consultante no encontrado: {file_path}")
+        if file_path.suffix.lower() == ".txt" and file_path.with_suffix(".md").exists():
+            file_path = file_path.with_suffix(".md")
+        elif file_path.suffix.lower() == ".md" and file_path.with_suffix(".txt").exists():
+            file_path = file_path.with_suffix(".txt")
+        else:
+            raise FileNotFoundError(f"Archivo de consultante no encontrado: {file_path}")
     
     content = file_path.read_text(encoding="utf-8").strip()
     data = {}

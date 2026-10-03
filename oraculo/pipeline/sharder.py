@@ -360,11 +360,7 @@ class SharderEngine:
                 "vedic_varga_d10": astroway.get("vedic_varga_d10", {}),
                 "vedic_shadbala_full": astroway.get("vedic_shadbala_full", {}),
                 "vedic_yogas": {
-                    "astroway_raja": astroway.get("vedic_yogas_raja", {}),
-                    "astroway_dhana": astroway.get("vedic_yogas_dhana", {}),
-                    "astroway_gajakesari": astroway.get("vedic_yogas_gajakesari", {}),
-                    "astroway_kaal_sarp": astroway.get("vedic_doshas_kaal_sarp", {}),
-                    "astroway_mangal": astroway.get("vedic_doshas_mangal", {}),
+                    "astroway_jaimini_yogas": astroway.get("jaimini_yogas", {}),
                     "vedastro_jhora": vedastro.get("jhora_yogas", {}),
                     "vedastro_kalasarpa": vedastro.get("kalasarpa_yoga", {})
                 }
