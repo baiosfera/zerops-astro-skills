@@ -9,15 +9,16 @@ import json
 import urllib.request
 import urllib.error
 
-def load_env_file(filepath="/var/www/.env"):
-    env_vars = {}
+def load_env_file(filepath="/etc/environment"):
+    env_vars = dict(os.environ)
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, v = line.split("=", 1)
-                    env_vars[k.strip()] = v.strip().strip("'\"")
+                    if k.strip() not in env_vars:
+                        env_vars[k.strip()] = v.strip().strip("'\"")
     return env_vars
 
 def main():

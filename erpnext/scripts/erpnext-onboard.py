@@ -36,15 +36,16 @@ except ImportError:
     spec_r.loader.exec_module(res_mod)
     ColombianCIIUResolver = res_mod.ColombianCIIUResolver
 
-def load_env(filepath="/var/www/.env"):
-    env = {}
+def load_env(filepath="/etc/environment"):
+    env = dict(os.environ)
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, v = line.split("=", 1)
-                    env[k.strip()] = v.strip("\"'")
+                    if k.strip() not in env:
+                        env[k.strip()] = v.strip("\"'")
     return env
 
 class FrappeClient:

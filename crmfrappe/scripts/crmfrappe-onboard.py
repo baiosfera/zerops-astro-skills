@@ -19,7 +19,10 @@ import requests
 
 try:
     from dotenv import load_dotenv
-    load_dotenv("/var/www/.env")
+    if os.path.exists("/etc/environment"):
+        load_dotenv("/etc/environment")
+    elif os.path.exists("/var/www/.env"):
+        load_dotenv("/var/www/.env")
 except ImportError:
     pass
 

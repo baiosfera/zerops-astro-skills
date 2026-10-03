@@ -8,9 +8,9 @@ from pathlib import Path
 from dataclasses import dataclass, field
 
 
-def load_env_file(env_path: str = "/var/www/.env") -> dict:
-    """Reads .env file safely and loads keys into os.environ if not already present."""
-    loaded = {}
+def load_env_file(env_path: str = "/etc/environment") -> dict:
+    """Reads platform environment variables safely and loads keys into os.environ if not already present."""
+    loaded = dict(os.environ)
     p = Path(env_path)
     if p.exists():
         with open(p, "r", encoding="utf-8") as f:

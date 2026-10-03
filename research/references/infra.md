@@ -26,7 +26,7 @@ This manual defines the technical operating parameters, environment credentials,
 
 ## 2. Environment Variables & Secret Ingestion
 
-All external API keys are ingested via `/var/www/.env` and referenced exclusively by variable name in shell scripts, never logged or hardcoded in chat:
+All external API keys are ingested natively via Zerops project environment variables (`zerops_env` / `/etc/environment`) and referenced exclusively by variable name in shell scripts, never logged or hardcoded in chat:
 - `EXA_API_KEY`: Authenticates Exa MCP server.
 - `TAVILY_API_KEY`: Authenticates Tavily MCP server.
 - `BRAVE_API_KEY`: Authenticates Brave Search MCP server.
