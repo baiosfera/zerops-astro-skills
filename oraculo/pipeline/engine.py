@@ -73,43 +73,250 @@ class ExtractionEngine:
         try:
             self.audit_dir.mkdir(parents=True, exist_ok=True)
             audit_file = self.audit_dir / f"audit_{provider}.json"
-            if is_cached and audit_file.exists():
-                return
+            audit_md_file = self.audit_dir / f"audit_{provider}.md"
+
             prov_results = [
                 r for r in results_list
                 if r.provider == provider or (provider == "freeastro" and r.provider in ("freeastro", "freeastroapi")) or (provider == "mcp" and "mcp" in r.provider)
             ]
-            audit_record = {
-                "provider": provider,
-                "consultant": client_data.get("name", "Unknown"),
-                "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
-                "status": status,
-                "is_cached": is_cached,
-                "total_endpoints": len(prov_results),
-                "success_count": len([r for r in prov_results if r.status in ("SUCCESS", "CACHED")]),
-                "failure_count": len([r for r in prov_results if r.status == "FAILED"]),
-                "latency_ms": round(latency_ms, 2),
-                "credits_audit": {
-                    "astroway_credits_remaining": credit_stats.get("astroway_credits_remaining"),
-                    "astroway_credits_used": credit_stats.get("astroway_credits_used"),
-                    "freeastro_report_credits": credit_stats.get("freeastro_report_credits"),
-                    "calls_made": credit_stats.get("calls_made", {}).get(provider, 0)
-                },
-                "endpoints": [
-                    {
-                        "endpoint": r.endpoint_key,
-                        "status": r.status,
-                        "http_status": r.http_status,
-                        "latency_ms": round(r.latency_ms, 2),
-                        "error": r.error
-                    }
-                    for r in prov_results
-                ]
-            }
-            with open(audit_file, "w", encoding="utf-8") as f:
-                json.dump(audit_record, f, indent=2, ensure_ascii=False)
+
+            audit_record = None
+            if is_cached and audit_file.exists():
+                try:
+                    with open(audit_file, "r", encoding="utf-8") as f:
+                        audit_record = json.load(f)
+                except Exception:
+                    audit_record = None
+
+            if audit_record is None:
+                consultant_name = client_data.get("preferred_name") or client_data.get("name") or "Unknown"
+                audit_record = {
+                    "provider": provider,
+                    "consultant": consultant_name,
+                    "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    "status": status,
+                    "is_cached": is_cached,
+                    "total_endpoints": len(prov_results),
+                    "success_count": len([r for r in prov_results if r.status in ("SUCCESS", "CACHED")]),
+                    "failure_count": len([r for r in prov_results if r.status == "FAILED"]),
+                    "latency_ms": round(latency_ms, 2),
+                    "credits_audit": {
+                        "astroway_credits_remaining": credit_stats.get("astroway_credits_remaining"),
+                        "astroway_credits_used": credit_stats.get("astroway_credits_used"),
+                        "freeastro_report_credits": credit_stats.get("freeastro_report_credits"),
+                        "calls_made": credit_stats.get("calls_made", {}).get(provider, 0)
+                    },
+                    "endpoints": [
+                        {
+                            "endpoint": r.endpoint_key,
+                            "status": r.status,
+                            "http_status": r.http_status,
+                            "latency_ms": round(r.latency_ms, 2),
+                            "error": r.error
+                        }
+                        for r in prov_results
+                    ]
+                }
+                with open(audit_file, "w", encoding="utf-8") as f:
+                    json.dump(audit_record, f, indent=2, ensure_ascii=False)
+
+            # Generate individual Markdown audit
+            md_content = self._render_provider_markdown(audit_record)
+            with open(audit_md_file, "w", encoding="utf-8") as f:
+                f.write(md_content)
+
+            # Update cumulative Lakehouse audit
+            self._render_lakehouse_markdown()
         except Exception as exc:
             logger.warning(f"Could not write micro audit for {provider}: {exc}")
+
+    def _render_provider_markdown(self, audit_record: dict) -> str:
+        provider = audit_record.get("provider", "unknown").upper()
+        consultant = audit_record.get("consultant", "Unknown")
+        ts = audit_record.get("timestamp_utc", "")
+        status = audit_record.get("status", "UNKNOWN")
+        is_cached = audit_record.get("is_cached", False)
+        total = audit_record.get("total_endpoints", 0)
+        success = audit_record.get("success_count", 0)
+        failures = audit_record.get("failure_count", 0)
+        latency = audit_record.get("latency_ms", 0.0)
+        credits_audit = audit_record.get("credits_audit", {})
+        endpoints = audit_record.get("endpoints", [])
+
+        status_badge = "🟢 **SUCCESS**" if status == "SUCCESS" else ("🔵 **CACHED**" if status == "CACHED" else ("🟡 **PARTIAL**" if status == "PARTIAL" else f"🔴 **{status}**"))
+        origin = "⚡ **Caché Inmutable en Disco** (0ms, 0 créditos consumidos)" if is_cached else "🌐 **Llamada en Vivo a la API**"
+
+        md = [
+            f"# 📊 Auditoría de Extracción: {provider}",
+            "",
+            f"> **Consultante:** `{consultant}` | **Timestamp:** `{ts}`  ",
+            f"> **Estado Operativo:** {status_badge} | **Origen:** {origin}",
+            "",
+            "---",
+            "",
+            "## 1. Resumen Ejecutivo de Métricas",
+            "",
+            "| Métrica | Valor | Detalle / Observación |",
+            "|---|---|---|",
+            f"| **Estado Global** | `{status}` | {'Todos los endpoints respondieron correctamente' if failures == 0 else f'{failures} fallos detectados'} |",
+            f"| **Total Endpoints Evaluados** | `{total}` | Universo taxativo invocado |",
+            f"| **Respuestas Exitosas (200 OK)** | `{success}` | Tasa de éxito: {round(success / max(1, total) * 100, 1)}% |",
+            f"| **Fallas / Errores** | `{failures}` | {'Cero errores' if failures == 0 else 'Revisar tabla de detalle'} |",
+            f"| **Latencia Total Incurrida** | `{latency:.2f} ms` | {'0 ms por hit en caché' if is_cached else 'Tiempo total de red'} |",
+        ]
+
+        prov_low = provider.lower()
+        if prov_low in ("astroway", "astroway_api"):
+            rem = credits_audit.get("astroway_credits_remaining")
+            used = credits_audit.get("astroway_credits_used")
+            lim = credits_audit.get("astroway_credits_limit", 50000)
+            calls = credits_audit.get("calls_made", total)
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | Peticiones HTTP enviadas |",
+                f"| **Créditos Gastados (Última llamada)** | `{used if used is not None else 'N/A'}` | Registrado en cabecera X-Credits-Used |",
+                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'N/A'}` / `{lim}` | Plan Indie PRO (50.000 créditos/mes) |"
+            ])
+        elif prov_low in ("freeastro", "freeastroapi"):
+            rep_cred = credits_audit.get("freeastro_report_credits", "N/A")
+            calls = credits_audit.get("calls_made", total)
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | Peticiones HTTP enviadas |",
+                f"| **Créditos Reportados** | `{rep_cred}` | Estado de cuenta FreeAstro |",
+                "| **Nivel de Servicio** | `Free Tier Dedicado` | Sin costo financiero |"
+            ])
+        else:
+            calls = credits_audit.get("calls_made", total)
+            md.append(f"| **Llamadas Efectuadas** | `{calls}` | Peticiones procesadas |")
+
+        md.extend([
+            "",
+            "---",
+            "",
+            "## 2. Detalle Exhaustivo de Endpoints",
+            "",
+            "| # | Endpoint / Clave | Estado | Código HTTP | Latencia (ms) | Observaciones / Error |",
+            "|---|---|---|---|---|---|"
+        ])
+
+        for idx, ep in enumerate(endpoints, 1):
+            ep_name = ep.get("endpoint", "")
+            ep_st = ep.get("status", "")
+            ep_code = ep.get("http_status", "-")
+            ep_lat = ep.get("latency_ms", 0.0)
+            ep_err = ep.get("error") or "✅ OK"
+            badge = "🟢 OK" if ep_st in ("SUCCESS", "CACHED") else ("🟡 THROTTLED" if ep_st == "THROTTLED" else f"🔴 {ep_st}")
+            md.append(f"| {idx} | `{ep_name}` | {badge} | `{ep_code}` | `{ep_lat:.1f}` | {ep_err} |")
+
+        md.append("")
+        return "\n".join(md)
+
+    def _render_lakehouse_markdown(self) -> None:
+        """Reads all audit_*.json in self.audit_dir and produces the cumulative LAKEHOUSE_AUDIT.md."""
+        lakehouse_file = self.audit_dir / "LAKEHOUSE_AUDIT.md"
+        audit_files = sorted(self.audit_dir.glob("audit_*.json"))
+        if not audit_files:
+            return
+
+        records = []
+        for af in audit_files:
+            try:
+                with open(af, "r", encoding="utf-8") as f:
+                    records.append(json.load(f))
+            except Exception:
+                pass
+
+        if not records:
+            return
+
+        # Aggregate metrics
+        consultant = records[0].get("consultant", "Unknown")
+        latest_ts = max((r.get("timestamp_utc", "") for r in records), default="")
+        total_endpoints = sum(r.get("total_endpoints", 0) for r in records)
+        total_success = sum(r.get("success_count", 0) for r in records)
+        total_failures = sum(r.get("failure_count", 0) for r in records)
+        health_pct = round(total_success / max(1, total_endpoints) * 100, 1)
+
+        md = [
+            "# 🏛️ Data Lakehouse de Oráculo: Auditoría Consolidada y Acumulativa",
+            "",
+            "> **Registro Acumulativo Soberano de Ingesta Cruda (Bronze Layer - Multi-Proveedor)**  ",
+            f"> **Consultante:** `{consultant}` | **Última Actualización:** `{latest_ts}`  ",
+            f"> **Salud Global del Lakehouse:** `{health_pct}%` ({total_success}/{total_endpoints} endpoints exitosos)",
+            "",
+            "---",
+            "",
+            "## 1. Resumen Consolidado de Proveedores",
+            "",
+            "| Proveedor | Estado | Origen | Endpoints OK / Total | Latencia Total | Créditos Usados | Saldo Restante | Auditoría Individual |",
+            "|---|---|---|---|---|---|---|---|"
+        ]
+
+        all_failures = []
+        for r in records:
+            prov = r.get("provider", "unknown").upper()
+            prov_file = f"audit_{r.get('provider', '').lower()}.md"
+            st = r.get("status", "UNKNOWN")
+            is_c = r.get("is_cached", False)
+            tot = r.get("total_endpoints", 0)
+            succ = r.get("success_count", 0)
+            lat = r.get("latency_ms", 0.0)
+            cr = r.get("credits_audit", {})
+
+            st_badge = "🟢 SUCCESS" if st == "SUCCESS" else ("🔵 CACHED" if st == "CACHED" else ("🟡 PARTIAL" if st == "PARTIAL" else f"🔴 {st}"))
+            origin_str = "⚡ Caché" if is_c else "🌐 En Vivo"
+
+            cr_used = "0 (Free)"
+            cr_rem = "Ilimitado"
+            if prov.lower() == "astroway":
+                used_v = cr.get("astroway_credits_used")
+                rem_v = cr.get("astroway_credits_remaining")
+                cr_used = f"{used_v} créditos" if used_v is not None else "N/A"
+                cr_rem = f"{rem_v} / {cr.get('astroway_credits_limit', 50000)}" if rem_v is not None else "50000"
+            elif prov.lower() == "freeastro":
+                cr_used = "0 (Free Tier)"
+                cr_rem = str(cr.get("freeastro_report_credits", "Activo"))
+            elif prov.lower() == "vedastro":
+                cr_used = "0 (PRO Unlimited)"
+                cr_rem = "Ilimitado"
+
+            md.append(f"| **{prov}** | {st_badge} | {origin_str} | `{succ}/{tot}` | `{lat:.1f} ms` | `{cr_used}` | `{cr_rem}` | [`{prov_file}`]({prov_file}) |")
+
+            for ep in r.get("endpoints", []):
+                if ep.get("status") == "FAILED":
+                    all_failures.append({
+                        "provider": prov,
+                        "endpoint": ep.get("endpoint"),
+                        "http_status": ep.get("http_status"),
+                        "error": ep.get("error")
+                    })
+
+        md.extend([
+            "",
+            "---",
+            "",
+            "## 2. Diagnóstico de Salud & Anomalías",
+            ""
+        ])
+
+        if not all_failures:
+            md.extend([
+                "✅ **Cero fallas detectadas en el Data Lakehouse.** Todos los proveedores y endpoints auditados respondieron con integridad 100% (HTTP 200 OK).",
+                "",
+                "> **Garantía Inmutable de Pago Único:** Todos los datos ingestados residen en `raw/json/cache/` indexados por hash del consultante. Las ejecuciones futuras hidratarán desde disco a costo computacional y financiero cero."
+            ])
+        else:
+            md.extend([
+                f"⚠️ **Se detectaron {len(all_failures)} fallas en el Lakehouse:**",
+                "",
+                "| Proveedor | Endpoint | Código HTTP | Mensaje de Error |",
+                "|---|---|---|---|",
+            ])
+            for f_item in all_failures:
+                md.append(f"| **{f_item['provider']}** | `{f_item['endpoint']}` | `{f_item['http_status']}` | `{f_item['error']}` |")
+
+        md.append("")
+        with open(lakehouse_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(md))
 
     def hydrate_accumulated_data(
         self,
@@ -459,16 +666,28 @@ class ExtractionEngine:
                         if res.get("data") and not has_err:
                             self.cache.set("astroway", "full_extract", client_cache_key, res, http_status=200)
 
-                        for ep_k, ep_data in res.get("data", {}).items():
-                            is_err = isinstance(ep_data, dict) and ("error" in ep_data or ep_data.get("ok") is False)
-                            results_list.append(ExtractionResult(
-                                provider="astroway", endpoint_key=ep_k,
-                                status="FAILED" if is_err else "SUCCESS",
-                                data=ep_data if not is_err else {},
-                                http_status=200 if not is_err else 500,
-                                latency_ms=elapsed / max(1, len(res.get("data", {}))),
-                                error=ep_data.get("error") if is_err else None
-                            ))
+                        if res.get("endpoint_audits"):
+                            for ep_audit in res["endpoint_audits"]:
+                                results_list.append(ExtractionResult(
+                                    provider="astroway",
+                                    endpoint_key=ep_audit["endpoint"],
+                                    status=ep_audit["status"],
+                                    data=res.get("data", {}).get(ep_audit["endpoint"], {}),
+                                    http_status=ep_audit.get("http_status", 200),
+                                    latency_ms=ep_audit.get("latency_ms", 0.0),
+                                    error=ep_audit.get("error")
+                                ))
+                        else:
+                            for ep_k, ep_data in res.get("data", {}).items():
+                                is_err = isinstance(ep_data, dict) and ("error" in ep_data or ep_data.get("ok") is False)
+                                results_list.append(ExtractionResult(
+                                    provider="astroway", endpoint_key=ep_k,
+                                    status="FAILED" if is_err else "SUCCESS",
+                                    data=ep_data if not is_err else {},
+                                    http_status=200 if not is_err else 500,
+                                    latency_ms=elapsed / max(1, len(res.get("data", {}))),
+                                    error=ep_data.get("error") if is_err else None
+                                ))
                     except Exception as exc:
                         has_err = True
                         results_list.append(ExtractionResult(
@@ -763,6 +982,12 @@ class ExtractionEngine:
 
         # Hidratación acumulativa: fusionar respuestas previas desde el caché de disco
         self.hydrate_accumulated_data(client_data, rest_results, mcp_results, results_list)
+
+        # Actualización de auditoría acumulativa consolidada en Markdown
+        try:
+            self._render_lakehouse_markdown()
+        except Exception as exc:
+            logger.warning(f"Could not render cumulative lakehouse markdown: {exc}")
 
         return {
             "client_data": client_data,

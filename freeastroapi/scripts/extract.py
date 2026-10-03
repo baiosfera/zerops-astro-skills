@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
+import unicodedata
 import httpx
 
 BASE_URL = os.getenv("FREEASTRO_API_URL", "https://api.freeastroapi.com")
