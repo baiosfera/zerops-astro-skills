@@ -541,7 +541,6 @@ async def extract_freeastroapi(
         "report_credits": None,
         "calls_made": 0,
         "data": {},
-        "raw_responses": {},
         "failures": []
     }
 
@@ -571,7 +570,6 @@ async def extract_freeastroapi(
                 if cached_data is not None:
                     print(f"⚡ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [CACHED / SKIP]", flush=True)
                     results["data"][key_name] = cached_data
-                    results["raw_responses"][key_name] = cached_data
                     results["endpoint_audits"].append({
                         "endpoint": key_name,
                         "status": "CACHED",
@@ -607,7 +605,6 @@ async def extract_freeastroapi(
                         data = resp.json()
                     except Exception:
                         data = {"format": "svg" if "<svg" in resp.text else "text", "content": resp.text}
-                    results["raw_responses"][key_name] = data
 
                     if isinstance(data, dict) and (data.get("status") == "error" or "error" in data):
                         err_msg = data.get("error", data.get("message", "Error in response"))

@@ -235,6 +235,7 @@ def main():
     parser.add_argument("-c", "--compile", action="store_true", help="Compilar shards, feeds y reportes desde caché verificado.")
     parser.add_argument("--allow-partial", action="store_true", help="Permitir compilación parcial ignorando la compuerta estricta de cobertura completa.")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
+    parser.add_argument("--include-atomic", action="store_true", help="Incluir los 191 calculadores atómicos de VedAstro (197 endpoints totales)")
     parser.add_argument("--dry-run", action="store_true", help="Dry run offline")
 
     args = parser.parse_args()
@@ -373,7 +374,8 @@ def main():
         cache_dir = Path(client_dir) / "raw" / "json" / "cache"
         engine = ExtractionEngine(
             cache_dir=str(cache_dir),
-            refresh_pro=args.refresh_pro
+            refresh_pro=args.refresh_pro,
+            include_atomic=getattr(args, "include_atomic", False)
         )
 
         is_extraction_only = args.extract or (bool(args.apis) and not args.compile)

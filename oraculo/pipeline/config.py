@@ -58,7 +58,7 @@ def _get_key_tolerant(*var_names: str, default: str = "") -> str:
 @dataclass
 class PipelineConfig:
     freeastro_api_key: str = field(default_factory=lambda: _get_key_tolerant("FREEASTRO_API_KEY", "FREEASTROAPI_KEY", "freeastroapi_key"))
-    astrology_api_key: str = field(default_factory=lambda: _get_key_tolerant("ASTROLOGY_API_IO", "ASTROLOGY_API_KEY", "astrology_apiKey"))
+    astrology_api_key: str = field(default_factory=lambda: _get_key_tolerant("ASTROLOGY_API_IO", "astrology_api_io", "ASTROLOGY_API_KEY", "astrology_apiKey", "astrologyapi_key"))
     vedastro_api_key: str = field(default_factory=lambda: _get_key_tolerant("VEDASTRO_API_KEY", "vedastro_apiKey", "VEDASTRO_KEY"))
     astroway_api_key: str = field(default_factory=lambda: _get_key_tolerant("ASTROWAY_API_KEY", "astroway_apiKey", "ASTROWAY_KEY"))
     kundali_mcp_key: str = field(default_factory=lambda: _get_key_tolerant("KUNDALI_MCP_KEY", "kundali_mcpKey", "KUNDALI_KEY"))

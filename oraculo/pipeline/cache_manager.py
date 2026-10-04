@@ -34,14 +34,25 @@ class CacheManager:
     def _get_path(self, provider: str, endpoint: str, key_data: Any, check_read: bool = False) -> Path:
         safe_endpoint = endpoint.strip("/").replace("/", "_").replace("-", "_")
         h = self._compute_hash(key_data)
-        filename = f"{provider}_{safe_endpoint}_{h}.json"
+        if safe_endpoint == "full_extract":
+            filename = f"00_{provider}_full_extract_{h}.json"
+        else:
+            filename = f"{provider}_{safe_endpoint}_{h}.json"
         provider_dir = self.cache_dir / provider.lower()
         provider_dir.mkdir(parents=True, exist_ok=True)
         target = provider_dir / filename
         if check_read and not target.exists():
+            if safe_endpoint == "full_extract":
+                legacy_target = provider_dir / f"{provider}_full_extract_{h}.json"
+                if legacy_target.exists():
+                    return legacy_target
             legacy = self.cache_dir / filename
             if legacy.exists():
                 return legacy
+            if safe_endpoint == "full_extract":
+                legacy_root = self.cache_dir / f"{provider}_full_extract_{h}.json"
+                if legacy_root.exists():
+                    return legacy_root
         return target
 
     def get(self, provider: str, endpoint: str, key_data: Any) -> Optional[dict]:
@@ -112,7 +123,7 @@ class CacheManager:
                 if not d.exists():
                     continue
                 for p in d.glob(f"{prefix}*{suffix}"):
-                    if p.name == f"{provider}_full_extract_{h}.json":
+                    if p.name == f"{provider}_full_extract_{h}.json" or p.name == f"00_{provider}_full_extract_{h}.json":
                         continue
                     # Extract endpoint name from filename
                     stem = p.name[len(prefix):-len(suffix)]

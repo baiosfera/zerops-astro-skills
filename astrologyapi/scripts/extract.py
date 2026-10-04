@@ -139,7 +139,7 @@ async def extract_astrologyapi(
     mode='all' executes the full 240+ endpoint catalog.
     Supports atomic delta-cache skipping and recording.
     """
-    key = api_key or os.getenv("ASTROLOGY_API_IO") or os.getenv("ASTROLOGY_API_KEY") or os.getenv("astrology_apiKey")
+    key = api_key or os.getenv("ASTROLOGY_API_IO") or os.getenv("astrology_api_io") or os.getenv("ASTROLOGY_API_KEY") or os.getenv("astrology_apiKey") or os.getenv("astrologyapi_key")
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json"

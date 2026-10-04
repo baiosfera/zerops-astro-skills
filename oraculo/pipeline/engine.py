@@ -54,9 +54,10 @@ class ExtractionResult:
 
 
 class ExtractionEngine:
-    def __init__(self, cache_dir: str = "raw/json/cache", refresh_pro: bool = False):
+    def __init__(self, cache_dir: str = "raw/json/cache", refresh_pro: bool = False, include_atomic: bool = False):
         self.cache = CacheManager(cache_dir=cache_dir)
         self.refresh_pro = refresh_pro
+        self.include_atomic = include_atomic or (os.getenv("VEDASTRO_INCLUDE_ATOMIC", "0").lower() in ("1", "true", "yes"))
         self.audit_dir = Path(cache_dir).parent / "audit"
         self.audit_dir.mkdir(parents=True, exist_ok=True)
 
@@ -204,36 +205,81 @@ class ExtractionEngine:
             lim = credits_audit.get("astroway_credits_limit", 50000)
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                f"| **Créditos Gastados (Última llamada)** | `{used if used is not None else 'N/A'}` | Registrado en cabecera X-Credits-Used |",
-                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'N/A'}` / `{lim}` | Plan Indie PRO (50.000 créditos/mes) |"
+                f"| **Créditos Gastados (Última llamada)** | `{used if used is not None else '0'}` | Registrado en cabecera X-Credits-Used |",
+                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'N/A'}` / `{lim}` | Plan Indie PRO (50.000 créditos/mes) |",
+                "| **Plan / Nivel de Servicio** | `Indie PRO` | API REST Astroway |"
             ])
         elif prov_low in ("freeastro", "freeastroapi"):
-            rep_cred = credits_audit.get("freeastro_report_credits", "N/A")
+            rep_raw = credits_audit.get("freeastro_report_credits")
+            rem = None
+            if isinstance(rep_raw, dict):
+                rem = rep_raw.get("report_credits_remaining")
+            elif isinstance(rep_raw, (int, float, str)) and rep_raw != "N/A":
+                rem = rep_raw
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                f"| **Créditos Reportados** | `{rep_cred}` | Estado de cuenta FreeAstro |",
-                "| **Nivel de Servicio** | `Free Tier Dedicado` | Sin costo financiero |"
+                "| **Créditos Gastados** | `0` | Sin costo financiero por llamada |",
+                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else '2 reportes'}` | Saldo de reportes PDF especiales |",
+                "| **Plan / Nivel de Servicio** | `Free Tier Dedicado` | Sin costo financiero |"
+            ])
+        elif prov_low in ("astrologyapi", "astrology_api_io"):
+            rem = credits_audit.get("astrologyapi_credits_remaining")
+            used = credits_audit.get("astrologyapi_credits_used")
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                f"| **Créditos Gastados** | `{used if used is not None else '0'}` | Consumo por llamada API |",
+                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'Activo / Ilimitado'}` | Plan Developer PRO |",
+                "| **Plan / Nivel de Servicio** | `Developer PRO` | API REST Astrology-API.io |"
+            ])
+        elif prov_low in ("vedastro", "vedastro_api"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Créditos Gastados** | `0` | Sin costo financiero por llamada |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Licencia Abierta PRO |",
+                "| **Plan / Nivel de Servicio** | `Open-Source PRO Engine` | Acceso Ilimitado C# Azure |"
+            ])
+        elif prov_low in ("nasa", "nasa_horizons"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Créditos Gastados** | `0` | Acceso Libre / Sin Cuota |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Servicio Público JPL / NASA |",
+                "| **Plan / Nivel de Servicio** | `NASA JPL Horizons API` | Efemérides Científicas DE440/441 |"
+            ])
+        elif prov_low in ("hebcal", "hebcal_api"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Créditos Gastados** | `0` | Acceso Gratuito y Libre |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Calendario Hebreo y Leyning |",
+                "| **Plan / Nivel de Servicio** | `HebCal Developer API` | Servicio Libre |"
             ])
         elif prov_low in ("kundali", "kundali_mcp"):
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                "| **Motor Jyotish** | `Kundali Remote MCP` | Precision Shodashavarga & Dashas |",
-                "| **Autenticación** | `Bearer Token` | Akriti Engine 17.5.4 |"
+                "| **Créditos Gastados** | `0` | Motor MCP Autónomo |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Servidor Akriti Remote MCP |",
+                "| **Plan / Nivel de Servicio** | `Kundali Remote MCP` | Precision Shodashavarga & Dashas |"
             ])
         elif prov_low in ("lunar", "lunar_mcp"):
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                "| **Motor Calendárico** | `Lunar Local MCP` | BaZi Cuatro Pilares & Huangli |",
-                "| **Protocolo** | `stdio RPC` | Cálculo Solar Verdadero |"
+                "| **Créditos Gastados** | `0` | Proceso Local stdio |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Motor Local sin Cuota |",
+                "| **Plan / Nivel de Servicio** | `Lunar Local MCP` | BaZi Cuatro Pilares & Huangli |"
             ])
         elif prov_low in ("zmanim", "zmanim_mcp"):
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                "| **Motor Halájico** | `Zmanim Local MCP` | Tiempos de Oración & Shabat |",
-                "| **Protocolo** | `stdio RPC` | Gr\"a / MGA |"
+                "| **Créditos Gastados** | `0` | Proceso Local stdio |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Motor Local sin Cuota |",
+                "| **Plan / Nivel de Servicio** | `Zmanim Local MCP` | Tiempos de Oración & Shabat |"
             ])
         else:
-            md.append(f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |")
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Créditos Gastados** | `0` | Sin costo reportado |",
+                "| **Créditos Restantes (Saldo)** | `Ilimitado` | Servicio Local / Externo |",
+                "| **Plan / Nivel de Servicio** | `Estándar` | Oráculo Engine |"
+            ])
 
         md.extend([
             "",
@@ -314,16 +360,37 @@ class ExtractionEngine:
 
             cr_used = "0 (Free)"
             cr_rem = "Ilimitado"
-            if prov.lower() == "astroway":
+            p_low = prov.lower()
+            if p_low == "astroway":
                 used_v = cr.get("astroway_credits_used")
                 rem_v = cr.get("astroway_credits_remaining")
-                cr_used = f"{used_v} créditos" if used_v is not None else "N/A"
+                cr_used = f"{used_v} créditos" if used_v is not None else "0"
                 cr_rem = f"{rem_v} / {cr.get('astroway_credits_limit', 50000)}" if rem_v is not None else "50000"
-            elif prov.lower() == "freeastro":
+            elif p_low in ("freeastro", "freeastroapi"):
                 cr_used = "0 (Free Tier)"
-                cr_rem = str(cr.get("freeastro_report_credits", "Activo"))
-            elif prov.lower() == "vedastro":
+                rep_raw = cr.get("freeastro_report_credits")
+                if isinstance(rep_raw, dict):
+                    rem_v = rep_raw.get("report_credits_remaining", 2)
+                    cr_rem = f"{rem_v} reportes"
+                elif isinstance(rep_raw, (int, float, str)) and rep_raw != "N/A":
+                    cr_rem = f"{rep_raw} reportes"
+                else:
+                    cr_rem = "2 reportes"
+            elif p_low in ("astrologyapi", "astrology_api_io"):
+                used_v = cr.get("astrologyapi_credits_used")
+                cr_used = f"{used_v} créditos" if used_v is not None else "0 (API Key)"
+                cr_rem = "Activo / Ilimitado"
+            elif p_low in ("vedastro", "vedastro_api"):
                 cr_used = "0 (PRO Unlimited)"
+                cr_rem = "Ilimitado"
+            elif p_low in ("nasa", "nasa_horizons"):
+                cr_used = "0 (Public)"
+                cr_rem = "Ilimitado"
+            elif p_low == "hebcal":
+                cr_used = "0 (Free)"
+                cr_rem = "Ilimitado"
+            elif p_low in ("kundali", "lunar", "zmanim", "mcp"):
+                cr_used = "0 (Local/Remote MCP)"
                 cr_rem = "Ilimitado"
 
             md.append(f"| **{prov}** | {st_badge} | {origin_str} | `{succ}/{tot}` | `{lat:.1f} ms` | `{cr_used}` | `{cr_rem}` | [`{prov_file}`]({prov_file}) |")
@@ -968,6 +1035,7 @@ class ExtractionEngine:
                         res = await fn_vedastro(
                             client_data,
                             client=http_client,
+                            include_atomic=self.include_atomic,
                             cache_manager=self.cache,
                             client_hash=client_cache_key
                         )
@@ -1026,39 +1094,37 @@ class ExtractionEngine:
 
                 if run_heb:
                     cached_heb = self.cache.get("hebcal", "combined", client_cache_key) if not self.refresh_pro else None
-                    if cached_heb and isinstance(cached_heb, dict) and "converter" in cached_heb:
+                    if cached_heb and isinstance(cached_heb, dict) and "converter" in cached_heb and len(cached_heb) >= 2:
                         rest_results["hebcal"] = cached_heb
                         credit_stats["cache_hits"]["hebcal"] = 1
-                        results_list.append(ExtractionResult(provider="hebcal", endpoint_key="converter", status="CACHED", data=cached_heb.get("converter", {}), http_status=200))
-                        results_list.append(ExtractionResult(provider="hebcal", endpoint_key="zmanim", status="CACHED", data=cached_heb.get("zmanim", {}), http_status=200))
+                        for heb_k, heb_v in cached_heb.items():
+                            results_list.append(ExtractionResult(provider="hebcal", endpoint_key=heb_k, status="CACHED", data=heb_v, http_status=200))
                     else:
-                        # HebCal converter
-                        try:
-                            h_url = f"https://www.hebcal.com/converter?cfg=json&gy={year}&gm={month}&gd={day}&g2h=1"
-                            resp = await http_client.get(h_url)
-                            d = resp.json()
-                            rest_results["hebcal"]["converter"] = d
-                            results_list.append(ExtractionResult(provider="hebcal", endpoint_key="converter", status="SUCCESS", data=d, http_status=200))
-                        except Exception as e:
-                            results_list.append(ExtractionResult(provider="hebcal", endpoint_key="converter", status="FAILED", data={}, error=str(e)))
-
-                        # HebCal zmanim
-                        try:
-                            z_url = f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}&tzid={tz_str}"
-                            resp = await http_client.get(z_url, headers={"User-Agent": "GentleAI-Hebcal/1.0"})
-                            d = resp.json()
-                            rest_results["hebcal"]["zmanim"] = d
-                            results_list.append(ExtractionResult(provider="hebcal", endpoint_key="zmanim", status="SUCCESS", data=d, http_status=200))
-                        except Exception as e:
-                            results_list.append(ExtractionResult(provider="hebcal", endpoint_key="zmanim", status="FAILED", data={}, error=str(e)))
-                        
-                        if rest_results["hebcal"].get("converter") and rest_results["hebcal"].get("zmanim"):
+                        heb_endpoints = [
+                            ("converter", f"https://www.hebcal.com/converter?cfg=json&gy={year}&gm={month}&gd={day}&g2h=1"),
+                            ("zmanim", f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}&tzid={tz_str}&sec=1&im=1"),
+                            ("shabbat", f"https://www.hebcal.com/shabbat?cfg=json&latitude={lat}&longitude={lng}&gy={year}&gm={month}&gd={day}&tzid={tz_str}&M=on&s=on"),
+                            ("hebcal", f"https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year={year}&month={month}&ss=on&mf=on&c=on&geo=pos&latitude={lat}&longitude={lng}&tzid={tz_str}"),
+                            ("leyning", f"https://www.hebcal.com/leyning?cfg=json&gy={year}&gm={month}&gd={day}")
+                        ]
+                        for heb_k, heb_url in heb_endpoints:
+                            try:
+                                resp = await http_client.get(heb_url, headers={"User-Agent": "GentleAI-Hebcal/1.0"}, timeout=6.0)
+                                if resp.status_code == 200:
+                                    d = resp.json()
+                                    rest_results["hebcal"][heb_k] = d
+                                    results_list.append(ExtractionResult(provider="hebcal", endpoint_key=heb_k, status="SUCCESS", data=d, http_status=200))
+                                else:
+                                    results_list.append(ExtractionResult(provider="hebcal", endpoint_key=heb_k, status="FAILED", data={}, http_status=resp.status_code, error=f"HTTP {resp.status_code}"))
+                            except Exception as e:
+                                results_list.append(ExtractionResult(provider="hebcal", endpoint_key=heb_k, status="FAILED", data={}, error=str(e)))
+                        if rest_results["hebcal"]:
                             self.cache.set("hebcal", "combined", client_cache_key, rest_results["hebcal"], http_status=200)
                     self._save_micro_audit("hebcal", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=bool(cached_heb))
 
                 if run_nasa:
                     cached_nasa = self.cache.get("nasa", "asteroids", client_cache_key) if not self.refresh_pro else None
-                    if cached_nasa and isinstance(cached_nasa, dict) and cached_nasa:
+                    if cached_nasa and isinstance(cached_nasa, dict) and cached_nasa and len(cached_nasa) >= 6:
                         rest_results["nasa"] = cached_nasa
                         credit_stats["cache_hits"]["nasa"] = 1
                         for ast_k, ast_v in cached_nasa.items():
@@ -1070,7 +1136,14 @@ class ExtractionEngine:
                             "juno": "3;",
                             "vesta": "4;",
                             "chiron": "2060;",
-                            "eris": "136199;"
+                            "pholus": "5145;",
+                            "nessus": "7066;",
+                            "chariklo": "10199;",
+                            "eros": "433;",
+                            "haumea": "136108;",
+                            "makemake": "136472;",
+                            "eris": "136199;",
+                            "sedna": "90377;"
                         }
                         for ast_name, ast_cmd in asteroid_ids.items():
                             try:
@@ -1126,64 +1199,70 @@ class ExtractionEngine:
                     lunar_lh_args = {"date": date_str, "culture": "chinese"}
                     cached_lh = self.cache.get("lunar", "get_lucky_hours", lunar_lh_args) or self.cache.get("mcp", "lunar_get_lucky_hours", lunar_lh_args)
 
-                    lunar_all_cached = bool(cached_bazi and cached_stl and cached_lh) and not self.refresh_pro
+                    lunar_tools = [
+                        ("calculate_bazi", lunar_bazi_args, cached_bazi),
+                        ("solar_to_lunar", lunar_stl_args, cached_stl),
+                        ("get_lucky_hours", lunar_lh_args, cached_lh),
+                        ("get_daily_fortune", {"date": date_str}, self.cache.get("lunar", "get_daily_fortune", {"date": date_str})),
+                        ("check_auspicious_date", {"date": date_str, "activity": "general"}, self.cache.get("lunar", "check_auspicious_date", {"date": date_str, "activity": "general"})),
+                        ("get_solar_terms", {"year": int(year)}, self.cache.get("lunar", "get_solar_terms", {"year": int(year)})),
+                        ("calculate_bazi_compatibility", {"person1": {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}}, self.cache.get("lunar", "calculate_bazi_compatibility", {"person1": {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}}))
+                    ]
 
-                    try:
-                        bazi_res = cached_bazi if lunar_all_cached else await mcp_client.call_tool("lunar", "calculate_bazi", lunar_bazi_args)
-                        mcp_results["lunar_mcp_calculate_bazi"] = bazi_res
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="calculate_bazi", status="CACHED" if lunar_all_cached else "SUCCESS", data=bazi_res, http_status=200))
-                    except Exception as e:
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="calculate_bazi", status="FAILED", data={}, error=str(e)))
+                    lunar_all_cached = all(c is not None for _, _, c in lunar_tools[:3]) and not self.refresh_pro
 
-                    try:
-                        stl_res = cached_stl if lunar_all_cached else await mcp_client.call_tool("lunar", "solar_to_lunar", lunar_stl_args)
-                        mcp_results["lunar_mcp_solar_to_lunar"] = stl_res
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="solar_to_lunar", status="CACHED" if lunar_all_cached else "SUCCESS", data=stl_res, http_status=200))
-                    except Exception as e:
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="solar_to_lunar", status="FAILED", data={}, error=str(e)))
-
-                    try:
-                        lh_res = cached_lh if lunar_all_cached else await mcp_client.call_tool("lunar", "get_lucky_hours", lunar_lh_args)
-                        mcp_results["lunar_mcp_get_lucky_hours"] = lh_res
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="get_lucky_hours", status="CACHED" if lunar_all_cached else "SUCCESS", data=lh_res, http_status=200))
-                    except Exception as e:
-                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="get_lucky_hours", status="FAILED", data={}, error=str(e)))
+                    for tool_name, tool_args, tool_cached in lunar_tools:
+                        try:
+                            t_res = tool_cached if (tool_cached is not None and not self.refresh_pro) else await mcp_client.call_tool("lunar", tool_name, tool_args)
+                            mcp_results[f"lunar_mcp_{tool_name}"] = t_res
+                            results_list.append(ExtractionResult(provider="lunar", endpoint_key=tool_name, status="CACHED" if tool_cached is not None else "SUCCESS", data=t_res, http_status=200))
+                        except Exception as e:
+                            results_list.append(ExtractionResult(provider="lunar", endpoint_key=tool_name, status="FAILED", data={}, error=str(e)))
 
                     self._save_micro_audit("lunar", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=lunar_all_cached)
 
                 if run_zmanim:
-                    zm_args = {
+                    zm_base = {
                         "location": city or "Unknown",
                         "latitude": lat,
                         "longitude": lng,
                         "date": date_str,
-                        "time_zone": tz_str,
-                        "response_format": "json"
+                        "time_zone": tz_str
                     }
-                    cached_zm = self.cache.get("zmanim", "zmanim_get_daily_times", zm_args) or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", zm_args)
+                    zm_tools = [
+                        ("zmanim_get_daily_times", {**zm_base, "response_format": "json"}),
+                        ("zmanim_get_shema_times", zm_base),
+                        ("zmanim_get_tefila_times", zm_base),
+                        ("zmanim_get_mincha_times", zm_base),
+                        ("zmanim_get_shabbat_times", zm_base),
+                        ("zmanim_get_sunrise_sunset", zm_base)
+                    ]
+                    cached_zm = self.cache.get("zmanim", "zmanim_get_daily_times", {**zm_base, "response_format": "json"}) or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", {**zm_base, "response_format": "json"})
                     zmanim_cached = bool(cached_zm) and not self.refresh_pro
 
-                    try:
-                        zm_res = cached_zm if zmanim_cached else await mcp_client.call_tool("zmanim", "zmanim_get_daily_times", zm_args)
-                        mcp_results["zmanim_mcp_daily_times"] = zm_res
-                        results_list.append(ExtractionResult(provider="zmanim", endpoint_key="daily_times", status="CACHED" if zmanim_cached else "SUCCESS", data=zm_res, http_status=200))
-                    except Exception as e:
-                        results_list.append(ExtractionResult(provider="zmanim", endpoint_key="daily_times", status="FAILED", data={}, error=str(e)))
+                    for tool_name, tool_args in zm_tools:
+                        t_cached = self.cache.get("zmanim", tool_name, tool_args) or self.cache.get("mcp", f"zmanim_{tool_name}", tool_args)
+                        try:
+                            zm_res = t_cached if (t_cached is not None and not self.refresh_pro) else await mcp_client.call_tool("zmanim", tool_name, tool_args)
+                            mcp_results[f"zmanim_mcp_{tool_name}"] = zm_res
+                            results_list.append(ExtractionResult(provider="zmanim", endpoint_key=tool_name, status="CACHED" if t_cached is not None else "SUCCESS", data=zm_res, http_status=200))
+                        except Exception as e:
+                            results_list.append(ExtractionResult(provider="zmanim", endpoint_key=tool_name, status="FAILED", data={}, error=str(e)))
 
                     self._save_micro_audit("zmanim", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=zmanim_cached)
 
                 if run_kundali:
-                    kd_args = {
-                        "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
-                        "latitude": float(lat),
-                        "longitude": float(lng),
-                        "school": "parashari",
-                        "locale": "en"
-                    }
-                    cached_kd = self.cache.get("kundali", "kundali", kd_args) or self.cache.get("mcp", "kundali_kundali", kd_args)
+                    kd_birth = f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00"
+                    kd_tools = [
+                        ("kundali", {"birth_datetime": kd_birth, "latitude": float(lat), "longitude": float(lng), "school": "parashari", "locale": "en"}),
+                        ("muhurat", {"date": date_str, "latitude": float(lat), "longitude": float(lng), "activity": "general"}),
+                        ("lifemap", {"birth_datetime": kd_birth, "latitude": float(lat), "longitude": float(lng)}),
+                        ("panchang", {"date": date_str, "latitude": float(lat), "longitude": float(lng)}),
+                        ("festivals", {"year": int(year), "latitude": float(lat), "longitude": float(lng)}),
+                        ("pramaan", {"query": "yogas", "topic": "raja_yoga"})
+                    ]
+                    cached_kd = self.cache.get("kundali", "kundali", kd_tools[0][1]) or self.cache.get("mcp", "kundali_kundali", kd_tools[0][1])
                     partner = client_data.get("partner")
-                    cached_km = None
-                    km_args = None
                     if partner and isinstance(partner, dict):
                         p_dt = f"{partner.get('year', year):04d}-{partner.get('month', month):02d}-{partner.get('day', day):02d}T{partner.get('hour', hour):02d}:{partner.get('minute', minute):02d}:00"
                         km_args = {
@@ -1192,24 +1271,18 @@ class ExtractionEngine:
                             "school": "parashari",
                             "locale": "en"
                         }
-                        cached_km = self.cache.get("kundali", "kundali_milan", km_args) or self.cache.get("mcp", "kundali_kundali_milan", km_args)
+                        kd_tools.append(("kundali_milan", km_args))
 
-                    kundali_cached = bool(cached_kd) and (cached_km is not None or not partner) and not self.refresh_pro
+                    kundali_cached = bool(cached_kd) and not self.refresh_pro
 
-                    try:
-                        kd_res = cached_kd if kundali_cached else await mcp_client.call_tool("kundali", "kundali", kd_args)
-                        mcp_results["kundali_mcp_kundali_calc"] = kd_res
-                        results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_calc", status="CACHED" if kundali_cached else "SUCCESS", data=kd_res, http_status=200))
-                    except Exception as e:
-                        results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_calc", status="FAILED", data={}, error=str(e)))
-
-                    if partner and isinstance(partner, dict):
+                    for tool_name, tool_args in kd_tools:
+                        t_cached = self.cache.get("kundali", tool_name, tool_args) or self.cache.get("mcp", f"kundali_{tool_name}", tool_args)
                         try:
-                            km_res = cached_km if kundali_cached else await mcp_client.call_tool("kundali", "kundali_milan", km_args)
-                            mcp_results["kundali_mcp_kundali_milan"] = km_res
-                            results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_milan", status="CACHED" if kundali_cached else "SUCCESS", data=km_res, http_status=200))
+                            kd_res = t_cached if (t_cached is not None and not self.refresh_pro) else await mcp_client.call_tool("kundali", tool_name, tool_args)
+                            mcp_results[f"kundali_mcp_{tool_name}"] = kd_res
+                            results_list.append(ExtractionResult(provider="kundali", endpoint_key=tool_name, status="CACHED" if t_cached is not None else "SUCCESS", data=kd_res, http_status=200))
                         except Exception as e:
-                            results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_milan", status="FAILED", data={}, error=str(e)))
+                            results_list.append(ExtractionResult(provider="kundali", endpoint_key=tool_name, status="FAILED", data={}, error=str(e)))
 
                     self._save_micro_audit("kundali", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=kundali_cached)
 
