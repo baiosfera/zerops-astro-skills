@@ -1,0 +1,577 @@
+[
+  [
+    "/chart",
+    "ChartInputUnknownTime",
+    "Natal Chart"
+  ],
+  [
+    "/planets",
+    "ChartInput",
+    "Planet Positions"
+  ],
+  [
+    "/houses",
+    "ChartInput",
+    "House Cusps"
+  ],
+  [
+    "/aspects",
+    "ChartInput",
+    "Aspect Matrix"
+  ],
+  [
+    "/essential-dignities",
+    "EssentialDignities",
+    "Essential Dignities"
+  ],
+  [
+    "/almuten",
+    "Almuten",
+    "Almuten Figuris"
+  ],
+  [
+    "/hyleg",
+    "Hyleg",
+    "Hyleg & Alcocoden"
+  ],
+  [
+    "/receptions",
+    "Receptions",
+    "Mutual Receptions"
+  ],
+  [
+    "/fixed-stars",
+    "ChartInput",
+    "Fixed Stars"
+  ],
+  [
+    "/arabic-parts",
+    "ArabicParts",
+    "Arabic Parts (Lots)"
+  ],
+  [
+    "/harmonics",
+    "Harmonic",
+    "Harmonic Chart"
+  ],
+  [
+    "/draconic",
+    "ChartInput",
+    "Draconic Chart"
+  ],
+  [
+    "/heliocentric",
+    "ChartInput",
+    "Heliocentric Chart"
+  ],
+  [
+    "/midpoints",
+    "ChartInput",
+    "Midpoints"
+  ],
+  [
+    "/midpoint-trees",
+    "MidpointTrees",
+    "Midpoint Trees (Uranian)"
+  ],
+  [
+    "/antiscia",
+    "ChartInput",
+    "Antiscia"
+  ],
+  [
+    "/parallel-aspects",
+    "ParallelAspects",
+    "Parallel Aspects"
+  ],
+  [
+    "/disposition-chains",
+    "DispositionChains",
+    "Disposition Chains"
+  ],
+  [
+    "/zenith",
+    "ChartInput",
+    "Zenith"
+  ],
+  [
+    "/horizon",
+    "ChartInput",
+    "Horizon Chart"
+  ],
+  [
+    "/vedic/varga/D1",
+    "ChartInput",
+    "Varga D1: Rashi"
+  ],
+  [
+    "/vedic/varga/D2",
+    "ChartInput",
+    "Varga D2: Hora"
+  ],
+  [
+    "/vedic/varga/D3",
+    "ChartInput",
+    "Varga D3: Drekkana"
+  ],
+  [
+    "/vedic/varga/D4",
+    "ChartInput",
+    "Varga D4: Chaturthamsa"
+  ],
+  [
+    "/vedic/varga/D7",
+    "ChartInput",
+    "Varga D7: Saptamsa"
+  ],
+  [
+    "/vedic/varga/D9",
+    "ChartInput",
+    "Varga D9: Navamsa"
+  ],
+  [
+    "/vedic/varga/D10",
+    "ChartInput",
+    "Varga D10: Dasamsa"
+  ],
+  [
+    "/vedic/varga/D12",
+    "ChartInput",
+    "Varga D12: Dwadasamsa"
+  ],
+  [
+    "/vedic/varga/D16",
+    "ChartInput",
+    "Varga D16: Shodasamsa"
+  ],
+  [
+    "/vedic/varga/D20",
+    "ChartInput",
+    "Varga D20: Vimsamsa"
+  ],
+  [
+    "/vedic/varga/D24",
+    "ChartInput",
+    "Varga D24: Chaturvimsamsa"
+  ],
+  [
+    "/vedic/varga/D27",
+    "ChartInput",
+    "Varga D27: Saptavimsamsa"
+  ],
+  [
+    "/vedic/varga/D30",
+    "ChartInput",
+    "Varga D30: Trimsamsa"
+  ],
+  [
+    "/vedic/varga/D40",
+    "ChartInput",
+    "Varga D40: Khavedamsa"
+  ],
+  [
+    "/vedic/varga/D45",
+    "ChartInput",
+    "Varga D45: Akshavedamsa"
+  ],
+  [
+    "/vedic/varga/D60",
+    "ChartInput",
+    "Varga D60: Shashtiamsa"
+  ],
+  [
+    "/vedic/shadbala/full",
+    "ChartInput",
+    "Shadbala: full summary"
+  ],
+  [
+    "/vedic/panchang/full",
+    "ChartInput",
+    "Panchang: full"
+  ],
+  [
+    "/ashtakavarga",
+    "ChartInput",
+    "Ashtakavarga"
+  ],
+  [
+    "/nakshatras",
+    "ChartInput",
+    "Nakshatras"
+  ],
+  [
+    "/vedic/dashas/vimshottari/maha",
+    "DashaInput",
+    "Dashas: Vimshottari Mahadasha"
+  ],
+  [
+    "/vedic/dashas/vimshottari/antar",
+    "DashaInput",
+    "Dashas: Vimshottari Antardasha"
+  ],
+  [
+    "/vedic/dashas/vimshottari/pratyantar",
+    "DashaInput",
+    "Dashas: Vimshottari Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/chara/maha",
+    "DashaInput",
+    "Dashas: Chara Mahadasha"
+  ],
+  [
+    "/vedic/dashas/chara/antar",
+    "DashaInput",
+    "Dashas: Chara Antardasha"
+  ],
+  [
+    "/vedic/jaimini/chara-karakas",
+    "ChartInput",
+    "Jaimini: Chara Karakas (detailed)"
+  ],
+  [
+    "/vedic/jaimini/atmakaraka-navamsa",
+    "ChartInput",
+    "Jaimini: Karakamsa (AK in Navamsa)"
+  ],
+  [
+    "/vedic/jaimini/padas",
+    "ChartInput",
+    "Jaimini: Padas (Bhava/Surya/Chandra/Graha Arudhas)"
+  ],
+  [
+    "/vedic/jaimini/upapada",
+    "ChartInput",
+    "Jaimini: Upapada Lagna (UL)"
+  ],
+  [
+    "/vedic/jaimini/yogas",
+    "ChartInput",
+    "Jaimini: Yogas (basic AK/DK/PK set)"
+  ],
+  [
+    "/vedic/jaimini/dasha-summary",
+    "JaiminiDashaSummary",
+    "Jaimini: Running Dasha Summary"
+  ],
+  [
+    "/vedic/yogas/jaimini/dhana",
+    "ChartInput",
+    "Yogas: Jaimini Dhana yoga"
+  ],
+  [
+    "/vedic/yogas/jaimini/raja",
+    "ChartInput",
+    "Yogas: Jaimini Raja yoga"
+  ],
+  [
+    "/vedic/kp/cusps",
+    "ChartInput",
+    "KP: Placidus cusps with sub-lord chain"
+  ],
+  [
+    "/vedic/kp/sub-lords",
+    "ChartInput",
+    "KP: Sub-lords (cusps + planets)"
+  ],
+  [
+    "/human-design",
+    "ChartInput",
+    "Human Design Chart"
+  ],
+  [
+    "/hd/incarnation-cross",
+    "ChartInput",
+    "Incarnation Cross"
+  ],
+  [
+    "/hd/hologenetic",
+    "ChartInput",
+    "Hologenetic Profile"
+  ],
+  [
+    "/hd/circuitry",
+    "ChartInput",
+    "HD Circuitry Analysis"
+  ],
+  [
+    "/profections",
+    "NatalTarget",
+    "Profections"
+  ],
+  [
+    "/firdaria",
+    "Firdaria",
+    "Firdaria"
+  ],
+  [
+    "/hellenistic/brennan/zodiacal-releasing-spirit",
+    "Zr",
+    "ZR from Spirit"
+  ],
+  [
+    "/hellenistic/brennan/zodiacal-releasing-fortune",
+    "Zr",
+    "ZR from Fortune"
+  ],
+  [
+    "/hellenistic/brennan/zr-loosing-of-bond",
+    "Zr",
+    "ZR Loosing of Bond"
+  ],
+  [
+    "/hellenistic/brennan/zr-peak-periods",
+    "Zr",
+    "ZR Peak Periods"
+  ],
+  [
+    "/hellenistic/brennan/lots-15",
+    "ChartInput",
+    "15 Hermetic Lots"
+  ],
+  [
+    "/hellenistic/brennan/profections-detail",
+    "Profections",
+    "Profections Detail"
+  ],
+  [
+    "/hellenistic/brennan/time-lord-stack",
+    "Profections",
+    "Time-Lord Stack"
+  ],
+  [
+    "/hellenistic/brennan/triplicity-rulers",
+    "ChartInput",
+    "Triplicity Rulers"
+  ],
+  [
+    "/hellenistic/hand/decennials",
+    "Decennials",
+    "Decennials"
+  ],
+  [
+    "/hellenistic/hand/sect-strength",
+    "ChartInput",
+    "Sect Strength Score"
+  ],
+  [
+    "/hellenistic/hand/bounds",
+    "ChartInput",
+    "Egyptian Bounds"
+  ],
+  [
+    "/hellenistic/greenbaum/daimon-tyche-axis",
+    "ChartInput",
+    "Daimon-Tyche Axis"
+  ],
+  [
+    "/hellenistic/greenbaum/lot-of-eros-detail",
+    "ChartInput",
+    "Lot of Eros Detail"
+  ],
+  [
+    "/cosmobiology/dial-90",
+    "ChartWithTnp",
+    "90° Dial"
+  ],
+  [
+    "/cosmobiology/midpoint-pictures",
+    "ChartWithTnp",
+    "Midpoint Pictures"
+  ],
+  [
+    "/cosmobiology/personal-point-tree",
+    "ChartWithTnp",
+    "Personal Point Tree"
+  ],
+  [
+    "/cosmobiology/uranian-tnps",
+    "ChartInput",
+    "Uranian TNPs"
+  ],
+  [
+    "/bazi/four-pillars",
+    "BaziFourPillarsInput",
+    "Four Pillars (full)"
+  ],
+  [
+    "/bazi/luck-pillars",
+    "BaziLuckPillarsInput",
+    "Luck Pillars (Da Yun)"
+  ],
+  [
+    "/bazi/element-balance",
+    "BaziChartInput",
+    "5-Element Balance"
+  ],
+  [
+    "/bazi/ten-gods",
+    "BaziTenGodsInput",
+    "Ten Gods (Shi Shen)"
+  ],
+  [
+    "/bazi/symbolic-stars",
+    "BaziChartInput",
+    "Symbolic stars (Shen Sha)"
+  ],
+  [
+    "/ziwei/twelve-palaces",
+    "ZiweiDateInput",
+    "12 Palaces"
+  ],
+  [
+    "/ziwei/palace-career",
+    "ZiweiDateInput",
+    "Career Palace (Guanlu)"
+  ],
+  [
+    "/ziwei/palace-wealth",
+    "ZiweiDateInput",
+    "Wealth Palace (Caibo)"
+  ],
+  [
+    "/ziwei/palace-destiny",
+    "ZiweiDateInput",
+    "Destiny Palace (Ming)"
+  ],
+  [
+    "/ziwei/full-chart",
+    "ZiweiDateInput",
+    "Full Chart (deprecated)"
+  ],
+  [
+    "/ziwei/main-stars",
+    "ZiweiDateInput",
+    "14 Main Stars"
+  ],
+  [
+    "/acg",
+    "ChartInput",
+    "Astrocartography (A*C*G)"
+  ],
+  [
+    "/acg/best-places",
+    "AcgBestPlaces",
+    "Best places for a life category"
+  ],
+  [
+    "/local-space",
+    "ChartInput",
+    "Local Space Chart"
+  ],
+  [
+    "/parans",
+    "ChartInput",
+    "Parans"
+  ],
+  [
+    "/relocation",
+    "Relocation",
+    "Relocation Chart"
+  ],
+  [
+    "/geodetic",
+    "Geodetic",
+    "Geodetic Equivalents"
+  ],
+  [
+    "/business/founder-personality",
+    "BusinessBusinessInput",
+    "Founder Personality"
+  ],
+  [
+    "/business/leadership-style",
+    "BusinessBusinessInput",
+    "Leadership Style"
+  ],
+  [
+    "/business/ideal-industry",
+    "BusinessBusinessInput",
+    "Ideal Industries"
+  ],
+  [
+    "/business/marketing-style",
+    "BusinessBusinessInput",
+    "Marketing Style"
+  ],
+  [
+    "/business/customer-archetype",
+    "BusinessBusinessInput",
+    "Customer Archetype"
+  ],
+  [
+    "/business/risk-profile",
+    "BusinessBusinessInput",
+    "Risk Profile"
+  ],
+  [
+    "/financial/investor-archetype",
+    "FinancialFinancialInput",
+    "Investor Archetype"
+  ],
+  [
+    "/financial/wealth-house",
+    "FinancialFinancialInput",
+    "2nd & 8th House"
+  ],
+  [
+    "/financial/career-money-style",
+    "FinancialFinancialInput",
+    "Career Money Style"
+  ],
+  [
+    "/financial/risk-tolerance",
+    "FinancialFinancialInput",
+    "Risk Tolerance"
+  ],
+  [
+    "/modern/greene/archetypal-figures",
+    "ChartInput",
+    "Greene: Archetypal Figures"
+  ],
+  [
+    "/modern/greene/saturn-shadow",
+    "ChartInput",
+    "Greene: Saturn Shadow"
+  ],
+  [
+    "/modern/greene/individuation-path",
+    "ChartInput",
+    "Greene: Individuation Path"
+  ],
+  [
+    "/modern/arroyo/element-balance",
+    "ChartInput",
+    "Arroyo: Element Balance"
+  ],
+  [
+    "/modern/arroyo/water-houses-trauma",
+    "ChartInput",
+    "Arroyo: Water Houses Trauma"
+  ],
+  [
+    "/modern/rudhyar/personality-keynote",
+    "ChartInput",
+    "Rudhyar: Personality Keynote"
+  ],
+  [
+    "/destiny-matrix/ladini",
+    "DestinyMatrixLadini",
+    "Destiny Matrix: Ladini Method"
+  ],
+  [
+    "/numerology/pythagorean/birthday",
+    "NumerologyNameDate",
+    "Birthday (pythagorean)"
+  ],
+  [
+    "/numerology/chaldean/birthday",
+    "NumerologyNameDate",
+    "Birthday (chaldean)"
+  ],
+  [
+    "/numerology/kabbalistic/birthday",
+    "NumerologyNameDate",
+    "Birthday (kabbalistic)"
+  ]
+]

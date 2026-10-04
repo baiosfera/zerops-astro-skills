@@ -67,3 +67,50 @@ class CacheManager:
 
     def has_valid(self, provider: str, endpoint: str, key_data: Any) -> bool:
         return self.get(provider, endpoint, key_data) is not None
+
+    def has_endpoint(self, provider: str, endpoint: str, key_data: Any) -> bool:
+        """Determines if a specific endpoint has an unpoisoned 200 OK result on disk."""
+        data = self.get(provider, endpoint, key_data)
+        if data is None:
+            return False
+        if isinstance(data, dict):
+            if data.get("ok") is False or "error" in data:
+                return False
+        return True
+
+    def get_endpoint(self, provider: str, endpoint: str, key_data: Any) -> Optional[Any]:
+        """Retrieves raw data for a specific endpoint from disk cache."""
+        return self.get(provider, endpoint, key_data)
+
+    def set_endpoint(self, provider: str, endpoint: str, key_data: Any, data: Any, http_status: int = 200) -> None:
+        """Immediately persists a successful endpoint calculation to disk."""
+        self.set(provider, endpoint, key_data, data, http_status=http_status)
+
+    def get_all_provider_endpoints(self, provider: str, key_data: Any) -> dict:
+        """
+        Scans cache directory and reconstructs the cumulative dictionary
+        of all successfully extracted endpoints for this provider and client hash.
+        """
+        h = self._compute_hash(key_data)
+        prefix = f"{provider}_"
+        suffix = f"_{h}.json"
+        endpoints_data = {}
+        if not self.cache_dir.exists():
+            return endpoints_data
+
+        try:
+            for p in self.cache_dir.glob(f"{prefix}*{suffix}"):
+                if p.name == f"{provider}_full_extract_{h}.json":
+                    continue
+                # Extract endpoint name from filename
+                stem = p.name[len(prefix):-len(suffix)]
+                val = self.get(provider, stem, key_data)
+                if val is not None:
+                    if isinstance(val, dict) and (val.get("ok") is False or "error" in val):
+                        continue
+                    endpoints_data[stem] = val
+        except Exception as exc:
+            print(f"⚠️ Error recovering accumulated endpoints for {provider}: {exc}")
+
+        return endpoints_data
+

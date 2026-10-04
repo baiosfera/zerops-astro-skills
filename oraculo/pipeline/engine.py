@@ -650,20 +650,36 @@ class ExtractionEngine:
                     elapsed = 0.0
                     has_err = False
                     try:
-                        res = await fn_astroway(client_data, client=http_client)
+                        res = await fn_astroway(
+                            client_data,
+                            client=http_client,
+                            cache_manager=self.cache,
+                            client_hash=client_cache_key,
+                            use_curated=True
+                        )
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
-                        rest_results["astroway"] = res.get("data", {})
+
+                        # Cumulative Additive Merge:
+                        # Reconstruct or merge all atomic endpoints on disk for astroway & client
+                        accumulated = self.cache.get_all_provider_endpoints("astroway", client_cache_key)
+                        for ep_k, ep_v in res.get("data", {}).items():
+                            if isinstance(ep_v, dict) and (ep_v.get("ok") is False or "error" in ep_v):
+                                continue
+                            accumulated[ep_k] = ep_v
+
+                        rest_results["astroway"] = accumulated
+                        res["data"] = accumulated
+
                         audit = res.get("credits_audit", {})
                         credit_stats["astroway_credits_remaining"] = audit.get("remaining")
                         credit_stats["astroway_credits_used"] = audit.get("used_last_call")
                         credit_stats["astroway_credits_limit"] = audit.get("limit", 50000)
                         credit_stats["calls_made"]["astroway"] = res.get("calls_made", 0)
 
-                        has_err = bool(res.get("failures")) or res.get("status") != "SUCCESS" or any(
-                            isinstance(v, dict) and ("error" in v or v.get("ok") is False)
-                            for v in res.get("data", {}).values()
-                        )
-                        if res.get("data") and not has_err:
+                        has_err = bool(res.get("failures")) or res.get("status") == "FAILED"
+
+                        # Persist cumulative cache if we have gathered valid endpoints
+                        if len(accumulated) >= 20:
                             self.cache.set("astroway", "full_extract", client_cache_key, res, http_status=200)
 
                         if res.get("endpoint_audits"):

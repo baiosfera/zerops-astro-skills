@@ -132,12 +132,23 @@ def resolve_astroway_payload(
     return base_payload
 
 
-def load_natal_catalog() -> List[Tuple[str, str, str]]:
+def load_natal_catalog(use_curated: bool = True) -> List[Tuple[str, str, str]]:
     """
-    Loads universal natal endpoints catalog from skill assets,
-    falling back to standard comprehensive suite if file is absent.
+    Loads curated high-value natal endpoints catalog by default (118 endpoints for oraculo-diag-*),
+    falling back to full catalog if use_curated is False.
     """
-    catalog_path = Path(__file__).parent.parent / "assets" / "natal_endpoints_catalog.json"
+    assets_dir = Path(__file__).parent.parent / "assets"
+    if use_curated:
+        curated_path = assets_dir / "curated_natal_catalog.json"
+        if curated_path.exists():
+            try:
+                raw = json.loads(curated_path.read_text(encoding="utf-8"))
+                if isinstance(raw, list) and raw:
+                    return [(item[0], item[1], item[2] if len(item) > 2 else "") for item in raw]
+            except Exception:
+                pass
+
+    catalog_path = assets_dir / "natal_endpoints_catalog.json"
     if catalog_path.exists():
         try:
             raw = json.loads(catalog_path.read_text(encoding="utf-8"))
@@ -177,7 +188,10 @@ async def extract_astroway(
     api_key: Optional[str] = None,
     client: Optional[httpx.AsyncClient] = None,
     include_pdf: Optional[List[str]] = None,
-    max_endpoints: int = 0
+    max_endpoints: int = 0,
+    cache_manager: Optional[Any] = None,
+    client_hash: Optional[str] = None,
+    use_curated: bool = True
 ) -> Dict[str, Any]:
     """
     Executes universal high-precision Swiss Ephemeris AstroWay extraction across all domains.
@@ -268,8 +282,8 @@ async def extract_astroway(
         "withTnp": True
     }
 
-    # Load universal catalog
-    catalog = load_natal_catalog()
+    # Load universal catalog (curated high-value by default)
+    catalog = load_natal_catalog(use_curated=use_curated)
     if max_endpoints > 0:
         catalog = catalog[:max_endpoints]
 
@@ -326,6 +340,7 @@ async def extract_astroway(
             "limit": 50000
         },
         "calls_made": 0,
+        "cache_hits": 0,
         "data": {},
         "raw_responses": {},
         "endpoint_audits": [],
@@ -338,7 +353,25 @@ async def extract_astroway(
         close_client = True
 
     try:
-        for key_name, path, body in endpoints:
+        total_eps = len(endpoints)
+        for idx, (key_name, path, body) in enumerate(endpoints, 1):
+            # 1. Delta Cache Check: Skip if already extracted with HTTP 200
+            if cache_manager and client_hash:
+                if cache_manager.has_endpoint("astroway", key_name, client_hash):
+                    cached_val = cache_manager.get_endpoint("astroway", key_name, client_hash)
+                    results["data"][key_name] = cached_val
+                    results["cache_hits"] = results.get("cache_hits", 0) + 1
+                    print(f"⚡ [AstroWay ({idx}/{total_eps})] {key_name} -> [CACHED / SKIP]", flush=True)
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "url": path,
+                        "status": "CACHED",
+                        "http_status": 200,
+                        "latency_ms": 0.0,
+                        "credits_used": 0
+                    })
+                    continue
+
             url = f"{BASE_URL}/v1{path}" if not path.startswith("/v1") else f"{BASE_URL}{path}"
             t_start = time.perf_counter()
             try:
@@ -357,6 +390,7 @@ async def extract_astroway(
                             wait_sec = float(m_wait.group(1)) + 1.0
                     except Exception:
                         pass
+                    print(f"⏳ [AstroWay ({idx}/{total_eps})] 429 Rate Limit hit. Backing off {wait_sec}s...", flush=True)
                     await asyncio.sleep(wait_sec)
                     resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
@@ -391,6 +425,7 @@ async def extract_astroway(
                             err_msg = data.get("error", "API returned ok=False")
                             results["failures"].append({"endpoint": key_name, "error": err_msg})
                             results["data"][key_name] = {"error": err_msg}
+                            print(f"⚠️  [AstroWay ({idx}/{total_eps})] {key_name} -> [FAIL ok=False] ({round(latency_ms, 1)}ms): {err_msg}", flush=True)
                             results["endpoint_audits"].append({
                                 "endpoint": key_name,
                                 "url": path,
@@ -402,6 +437,10 @@ async def extract_astroway(
                             })
                         else:
                             results["data"][key_name] = data
+                            if cache_manager and client_hash:
+                                cache_manager.set_endpoint("astroway", key_name, client_hash, data, http_status=200)
+                            rem_str = f" | Restan: {results['credits_audit']['remaining']}" if results['credits_audit']['remaining'] is not None else ""
+                            print(f"✨ [AstroWay ({idx}/{total_eps})] {key_name} -> [200 OK] ({round(latency_ms, 1)}ms){rem_str}", flush=True)
                             results["endpoint_audits"].append({
                                 "endpoint": key_name,
                                 "url": path,
@@ -412,6 +451,10 @@ async def extract_astroway(
                             })
                     else:
                         results["data"][key_name] = data
+                        if cache_manager and client_hash:
+                            cache_manager.set_endpoint("astroway", key_name, client_hash, data, http_status=200)
+                        rem_str = f" | Restan: {results['credits_audit']['remaining']}" if results['credits_audit']['remaining'] is not None else ""
+                        print(f"✨ [AstroWay ({idx}/{total_eps})] {key_name} -> [200 OK] ({round(latency_ms, 1)}ms){rem_str}", flush=True)
                         results["endpoint_audits"].append({
                             "endpoint": key_name,
                             "url": path,
@@ -424,6 +467,7 @@ async def extract_astroway(
                     err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
+                    print(f"❌ [AstroWay ({idx}/{total_eps})] {key_name} -> [HTTP {resp.status_code}] ({round(latency_ms, 1)}ms): {err_msg[:60]}", flush=True)
                     results["endpoint_audits"].append({
                         "endpoint": key_name,
                         "url": path,
@@ -438,6 +482,7 @@ async def extract_astroway(
                 err_msg = f"Exception: {type(exc).__name__} - {str(exc)}"
                 results["failures"].append({"endpoint": key_name, "error": err_msg})
                 results["data"][key_name] = {"error": err_msg}
+                print(f"💥 [AstroWay ({idx}/{total_eps})] {key_name} -> [EXC]: {err_msg[:60]}", flush=True)
                 results["endpoint_audits"].append({
                     "endpoint": key_name,
                     "url": path,
