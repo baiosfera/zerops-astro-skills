@@ -226,17 +226,19 @@ async def extract_freeastroapi(
         "house_system": "whole_sign"
     }
 
+    location_obj = {
+        "city": clean_city,
+        "lat": lat,
+        "lng": lng,
+        "tz_str": tz_str
+    }
+
     # Nested natal for directions & progressions (OpenAPI 3.1 SecondaryProgressionsNatalInput)
     natal_nested_obj = {
         "name": full_name,
         "datetime": datetime_iso,
         "time_known": True,
-        "location": {
-            "city": clean_city,
-            "lat": lat,
-            "lng": lng,
-            "tz_str": tz_str
-        }
+        "location": location_obj
     }
 
     payload_profections = {
@@ -289,7 +291,7 @@ async def extract_freeastroapi(
                             "natal": natal_nested_obj,
                             "calendar": {"from": f"{current_year}-01-01", "to": f"{current_year}-12-31"}
                         }
-                    elif schema in ("ExactAspectSearchRequest", "ExactIngressSearchRequest") or "exact-aspects" in p or "exact-ingresses" in p or "search" in p:
+                    elif schema in ("ExactAspectSearchRequest", "ExactIngressSearchRequest") or "exact-aspects" in p or "exact-ingresses" in p:
                         body = {
                             "natal": natal_nested_obj,
                             "search": {"from": f"{current_year}-01-01", "to": f"{current_year}-12-31"}
@@ -324,13 +326,24 @@ async def extract_freeastroapi(
                             "natal": natal_nested_obj,
                             "solar_arc_progression": {"target_date": today_str}
                         }
-                    elif schema in ("SolarReturnRequest", "ExperimentalSolarReturnChartRequest") or "solar-return" in p:
+                    elif schema in ("SolarReturnRequest", "ExperimentalSolarReturnChartRequest") or "solar-return" in p or p.endswith("/solar/calculate"):
                         body = {
-                            "natal": base_western_payload,
-                            "solar_return_year": current_year,
-                            "solar_return_city": clean_city
+                            "natal": natal_nested_obj,
+                            "solar_return": {
+                                "year": int(current_year),
+                                "location": location_obj
+                            }
                         }
-                    elif schema in ("TransitRequest", "ExperimentalTransitChartRequest") or "/transits" in p or p.endswith("/transits/calculate"):
+                    elif schema in ("PlanetReturnRequest",) or p.endswith("/returns/calculate"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "return_target": {
+                                "body": "sun",
+                                "search_start": f"{current_year}-01-01",
+                                "location": location_obj
+                            }
+                        }
+                    elif schema in ("TransitRequest", "ExperimentalTransitChartRequest") or p.endswith("/transits/calculate"):
                         body = {
                             "natal": base_western_payload,
                             "transit_date": today_str,
@@ -339,19 +352,14 @@ async def extract_freeastroapi(
                     elif schema in ("TransitTimelineRequest",):
                         body = {
                             "natal": base_western_payload,
-                            "range_start": date_str,
-                            "range_end": today_str
+                            "range_start": f"{current_year}-10-01",
+                            "range_end": f"{current_year}-10-10"
                         }
                     elif schema in ("TransitSearchRequest",):
                         body = {
                             "natal": base_western_payload,
                             "transit_planet": "Jupiter",
                             "natal_point": "Sun"
-                        }
-                    elif schema in ("PlanetReturnRequest",):
-                        body = {
-                            "natal": base_western_payload,
-                            "return_target": {"body": "Moon", "year": current_year}
                         }
                     elif schema in ("AstrocartographyCityCheckRequest", "AstrocartographyRelocationRequest"):
                         body = {
@@ -384,15 +392,19 @@ async def extract_freeastroapi(
                     elif schema in ("VedicGocharTimelineRequest", "GocharTimelineRequest"):
                         body = {
                             **payload_vargas,
-                            "range_start": date_str,
-                            "range_end": today_str
+                            "range_start": f"{current_year}-10-01",
+                            "range_end": f"{current_year}-10-10"
                         }
-                    elif schema in ("VedicTransitInsightsRequest",):
+                    elif schema in ("VedicTransitInsightsRequest",) or p.endswith("/vedic/transits/insights"):
                         body = {
                             **payload_vargas,
-                            "transit_year": current_year,
-                            "transit_month": month,
-                            "transit_day": day
+                            "year": year, "month": month, "day": day,
+                            "hour": hour, "minute": minute, "second": 0,
+                            "lat": lat, "lng": lng, "tz_str": tz_str,
+                            "ayanamsha": "lahiri",
+                            "transit_year": int(current_year),
+                            "transit_month": int(month),
+                            "transit_day": int(day)
                         }
                     elif schema in ("VedicBatchRequest",):
                         body = {
@@ -402,22 +414,46 @@ async def extract_freeastroapi(
                         }
                     elif "ElectionSearchRequest" in schema or "/electional/" in p:
                         body = {
-                            "search_window": {"start": f"{current_year}-01-01", "end": f"{current_year}-12-31"},
-                            "city": clean_city,
-                            "lat": lat,
-                            "lng": lng,
-                            "tz_str": tz_str
+                            "search_window": {"start": f"{current_year}-10-01", "end": f"{current_year}-10-10"},
+                            "location": location_obj
                         }
                     elif "FamousPeople" in schema:
                         body = {"natal": base_western_payload}
                     elif schema in ("WesternChatRequest", "VedicChatRequest"):
                         body = {"message": f"Interpretación astrológica para {full_name}"}
-                    elif schema in ("VedicQARequest",):
-                        body = {"question": f"¿Cuál es el dasha regente de {full_name}?", "date": date_str, "time": f"{hour:02d}:{minute:02d}", "city": clean_city}
-                    elif schema in ("VedicMuhuratSearchRequest",):
-                        body = {"start_date": f"{current_year}-01-01", "end_date": f"{current_year}-12-31", "city": clean_city}
-                    elif schema in ("VedicMuhuratPersonalizedSearchRequest",):
-                        body = {"start_date": f"{current_year}-01-01", "end_date": f"{current_year}-12-31", "subject": base_western_payload, "city": clean_city}
+                    elif schema in ("VedicQARequest",) or p.endswith("/vedic/qa"):
+                        body = {
+                            "question": "abhijit_muhurat_today",
+                            "date": today_str,
+                            "time": f"{hour:02d}:{minute:02d}",
+                            "city": clean_city
+                        }
+                    elif schema in ("VedicMuhuratPersonalizedSearchRequest",) or "personalized" in p:
+                        body = {
+                            "start_date": today_str,
+                            "end_date": f"{current_year}-10-14",
+                            "subject": {
+                                "year": year, "month": month, "day": day,
+                                "hour": hour, "minute": minute, "second": 0,
+                                "lat": lat, "lng": lng, "tz_str": tz_str,
+                                "ayanamsha": "lahiri"
+                            },
+                            "city": clean_city
+                        }
+                    elif schema in ("VedicMuhuratSearchRequest",) or p.endswith("/vedic/muhurat/search"):
+                        body = {
+                            "start_date": today_str,
+                            "end_date": f"{current_year}-10-14",
+                            "city": clean_city
+                        }
+                    elif p.endswith("/vedic/visual/chart") or "visual/chart" in p:
+                        body = {
+                            "year": year, "month": month, "day": day,
+                            "hour": hour, "minute": minute, "second": 0,
+                            "lat": lat, "lng": lng, "tz_str": tz_str,
+                            "ayanamsha": "lahiri",
+                            "divisions": [1, 9]
+                        }
                     elif "/chinese/" in p:
                         if "/flow" in p: body = payload_bazi_flow
                         elif "/health" in p: body = payload_bazi_health

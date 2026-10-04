@@ -89,14 +89,13 @@ def resolve_astrologyapi_payload(
 
 def get_free_tier_endpoints() -> List[Tuple[str, str]]:
     """
-    Curated suite of 6 exclusive jewels that do not duplicate other APIs
-    and preserve the user's 50 free monthly credits (allowing 8-10 charts/month).
+    Curated suite of 5 exclusive jewels that do not duplicate other APIs
+    and preserve the user's 50 free monthly credits (allowing 10 charts/month).
     """
     return [
         ("kabbalah_birth_angels", "/kabbalah/birth-angels"),
         ("kabbalah_tikkun", "/kabbalah/tikkun"),
         ("kabbalah_tree_of_life", "/kabbalah/tree-of-life-chart"),
-        ("kabbalah_sephirot_activation", "/kabbalah/sephirot-activation"),
         ("traditional_almuten", "/traditional/almuten"),
         ("timing_timeline", "/timing/timeline"),
     ]

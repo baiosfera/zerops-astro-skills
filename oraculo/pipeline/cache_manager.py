@@ -31,14 +31,21 @@ class CacheManager:
         """
         return self._compute_hash(client_data)
 
-    def _get_path(self, provider: str, endpoint: str, key_data: Any) -> Path:
+    def _get_path(self, provider: str, endpoint: str, key_data: Any, check_read: bool = False) -> Path:
         safe_endpoint = endpoint.strip("/").replace("/", "_").replace("-", "_")
         h = self._compute_hash(key_data)
         filename = f"{provider}_{safe_endpoint}_{h}.json"
-        return self.cache_dir / filename
+        provider_dir = self.cache_dir / provider.lower()
+        provider_dir.mkdir(parents=True, exist_ok=True)
+        target = provider_dir / filename
+        if check_read and not target.exists():
+            legacy = self.cache_dir / filename
+            if legacy.exists():
+                return legacy
+        return target
 
     def get(self, provider: str, endpoint: str, key_data: Any) -> Optional[dict]:
-        p = self._get_path(provider, endpoint, key_data)
+        p = self._get_path(provider, endpoint, key_data, check_read=True)
         if not p.exists():
             return None
         try:
@@ -52,7 +59,7 @@ class CacheManager:
         return None
 
     def set(self, provider: str, endpoint: str, key_data: Any, data: Any, http_status: int = 200) -> None:
-        p = self._get_path(provider, endpoint, key_data)
+        p = self._get_path(provider, endpoint, key_data, check_read=False)
         record = {
             "_provider": provider,
             "_endpoint": endpoint,
@@ -90,6 +97,7 @@ class CacheManager:
         """
         Scans cache directory and reconstructs the cumulative dictionary
         of all successfully extracted endpoints for this provider and client hash.
+        Checks both provider subdirectories and legacy root cache for seamless compatibility.
         """
         h = self._compute_hash(key_data)
         prefix = f"{provider}_"
@@ -99,16 +107,22 @@ class CacheManager:
             return endpoints_data
 
         try:
-            for p in self.cache_dir.glob(f"{prefix}*{suffix}"):
-                if p.name == f"{provider}_full_extract_{h}.json":
+            dirs_to_check = [self.cache_dir / provider.lower(), self.cache_dir]
+            for d in dirs_to_check:
+                if not d.exists():
                     continue
-                # Extract endpoint name from filename
-                stem = p.name[len(prefix):-len(suffix)]
-                val = self.get(provider, stem, key_data)
-                if val is not None:
-                    if isinstance(val, dict) and (val.get("ok") is False or "error" in val):
+                for p in d.glob(f"{prefix}*{suffix}"):
+                    if p.name == f"{provider}_full_extract_{h}.json":
                         continue
-                    endpoints_data[stem] = val
+                    # Extract endpoint name from filename
+                    stem = p.name[len(prefix):-len(suffix)]
+                    if stem in endpoints_data:
+                        continue
+                    val = self.get(provider, stem, key_data)
+                    if val is not None:
+                        if isinstance(val, dict) and (val.get("ok") is False or "error" in val):
+                            continue
+                        endpoints_data[stem] = val
         except Exception as exc:
             print(f"⚠️ Error recovering accumulated endpoints for {provider}: {exc}")
 

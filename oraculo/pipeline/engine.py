@@ -460,7 +460,7 @@ class ExtractionEngine:
         aw_ok = bool(aw_data and isinstance(aw_data, dict) and len(aw_data.get("data", {})) >= 80)
 
         aa_data = self.cache.get("astrologyapi", "full_extract", client_hash)
-        aa_ok = bool(aa_data and isinstance(aa_data, dict) and len(aa_data.get("data", {})) >= 6)
+        aa_ok = bool(aa_data and isinstance(aa_data, dict) and len(aa_data.get("data", {})) >= 5)
 
         va_data = self.cache.get("vedastro", "full_extract", client_hash)
         va_ok = bool(va_data and isinstance(va_data, dict) and len(va_data.get("data", {})) >= 6)
@@ -552,7 +552,7 @@ class ExtractionEngine:
             "astroway_credits_limit": 50000,
             "freeastro_report_credits": None,
             "vedastro_plan": "PRO Unlimited ($1/mo, llamadas ilimitadas)",
-            "astrologyapi_plan": "Free Tier Dedicated (9 macro endpoints)"
+            "astrologyapi_plan": "Free Tier Dedicated (5 curated jewels)"
         }
         results_list: List[ExtractionResult] = []
 
@@ -766,7 +766,7 @@ class ExtractionEngine:
                             isinstance(v, dict) and "error" in v
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) >= 6:
+                        if not cached_has_err and len(cached.get("data", {})) >= 5:
                             rest_results["astrologyapi"] = cached.get("data", {})
                             credit_stats["calls_made"]["astrologyapi"] = 0
                             credit_stats["cache_hits"]["astrologyapi"] = 1

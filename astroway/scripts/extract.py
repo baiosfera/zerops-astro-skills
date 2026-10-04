@@ -97,6 +97,60 @@ def resolve_astroway_payload(
             "target": {**base_payload, "latitude": lat, "longitude": lng}
         }
 
+    # 1.1 Sabian Symbols
+    if "sabian" in path:
+        return {
+            **base_payload,
+            "longitudes": [0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0]
+        }
+
+    # 1.2 Hellenistic Perfections, Lord of Prediction & Quarter Lord
+    if "perfections" in path or "lord-of-prediction" in path:
+        return {
+            **base_payload,
+            "targetAge": int(target_age)
+        }
+    if "quarter-lord" in path:
+        return {
+            **base_payload,
+            "targetDate": today_str
+        }
+
+    # 1.3 Vedic Specialized Endpoints
+    if "varshaphal" in path:
+        return {
+            **base_payload,
+            "year": int(current_year)
+        }
+    if "kp/horary" in path:
+        return {
+            **base_payload,
+            "horaryNumber": 108
+        }
+    if "sub-sub-lord" in path:
+        return {
+            **base_payload,
+            "longitude": float(lng if lng >= 0 else (lng % 360.0))
+        }
+    if "planet-house-effect" in path:
+        return {
+            **base_payload,
+            "planet": 0,
+            "house": 1
+        }
+
+    # 1.4 Human Design Group Overlay & Rave New Years
+    if "group-overlay" in path:
+        return {
+            "inputs": [base_payload, base_payload]
+        }
+    if "rave-new-years" in path:
+        return {
+            **base_payload,
+            "startYear": int(year),
+            "endYear": int(current_year)
+        }
+
     # 2. Hellenistic Profections & Time Lords
     if "profections" in path:
         return {
@@ -119,6 +173,22 @@ def resolve_astroway_payload(
 
     # 4. Chinese BaZi
     if "/bazi" in path or "bazi" in path:
+        if "yearly" in path:
+            return {
+                "natalDate": date_str,
+                "targetYear": int(current_year)
+            }
+        if "monthly" in path:
+            target_month = int(today_str.split("-")[1]) if "-" in today_str else 1
+            return {
+                "natalDate": date_str,
+                "targetYear": int(current_year),
+                "targetMonth": target_month
+            }
+        if "year-pillar-decade" in path:
+            return {
+                "startYear": int(year)
+            }
         if "luck" in path or ref == "BaziLuckInput":
             return bazi_luck_payload
         return bazi_base_payload
@@ -131,6 +201,11 @@ def resolve_astroway_payload(
 
     # 6. Cosmobiology & Hamburg School
     if "cosmobiology" in path or "midpoint" in path or "dial-90" in path or ref == "ChartWithTnp":
+        if "transit-midpoints" in path:
+            return {
+                **dial90_payload,
+                "targetDate": today_str
+            }
         return dial90_payload
 
     # 7. Astromapping & Local Space
@@ -150,6 +225,13 @@ def resolve_astroway_payload(
 
     # 10. Numerology
     if "numerology" in path:
+        if "personal-year" in path:
+            return {
+                "name": name,
+                "date": date_str,
+                "year": int(current_year),
+                "targetYear": int(current_year)
+            }
         return {
             "name": name,
             "date": date_str,

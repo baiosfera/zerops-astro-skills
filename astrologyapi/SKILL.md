@@ -4,9 +4,9 @@ description: "Trigger: astrologyapi, astrology-api.io, core numerology, kabbalah
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.1"
+  version: "2.2"
 ---
-# Astrology-API.io Engine (v2.1)
+# Astrology-API.io Engine (v2.2)
 
 Developer-first astrological, numerological, and Hellenistic REST API engine powered by Swiss Ephemeris SE 2.10 across 349 endpoints.
 

@@ -166,12 +166,20 @@ async def extract_vedastro(
         "Ayanamsa": "LAHIRI"
     }
 
+    payload_jhora = {
+        "time": {
+            "StdTime": std_time,
+            "Location": loc_obj
+        },
+        "Ayanamsa": "LAHIRI"
+    }
+
     endpoints: List[Tuple[str, str, Dict[str, Any]]] = [
         ("predictions", f"{VEDASTRO_URL}/Calculate/HoroscopePredictions", payload_predictions),
         ("planet_data", f"{VEDASTRO_URL}/Calculate/AllPlanetData", payload_planet),
         ("house_data", f"{VEDASTRO_URL}/Calculate/AllHouseData", payload_house),
         ("dasa_range", f"{VEDASTRO_URL}/Calculate/DasaAtRange", payload_dasa),
-        ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_atomic_base),
+        ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_jhora),
         ("kalasarpa_yoga", f"{VEDASTRO_URL}/Calculate/KalaSarpaYoga", payload_atomic_base),
     ]
 

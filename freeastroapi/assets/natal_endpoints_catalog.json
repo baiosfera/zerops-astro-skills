@@ -205,16 +205,6 @@
     ]
   },
   {
-    "path": "/api/v1/natal/experimental",
-    "method": "POST",
-    "schema": "",
-    "summary": "Experimental Natal Chart Closed",
-    "tags": [
-      "Natal",
-      "natal"
-    ]
-  },
-  {
     "path": "/api/v1/natal/experimental/solar-return",
     "method": "POST",
     "schema": "ExperimentalSolarReturnChartRequest",
@@ -239,16 +229,6 @@
     "method": "GET",
     "schema": "",
     "summary": "Get Report Credits For Api Key",
-    "tags": [
-      "Natal",
-      "natal"
-    ]
-  },
-  {
-    "path": "/api/v1/natal/report/{job_id}",
-    "method": "GET",
-    "schema": "",
-    "summary": "Get Psychological Report",
     "tags": [
       "Natal",
       "natal"
@@ -354,24 +334,6 @@
     "method": "POST",
     "schema": "routers__v1__vedic__DashaRequest",
     "summary": "Get Dasha Insights",
-    "tags": [
-      "Vedic"
-    ]
-  },
-  {
-    "path": "/api/v1/vedic/gochar/timeline",
-    "method": "POST",
-    "schema": "VedicGocharTimelineRequest",
-    "summary": "Get Gochar Timeline",
-    "tags": [
-      "Vedic"
-    ]
-  },
-  {
-    "path": "/api/v1/vedic/gochar/timeline/insights",
-    "method": "POST",
-    "schema": "VedicGocharTimelineRequest",
-    "summary": "Get Gochar Timeline Insights",
     "tags": [
       "Vedic"
     ]
@@ -802,46 +764,6 @@
     ]
   },
   {
-    "path": "/api/v1/western/transits/insights",
-    "method": "POST",
-    "schema": "TransitTimelineRequest",
-    "summary": "Get Transit Insights",
-    "tags": [
-      "Western",
-      "Western Synastry"
-    ]
-  },
-  {
-    "path": "/api/v1/western/transits/search",
-    "method": "POST",
-    "schema": "TransitSearchRequest",
-    "summary": "Search Transits",
-    "tags": [
-      "Western",
-      "Western Synastry"
-    ]
-  },
-  {
-    "path": "/api/v1/western/transits/timeline",
-    "method": "POST",
-    "schema": "TransitTimelineRequest",
-    "summary": "Get Transits Timeline",
-    "tags": [
-      "Western",
-      "Western Synastry"
-    ]
-  },
-  {
-    "path": "/api/v1/western/transits/timeline/index-documents",
-    "method": "POST",
-    "schema": "TransitTimelineRequest",
-    "summary": "Get Transits Timeline Index Documents",
-    "tags": [
-      "Western",
-      "Western Synastry"
-    ]
-  },
-  {
     "path": "/api/v2/geo/search",
     "method": "GET",
     "schema": "",
@@ -910,24 +832,6 @@
     "method": "POST",
     "schema": "routers__v2__vedic__DashaRequest",
     "summary": "Get Vimshottari Dasha Insights (v2)",
-    "tags": [
-      "Vedic v2"
-    ]
-  },
-  {
-    "path": "/api/v2/vedic/gochar/timeline",
-    "method": "POST",
-    "schema": "GocharTimelineRequest",
-    "summary": "Get Vedic Gochar Timeline (v2)",
-    "tags": [
-      "Vedic v2"
-    ]
-  },
-  {
-    "path": "/api/v2/vedic/gochar/timeline/insights",
-    "method": "POST",
-    "schema": "GocharTimelineRequest",
-    "summary": "Get Vedic Gochar Timeline Insights (v2)",
     "tags": [
       "Vedic v2"
     ]
@@ -1164,25 +1068,6 @@
     "summary": "Get Weekly Personal Horoscope",
     "tags": [
       "Horoscope v3"
-    ]
-  },
-  {
-    "path": "/moon-pulse/v1/moon",
-    "method": "GET",
-    "schema": "",
-    "summary": "Get Garmin-safe Moon Pulse data",
-    "tags": [
-      "Moon Pulse"
-    ]
-  },
-  {
-    "path": "/natal",
-    "method": "POST",
-    "schema": "SimpleNatalRequest",
-    "summary": "Calculate Simple Natal",
-    "tags": [
-      "Simple Natal",
-      "Simple Natal"
     ]
   }
 ]
