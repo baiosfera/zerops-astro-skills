@@ -4,9 +4,9 @@ description: "Trigger: vedastro, api.vedastro.org, horoscope predictions yogas, 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.3"
+  version: "1.4"
 ---
-# VedAstro PRO Calculation & Classical Texts Engine (v1.3)
+# VedAstro PRO Calculation & Classical Texts Engine (v1.4)
 
 High-precision Vedic calculation REST API powered by Swiss Ephemeris and NASA JPL algorithms, exposing 6 macro endpoints and 677 granular atomic calculators.
 

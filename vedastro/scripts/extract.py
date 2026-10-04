@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Autonomous Extractor for VedAstro PRO API (Standard v2.2)
-Fetches HoroscopePredictions, AllPlanetData, AllHouseData, DasaAtRange, JHoraYogaList, and KalaSarpaYoga.
+Autonomous Universal Extractor for VedAstro PRO API (v1.4)
+Extracts 6 core macro-endpoints (HoroscopePredictions, AllPlanetData, AllHouseData,
+DasaAtRange, JHoraYogaList, KalaSarpaYoga) and supports optional extraction of all
+191 granular atomic calculators via --include-atomic for PRO Unlimited accounts.
 Validates semantic status ('Pass' vs 'Fail'), enforces numeric timezone offset (+/-HH:MM),
 and uses canonical 'inputTime' for atomic calculators with polite pacing (anti-throttling).
 """
@@ -13,11 +15,12 @@ import json
 import os
 from pathlib import Path
 import sys
-from typing import Any, Dict, Optional
+import time
+from typing import Any, Dict, List, Optional, Tuple
 import httpx
 
 VEDASTRO_URL = os.getenv("VEDASTRO_URL", "https://api.vedastro.org/api")
-DEFAULT_TIMEOUT = 15.0
+DEFAULT_TIMEOUT = 16.0
 
 
 def format_timezone_offset(tz_offset: float) -> str:
@@ -34,10 +37,37 @@ def build_std_time(year: int, month: int, day: int, hour: int, minute: int, tz_o
     return f"{hour:02d}:{minute:02d} {day:02d}/{month:02d}/{year:04d} {tz_offset_str}"
 
 
+def load_atomic_time_methods() -> List[str]:
+    """
+    Loads 191 atomic methods from catalog that only require natal Time.
+    """
+    cat_path = Path(__file__).parent.parent / "assets" / "advanced_calculators_catalog.json"
+    if cat_path.exists():
+        try:
+            data = json.loads(cat_path.read_text(encoding="utf-8"))
+            calcs = data.get("calculators", [])
+            methods = []
+            for c in calcs:
+                desc = c.get("description", "")
+                sig = ""
+                for line in desc.split("\n"):
+                    if "Signature:" in line:
+                        sig = line
+                        break
+                if "Timetime" in sig and len(sig.split("(")[1].split(",")) == 1:
+                    methods.append(c["name"])
+            if methods:
+                return methods
+        except Exception:
+            pass
+    return []
+
+
 async def extract_vedastro(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
-    client: Optional[httpx.AsyncClient] = None
+    client: Optional[httpx.AsyncClient] = None,
+    include_atomic: bool = False
 ) -> Dict[str, Any]:
     """
     Extracts complete VedAstro PRO calculations for the given client data.
@@ -58,7 +88,7 @@ async def extract_vedastro(
     lat = float(client_data.get("lat", 0.0))
     lng = float(client_data.get("lng", 0.0))
     city = client_data.get("city", client_data.get("preferred_name", "Birth City"))
-    
+
     tz_offset_val = client_data.get("tz_offset", -5.0)
     if isinstance(tz_offset_val, (int, float)):
         tz_offset_str = format_timezone_offset(float(tz_offset_val))
@@ -68,12 +98,11 @@ async def extract_vedastro(
             tz_offset_str = "-05:00"
 
     std_time = build_std_time(year, month, day, hour, minute, tz_offset_str)
-    
+
     # Target range for dashas (from birth to 90 years ahead)
     end_year = year + 90
     end_std_time = build_std_time(end_year, month, day, hour, minute, tz_offset_str)
 
-    # Standard location payload
     loc_obj = {
         "Latitude": lat,
         "Longitude": lng,
@@ -126,7 +155,7 @@ async def extract_vedastro(
     }
 
     # Atomic calculators strictly require 'inputTime'
-    payload_jhora = {
+    payload_atomic_base = {
         "inputTime": {
             "StdTime": std_time,
             "Location": loc_obj
@@ -134,28 +163,27 @@ async def extract_vedastro(
         "Ayanamsa": "LAHIRI"
     }
 
-    payload_kalasarpa = {
-        "inputTime": {
-            "StdTime": std_time,
-            "Location": loc_obj
-        },
-        "Ayanamsa": "LAHIRI"
-    }
-
-    endpoints = [
+    endpoints: List[Tuple[str, str, Dict[str, Any]]] = [
         ("predictions", f"{VEDASTRO_URL}/Calculate/HoroscopePredictions", payload_predictions),
         ("planet_data", f"{VEDASTRO_URL}/Calculate/AllPlanetData", payload_planet),
         ("house_data", f"{VEDASTRO_URL}/Calculate/AllHouseData", payload_house),
         ("dasa_range", f"{VEDASTRO_URL}/Calculate/DasaAtRange", payload_dasa),
-        ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_jhora),
-        ("kalasarpa_yoga", f"{VEDASTRO_URL}/Calculate/KalaSarpaYoga", payload_kalasarpa),
+        ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_atomic_base),
+        ("kalasarpa_yoga", f"{VEDASTRO_URL}/Calculate/KalaSarpaYoga", payload_atomic_base),
     ]
+
+    # Append 191 atomic calculators if requested
+    if include_atomic:
+        atomic_names = load_atomic_time_methods()
+        for name in atomic_names:
+            endpoints.append((f"atomic_{name}", f"{VEDASTRO_URL}/Calculate/{name}", payload_atomic_base))
 
     results: Dict[str, Any] = {
         "provider": "vedastro",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "status": "SUCCESS",
         "is_unlimited": True,
+        "include_atomic": include_atomic,
         "calls_made": 0,
         "data": {},
         "raw_responses": {},
@@ -171,7 +199,7 @@ async def extract_vedastro(
         for idx, (key_name, url, body) in enumerate(endpoints):
             if idx > 0:
                 # Polite pacing to avoid API throttling
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.35)
 
             try:
                 resp = await client.post(url, headers=headers, json=body)
@@ -179,7 +207,7 @@ async def extract_vedastro(
                 if resp.status_code == 200:
                     data = resp.json()
                     results["raw_responses"][key_name] = data
-                    
+
                     if isinstance(data, dict):
                         status_field = str(data.get("Status", "")).lower()
                         if status_field == "pass":
@@ -202,10 +230,7 @@ async def extract_vedastro(
                 results["data"][key_name] = {"error": err_msg}
 
         if results["failures"]:
-            if len(results["failures"]) == len(endpoints):
-                results["status"] = "FAILED"
-            else:
-                results["status"] = "PARTIAL"
+            results["status"] = "FAILED" if len(results["failures"]) == len(endpoints) else "PARTIAL"
         else:
             results["status"] = "SUCCESS"
 
@@ -217,9 +242,10 @@ async def extract_vedastro(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="VedAstro PRO Extractor")
-    parser.add_argument("--client-file", type=str, help="Path to client input JSON or text file")
+    parser = argparse.ArgumentParser(description="VedAstro PRO Extractor v1.4")
+    parser.add_argument("--client-file", type=str, help="Path to client JSON file")
     parser.add_argument("--output", type=str, help="Path to write output JSON")
+    parser.add_argument("--include-atomic", action="store_true", help="Include all 191 atomic calculators")
     args = parser.parse_args()
 
     client_data = {
@@ -236,7 +262,7 @@ def main():
             client_data = json.loads(p.read_text(encoding="utf-8"))
 
     loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(extract_vedastro(client_data))
+    res = loop.run_until_complete(extract_vedastro(client_data, include_atomic=args.include_atomic))
 
     if args.output:
         out_p = Path(args.output)

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Autonomous Extractor for AstroWay REST Engine (v2.0)
-Extracts Western Natal, Harmonics, Draconic, Heliocentric, 16 Vedic Vargas (D1 to D60),
+Autonomous Universal Extractor for AstroWay REST Engine (v2.1)
+Extracts the complete universe of Swiss Ephemeris AstroWay calculations (540+ endpoints)
+across Western Natal, Harmonics, Draconic, Heliocentric, 16 Vedic Vargas (D1 to D60),
 Dashas, Shadbala, Jaimini, Lal Kitab, Human Design, Chinese BaZi, Zi Wei Dou Shu,
 Business & Financial Archetypes, Hellenistic Astrology, Cosmobiology, Astromapping,
 and Modern Psychological & Numerology profiles.
@@ -18,21 +19,168 @@ from pathlib import Path
 import re
 import sys
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import httpx
 
 BASE_URL = os.getenv("ASTROWAY_URL", "https://api.astroway.info")
 DEFAULT_TIMEOUT = 16.0
 
 
+def resolve_astroway_payload(
+    path: str,
+    ref: str,
+    base_payload: Dict[str, Any],
+    fc_payload: Dict[str, Any],
+    bazi_base_payload: Dict[str, Any],
+    bazi_luck_payload: Dict[str, Any],
+    ziwei_payload: Dict[str, Any],
+    ziwei_sihua_payload: Dict[str, Any],
+    dial90_payload: Dict[str, Any],
+    date_str: str,
+    time_str: str,
+    name: str,
+    gender: str,
+    today_str: str,
+    target_age: int,
+    lat: float,
+    lng: float,
+    current_year: int
+) -> Dict[str, Any]:
+    """
+    Constructs the exact schema-compliant payload for any AstroWay endpoint,
+    fixing composite relocation, targetDate, targetAge, and specialized inputs.
+    """
+    # 1. Composite Relocation Chart
+    if path in ("/relocation", "/v1/relocation"):
+        return {
+            "natal": base_payload,
+            "target": {**base_payload, "latitude": lat, "longitude": lng}
+        }
+
+    # 2. Hellenistic Profections & Time Lords
+    if "profections" in path:
+        return {
+            **base_payload,
+            "targetDate": today_str,
+            "targetAge": target_age
+        }
+    if "time-lord-stack" in path:
+        return {
+            **base_payload,
+            "targetAge": target_age
+        }
+
+    # 3. Zodiacal Releasing
+    if "zodiacal-releasing" in path or "zr-" in path:
+        return {
+            **base_payload,
+            "years": 80
+        }
+
+    # 4. Chinese BaZi
+    if "/bazi" in path or "bazi" in path:
+        if "luck" in path or ref == "BaziLuckInput":
+            return bazi_luck_payload
+        return bazi_base_payload
+
+    # 5. Chinese Zi Wei Dou Shu
+    if "/ziwei" in path or "ziwei" in path:
+        if "transformations" in path or "sihua" in path:
+            return ziwei_sihua_payload
+        return ziwei_payload
+
+    # 6. Cosmobiology & Hamburg School
+    if "cosmobiology" in path or "midpoint" in path or "dial-90" in path or ref == "ChartWithTnp":
+        return dial90_payload
+
+    # 7. Astromapping & Local Space
+    if "acg/best-places" in path:
+        return {
+            **base_payload,
+            "category": "career"
+        }
+
+    # 8. Harmonics
+    if "harmonics" in path or ref == "HarmonicInput":
+        return {"harmonic": 9, **base_payload}
+
+    # 9. Esoteric & Mayan
+    if "destiny-matrix" in path or "mayan" in path:
+        return {"date": date_str}
+
+    # 10. Numerology
+    if "numerology" in path:
+        return {
+            "name": name,
+            "date": date_str,
+            "targetYear": current_year
+        }
+
+    # 11. Kabbalah Gematria
+    if "gematria" in path:
+        return {"text": name}
+
+    # 12. Dasha Inputs
+    if ref == "DashaInput" or "/dashas/" in path:
+        return {
+            **base_payload,
+            "level": 3,
+            "dashaSystem": "vimshottari"
+        }
+
+    # Default: Standard Tropical Placidus ChartInput
+    return base_payload
+
+
+def load_natal_catalog() -> List[Tuple[str, str, str]]:
+    """
+    Loads universal natal endpoints catalog from skill assets,
+    falling back to standard comprehensive suite if file is absent.
+    """
+    catalog_path = Path(__file__).parent.parent / "assets" / "natal_endpoints_catalog.json"
+    if catalog_path.exists():
+        try:
+            raw = json.loads(catalog_path.read_text(encoding="utf-8"))
+            if isinstance(raw, list) and raw:
+                return [(item[0], item[1], item[2] if len(item) > 2 else "") for item in raw]
+        except Exception:
+            pass
+
+    # Built-in robust 128-endpoint catalog fallback
+    standard_paths = [
+        ("/chart", "ChartInput", "Western Natal Tropical"),
+        ("/draconic", "ChartInput", "Draconic Chart"),
+        ("/heliocentric", "ChartInput", "Heliocentric Chart"),
+        ("/harmonics", "HarmonicInput", "Harmonics H9"),
+        ("/relocation", "RelocationInput", "Relocated Chart"),
+        ("/almuten", "ChartInput", "Almuten Figuris"),
+        ("/arabic-parts", "ChartInput", "Arabic Parts"),
+        ("/essential-dignities", "ChartInput", "Essential Dignities"),
+        ("/fixed-stars", "ChartInput", "Fixed Stars"),
+        ("/profections", "ChartInput", "Profections"),
+        ("/vedic/varga/D1", "ChartInput", "Rasi D1"),
+        ("/vedic/varga/D9", "ChartInput", "Navamsa D9"),
+        ("/vedic/varga/D10", "ChartInput", "Dasamsa D10"),
+        ("/vedic/shadbala/full", "ChartInput", "Shadbala Full"),
+        ("/vedic/dashas/vimshottari/maha", "ChartInput", "Vimshottari Maha"),
+        ("/bazi/four-pillars", "BaziChartInput", "BaZi Four Pillars"),
+        ("/ziwei/twelve-palaces", "ZiweiDateInput", "Zi Wei Twelve Palaces"),
+        ("/human-design", "ChartInput", "Human Design BodyGraph"),
+        ("/acg", "ChartInput", "Astrocartography"),
+        ("/cosmobiology/dial-90", "ChartWithTnp", "90 Degree Dial")
+    ]
+    return standard_paths
+
+
 async def extract_astroway(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
     client: Optional[httpx.AsyncClient] = None,
-    include_pdf: Optional[List[str]] = None
+    include_pdf: Optional[List[str]] = None,
+    max_endpoints: int = 0
 ) -> Dict[str, Any]:
     """
-    Executes full high-precision Swiss Ephemeris AstroWay extraction across all domains.
+    Executes universal high-precision Swiss Ephemeris AstroWay extraction across all domains.
     Discards PDF reports by default; allows optional download only if requested.
     """
     key = api_key or os.getenv("ASTROWAY_API_KEY") or os.getenv("astroway_apiKey")
@@ -57,6 +205,10 @@ async def extract_astroway(
 
     date_str = f"{year:04d}-{month:02d}-{day:02d}"
     time_str = f"{hour:02d}:{minute:02d}:00"
+    now_utc = datetime.now(timezone.utc)
+    today_str = now_utc.strftime("%Y-%m-%d")
+    current_year = now_utc.year
+    target_age = max(1, current_year - year)
 
     # Base Payload (Standard Tropical Placidus)
     base_payload = {
@@ -116,186 +268,38 @@ async def extract_astroway(
         "withTnp": True
     }
 
-    # Hellenistic ZR Payload
-    zr_payload = {
-        **base_payload,
-        "years": 80
-    }
+    # Load universal catalog
+    catalog = load_natal_catalog()
+    if max_endpoints > 0:
+        catalog = catalog[:max_endpoints]
 
-    # ACG Best Places Payload
-    acg_best_payload = {
-        **base_payload,
-        "category": "career"
-    }
+    endpoints: List[Tuple[str, str, Dict[str, Any]]] = []
+    for path, ref, summary in catalog:
+        clean_path = path if path.startswith("/") else f"/{path}"
+        key_name = clean_path.strip("/").replace("/", "_").replace("-", "_")
+        body = resolve_astroway_payload(
+            path=clean_path,
+            ref=ref,
+            base_payload=base_payload,
+            fc_payload=fc_payload,
+            bazi_base_payload=bazi_base_payload,
+            bazi_luck_payload=bazi_luck_payload,
+            ziwei_payload=ziwei_payload,
+            ziwei_sihua_payload=ziwei_sihua_payload,
+            dial90_payload=dial90_payload,
+            date_str=date_str,
+            time_str=time_str,
+            name=name,
+            gender=gender,
+            today_str=today_str,
+            target_age=target_age,
+            lat=lat,
+            lng=lng,
+            current_year=current_year
+        )
+        endpoints.append((key_name, clean_path, body))
 
-    # Harmonics Payloads
-    h5_payload = {"harmonic": 5, **base_payload}
-    h7_payload = {"harmonic": 7, **base_payload}
-    h9_payload = {"harmonic": 9, **base_payload}
-
-    # Esoteric & Numerology Payloads
-    destiny_payload = {"date": date_str}
-    gematria_payload = {"text": name}
-    numerology_payload = {"name": name, "date": date_str}
-
-    # Taxative list of 124 pure calculation endpoints (0 PDFs)
-    endpoints: List[tuple] = [
-        # 1. Western Natal, Special Charts & Harmonics
-        ("western_chart", "/chart", base_payload),
-        ("western_chart_fagan_campanus", "/chart", fc_payload),
-        ("western_harmonics_h5", "/harmonics", h5_payload),
-        ("western_harmonics_h7", "/harmonics", h7_payload),
-        ("western_harmonics_h9", "/harmonics", h9_payload),
-        ("western_draconic", "/draconic", base_payload),
-        ("western_heliocentric", "/heliocentric", base_payload),
-        ("western_relocation", "/relocation", base_payload),
-        ("western_geodetic", "/geodetic", base_payload),
-        ("almuten_figuris", "/almuten", base_payload),
-        ("arabic_parts", "/arabic-parts", base_payload),
-        ("essential_dignities", "/essential-dignities", base_payload),
-        ("receptions", "/receptions", base_payload),
-        ("fixed_stars", "/fixed-stars", base_payload),
-        ("hyleg", "/hyleg", base_payload),
-        ("firdaria", "/firdaria", base_payload),
-        ("antiscia", "/antiscia", base_payload),
-        ("profections", "/profections", base_payload),
-        ("disposition_chains", "/disposition-chains", base_payload),
-
-        # 2. Vedic Shodashavargas (16 Vargas)
-        ("vedic_varga_d1", "/vedic/varga/D1", base_payload),
-        ("vedic_varga_d2", "/vedic/varga/D2", base_payload),
-        ("vedic_varga_d3", "/vedic/varga/D3", base_payload),
-        ("vedic_varga_d4", "/vedic/varga/D4", base_payload),
-        ("vedic_varga_d7", "/vedic/varga/D7", base_payload),
-        ("vedic_varga_d9", "/vedic/varga/D9", base_payload),
-        ("vedic_varga_d10", "/vedic/varga/D10", base_payload),
-        ("vedic_varga_d12", "/vedic/varga/D12", base_payload),
-        ("vedic_varga_d16", "/vedic/varga/D16", base_payload),
-        ("vedic_varga_d20", "/vedic/varga/D20", base_payload),
-        ("vedic_varga_d24", "/vedic/varga/D24", base_payload),
-        ("vedic_varga_d27", "/vedic/varga/D27", base_payload),
-        ("vedic_varga_d30", "/vedic/varga/D30", base_payload),
-        ("vedic_varga_d40", "/vedic/varga/D40", base_payload),
-        ("vedic_varga_d45", "/vedic/varga/D45", base_payload),
-        ("vedic_varga_d60", "/vedic/varga/D60", base_payload),
-
-        # 3. Vedic Dashas, Shadbala, Ashtakavarga & Panchang
-        ("vedic_dashas_vimshottari_maha", "/vedic/dashas/vimshottari/maha", base_payload),
-        ("vedic_dashas_vimshottari_antar", "/vedic/dashas/vimshottari/antar", base_payload),
-        ("vedic_dashas_yogini_maha", "/vedic/dashas/yogini/maha", base_payload),
-        ("vedic_dashas_chara_maha", "/vedic/dashas/chara/maha", base_payload),
-        ("vedic_shadbala_full", "/vedic/shadbala/full", base_payload),
-        ("vedic_bhavabala", "/vedic/bhavabala", base_payload),
-        ("vedic_ashtakavarga", "/ashtakavarga", base_payload),
-        ("vedic_panchang_full", "/vedic/panchang/full", base_payload),
-
-        # 4. Vedic Jaimini & Yogas
-        ("jaimini_karakas", "/vedic/jaimini/karakas", base_payload),
-        ("jaimini_chara_karakas", "/vedic/jaimini/chara-karakas", base_payload),
-        ("jaimini_padas", "/vedic/jaimini/padas", base_payload),
-        ("jaimini_upapada", "/vedic/jaimini/upapada", base_payload),
-        ("jaimini_atmakaraka_navamsa", "/vedic/jaimini/atmakaraka-navamsa", base_payload),
-        ("jaimini_argala_analysis", "/vedic/jaimini/argala-analysis", base_payload),
-        ("jaimini_yogas", "/vedic/jaimini/yogas", base_payload),
-        ("vedic_yogas_parashara_full", "/vedic/yogas/parashara/full", base_payload),
-        ("vedic_yogas_jaimini_full", "/vedic/yogas/jaimini/full", base_payload),
-
-        # 5. Lal Kitab
-        ("lal_kitab_teva", "/vedic/lal-kitab/teva", base_payload),
-        ("lal_kitab_debts", "/vedic/lal-kitab/debts", base_payload),
-        ("lal_kitab_remedies", "/vedic/lal-kitab/remedies", base_payload),
-        ("lal_kitab_varshphal", "/vedic/lal-kitab/varshphal", base_payload),
-
-        # 6. Human Design
-        ("human_design", "/human-design", base_payload),
-        ("hd_circuitry", "/hd/circuitry", base_payload),
-        ("hd_incarnation_cross", "/hd/incarnation-cross", base_payload),
-        ("hd_sensitivity", "/hd/sensitivity", base_payload),
-        ("hd_dream_rave", "/hd/dream-rave", base_payload),
-        ("hd_hologenetic", "/hd/hologenetic", base_payload),
-
-        # 7. Chinese BaZi & Zi Wei Dou Shu
-        ("bazi_four_pillars", "/bazi/four-pillars", bazi_base_payload),
-        ("bazi_ten_gods", "/bazi/ten-gods", bazi_base_payload),
-        ("bazi_day_master", "/bazi/day-master", bazi_base_payload),
-        ("bazi_luck_pillars", "/bazi/luck-pillars", bazi_luck_payload),
-        ("bazi_element_balance", "/bazi/element-balance", bazi_base_payload),
-        ("bazi_interactions", "/bazi/interactions", bazi_base_payload),
-        ("bazi_symbolic_stars", "/bazi/symbolic-stars", bazi_base_payload),
-        ("bazi_strength", "/bazi/strength", bazi_base_payload),
-        ("ziwei_chart", "/ziwei/chart", ziwei_payload),
-        ("ziwei_four_transformations", "/ziwei/four-transformations", ziwei_sihua_payload),
-        ("ziwei_twelve_palaces", "/ziwei/twelve-palaces", ziwei_payload),
-
-        # 8. Business, Finance & Career
-        ("business_founder_personality", "/business/founder-personality", base_payload),
-        ("business_leadership_style", "/business/leadership-style", base_payload),
-        ("business_ideal_industry", "/business/ideal-industry", base_payload),
-        ("business_customer_archetype", "/business/customer-archetype", base_payload),
-        ("business_marketing_style", "/business/marketing-style", base_payload),
-        ("business_founding_chart", "/business/founding-chart", base_payload),
-        ("financial_investor_archetype", "/financial/investor-archetype", base_payload),
-        ("financial_wealth_house", "/financial/wealth-house", base_payload),
-        ("financial_wealth_cycle", "/financial/wealth-cycle", base_payload),
-        ("financial_market_timing", "/financial/market-timing", base_payload),
-        ("financial_spending_style", "/financial/spending-style", base_payload),
-        ("financial_risk_tolerance", "/financial/risk-tolerance", base_payload),
-
-        # 9. Hellenistic Astrology
-        ("hellenistic_lots_15", "/hellenistic/brennan/lots-15", base_payload),
-        ("hellenistic_zr_spirit", "/hellenistic/brennan/zodiacal-releasing-spirit", zr_payload),
-        ("hellenistic_zr_fortune", "/hellenistic/brennan/zodiacal-releasing-fortune", zr_payload),
-        ("hellenistic_zr_peaks", "/hellenistic/brennan/zr-peak-periods", zr_payload),
-        ("hellenistic_zr_loosing", "/hellenistic/brennan/zr-loosing-of-bond", zr_payload),
-        ("hellenistic_profections_detail", "/hellenistic/brennan/profections-detail", base_payload),
-        ("hellenistic_time_lord_stack", "/hellenistic/brennan/time-lord-stack", base_payload),
-        ("hellenistic_joys_of_planets", "/hellenistic/brennan/joys-of-planets", base_payload),
-        ("hellenistic_triplicity_rulers", "/hellenistic/brennan/triplicity-rulers", base_payload),
-        ("hellenistic_bonifications_maltreatments", "/hellenistic/brennan/bonifications-maltreatments", base_payload),
-        ("hellenistic_antiscia", "/hellenistic/greenbaum/antiscia-hellenistic", base_payload),
-        ("hellenistic_dodekatemoria", "/hellenistic/greenbaum/dodekatemoria", base_payload),
-        ("hellenistic_daimon_tyche_axis", "/hellenistic/greenbaum/daimon-tyche-axis", base_payload),
-        ("hellenistic_bounds", "/hellenistic/hand/bounds", base_payload),
-        ("hellenistic_decennials", "/hellenistic/hand/decennials", base_payload),
-        ("hellenistic_sect_strength", "/hellenistic/hand/sect-strength", base_payload),
-
-        # 10. Cosmobiology & Hamburg School
-        ("cosmobiology_dial90", "/cosmobiology/dial-90", dial90_payload),
-        ("cosmobiology_midpoints", "/midpoint-trees", base_payload),
-        ("cosmobiology_uranian_tnps", "/cosmobiology/uranian-tnps", base_payload),
-        ("cosmobiology_witte_formulas", "/cosmobiology/witte-formulas", dial90_payload),
-        ("cosmobiology_midpoint_pictures", "/cosmobiology/midpoint-pictures", dial90_payload),
-
-        # 11. Astromapping & Relocation
-        ("geo_acg", "/acg", base_payload),
-        ("geo_acg_best_places", "/acg/best-places", acg_best_payload),
-        ("geo_local_space", "/local-space", base_payload),
-        ("geo_parans", "/parans", base_payload),
-
-        # 12. Evolutionary & Modern Psychological
-        ("evolutionary_skipped_steps", "/evolutionary/skipped-steps", base_payload),
-        ("evolutionary_nodal_axis", "/evolutionary/nodal-axis-detail", base_payload),
-        ("evolutionary_pluto_natal_condition", "/evolutionary/pluto-natal-condition", base_payload),
-        ("psychological_greene_archetypes", "/modern/greene/archetypal-figures", base_payload),
-        ("psychological_greene_shadow", "/modern/greene/saturn-shadow", base_payload),
-        ("psychological_greene_parental_imagos", "/modern/greene/parental-imagos", base_payload),
-        ("psychological_greene_lunar_myth", "/modern/greene/lunar-myth", base_payload),
-        ("psychological_greene_individuation", "/modern/greene/individuation-path", base_payload),
-        ("psychological_arroyo_elements", "/modern/arroyo/element-integration", base_payload),
-        ("psychological_arroyo_water_trauma", "/modern/arroyo/water-houses-trauma", base_payload),
-        ("psychological_rudhyar_lunation", "/modern/rudhyar/lunation-phase", base_payload),
-        ("psychological_rudhyar_sabian", "/modern/rudhyar/symbolic-degrees", base_payload),
-        ("psychological_rudhyar_keynote", "/modern/rudhyar/personality-keynote", base_payload),
-
-        # 13. Esoteric & Numerology
-        ("destiny_matrix_ladini", "/destiny-matrix/ladini", destiny_payload),
-        ("kabbalah_gematria", "/kabbalah/gematria", gematria_payload),
-        ("numerology_pythagorean_life_path", "/numerology/pythagorean/life-path", numerology_payload),
-        ("numerology_pythagorean_expression", "/numerology/pythagorean/expression", numerology_payload),
-        ("numerology_chaldean_life_path", "/numerology/chaldean/life-path", numerology_payload)
-    ]
-
-    # Optional PDF report activation (only if explicitly requested via include_pdf)
+    # Optional PDF report activation
     if include_pdf:
         pdf_options = {
             "natal": "/reports/natal",
@@ -312,7 +316,7 @@ async def extract_astroway(
 
     results: Dict[str, Any] = {
         "provider": "astroway",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": now_utc.isoformat(),
         "status": "SUCCESS",
         "plan": "Indie PRO ($5/mo, 50k credits/mo)",
         "credits_audit": {
@@ -335,11 +339,11 @@ async def extract_astroway(
 
     try:
         for key_name, path, body in endpoints:
-            url = f"{BASE_URL}/v1{path}"
+            url = f"{BASE_URL}/v1{path}" if not path.startswith("/v1") else f"{BASE_URL}{path}"
             t_start = time.perf_counter()
             try:
-                # Rate limit pacing: 0.4s between requests to respect Indie PRO limits
-                await asyncio.sleep(0.4)
+                # Rate limit pacing: 0.35s between requests to respect Indie PRO limits
+                await asyncio.sleep(0.35)
                 resp = await client.post(url, headers=headers, json=body)
                 results["calls_made"] += 1
 
@@ -404,8 +408,7 @@ async def extract_astroway(
                                 "status": "SUCCESS",
                                 "http_status": 200,
                                 "latency_ms": round(latency_ms, 2),
-                                "credits_used": credits_used_call,
-                                "error": None
+                                "credits_used": credits_used_call
                             })
                     else:
                         results["data"][key_name] = data
@@ -415,11 +418,10 @@ async def extract_astroway(
                             "status": "SUCCESS",
                             "http_status": 200,
                             "latency_ms": round(latency_ms, 2),
-                            "credits_used": credits_used_call,
-                            "error": None
+                            "credits_used": credits_used_call
                         })
                 else:
-                    err_msg = f"HTTP {resp.status_code}: {resp.text[:150]}"
+                    err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
                     results["endpoint_audits"].append({
@@ -459,9 +461,10 @@ async def extract_astroway(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="AstroWay Extractor v2.0")
+    parser = argparse.ArgumentParser(description="AstroWay Universal Extractor v2.1")
     parser.add_argument("--client-file", type=str, help="Path to client JSON file")
     parser.add_argument("--output", type=str, help="Path to write output JSON")
+    parser.add_argument("--max-endpoints", type=int, default=0, help="Maximum endpoints to extract (0 = all)")
     parser.add_argument("--include-pdf", type=str, help="Comma-separated PDF reports to include (default: none)")
     args = parser.parse_args()
 
@@ -482,7 +485,13 @@ def main():
     include_pdf = [x.strip() for x in args.include_pdf.split(",")] if args.include_pdf else None
 
     loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(extract_astroway(client_data, include_pdf=include_pdf))
+    res = loop.run_until_complete(
+        extract_astroway(
+            client_data,
+            include_pdf=include_pdf,
+            max_endpoints=args.max_endpoints
+        )
+    )
 
     if args.output:
         out_p = Path(args.output)

@@ -1,0 +1,1207 @@
+[
+  [
+    "/api/v3/data/positions",
+    "#/components/schemas/DataRequest",
+    "Planetary Positions"
+  ],
+  [
+    "/api/v3/data/house-cusps",
+    "#/components/schemas/DataRequest",
+    "House Cusps"
+  ],
+  [
+    "/api/v3/data/aspects",
+    "#/components/schemas/DataRequest",
+    "Aspects"
+  ],
+  [
+    "/api/v3/data/lunar-metrics",
+    "#/components/schemas/DataRequest",
+    "Lunar Metrics"
+  ],
+  [
+    "/api/v3/data/global-positions",
+    "#/components/schemas/GlobalDataRequest",
+    "Global Positions"
+  ],
+  [
+    "/api/v3/data/positions/enhanced",
+    "#/components/schemas/DataRequest",
+    "Enhanced Positions"
+  ],
+  [
+    "/api/v3/data/aspects/enhanced",
+    "#/components/schemas/DataRequest",
+    "Enhanced Aspects"
+  ],
+  [
+    "/api/v3/data/lunar-metrics/enhanced",
+    "#/components/schemas/DataRequest",
+    "Enhanced Lunar Metrics"
+  ],
+  [
+    "/api/v3/data/sabian-symbols",
+    "#/components/schemas/NatalChartRequest",
+    "Sabian Symbols"
+  ],
+  [
+    "/api/v3/data/asteroids",
+    "#/components/schemas/AsteroidsDataRequest",
+    "Asteroid Interpretations Data"
+  ],
+  [
+    "/api/v3/charts/natal",
+    "#/components/schemas/NatalChartRequest",
+    "Chart Natal"
+  ],
+  [
+    "/api/v3/charts/synastry",
+    "#/components/schemas/SynastryChartRequest",
+    "Synastry (two charts dialogue)"
+  ],
+  [
+    "/api/v3/charts/composite",
+    "#/components/schemas/CompositeChartRequest",
+    "Composite (relationship as entity)"
+  ],
+  [
+    "/api/v3/charts/draconic",
+    "#/components/schemas/DraconicChartRequest",
+    "Draconic Chart (karmic / soul-purpose lens)"
+  ],
+  [
+    "/api/v3/charts/harmonic",
+    "#/components/schemas/HarmonicChartRequest",
+    "Harmonic Chart (Addey \u2014 H-N aspect family extraction)"
+  ],
+  [
+    "/api/v3/charts/antiscia",
+    "#/components/schemas/AntisciaChartRequest",
+    "Antiscia Chart (solstitial + equinoctial shadow points)"
+  ],
+  [
+    "/api/v3/charts/heliocentric",
+    "#/components/schemas/HeliocentricChartRequest",
+    "Heliocentric Chart (Sun-centered planetary positions)"
+  ],
+  [
+    "/api/v3/charts/local-space",
+    "#/components/schemas/LocalSpaceChartRequest",
+    "Local Space Chart (Cozzi \u2014 directional/locality)"
+  ],
+  [
+    "/api/v3/charts/davison",
+    "#/components/schemas/DavisonChartRequest",
+    "Davison Relationship Chart"
+  ],
+  [
+    "/api/v3/charts/transit",
+    "#/components/schemas/TransitChartRequest",
+    "Transit Snapshot (specific moment)"
+  ],
+  [
+    "/api/v3/charts/solar-return",
+    "#/components/schemas/SolarReturnRequest",
+    "Chart Solar Return"
+  ],
+  [
+    "/api/v3/charts/lunar-return",
+    "#/components/schemas/LunarReturnRequest",
+    "Chart Lunar Return"
+  ],
+  [
+    "/api/v3/charts/solar-return-transits",
+    "#/components/schemas/SolarReturnTransitRequest",
+    "Solar Return Transits"
+  ],
+  [
+    "/api/v3/charts/lunar-return-transits",
+    "#/components/schemas/LunarReturnTransitRequest",
+    "Chart Lunar Return Transits"
+  ],
+  [
+    "/api/v3/charts/venus-return",
+    "#/components/schemas/VenusReturnRequest",
+    "Chart Venus Return"
+  ],
+  [
+    "/api/v3/charts/venus-return-transits",
+    "#/components/schemas/VenusReturnTransitRequest",
+    "Chart Venus Return Transits"
+  ],
+  [
+    "/api/v3/charts/planetary-return",
+    "#/components/schemas/PlanetaryReturnRequest",
+    "Planetary Return (generic)"
+  ],
+  [
+    "/api/v3/charts/saturn-return",
+    "#/components/schemas/SaturnReturnRequest",
+    "Saturn Return (dedicated)"
+  ],
+  [
+    "/api/v3/charts/progressions",
+    "#/components/schemas/ProgressionRequest",
+    "Chart Progressions"
+  ],
+  [
+    "/api/v3/charts/directions",
+    "#/components/schemas/DirectionRequest",
+    "Chart Directions"
+  ],
+  [
+    "/api/v3/charts/natal-transits",
+    "#/components/schemas/NatalTransitRequest",
+    "Transit Period Analysis (date range)"
+  ],
+  [
+    "/api/v3/render/natal",
+    "#/components/schemas/NatalChartRenderRequest",
+    "Render Natal Chart"
+  ],
+  [
+    "/api/v3/render/draconic",
+    "#/components/schemas/DraconicChartRenderRequest",
+    "Render Draconic Chart"
+  ],
+  [
+    "/api/v3/render/harmonic",
+    "#/components/schemas/HarmonicChartRenderRequest",
+    "Render Harmonic Chart"
+  ],
+  [
+    "/api/v3/render/antiscia",
+    "#/components/schemas/AntisciaChartRenderRequest",
+    "Render Antiscia Chart"
+  ],
+  [
+    "/api/v3/render/heliocentric",
+    "#/components/schemas/HeliocentricChartRenderRequest",
+    "Render Heliocentric Chart"
+  ],
+  [
+    "/api/v3/render/local-space",
+    "#/components/schemas/LocalSpaceChartRenderRequest",
+    "Render Local Space Chart"
+  ],
+  [
+    "/api/v3/render/synastry",
+    "#/components/schemas/SynastryChartRenderRequest",
+    "Render Synastry Chart"
+  ],
+  [
+    "/api/v3/render/transit",
+    "#/components/schemas/TransitChartRenderRequest",
+    "Render Transit Chart"
+  ],
+  [
+    "/api/v3/render/composite",
+    "#/components/schemas/CompositeChartRenderRequest",
+    "Render Composite Chart"
+  ],
+  [
+    "/api/v3/render/davison",
+    "#/components/schemas/DavisonChartRenderRequest",
+    "Render Davison Chart"
+  ],
+  [
+    "/api/v3/render/biwheel-progression",
+    "#/components/schemas/BiwheelProgressionRequest",
+    "Render Biwheel Progression"
+  ],
+  [
+    "/api/v3/analysis/natal-report",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Natal Report"
+  ],
+  [
+    "/api/v3/analysis/lunar-analysis",
+    "#/components/schemas/LunarAnalysisRequest",
+    "Get Lunar Analysis"
+  ],
+  [
+    "/api/v3/analysis/relationship-score",
+    "#/components/schemas/SynastryChartRequest",
+    "Get Relationship Score"
+  ],
+  [
+    "/api/v3/analysis/synastry-report",
+    "#/components/schemas/SynastryReportRequest",
+    "Get Synastry Report"
+  ],
+  [
+    "/api/v3/analysis/solar-return-report",
+    "#/components/schemas/SolarReturnReportRequest",
+    "Get Solar Return Report"
+  ],
+  [
+    "/api/v3/analysis/lunar-return-report",
+    "#/components/schemas/LunarReturnReportRequest",
+    "Get Lunar Return Report"
+  ],
+  [
+    "/api/v3/analysis/solar-return-transit-report",
+    "#/components/schemas/SolarReturnTransitRequest",
+    "Get Solar Return Transit Report"
+  ],
+  [
+    "/api/v3/analysis/lunar-return-transit-report",
+    "#/components/schemas/LunarReturnTransitRequest",
+    "Get Lunar Return Transit Report"
+  ],
+  [
+    "/api/v3/analysis/venus-return-report",
+    "#/components/schemas/VenusReturnReportRequest",
+    "Venus Return Report"
+  ],
+  [
+    "/api/v3/analysis/venus-return-transit-report",
+    "#/components/schemas/VenusReturnTransitRequest",
+    "Venus Return Transit Report"
+  ],
+  [
+    "/api/v3/analysis/natal-transit-report",
+    "#/components/schemas/NatalTransitRequest",
+    "Get Natal Transit Report"
+  ],
+  [
+    "/api/v3/analysis/progression-report",
+    "#/components/schemas/ProgressionReportRequest",
+    "Get Progression Report"
+  ],
+  [
+    "/api/v3/analysis/direction-report",
+    "#/components/schemas/DirectionReportRequest",
+    "Get Direction Report"
+  ],
+  [
+    "/api/v3/analysis/composite-report",
+    "#/components/schemas/CompositeReportRequest",
+    "Get Composite Report"
+  ],
+  [
+    "/api/v3/analysis/compatibility-score",
+    "#/components/schemas/SynastryChartRequest",
+    "Get Compatibility Score"
+  ],
+  [
+    "/api/v3/analysis/compatibility",
+    "#/components/schemas/CompatibilityRequest",
+    "Get Compatibility"
+  ],
+  [
+    "/api/v3/analysis/career",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Career Analysis"
+  ],
+  [
+    "/api/v3/analysis/relationship",
+    "",
+    "Get Relationship Analysis"
+  ],
+  [
+    "/api/v3/analysis/psychological",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Psychological Analysis"
+  ],
+  [
+    "/api/v3/analysis/karmic",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Karmic Analysis"
+  ],
+  [
+    "/api/v3/analysis/health",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Health Analysis"
+  ],
+  [
+    "/api/v3/analysis/spiritual",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Spiritual Analysis"
+  ],
+  [
+    "/api/v3/analysis/predictive",
+    "#/components/schemas/NatalTransitRequest",
+    "Get Predictive Analysis"
+  ],
+  [
+    "/api/v3/analysis/vocational",
+    "#/components/schemas/app__api__v3__schemas__requests__NatalReportRequest",
+    "Get Vocational Analysis"
+  ],
+  [
+    "/api/v3/analysis/relocation",
+    "#/components/schemas/RelocationChartRequest",
+    "Get Relocation Analysis"
+  ],
+  [
+    "/api/v3/analysis/transit-report",
+    "#/components/schemas/NatalTransitRequest",
+    "Get Transit Report"
+  ],
+  [
+    "/api/v3/analysis/archetypes",
+    "#/components/schemas/ArchetypeRequest",
+    "Get Archetype Profile"
+  ],
+  [
+    "/api/v3/analysis/relocation-report",
+    "#/components/schemas/RelocationReportRequest",
+    "Relocation / Astrocartography full report (JSON)"
+  ],
+  [
+    "/api/v3/analysis/multi-year-roadmap-report",
+    "#/components/schemas/MultiYearRoadmapPDFRequest",
+    "Get Multi Year Roadmap Report"
+  ],
+  [
+    "/api/v3/traditional/analysis",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Get Traditional Analysis"
+  ],
+  [
+    "/api/v3/traditional/dignities",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Get Dignities Analysis"
+  ],
+  [
+    "/api/v3/traditional/lots",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Get Lots Analysis"
+  ],
+  [
+    "/api/v3/traditional/extended-receptions",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Get Extended Receptions"
+  ],
+  [
+    "/api/v3/traditional/almuten",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Calculate Almuten Endpoint"
+  ],
+  [
+    "/api/v3/traditional/hayz",
+    "#/components/schemas/TraditionalAnalysisRequest",
+    "Calculate Hayz Endpoint"
+  ],
+  [
+    "/api/v3/horary/chart",
+    "#/components/schemas/HoraryChartRequest",
+    "Generate Horary Chart"
+  ],
+  [
+    "/api/v3/horary/fertility-analysis",
+    "#/components/schemas/FertilityAnalysisRequest",
+    "Analyze Fertility Question"
+  ],
+  [
+    "/api/v3/horary/aspects",
+    "#/components/schemas/HoraryAspectsRequest",
+    "Get Horary Aspects"
+  ],
+  [
+    "/api/v3/horary/analyze",
+    "#/components/schemas/HoraryAnalysisRequest",
+    "Analyze Horary Question"
+  ],
+  [
+    "/api/v3/horary/render",
+    "#/components/schemas/HoraryFigureRenderRequest",
+    "Render Horary"
+  ],
+  [
+    "/api/v3/horary/figure",
+    "#/components/schemas/HoraryFigureRequest",
+    "Horary Figure"
+  ],
+  [
+    "/api/v3/horary/ask",
+    "#/components/schemas/AskHoraryRequest",
+    "Ask a horary question in plain language"
+  ],
+  [
+    "/api/v3/electional/evaluate",
+    "#/components/schemas/ElectionalEvaluateRequest",
+    "Evaluate a single moment"
+  ],
+  [
+    "/api/v3/electional/search",
+    "#/components/schemas/ElectionalSearchRequest",
+    "Search best electional windows"
+  ],
+  [
+    "/api/v3/electional/planetary-hours",
+    "#/components/schemas/PlanetaryHoursRequest",
+    "Current planetary hour with multilingual interpretation"
+  ],
+  [
+    "/api/v3/electional/personal-hours",
+    "#/components/schemas/PersonalHoursRequest",
+    "Personal Power Hours \u2014 natal-personalized intraday timing"
+  ],
+  [
+    "/api/v3/rectification/search",
+    "#/components/schemas/RectificationSearchRequest",
+    "Rectify birth time from life events"
+  ],
+  [
+    "/api/v3/fixed-stars/positions",
+    "#/components/schemas/FixedStarsPositionsRequest",
+    "Fixed Stars Positions"
+  ],
+  [
+    "/api/v3/fixed-stars/conjunctions",
+    "#/components/schemas/FixedStarsConjunctionsRequest",
+    "Fixed Stars Conjunctions"
+  ],
+  [
+    "/api/v3/fixed-stars/report",
+    "#/components/schemas/FixedStarsReportRequest",
+    "Fixed Stars Report"
+  ],
+  [
+    "/api/v3/fixed-stars/parans",
+    "#/components/schemas/FixedStarsParansRequest",
+    "Fixed Stars Parans"
+  ],
+  [
+    "/api/v3/glossary/sky-interpretations",
+    "#/components/schemas/SkyInterpretationsRequest",
+    "Localized general meanings for supported Cosmic Weather keys"
+  ],
+  [
+    "/api/v3/insights/relationship/compatibility",
+    "#/components/schemas/CompatibilityRequest",
+    "Calculate Compatibility"
+  ],
+  [
+    "/api/v3/insights/relationship/compatibility-score",
+    "#/components/schemas/MultipleSubjectsRequest",
+    "Quick Compatibility Score"
+  ],
+  [
+    "/api/v3/insights/relationship/love-languages",
+    "#/components/schemas/SingleSubjectRequest",
+    "Analyze Love Languages"
+  ],
+  [
+    "/api/v3/insights/relationship/davison",
+    "#/components/schemas/MultipleSubjectsRequest",
+    "Calculate Davison Chart"
+  ],
+  [
+    "/api/v3/insights/relationship/timing",
+    "#/components/schemas/CompatibilityRequest",
+    "Calculate Relationship Timing"
+  ],
+  [
+    "/api/v3/insights/relationship/red-flags",
+    "#/components/schemas/SingleSubjectRequest",
+    "Analyze Red Green Flags"
+  ],
+  [
+    "/api/v3/insights/pet/personality",
+    "#/components/schemas/PetSingleSubjectRequest",
+    "Analyze Pet Personality"
+  ],
+  [
+    "/api/v3/insights/pet/compatibility",
+    "#/components/schemas/PetCompatibilityRequest",
+    "Calculate Pet Human Compatibility"
+  ],
+  [
+    "/api/v3/insights/pet/training-windows",
+    "#/components/schemas/PetSingleSubjectRequest",
+    "Get Optimal Training Windows"
+  ],
+  [
+    "/api/v3/insights/pet/health-sensitivities",
+    "#/components/schemas/PetSingleSubjectRequest",
+    "Analyze Health Sensitivities"
+  ],
+  [
+    "/api/v3/insights/pet/multi-pet-dynamics",
+    "#/components/schemas/PetMultiSubjectRequest",
+    "Analyze Multi Pet Household"
+  ],
+  [
+    "/api/v3/insights/wellness/body-mapping",
+    "#/components/schemas/SingleSubjectRequest",
+    "Analyze Body Mapping"
+  ],
+  [
+    "/api/v3/insights/wellness/biorhythms",
+    "#/components/schemas/SingleSubjectRequest",
+    "Calculate Biorhythms"
+  ],
+  [
+    "/api/v3/insights/wellness/wellness-timing",
+    "#/components/schemas/WellnessTimingRequest",
+    "Find Wellness Timing"
+  ],
+  [
+    "/api/v3/insights/wellness/energy-patterns",
+    "#/components/schemas/SingleSubjectRequest",
+    "Analyze Energy Patterns"
+  ],
+  [
+    "/api/v3/insights/wellness/wellness-score",
+    "#/components/schemas/SingleSubjectRequest",
+    "Calculate Wellness Score"
+  ],
+  [
+    "/api/v3/insights/wellness/moon-wellness",
+    "#/components/schemas/SingleSubjectRequest",
+    "Get Moon Wellness Calendar"
+  ],
+  [
+    "/api/v3/insights/financial/market-timing",
+    "#/components/schemas/MarketTimingRequest",
+    "Analyze Market Timing"
+  ],
+  [
+    "/api/v3/insights/financial/personal-trading",
+    "",
+    "Analyze Personal Trading Windows"
+  ],
+  [
+    "/api/v3/insights/financial/gann-analysis",
+    "#/components/schemas/Body_calculate_gann_cycles_api_v3_insights_financial_gann_analysis_post",
+    "Calculate Gann Cycles"
+  ],
+  [
+    "/api/v3/insights/financial/bradley-siderograph",
+    "#/components/schemas/BradleySiderographRequest",
+    "Calculate Bradley Turns"
+  ],
+  [
+    "/api/v3/insights/financial/crypto-timing",
+    "#/components/schemas/CryptoTimingRequest",
+    "Analyze Crypto Timing"
+  ],
+  [
+    "/api/v3/insights/financial/forex-timing",
+    "#/components/schemas/Body_analyze_forex_timing_api_v3_insights_financial_forex_timing_post",
+    "Analyze Forex Timing"
+  ],
+  [
+    "/api/v3/insights/business/team-dynamics",
+    "#/components/schemas/BusinessMultipleRequest",
+    "Analyze Team Dynamics"
+  ],
+  [
+    "/api/v3/insights/business/hiring-compatibility",
+    "#/components/schemas/BusinessMultipleRequest",
+    "Analyze Hiring Compatibility"
+  ],
+  [
+    "/api/v3/insights/business/leadership-style",
+    "#/components/schemas/BusinessSingleRequest",
+    "Analyze Leadership Style"
+  ],
+  [
+    "/api/v3/insights/business/business-timing",
+    "#/components/schemas/Body_calculate_business_timing_api_v3_insights_business_business_timing_post",
+    "Calculate Business Timing"
+  ],
+  [
+    "/api/v3/insights/business/department-compatibility",
+    "",
+    "Analyze Department Compatibility"
+  ],
+  [
+    "/api/v3/insights/business/succession-planning",
+    "#/components/schemas/BusinessMultipleRequest",
+    "Analyze Succession Planning"
+  ],
+  [
+    "/api/v3/timezone",
+    "#/components/schemas/TimezoneRequest",
+    "Resolve Timezone"
+  ],
+  [
+    "/api/v3/enhanced/personal-analysis",
+    "#/components/schemas/PersonalAnalysisRequest",
+    "Get Personal Analysis"
+  ],
+  [
+    "/api/v3/enhanced/global-analysis",
+    "#/components/schemas/GlobalAnalysisRequest",
+    "Get Global Analysis"
+  ],
+  [
+    "/api/v3/enhanced_charts/personal-analysis",
+    "#/components/schemas/PersonalAnalysisRequest",
+    "Get Personal Analysis"
+  ],
+  [
+    "/api/v3/enhanced_charts/global-analysis",
+    "#/components/schemas/GlobalAnalysisRequest",
+    "Get Global Analysis"
+  ],
+  [
+    "/api/v3/astrocartography/map",
+    "#/components/schemas/AstrocartographyMapRequest",
+    "Generate Astrocartography Map"
+  ],
+  [
+    "/api/v3/astrocartography/render",
+    "#/components/schemas/AstrocartographyRenderRequest",
+    "Render Astrocartography Map"
+  ],
+  [
+    "/api/v3/astrocartography/lines",
+    "#/components/schemas/AstrocartographyLinesRequest",
+    "Get Astrocartography Lines"
+  ],
+  [
+    "/api/v3/astrocartography/location-analysis",
+    "#/components/schemas/LocationAnalysisRequest",
+    "Analyze Location"
+  ],
+  [
+    "/api/v3/astrocartography/search-locations",
+    "#/components/schemas/SearchLocationsRequest",
+    "Search Optimal Locations"
+  ],
+  [
+    "/api/v3/astrocartography/compare-locations",
+    "#/components/schemas/CompareLocationsRequest",
+    "Compare Locations"
+  ],
+  [
+    "/api/v3/astrocartography/relocation-chart",
+    "#/components/schemas/RelocationChartRequest",
+    "Get Relocation Chart"
+  ],
+  [
+    "/api/v3/astrocartography/power-zones",
+    "#/components/schemas/PowerZonesRequest",
+    "Find Power Zones"
+  ],
+  [
+    "/api/v3/astrocartography/paran-map",
+    "#/components/schemas/ParanMapRequest",
+    "Generate Paran Map"
+  ],
+  [
+    "/api/v3/astrocartography/astrodynes",
+    "#/components/schemas/AstrodynesRequest",
+    "Calculate Astrodynes"
+  ],
+  [
+    "/api/v3/astrocartography/astrodynes/compare",
+    "#/components/schemas/AstrodynesCompareRequest",
+    "Compare Astrodynes Locations"
+  ],
+  [
+    "/api/v3/horoscope/sign/daily",
+    "#/components/schemas/SunSignDailyRequest",
+    "Get Daily Sun Sign Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/daily",
+    "#/components/schemas/PersonalizedHoroscopeRequest",
+    "Get Personalized Daily Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/weekly",
+    "#/components/schemas/PersonalizedHoroscopeRequest",
+    "Get Personalized Weekly Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/monthly",
+    "#/components/schemas/PersonalizedHoroscopeRequest",
+    "Get Personalized Monthly Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/yearly",
+    "#/components/schemas/PersonalizedHoroscopeRequest",
+    "Get Personalized Yearly Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/weekly",
+    "",
+    "Get Weekly Sun Sign Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/monthly",
+    "",
+    "Get Monthly Sun Sign Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/yearly",
+    "",
+    "Get Yearly Sun Sign Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/yearly/text",
+    "#/components/schemas/SunSignYearlyTextRequest",
+    "Get Yearly Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/chinese/bazi",
+    "#/components/schemas/ChineseBaZiHoroscopeRequest",
+    "Get Chinese Bazi Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/daily/text",
+    "#/components/schemas/SunSignDailyTextRequest",
+    "Get Daily Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/daily/text",
+    "#/components/schemas/PersonalizedDailyTextRequest",
+    "Get Personal Daily Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/weekly/text",
+    "#/components/schemas/PersonalizedWeeklyTextRequest",
+    "Get Personal Weekly Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/monthly/text",
+    "#/components/schemas/PersonalizedMonthlyTextRequest",
+    "Get Personal Monthly Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/personal/yearly/text",
+    "#/components/schemas/PersonalizedYearlyTextRequest",
+    "Get Personal Yearly Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/weekly/text",
+    "#/components/schemas/SunSignWeeklyTextRequest",
+    "Get Weekly Text Horoscope"
+  ],
+  [
+    "/api/v3/horoscope/sign/monthly/text",
+    "#/components/schemas/SunSignMonthlyTextRequest",
+    "Get Monthly Text Horoscope"
+  ],
+  [
+    "/api/v3/numerology/core-numbers",
+    "#/components/schemas/NumerologySubjectRequest",
+    "Get Core Numbers"
+  ],
+  [
+    "/api/v3/numerology/comprehensive",
+    "#/components/schemas/NumerologySubjectRequest",
+    "Get Comprehensive Reading"
+  ],
+  [
+    "/api/v3/numerology/compatibility",
+    "#/components/schemas/NumerologySubjectsRequest",
+    "Analyze Compatibility"
+  ],
+  [
+    "/api/v3/numerology/zodiac-planet",
+    "#/components/schemas/ZodiacPlanetRequest",
+    "Zodiac Planet Analysis"
+  ],
+  [
+    "/api/v3/numerology/luck-analysis",
+    "#/components/schemas/LuckAnalysisRequest",
+    "Luck Analysis"
+  ],
+  [
+    "/api/v3/numerology/name-optimization",
+    "#/components/schemas/NameOptimizationSubjectRequest",
+    "Optimize Name"
+  ],
+  [
+    "/api/v3/numerology/personal-cycles",
+    "#/components/schemas/PersonalCyclesSubjectRequest",
+    "Get Personal Cycles"
+  ],
+  [
+    "/api/v3/kabbalah/tree-of-life-chart",
+    "#/components/schemas/TreeOfLifeChartRequest",
+    "Get Tree Of Life Chart"
+  ],
+  [
+    "/api/v3/kabbalah/birth-angels",
+    "#/components/schemas/BirthAngelsRequest",
+    "Get Birth Angels"
+  ],
+  [
+    "/api/v3/kabbalah/tikkun",
+    "#/components/schemas/TikkunRequest",
+    "Get Tikkun"
+  ],
+  [
+    "/api/v3/kabbalah/gematria",
+    "#/components/schemas/GematriaRequest",
+    "Calculate Gematria"
+  ],
+  [
+    "/api/v3/chinese/bazi",
+    "#/components/schemas/BaZiRequest",
+    "Calculate Bazi"
+  ],
+  [
+    "/api/v3/chinese/compatibility",
+    "#/components/schemas/MultipleSubjectsRequest",
+    "Calculate Compatibility"
+  ],
+  [
+    "/api/v3/chinese/luck-pillars",
+    "#/components/schemas/LuckPillarsRequest",
+    "Calculate Luck Pillars"
+  ],
+  [
+    "/api/v3/chinese/ming-gua",
+    "#/components/schemas/SingleSubjectRequest",
+    "Calculate Ming Gua"
+  ],
+  [
+    "/api/v3/chinese/yearly-forecast",
+    "#/components/schemas/ChineseYearlyRequest",
+    "Get Yearly Forecast"
+  ],
+  [
+    "/api/v3/chinese/name-analysis",
+    "#/components/schemas/ChineseNameRequest",
+    "Analyze Chinese Name"
+  ],
+  [
+    "/api/v3/fengshui/flying-stars/chart",
+    "#/components/schemas/FlyingStarsChartRequest",
+    "Calculate Flying Stars Chart"
+  ],
+  [
+    "/api/v3/ziwei/chart",
+    "#/components/schemas/ZiWeiChartRequest",
+    "Calculate Zi Wei Chart"
+  ],
+  [
+    "/api/v3/human-design/bodygraph",
+    "#/components/schemas/BodyGraphRequest",
+    "Calculate Bodygraph"
+  ],
+  [
+    "/api/v3/human-design/type",
+    "#/components/schemas/BodyGraphRequest",
+    "Get Type Only"
+  ],
+  [
+    "/api/v3/human-design/transits",
+    "#/components/schemas/TransitOverlayRequest",
+    "Calculate Transit Overlay"
+  ],
+  [
+    "/api/v3/human-design/compatibility",
+    "#/components/schemas/HDCompatibilityRequest",
+    "Calculate Compatibility"
+  ],
+  [
+    "/api/v3/human-design/design-date",
+    "#/components/schemas/BodyGraphRequest",
+    "Calculate Design Date"
+  ],
+  [
+    "/api/v3/human-design/bodygraph-svg",
+    "#/components/schemas/BodygraphSVGRequest",
+    "Render Bodygraph Svg"
+  ],
+  [
+    "/api/v3/human-design/compatibility-svg",
+    "#/components/schemas/ConnectionChartSVGRequest",
+    "Render Compatibility Svg"
+  ],
+  [
+    "/api/v3/human-design/cycles",
+    "#/components/schemas/CycleChartRequest",
+    "Calculate Cycle"
+  ],
+  [
+    "/api/v3/human-design/birth-time-scan",
+    "#/components/schemas/BirthTimeScanRequest",
+    "Scan Birth Time Sensitivity"
+  ],
+  [
+    "/api/v3/eclipses/natal-check",
+    "#/components/schemas/EclipseNatalCheckRequest",
+    "\ud83c\udfaf Eclipse Natal Impact Analysis"
+  ],
+  [
+    "/api/v3/eclipses/interpretation",
+    "#/components/schemas/EclipseInterpretationRequest",
+    "\ud83d\udcd6 Eclipse Detailed Interpretation"
+  ],
+  [
+    "/api/v3/mundane/events/search",
+    "#/components/schemas/MundaneEventsSearchRequest",
+    "\ud83c\udf0d Mundane Events Search \u2014 every sky event in a window, one list"
+  ],
+  [
+    "/api/v3/lunar/phases",
+    "#/components/schemas/LunarPhasesRequest",
+    "Get Precise Lunar Phases"
+  ],
+  [
+    "/api/v3/lunar/void-of-course",
+    "#/components/schemas/VoidOfCourseRequest",
+    "Get Void Of Course Status"
+  ],
+  [
+    "/api/v3/lunar/mansions",
+    "#/components/schemas/LunarMansionsRequest",
+    "Get Lunar Mansions"
+  ],
+  [
+    "/api/v3/lunar/events",
+    "#/components/schemas/LunarEventsRequest",
+    "Get Special Lunar Events"
+  ],
+  [
+    "/api/v3/vedic/birth-details",
+    "#/components/schemas/VedicRequest",
+    "Get Vedic Birth Details"
+  ],
+  [
+    "/api/v3/vedic/kundli-matching",
+    "#/components/schemas/VedicMatchingRequest",
+    "Get Kundli Matching"
+  ],
+  [
+    "/api/v3/vedic/manglik-dosha",
+    "#/components/schemas/VedicRequest",
+    "Get Manglik Dosha"
+  ],
+  [
+    "/api/v3/vedic/divisional-chart",
+    "#/components/schemas/VedicDivisionalRequest",
+    "Get Divisional Charts"
+  ],
+  [
+    "/api/v3/vedic/panchang",
+    "#/components/schemas/VedicDateLocationRequest",
+    "Get Panchang"
+  ],
+  [
+    "/api/v3/vedic/remedies",
+    "#/components/schemas/VedicRemediesRequest",
+    "Get Remedies"
+  ],
+  [
+    "/api/v3/vedic/vimshottari-dasha",
+    "#/components/schemas/VedicDashaRequest",
+    "Get Vimshottari Dasha"
+  ],
+  [
+    "/api/v3/vedic/sade-sati",
+    "#/components/schemas/VedicSadeSatiRequest",
+    "Get Sade Sati"
+  ],
+  [
+    "/api/v3/vedic/kaal-sarpa-dosha",
+    "#/components/schemas/VedicKaalSarpaRequest",
+    "Get Kaal Sarpa Dosha"
+  ],
+  [
+    "/api/v3/vedic/transit",
+    "#/components/schemas/VedicTransitRequest",
+    "Get Vedic Transit"
+  ],
+  [
+    "/api/v3/vedic/nakshatra-predictions",
+    "#/components/schemas/VedicNakshatraPredictionRequest",
+    "Get Nakshatra Predictions"
+  ],
+  [
+    "/api/v3/vedic/yogini-dasha",
+    "#/components/schemas/VedicYoginiDashaRequest",
+    "Get Yogini Dasha"
+  ],
+  [
+    "/api/v3/vedic/yoga-analysis",
+    "#/components/schemas/VedicYogaAnalysisRequest",
+    "Analyze yogas (planetary combinations)"
+  ],
+  [
+    "/api/v3/vedic/ashtakvarga",
+    "#/components/schemas/VedicAshtakvargaRequest",
+    "Calculate Ashtakvarga strength analysis"
+  ],
+  [
+    "/api/v3/vedic/shadbala",
+    "#/components/schemas/VedicShadbalaRequest",
+    "Calculate Shadbala (six-fold strength)"
+  ],
+  [
+    "/api/v3/vedic/bhava-bala",
+    "#/components/schemas/VedicShadbalaRequest",
+    "Calculate Bhava Bala (house strength)"
+  ],
+  [
+    "/api/v3/vedic/vimsopaka",
+    "#/components/schemas/VedicShadbalaRequest",
+    "Calculate Vimsopaka Bala (weighted varga strength)"
+  ],
+  [
+    "/api/v3/vedic/chara-dasha",
+    "#/components/schemas/VedicCharaDashaRequest",
+    "Calculate Chara Dasha"
+  ],
+  [
+    "/api/v3/vedic/jaimini",
+    "#/components/schemas/VedicJaiminiRequest",
+    "Calculate Jaimini"
+  ],
+  [
+    "/api/v3/vedic/kp-system",
+    "#/components/schemas/VedicKPSystemRequest",
+    "Calculate Kp System"
+  ],
+  [
+    "/api/v3/vedic/varshaphal",
+    "#/components/schemas/VedicVarshaphalRequest",
+    "Calculate Varshaphal"
+  ],
+  [
+    "/api/v3/vedic/festival-calendar",
+    "#/components/schemas/VedicFestivalCalendarRequest",
+    "Get Festival Calendar"
+  ],
+  [
+    "/api/v3/vedic/regional-panchang",
+    "#/components/schemas/VedicRegionalPanchangRequest",
+    "Get Regional Panchang"
+  ],
+  [
+    "/api/v3/vedic/aspects",
+    "#/components/schemas/VedicAspectsRequest",
+    "Vedic aspects (drishti) \u2014 graha drishti, Drik Bala, bhava, Jaimini"
+  ],
+  [
+    "/api/v3/vedic/chart",
+    "#/components/schemas/VedicChartSVGRequest",
+    "Generate Vedic Chart Svg"
+  ],
+  [
+    "/api/v3/vedic/chart/render/{format}",
+    "#/components/schemas/VedicChartRenderRequest",
+    "Render Vedic Chart"
+  ],
+  [
+    "/api/v3/directions/primary",
+    "#/components/schemas/PrimaryDirectionRequest",
+    "Compute Primary Directions"
+  ],
+  [
+    "/api/v3/timing/profections/annual",
+    "#/components/schemas/AnnualProfectionRequest",
+    "Annual Profections \u2014 multi-year timeline"
+  ],
+  [
+    "/api/v3/timing/profections/monthly",
+    "#/components/schemas/MonthlyProfectionRequest",
+    "Monthly Profections \u2014 12 sub-periods within an active year"
+  ],
+  [
+    "/api/v3/timing/profections/daily",
+    "#/components/schemas/DailyProfectionRequest",
+    "Daily Profections \u2014 12 sub-periods within an active month"
+  ],
+  [
+    "/api/v3/timing/profections/continuous",
+    "#/components/schemas/ContinuousProfectionRequest",
+    "Continuous (Medieval) Profections \u2014 30 degrees per year"
+  ],
+  [
+    "/api/v3/timing/profections/biwheel",
+    "#/components/schemas/ProfectionBiwheelRequest",
+    "Profections \u00d7 Natal bi-wheel \u2014 Hellenistic timing overlay"
+  ],
+  [
+    "/api/v3/timing/profections/aspects",
+    "#/components/schemas/ProfectionAspectsRequest",
+    "Profected-to-natal aspect list \u2014 tabular timing view"
+  ],
+  [
+    "/api/v3/timing/firdaria",
+    "#/components/schemas/FirdariaRequest",
+    "Firdaria"
+  ],
+  [
+    "/api/v3/timing/decennials",
+    "#/components/schemas/DecennialsRequest",
+    "Decennials"
+  ],
+  [
+    "/api/v3/timing/timeline",
+    "#/components/schemas/TimelineRequest",
+    "Timeline"
+  ],
+  [
+    "/api/v3/timing/zodiacal-releasing",
+    "#/components/schemas/TimingZodiacalReleasingRequest",
+    "Zodiacal Releasing Proxy"
+  ],
+  [
+    "/api/v3/timing/zodiacal-releasing/current",
+    "#/components/schemas/TimingZRCurrentRequest",
+    "Zr Current Proxy"
+  ],
+  [
+    "/api/v3/timing/sun-conjunctions",
+    "#/components/schemas/SunConjunctionsRequest",
+    "\ud83c\udf1e Cazimi, Combust, Under-Beams & Sun-aspect calendar"
+  ],
+  [
+    "/api/v3/timing/lunations",
+    "#/components/schemas/LunationsRequest",
+    "\ud83c\udf11\ud83c\udf15 New & Full Moon calendar with zodiac signs"
+  ],
+  [
+    "/api/v3/timing/solar-return",
+    "#/components/schemas/TimingSolarReturnRequest",
+    "\ud83c\udf1e Solar Return \u2014 year signature, time slices, and lookup"
+  ],
+  [
+    "/api/v3/timing/solar-return/hot-months",
+    "#/components/schemas/TimingSolarReturnRequest",
+    "\ud83d\udd25 Hot Months \u2014 year intensity ribbon (12 weighted monthly buckets)"
+  ],
+  [
+    "/api/v3/timing/solar-return/repeating-signatures",
+    "#/components/schemas/TimingSolarReturnRequest",
+    "\ud83d\udd01 Repeating Signatures \u2014 two-panel year synthesis (house + planet)"
+  ],
+  [
+    "/api/v3/timing/stations",
+    "#/components/schemas/StationsRequest",
+    "Planetary Stations \u2014 retrograde/direct calendar (9 planetary bodies + optional node reversals)"
+  ],
+  [
+    "/api/v3/timing/transits",
+    "#/components/schemas/MultiYearTransitRequest",
+    "Multi-Year Transits \u2014 outer planet activation windows to natal points"
+  ],
+  [
+    "/api/v3/timing/convergence",
+    "#/components/schemas/MultiYearTransitRequest",
+    "Multi-Year Convergences \u2014 tiered transit + time-lord synthesis"
+  ],
+  [
+    "/api/v3/timing/saturn-return",
+    "#/components/schemas/SaturnReturnTimingRequest",
+    "Saturn Return \u2014 precise multi-pass timing, shadow bounds, and natal analysis"
+  ],
+  [
+    "/api/v3/timing/return-to-degree",
+    "#/components/schemas/ReturnToDegreeRequest",
+    "\ud83c\udfaf Return to an arbitrary ecliptic degree \u2014 demi-returns and custom-degree searches"
+  ],
+  [
+    "/api/v3/timing/lunar-half-cycle",
+    "#/components/schemas/LunarHalfCycleRequest",
+    "\ud83c\udf17 Lunar Half-Cycle Timeline \u2014 every sky-element boundary in a window"
+  ],
+  [
+    "/api/v3/timing/aspect-passages",
+    "#/components/schemas/AspectPassagesRequest",
+    "\u26a1 Aspect Passages \u2014 every exact aspect between two moving bodies"
+  ]
+]
