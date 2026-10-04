@@ -450,11 +450,23 @@ class ExtractionEngine:
         city = client_data.get("city", client_data.get("preferred_name", "Unknown"))
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
 
+        fe_data = self.cache.get("freeastro", "full_extract", client_hash)
+        fe_ok = bool(fe_data and isinstance(fe_data, dict) and len(fe_data.get("data", {})) >= 120)
+
+        aw_data = self.cache.get("astroway", "full_extract", client_hash)
+        aw_ok = bool(aw_data and isinstance(aw_data, dict) and len(aw_data.get("data", {})) >= 300)
+
+        aa_data = self.cache.get("astrologyapi", "full_extract", client_hash)
+        aa_ok = bool(aa_data and isinstance(aa_data, dict) and len(aa_data.get("data", {})) >= 6)
+
+        va_data = self.cache.get("vedastro", "full_extract", client_hash)
+        va_ok = bool(va_data and isinstance(va_data, dict) and len(va_data.get("data", {})) >= 6)
+
         required = {
-            "freeastro": bool(self.cache.get("freeastro", "full_extract", client_hash)),
-            "astroway": bool(self.cache.get("astroway", "full_extract", client_hash)),
-            "astrologyapi": bool(self.cache.get("astrologyapi", "full_extract", client_hash)),
-            "vedastro": bool(self.cache.get("vedastro", "full_extract", client_hash)),
+            "freeastro": fe_ok,
+            "astroway": aw_ok,
+            "astrologyapi": aa_ok,
+            "vedastro": va_ok,
             "hebcal": bool(self.cache.get("hebcal", "combined", client_hash)),
             "nasa": bool(self.cache.get("nasa", "asteroids", client_hash)),
             "lunar_bazi": bool(self.cache.get("mcp", "lunar_calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})),
@@ -565,14 +577,15 @@ class ExtractionEngine:
             # 1. Dispatch FreeAstroAPI
             async def _run_freeastro():
                 if fn_freeastro and should_run("freeastro", "freeastroapi"):
-                    # Check cache first (reject poisoned entries)
+                    # Check cache first (reject poisoned entries and require complete catalog)
+                    explicit_run = bool(norm_apis and any(p in norm_apis for p in ["freeastro", "freeastroapi"]))
                     cached = self.cache.get("freeastro", "full_extract", client_cache_key) if not self.refresh_pro else None
-                    if cached and isinstance(cached, dict) and "data" in cached:
+                    if cached and isinstance(cached, dict) and "data" in cached and not explicit_run:
                         cached_has_err = bool(cached.get("failures")) or any(
                             isinstance(v, dict) and ("error" in v or v.get("status") == "FAIL")
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) > 0:
+                        if not cached_has_err and len(cached.get("data", {})) >= 120:
                             rest_results["freeastro"] = cached.get("data", {})
                             credit_stats["freeastro_report_credits"] = cached.get("report_credits")
                             credit_stats["calls_made"]["freeastro"] = 0
@@ -649,13 +662,15 @@ class ExtractionEngine:
             # 2. Dispatch AstroWay
             async def _run_astroway():
                 if fn_astroway and should_run("astroway"):
+                    # Check cache first (reject poisoned entries and require complete catalog)
+                    explicit_run = bool(norm_apis and any(p in norm_apis for p in ["astroway"]))
                     cached = self.cache.get("astroway", "full_extract", client_cache_key) if not self.refresh_pro else None
-                    if cached and isinstance(cached, dict) and "data" in cached:
+                    if cached and isinstance(cached, dict) and "data" in cached and not explicit_run:
                         cached_has_err = bool(cached.get("failures")) or any(
                             isinstance(v, dict) and ("error" in v or v.get("ok") is False)
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) > 0:
+                        if not cached_has_err and len(cached.get("data", {})) >= 300:
                             rest_results["astroway"] = cached.get("data", {})
                             audit = cached.get("credits_audit", {})
                             credit_stats["astroway_credits_remaining"] = audit.get("remaining")
@@ -740,13 +755,15 @@ class ExtractionEngine:
             # 3. Dispatch AstrologyAPI
             async def _run_astrology():
                 if fn_astrology and should_run("astrologyapi", "astrology_api_io"):
+                    # Check cache first (reject poisoned entries and require complete catalog)
+                    explicit_run = bool(norm_apis and any(p in norm_apis for p in ["astrologyapi", "astrology_api_io"]))
                     cached = self.cache.get("astrologyapi", "full_extract", client_cache_key) if not self.refresh_pro else None
-                    if cached and isinstance(cached, dict) and "data" in cached:
+                    if cached and isinstance(cached, dict) and "data" in cached and not explicit_run:
                         cached_has_err = bool(cached.get("failures")) or any(
                             isinstance(v, dict) and "error" in v
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) > 0:
+                        if not cached_has_err and len(cached.get("data", {})) >= 6:
                             rest_results["astrologyapi"] = cached.get("data", {})
                             credit_stats["calls_made"]["astrologyapi"] = 0
                             credit_stats["cache_hits"]["astrologyapi"] = 1
@@ -819,13 +836,15 @@ class ExtractionEngine:
             # 4. Dispatch VedAstro
             async def _run_vedastro():
                 if fn_vedastro and should_run("vedastro"):
+                    # Check cache first (reject poisoned entries and require complete catalog)
+                    explicit_run = bool(norm_apis and any(p in norm_apis for p in ["vedastro"]))
                     cached = self.cache.get("vedastro", "full_extract", client_cache_key) if not self.refresh_pro else None
-                    if cached and isinstance(cached, dict) and "data" in cached:
+                    if cached and isinstance(cached, dict) and "data" in cached and not explicit_run:
                         cached_has_err = bool(cached.get("failures")) or any(
                             isinstance(v, dict) and ("error" in v or v.get("status") == "FAIL")
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) > 0:
+                        if not cached_has_err and len(cached.get("data", {})) >= 6:
                             rest_results["vedastro"] = cached.get("data", {})
                             credit_stats["calls_made"]["vedastro"] = 0
                             credit_stats["cache_hits"]["vedastro"] = 1
