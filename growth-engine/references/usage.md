@@ -449,4 +449,18 @@ export interface FulfillmentCarrierAdapter {
 export interface InvoicingProvider {
   createLegalInvoice(order: { id: string; amount: number; tax: number; customer: any }): Promise<{ invoiceId: string; pdfUrl: string }>;
 }
-```
+
+---
+
+## 7. High-Ticket Positioning & Lexical Cleanse (Anti-Slop Sovereign Copy)
+
+### 7.1 High-Ticket Filter Mechanism
+For high-end or restricted-access communities, events, or VIP memberships:
+- Transparently state the high-ticket price range and exclusive cover costs early in the landing and email narrative.
+- Use explicit admission criteria and premium pricing as a natural filter, eliminating unqualified leads before manual reviews.
+
+### 7.2 Secular & Anti-Slop Lexical Guidelines
+- Replace pretentious jargon: replace "Curaduría" with "Dirección Artística" or "Producción Cultural".
+- Replace ambiguous staff titles: replace "Anfitrión/a" with "Equipo Organizador" or "Personal de Sala".
+- Eradicate pseudospiritual or dogmatic buzzwords ("sagrado", "sacrosanto") in favor of secular sovereign terms ("fundamental", "innegociable", "consentimiento informado").
+

@@ -325,6 +325,9 @@ Runs scheduled database backups to POSIX shared storage (`/mnt/baiostorage/backu
 ### Pattern 6: Resilient PostgreSQL Upsert & Phone Variant Normalization
 Prevents raw PostgreSQL unique constraint violations (`leads_email_key` / `leads_whatsapp_key`) during user checkout or registration. Generates phone variants (+57, 57, 10-digit), performs multi-variant queries, updates existing records without colliding on unique keys, and guarantees zero HTTP 500 errors in digital payment flows.
 
+### Pattern 7: Intelligent Multi-Channel Lead Deduplication & Cross-Conflict Protection (409)
+Tracks `registered_channels` inside PostgreSQL metadata JSONB (`jsonb_set` / array append). When a contact re-submits a form for a channel they are already part of, the API idempotently acknowledges the submission (`already_registered: true`) while suppressing duplicate email and WhatsApp dispatches. If a contact joins a new channel, the channel is appended and only the specific welcome flow fires. If an input email belongs to user A and the phone belongs to user B, the system halts with HTTP 409 Conflict, rejecting silent identity corruption.
+
 ---
 
 ## 9. Anti-Patterns & Common Gotchas
@@ -332,3 +335,5 @@ Prevents raw PostgreSQL unique constraint violations (`leads_email_key` / `leads
 1. **Hardcoding Plaintext Credentials**: Never commit database passwords or tokens into git repositories; always reference `$db_connectionString` and `$cache_connectionString`.
 2. **Blocking the Event Loop in Python**: Heavy CPU-bound AI inferences MUST execute inside `await asyncio.to_thread()`.
 3. **Missing POSIX FUSE Permissions**: Always apply `chmod -R 777 /mnt/<storage>/<service>/` to avoid permission errors across container boundaries.
+4. **Silent Identity Overwriting on Cross-Conflict**: Updating database records by matching either email OR phone without verifying mutual ownership allows accidental record corruption or hijacking. Always verify that email and phone belong to the same entity, returning HTTP 409 Conflict if they point to different existing contacts.
+

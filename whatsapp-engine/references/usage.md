@@ -402,6 +402,12 @@ Leverages Go goroutines in Evolution Go to dispatch thousands of interactive mes
 ### Pattern 5: Resilient S3/Shared Storage Media Ingestion
 Stores received media, invoices, and sticker webp files durably on `/mnt/baiostorage/evolutiongo` with automatic MIME validation.
 
+### Pattern 6: E.164 Intelligent Auto-Deduction & Canonical Routing (Colombia +57)
+Ensures phone numbers entered in frontend contact or lead capture forms are automatically canonicalized. In Colombian deployments, 10-digit numbers starting with `3` are auto-inferred as `+57`, returning the canonical E.164 string (`+573...`), pure digits for Evolution Go (`573...`), and display formatting. Prevents catastrophic routing to Netherlands (+31) in `wa.me/` URLs.
+
+### Pattern 7: Decoupled Multi-Channel Narrative (WhatsApp Concierge vs Email Dossier)
+Decouples conversational messaging from transactional emails. WhatsApp delivers immediate, warm executive concierge assistance (2-3 short paragraphs), while email delivers the institutional dossier and manifesto without repeating identical text verbatim.
+
 ---
 
 ## 6. Anti-Patterns & Gotchas
@@ -410,3 +416,5 @@ Stores received media, invoices, and sticker webp files durably on `/mnt/baiosto
 2. **Missing Idempotency Locks**: WhatsApp webhooks re-send events if acknowledgments take longer than 5 seconds. Always lock message IDs in Valkey (`SET lock:msg:<id> 1 NX EX 3600`).
 3. **Sharing PostgreSQL Database without Schema Separation**: Keep `evogo_auth` and `evogo_users` in separate databases or schemas to avoid lock contention during high-volume message logging.
 4. **Ignoring Passkey WebAuthn Support**: New WhatsApp accounts require Passkey ceremonies. Use Evolution Go v0.7.2+ to prevent broken session disconnections.
+5. **Raw 10-Digit Mobile Numbers without Country Prefix**: Supplying raw 10-digit mobile numbers (e.g. `3101234567`) to `wa.me/` or EvolutionGo defaults to Netherlands (+31), causing 404 number-not-found errors. Always use `normalizePhone` to ensure E.164 compliance (+57 for Colombian numbers starting with 3).
+6. **Carbon-Copy Duplicate Notifications**: Sending identical text verbatim across both WhatsApp and transactional email degrades user experience and trust. Keep WhatsApp conversational and agile (concierge), and email formal and archival (dossier).
