@@ -762,28 +762,52 @@ class ExtractionEngine:
                     elapsed = 0.0
                     has_err = False
                     try:
-                        res = await fn_astrology(client_data, client=http_client)
+                        res = await fn_astrology(
+                            client_data,
+                            client=http_client,
+                            cache_manager=self.cache,
+                            client_hash=client_cache_key
+                        )
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
-                        rest_results["astrologyapi"] = res.get("data", {})
+
+                        # Cumulative Additive Merge:
+                        accumulated = self.cache.get_all_provider_endpoints("astrologyapi", client_cache_key)
+                        for ep_k, ep_v in res.get("data", {}).items():
+                            if isinstance(ep_v, dict) and ("error" in ep_v or ep_v.get("status") == "FAIL"):
+                                continue
+                            accumulated[ep_k] = ep_v
+
+                        rest_results["astrologyapi"] = accumulated
+                        res["data"] = accumulated
                         credit_stats["calls_made"]["astrologyapi"] = res.get("calls_made", 0)
 
-                        has_err = bool(res.get("failures")) or res.get("status") != "SUCCESS" or any(
-                            isinstance(v, dict) and "error" in v
-                            for v in res.get("data", {}).values()
-                        )
-                        if res.get("data") and not has_err:
+                        has_err = bool(res.get("failures")) or res.get("status") == "FAILED"
+
+                        if len(accumulated) >= 3:
                             self.cache.set("astrologyapi", "full_extract", client_cache_key, res, http_status=200)
 
-                        for ep_k, ep_data in res.get("data", {}).items():
-                            is_err = isinstance(ep_data, dict) and "error" in ep_data
-                            results_list.append(ExtractionResult(
-                                provider="astrologyapi", endpoint_key=ep_k,
-                                status="FAILED" if is_err else "SUCCESS",
-                                data=ep_data if not is_err else {},
-                                http_status=200 if not is_err else 500,
-                                latency_ms=elapsed / max(1, len(res.get("data", {}))),
-                                error=ep_data.get("error") if is_err else None
-                            ))
+                        if res.get("endpoint_audits"):
+                            for ep_audit in res["endpoint_audits"]:
+                                results_list.append(ExtractionResult(
+                                    provider="astrologyapi",
+                                    endpoint_key=ep_audit["endpoint"],
+                                    status=ep_audit["status"],
+                                    data=res.get("data", {}).get(ep_audit["endpoint"], {}),
+                                    http_status=ep_audit.get("http_status", 200),
+                                    latency_ms=ep_audit.get("latency_ms", 0.0),
+                                    error=ep_audit.get("error")
+                                ))
+                        else:
+                            for ep_k, ep_data in res.get("data", {}).items():
+                                is_err = isinstance(ep_data, dict) and "error" in ep_data
+                                results_list.append(ExtractionResult(
+                                    provider="astrologyapi", endpoint_key=ep_k,
+                                    status="FAILED" if is_err else "SUCCESS",
+                                    data=ep_data if not is_err else {},
+                                    http_status=200 if not is_err else 500,
+                                    latency_ms=elapsed / max(1, len(res.get("data", {}))),
+                                    error=ep_data.get("error") if is_err else None
+                                ))
                     except Exception as exc:
                         has_err = True
                         results_list.append(ExtractionResult(
@@ -817,28 +841,52 @@ class ExtractionEngine:
                     elapsed = 0.0
                     has_err = False
                     try:
-                        res = await fn_vedastro(client_data, client=http_client)
+                        res = await fn_vedastro(
+                            client_data,
+                            client=http_client,
+                            cache_manager=self.cache,
+                            client_hash=client_cache_key
+                        )
                         elapsed = (asyncio.get_event_loop().time() - t0) * 1000.0
-                        rest_results["vedastro"] = res.get("data", {})
+
+                        # Cumulative Additive Merge:
+                        accumulated = self.cache.get_all_provider_endpoints("vedastro", client_cache_key)
+                        for ep_k, ep_v in res.get("data", {}).items():
+                            if isinstance(ep_v, dict) and ("error" in ep_v or ep_v.get("status") == "FAIL"):
+                                continue
+                            accumulated[ep_k] = ep_v
+
+                        rest_results["vedastro"] = accumulated
+                        res["data"] = accumulated
                         credit_stats["calls_made"]["vedastro"] = res.get("calls_made", 0)
 
-                        has_err = bool(res.get("failures")) or res.get("status") != "SUCCESS" or any(
-                            isinstance(v, dict) and ("error" in v or v.get("status") == "FAIL")
-                            for v in res.get("data", {}).values()
-                        )
-                        if res.get("data") and not has_err:
+                        has_err = bool(res.get("failures")) or res.get("status") == "FAILED"
+
+                        if len(accumulated) >= 4:
                             self.cache.set("vedastro", "full_extract", client_cache_key, res, http_status=200)
 
-                        for ep_k, ep_data in res.get("data", {}).items():
-                            is_err = isinstance(ep_data, dict) and ("error" in ep_data or ep_data.get("status") == "FAIL")
-                            results_list.append(ExtractionResult(
-                                provider="vedastro", endpoint_key=ep_k,
-                                status="FAILED" if is_err else "SUCCESS",
-                                data=ep_data if not is_err else {},
-                                http_status=200 if not is_err else 500,
-                                latency_ms=elapsed / max(1, len(res.get("data", {}))),
-                                error=ep_data.get("error") if is_err else None
-                            ))
+                        if res.get("endpoint_audits"):
+                            for ep_audit in res["endpoint_audits"]:
+                                results_list.append(ExtractionResult(
+                                    provider="vedastro",
+                                    endpoint_key=ep_audit["endpoint"],
+                                    status=ep_audit["status"],
+                                    data=res.get("data", {}).get(ep_audit["endpoint"], {}),
+                                    http_status=ep_audit.get("http_status", 200),
+                                    latency_ms=ep_audit.get("latency_ms", 0.0),
+                                    error=ep_audit.get("error")
+                                ))
+                        else:
+                            for ep_k, ep_data in res.get("data", {}).items():
+                                is_err = isinstance(ep_data, dict) and ("error" in ep_data or ep_data.get("status") == "FAIL")
+                                results_list.append(ExtractionResult(
+                                    provider="vedastro", endpoint_key=ep_k,
+                                    status="FAILED" if is_err else "SUCCESS",
+                                    data=ep_data if not is_err else {},
+                                    http_status=200 if not is_err else 500,
+                                    latency_ms=elapsed / max(1, len(res.get("data", {}))),
+                                    error=ep_data.get("error") if is_err else None
+                                ))
                     except Exception as exc:
                         has_err = True
                         results_list.append(ExtractionResult(

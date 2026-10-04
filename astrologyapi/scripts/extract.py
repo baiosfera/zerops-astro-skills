@@ -89,8 +89,8 @@ def resolve_astrologyapi_payload(
 
 def get_free_tier_endpoints() -> List[Tuple[str, str]]:
     """
-    Curated suite of 24 high-value exclusive endpoints that do not duplicate
-    other APIs and fit comfortably within the 50 free monthly credits.
+    Curated suite of 6 exclusive jewels that do not duplicate other APIs
+    and preserve the user's 50 free monthly credits (allowing 8-10 charts/month).
     """
     return [
         ("kabbalah_birth_angels", "/kabbalah/birth-angels"),
@@ -98,25 +98,7 @@ def get_free_tier_endpoints() -> List[Tuple[str, str]]:
         ("kabbalah_tree_of_life", "/kabbalah/tree-of-life-chart"),
         ("kabbalah_sephirot_activation", "/kabbalah/sephirot-activation"),
         ("traditional_almuten", "/traditional/almuten"),
-        ("traditional_analysis", "/traditional/analysis"),
-        ("traditional_temperament", "/traditional/temperament"),
-        ("traditional_hyleg", "/traditional/hyleg"),
         ("timing_timeline", "/timing/timeline"),
-        ("timing_annual_profections", "/timing/annual-profections"),
-        ("timing_firdaria", "/timing/firdaria"),
-        ("data_positions_enhanced", "/data/positions/enhanced"),
-        ("fixed_stars_conjunctions", "/fixed-stars/conjunctions"),
-        ("fixed_stars_paranatellonta", "/fixed-stars/paranatellonta"),
-        ("numerology_comprehensive", "/numerology/comprehensive"),
-        ("numerology_life_cycles", "/numerology/life-cycles"),
-        ("analysis_vocational", "/analysis/vocational"),
-        ("analysis_wealth", "/analysis/wealth"),
-        ("analysis_psychological", "/analysis/psychological"),
-        ("insights_karmic", "/insights/karmic"),
-        ("insights_shadow", "/insights/shadow"),
-        ("insights_life_purpose", "/insights/life-purpose"),
-        ("charts_draconic", "/charts/draconic"),
-        ("charts_heliocentric", "/charts/heliocentric"),
     ]
 
 
@@ -148,12 +130,15 @@ async def extract_astrologyapi(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
     client: Optional[httpx.AsyncClient] = None,
-    mode: str = "free-tier"
+    mode: str = "free-tier",
+    cache_manager: Optional[Any] = None,
+    client_hash: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Extracts calculations from Astrology-API.io.
-    mode='free-tier' restricts to 24 curated endpoints to protect the 50 free credits limit.
+    mode='free-tier' restricts to 6 curated jewel endpoints to protect the 50 free credits limit.
     mode='all' executes the full 240+ endpoint catalog.
+    Supports atomic delta-cache skipping and recording.
     """
     key = api_key or os.getenv("ASTROLOGY_API_IO") or os.getenv("ASTROLOGY_API_KEY") or os.getenv("astrology_apiKey")
     headers = {
@@ -204,6 +189,7 @@ async def extract_astrologyapi(
         "calls_made": 0,
         "data": {},
         "raw_responses": {},
+        "endpoint_audits": [],
         "failures": []
     }
 
@@ -213,16 +199,35 @@ async def extract_astrologyapi(
         close_client = True
 
     try:
-        for idx, (key_name, path, body) in enumerate(endpoints):
+        total_eps = len(endpoints)
+        for idx, (key_name, path, body) in enumerate(endpoints, 1):
+            # Check delta cache
+            if cache_manager and client_hash:
+                cached_data = cache_manager.get_endpoint("astrologyapi", key_name, client_hash)
+                if cached_data is not None:
+                    print(f"⚡ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [CACHED / SKIP]", flush=True)
+                    results["data"][key_name] = cached_data
+                    results["raw_responses"][key_name] = cached_data
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "CACHED",
+                        "http_status": 200,
+                        "latency_ms": 0.0,
+                        "error": None
+                    })
+                    continue
+
             url = f"{BASE_URL}{path}" if path.startswith("/") else f"{BASE_URL}/{path}"
-            if idx > 0:
+            if results["calls_made"] > 0:
                 # Polite pacing to respect rate limits and avoid 429
                 await asyncio.sleep(1.0)
 
+            t0 = time.perf_counter()
             for attempt in range(2):
                 try:
                     resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
+                    lat = (time.perf_counter() - t0) * 1000.0
 
                     if resp.status_code == 200:
                         data = resp.json()
@@ -231,33 +236,85 @@ async def extract_astrologyapi(
                         # Check semantic error in body
                         if isinstance(data, dict) and "detail" in data:
                             err_msg = str(data.get("detail"))
+                            print(f"❌ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [DETAIL ERR] ({lat:.1f}ms): {err_msg}", flush=True)
                             results["failures"].append({"endpoint": key_name, "error": err_msg})
                             results["data"][key_name] = {"error": err_msg}
+                            results["endpoint_audits"].append({
+                                "endpoint": key_name,
+                                "status": "FAILED",
+                                "http_status": 200,
+                                "latency_ms": lat,
+                                "error": err_msg
+                            })
                         else:
-                            results["data"][key_name] = data.get("data", data)
+                            extracted_val = data.get("data", data)
+                            results["data"][key_name] = extracted_val
+                            if cache_manager and client_hash:
+                                cache_manager.set_endpoint("astrologyapi", key_name, client_hash, extracted_val)
+                            print(f"✨ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [200 OK] ({lat:.1f}ms)", flush=True)
+                            results["endpoint_audits"].append({
+                                "endpoint": key_name,
+                                "status": "SUCCESS",
+                                "http_status": 200,
+                                "latency_ms": lat,
+                                "error": None
+                            })
                         break
                     elif resp.status_code == 429:
                         if attempt == 0:
                             await asyncio.sleep(3.0)
                             continue
                         err_msg = "Rate limit exceeded (429)"
+                        print(f"❌ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [429]: {err_msg}", flush=True)
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
                         results["data"][key_name] = {"error": err_msg}
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "FAILED",
+                            "http_status": 429,
+                            "latency_ms": lat,
+                            "error": err_msg
+                        })
                         break
                     elif resp.status_code == 402:
                         err_msg = "Payment Required / Monthly Quota Exceeded (402)"
+                        print(f"❌ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [402]: {err_msg}", flush=True)
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
                         results["data"][key_name] = {"error": err_msg}
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "FAILED",
+                            "http_status": 402,
+                            "latency_ms": lat,
+                            "error": err_msg
+                        })
                         break
                     else:
                         err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                        print(f"❌ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [HTTP {resp.status_code}]: {err_msg}", flush=True)
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
                         results["data"][key_name] = {"error": err_msg}
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "FAILED",
+                            "http_status": resp.status_code,
+                            "latency_ms": lat,
+                            "error": err_msg
+                        })
                         break
                 except Exception as exc:
+                    lat = (time.perf_counter() - t0) * 1000.0
                     err_msg = f"Exception: {type(exc).__name__} - {str(exc)}"
+                    print(f"❌ [AstrologyAPI ({idx}/{total_eps})] {key_name} -> [EXC]: {err_msg}", flush=True)
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "FAILED",
+                        "http_status": 500,
+                        "latency_ms": lat,
+                        "error": err_msg
+                    })
                     break
 
         if results["failures"]:

@@ -4,9 +4,9 @@ description: "Trigger: astroway, api.astroway.info, human design bodygraph, bg5 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.2"
+  version: "3.0"
 ---
-# AstroWay REST Engine (v2.2)
+# AstroWay REST Engine (v3.0)
 
 High-precision astrological, metaphysical, and Human Design REST calculation engine powered by Swiss Ephemeris algorithms and NASA JPL DE440/DE441 planetary data (`https://api.astroway.info/v1/`).
 

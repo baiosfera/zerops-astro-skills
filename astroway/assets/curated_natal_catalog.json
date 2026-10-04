@@ -35,26 +35,6 @@
     "Hyleg & Alcocoden"
   ],
   [
-    "/receptions",
-    "Receptions",
-    "Mutual Receptions"
-  ],
-  [
-    "/fixed-stars",
-    "ChartInput",
-    "Fixed Stars"
-  ],
-  [
-    "/arabic-parts",
-    "ArabicParts",
-    "Arabic Parts (Lots)"
-  ],
-  [
-    "/harmonics",
-    "Harmonic",
-    "Harmonic Chart"
-  ],
-  [
     "/draconic",
     "ChartInput",
     "Draconic Chart"
@@ -65,14 +45,29 @@
     "Heliocentric Chart"
   ],
   [
+    "/harmonics",
+    "Harmonic",
+    "Harmonic Chart"
+  ],
+  [
+    "/arabic-parts",
+    "ArabicParts",
+    "Arabic Parts (Lots)"
+  ],
+  [
+    "/fixed-stars",
+    "ChartInput",
+    "Fixed Stars"
+  ],
+  [
+    "/sabian-symbols",
+    "Sabian",
+    "Sabian Symbols"
+  ],
+  [
     "/midpoints",
     "ChartInput",
     "Midpoints"
-  ],
-  [
-    "/midpoint-trees",
-    "MidpointTrees",
-    "Midpoint Trees (Uranian)"
   ],
   [
     "/antiscia",
@@ -80,14 +75,34 @@
     "Antiscia"
   ],
   [
-    "/parallel-aspects",
-    "ParallelAspects",
-    "Parallel Aspects"
+    "/profections",
+    "NatalTarget",
+    "Profections"
   ],
   [
-    "/disposition-chains",
-    "DispositionChains",
-    "Disposition Chains"
+    "/firdaria",
+    "Firdaria",
+    "Firdaria"
+  ],
+  [
+    "/relocation",
+    "Relocation",
+    "Relocation Chart"
+  ],
+  [
+    "/acg",
+    "ChartInput",
+    "Astrocartography (A*C*G)"
+  ],
+  [
+    "/parans",
+    "ChartInput",
+    "Parans"
+  ],
+  [
+    "/local-space",
+    "ChartInput",
+    "Local Space Chart"
   ],
   [
     "/zenith",
@@ -95,9 +110,304 @@
     "Zenith"
   ],
   [
-    "/horizon",
+    "/hellenistic/brennan/zodiacal-releasing-spirit",
+    "Zr",
+    "ZR from Spirit"
+  ],
+  [
+    "/hellenistic/brennan/zodiacal-releasing-fortune",
+    "Zr",
+    "ZR from Fortune"
+  ],
+  [
+    "/hellenistic/brennan/zr-loosing-of-bond",
+    "Zr",
+    "ZR Loosing of Bond"
+  ],
+  [
+    "/hellenistic/brennan/zr-peak-periods",
+    "Zr",
+    "ZR Peak Periods"
+  ],
+  [
+    "/hellenistic/brennan/lots-15",
     "ChartInput",
-    "Horizon Chart"
+    "15 Hermetic Lots"
+  ],
+  [
+    "/hellenistic/brennan/profections-detail",
+    "Profections",
+    "Profections Detail"
+  ],
+  [
+    "/hellenistic/brennan/time-lord-stack",
+    "Profections",
+    "Time-Lord Stack"
+  ],
+  [
+    "/hellenistic/brennan/joys-of-planets",
+    "ChartInput",
+    "Joys of Planets"
+  ],
+  [
+    "/hellenistic/brennan/triplicity-rulers",
+    "ChartInput",
+    "Triplicity Rulers"
+  ],
+  [
+    "/hellenistic/brennan/bonifications-maltreatments",
+    "ChartInput",
+    "Bonifications/Maltreatments"
+  ],
+  [
+    "/hellenistic/hand/lots-of-seven",
+    "ChartInput",
+    "Lots of Seven"
+  ],
+  [
+    "/hellenistic/hand/decennials",
+    "Decennials",
+    "Decennials"
+  ],
+  [
+    "/hellenistic/hand/perfections",
+    "Perfections",
+    "Perfections"
+  ],
+  [
+    "/hellenistic/hand/sect-strength",
+    "ChartInput",
+    "Sect Strength Score"
+  ],
+  [
+    "/hellenistic/hand/critical-degrees",
+    "ChartInput",
+    "Critical Degrees"
+  ],
+  [
+    "/hellenistic/hand/horoscopos-trine",
+    "ChartInput",
+    "Horoskopos Trine"
+  ],
+  [
+    "/hellenistic/hand/quarter-lord",
+    "QuarterLord",
+    "Quarter Lord"
+  ],
+  [
+    "/hellenistic/hand/decanic-rulers",
+    "ChartInput",
+    "Decanic Rulers"
+  ],
+  [
+    "/hellenistic/hand/bounds",
+    "ChartInput",
+    "Egyptian Bounds"
+  ],
+  [
+    "/hellenistic/hand/longevity-hyleg",
+    "ChartInput",
+    "Hyleg Longevity"
+  ],
+  [
+    "/hellenistic/greenbaum/daimon-tyche-axis",
+    "ChartInput",
+    "Daimon-Tyche Axis"
+  ],
+  [
+    "/hellenistic/greenbaum/lot-of-eros-detail",
+    "ChartInput",
+    "Lot of Eros Detail"
+  ],
+  [
+    "/hellenistic/greenbaum/temple-doctrine",
+    "ChartInput",
+    "Temple Doctrine"
+  ],
+  [
+    "/hellenistic/greenbaum/dodekatemoria",
+    "ChartInput",
+    "Dodekatemoria"
+  ],
+  [
+    "/hellenistic/greenbaum/duodecima",
+    "ChartInput",
+    "Duodecima"
+  ],
+  [
+    "/hellenistic/greenbaum/antiscia-hellenistic",
+    "ChartInput",
+    "Antiscia (Hellenistic)"
+  ],
+  [
+    "/hellenistic/greenbaum/contra-antiscia",
+    "ChartInput",
+    "Contra-Antiscia"
+  ],
+  [
+    "/hellenistic/greenbaum/zodiacal-decans",
+    "ChartInput",
+    "Zodiacal Decans"
+  ],
+  [
+    "/hellenistic/greenbaum/quality-of-time",
+    "ChartInput",
+    "Quality of Time"
+  ],
+  [
+    "/hellenistic/greenbaum/sphaera-barbarica",
+    "ChartInput",
+    "Sphaera Barbarica"
+  ],
+  [
+    "/hellenistic/schmidt/stoic-elementhood",
+    "ChartInput",
+    "Stoic Elementhood"
+  ],
+  [
+    "/hellenistic/schmidt/qualities-and-quantities",
+    "ChartInput",
+    "Qualities & Quantities"
+  ],
+  [
+    "/hellenistic/schmidt/levels-of-causation",
+    "ChartInput",
+    "Levels of Causation"
+  ],
+  [
+    "/hellenistic/schmidt/lord-of-prediction",
+    "LordOfPrediction",
+    "Lord of Prediction"
+  ],
+  [
+    "/hellenistic/schmidt/stations-and-phases",
+    "ChartInput",
+    "Stations & Phases"
+  ],
+  [
+    "/hellenistic/schmidt/morning-evening-stars",
+    "ChartInput",
+    "Morning/Evening Stars"
+  ],
+  [
+    "/hellenistic/schmidt/sect-classes",
+    "ChartInput",
+    "Sect Classes"
+  ],
+  [
+    "/hellenistic/schmidt/derivative-houses-method",
+    "ChartInput",
+    "Derivative Houses"
+  ],
+  [
+    "/hellenistic/schmidt/aspectual-typology",
+    "ChartInput",
+    "Aspectual Typology"
+  ],
+  [
+    "/hellenistic/schmidt/ennea-mooirai",
+    "ChartInput",
+    "Ennea Mooirai"
+  ],
+  [
+    "/modern/greene/archetypal-figures",
+    "ChartInput",
+    "Greene: Archetypal Figures"
+  ],
+  [
+    "/modern/greene/parental-imagos",
+    "ChartInput",
+    "Greene: Parental Imagos"
+  ],
+  [
+    "/modern/greene/saturn-shadow",
+    "ChartInput",
+    "Greene: Saturn Shadow"
+  ],
+  [
+    "/modern/greene/lunar-myth",
+    "ChartInput",
+    "Greene: Lunar Myth"
+  ],
+  [
+    "/modern/greene/individuation-path",
+    "ChartInput",
+    "Greene: Individuation Path"
+  ],
+  [
+    "/modern/arroyo/element-balance",
+    "ChartInput",
+    "Arroyo: Element Balance"
+  ],
+  [
+    "/modern/arroyo/element-integration",
+    "ChartInput",
+    "Arroyo: Element Integration"
+  ],
+  [
+    "/modern/arroyo/cycle-of-becoming",
+    "ChartInput",
+    "Arroyo: Cycle of Becoming"
+  ],
+  [
+    "/modern/arroyo/water-houses-trauma",
+    "ChartInput",
+    "Arroyo: Water Houses Trauma"
+  ],
+  [
+    "/modern/arroyo/relational-element-map",
+    "ChartInput",
+    "Arroyo: Relational Map"
+  ],
+  [
+    "/modern/rudhyar/lunation-phase",
+    "ChartInput",
+    "Rudhyar: Lunation Phase"
+  ],
+  [
+    "/modern/rudhyar/symbolic-degrees",
+    "ChartInput",
+    "Rudhyar: Symbolic Degrees"
+  ],
+  [
+    "/modern/rudhyar/cycles-of-becoming",
+    "ChartInput",
+    "Rudhyar: Cycles of Becoming"
+  ],
+  [
+    "/modern/rudhyar/personality-keynote",
+    "ChartInput",
+    "Rudhyar: Personality Keynote"
+  ],
+  [
+    "/modern/rudhyar/transits-as-rebirth",
+    "ChartInput",
+    "Rudhyar: Transits as Rebirth"
+  ],
+  [
+    "/evolutionary/pluto-natal-condition",
+    "ChartInput",
+    "Pluto Natal Condition"
+  ],
+  [
+    "/evolutionary/skipped-steps",
+    "ChartInput",
+    "Skipped Steps"
+  ],
+  [
+    "/evolutionary/nodal-axis-detail",
+    "ChartInput",
+    "Nodal Axis Detail"
+  ],
+  [
+    "/evolutionary/soul-types",
+    "ChartInput",
+    "Soul Types"
+  ],
+  [
+    "/evolutionary/yesterday-sky",
+    "ChartInput",
+    "Yesterday's Sky"
   ],
   [
     "/vedic/varga/D1",
@@ -180,24 +490,164 @@
     "Varga D60: Shashtiamsa"
   ],
   [
-    "/vedic/shadbala/full",
-    "ChartInput",
-    "Shadbala: full summary"
-  ],
-  [
     "/vedic/panchang/full",
     "ChartInput",
     "Panchang: full"
   ],
   [
-    "/ashtakavarga",
+    "/vedic/panchang/tithi",
     "ChartInput",
-    "Ashtakavarga"
+    "Panchang: Tithi"
   ],
   [
-    "/nakshatras",
+    "/vedic/panchang/karana",
     "ChartInput",
-    "Nakshatras"
+    "Panchang: Karana"
+  ],
+  [
+    "/vedic/panchang/yoga",
+    "ChartInput",
+    "Panchang: Yoga"
+  ],
+  [
+    "/vedic/panchang/nakshatra-of-day",
+    "ChartInput",
+    "Panchang: Nakshatra of Day"
+  ],
+  [
+    "/vedic/panchang/choghadia",
+    "ChartInput",
+    "Panchang: Choghadia"
+  ],
+  [
+    "/vedic/panchang/hora",
+    "ChartInput",
+    "Panchang: Hora"
+  ],
+  [
+    "/vedic/panchang/rahu-kaal",
+    "ChartInput",
+    "Panchang: Rahu Kaal block"
+  ],
+  [
+    "/vedic/shadbala/sthana",
+    "ChartInput",
+    "Shadbala: Sthana (positional)"
+  ],
+  [
+    "/vedic/shadbala/dig",
+    "ChartInput",
+    "Shadbala: Dig (directional)"
+  ],
+  [
+    "/vedic/shadbala/kala",
+    "ChartInput",
+    "Shadbala: Kala (temporal)"
+  ],
+  [
+    "/vedic/shadbala/cheshta",
+    "ChartInput",
+    "Shadbala: Cheshta (motional)"
+  ],
+  [
+    "/vedic/shadbala/naisargika",
+    "ChartInput",
+    "Shadbala: Naisargika (natural)"
+  ],
+  [
+    "/vedic/shadbala/drik",
+    "ChartInput",
+    "Shadbala: Drik (aspectual)"
+  ],
+  [
+    "/vedic/shadbala/full",
+    "ChartInput",
+    "Shadbala: full summary"
+  ],
+  [
+    "/vedic/bhavabala",
+    "ChartInput",
+    "Bhava Bala: house strength"
+  ],
+  [
+    "/vedic/gemstones",
+    "Gemstone",
+    "Gemstone (ratna) recommendation"
+  ],
+  [
+    "/vedic/varshaphal",
+    "Varshaphal",
+    "Varshaphal: Tajika annual chart"
+  ],
+  [
+    "/vedic/yogas/parashara/raja",
+    "ChartInput",
+    "Yogas: Raja (royal)"
+  ],
+  [
+    "/vedic/yogas/parashara/dhana",
+    "ChartInput",
+    "Yogas: Dhana (wealth)"
+  ],
+  [
+    "/vedic/yogas/parashara/dharma-karmadhipati",
+    "ChartInput",
+    "Yogas: Dharma-Karmadhipati"
+  ],
+  [
+    "/vedic/yogas/parashara/pancha-mahapurusha",
+    "ChartInput",
+    "Yogas: Pancha Mahapurusha (5 great)"
+  ],
+  [
+    "/vedic/yogas/parashara/gajakesari",
+    "ChartInput",
+    "Yogas: Gajakesari"
+  ],
+  [
+    "/vedic/yogas/parashara/adhi",
+    "ChartInput",
+    "Yogas: Adhi"
+  ],
+  [
+    "/vedic/yogas/parashara/full",
+    "ChartInput",
+    "Yogas: Parashara full report"
+  ],
+  [
+    "/vedic/doshas/parashara/mangal",
+    "ChartInput",
+    "Doshas: Mangal (Mars affliction)"
+  ],
+  [
+    "/vedic/doshas/parashara/kaal-sarp",
+    "ChartInput",
+    "Doshas: Kaal Sarp"
+  ],
+  [
+    "/vedic/doshas/parashara/pitru",
+    "ChartInput",
+    "Doshas: Pitru (ancestral)"
+  ],
+  [
+    "/vedic/doshas/parashara/shrapit",
+    "ChartInput",
+    "Doshas: Shrapit (curse)"
+  ],
+  [
+    "/vedic/doshas/parashara/grahan",
+    "ChartInput",
+    "Doshas: Grahan (eclipse-like)"
+  ],
+  [
+    "/vedic/doshas/parashara/guru-chandal",
+    "ChartInput",
+    "Doshas: Guru-Chandal"
+  ],
+  [
+    "/vedic/doshas/parashara/full",
+    "ChartInput",
+    "Doshas: Parashara full report"
   ],
   [
     "/vedic/dashas/vimshottari/maha",
@@ -215,6 +665,91 @@
     "Dashas: Vimshottari Pratyantardasha"
   ],
   [
+    "/vedic/dashas/vimshottari/sookshma",
+    "DashaInput",
+    "Dashas: Vimshottari Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/vimshottari/prana",
+    "DashaInput",
+    "Dashas: Vimshottari Pranadasha"
+  ],
+  [
+    "/vedic/dashas/yogini/maha",
+    "DashaInput",
+    "Dashas: Yogini Mahadasha"
+  ],
+  [
+    "/vedic/dashas/yogini/antar",
+    "DashaInput",
+    "Dashas: Yogini Antardasha"
+  ],
+  [
+    "/vedic/dashas/yogini/pratyantar",
+    "DashaInput",
+    "Dashas: Yogini Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/yogini/sookshma",
+    "DashaInput",
+    "Dashas: Yogini Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/yogini/prana",
+    "DashaInput",
+    "Dashas: Yogini Pranadasha"
+  ],
+  [
+    "/vedic/dashas/ashtottari/maha",
+    "DashaInput",
+    "Dashas: Ashtottari Mahadasha"
+  ],
+  [
+    "/vedic/dashas/ashtottari/antar",
+    "DashaInput",
+    "Dashas: Ashtottari Antardasha"
+  ],
+  [
+    "/vedic/dashas/ashtottari/pratyantar",
+    "DashaInput",
+    "Dashas: Ashtottari Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/ashtottari/sookshma",
+    "DashaInput",
+    "Dashas: Ashtottari Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/ashtottari/prana",
+    "DashaInput",
+    "Dashas: Ashtottari Pranadasha"
+  ],
+  [
+    "/vedic/dashas/kalachakra/maha",
+    "DashaInput",
+    "Dashas: Kalachakra Mahadasha"
+  ],
+  [
+    "/vedic/dashas/kalachakra/antar",
+    "DashaInput",
+    "Dashas: Kalachakra Antardasha"
+  ],
+  [
+    "/vedic/dashas/kalachakra/pratyantar",
+    "DashaInput",
+    "Dashas: Kalachakra Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/kalachakra/sookshma",
+    "DashaInput",
+    "Dashas: Kalachakra Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/kalachakra/prana",
+    "DashaInput",
+    "Dashas: Kalachakra Pranadasha"
+  ],
+  [
     "/vedic/dashas/chara/maha",
     "DashaInput",
     "Dashas: Chara Mahadasha"
@@ -225,14 +760,154 @@
     "Dashas: Chara Antardasha"
   ],
   [
+    "/vedic/dashas/chara/pratyantar",
+    "DashaInput",
+    "Dashas: Chara Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/chara/sookshma",
+    "DashaInput",
+    "Dashas: Chara Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/chara/prana",
+    "DashaInput",
+    "Dashas: Chara Pranadasha"
+  ],
+  [
+    "/vedic/dashas/tribhagi/maha",
+    "DashaInput",
+    "Dashas: Tribhagi Mahadasha"
+  ],
+  [
+    "/vedic/dashas/tribhagi/antar",
+    "DashaInput",
+    "Dashas: Tribhagi Antardasha"
+  ],
+  [
+    "/vedic/dashas/tribhagi/pratyantar",
+    "DashaInput",
+    "Dashas: Tribhagi Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/tribhagi/sookshma",
+    "DashaInput",
+    "Dashas: Tribhagi Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/tribhagi/prana",
+    "DashaInput",
+    "Dashas: Tribhagi Pranadasha"
+  ],
+  [
+    "/vedic/dashas/shatabdika/maha",
+    "DashaInput",
+    "Dashas: Shatabdika Mahadasha"
+  ],
+  [
+    "/vedic/dashas/shatabdika/antar",
+    "DashaInput",
+    "Dashas: Shatabdika Antardasha"
+  ],
+  [
+    "/vedic/dashas/shatabdika/pratyantar",
+    "DashaInput",
+    "Dashas: Shatabdika Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/shatabdika/sookshma",
+    "DashaInput",
+    "Dashas: Shatabdika Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/shatabdika/prana",
+    "DashaInput",
+    "Dashas: Shatabdika Pranadasha"
+  ],
+  [
+    "/vedic/dashas/shodashottari/maha",
+    "DashaInput",
+    "Dashas: Shodashottari Mahadasha"
+  ],
+  [
+    "/vedic/dashas/shodashottari/antar",
+    "DashaInput",
+    "Dashas: Shodashottari Antardasha"
+  ],
+  [
+    "/vedic/dashas/shodashottari/pratyantar",
+    "DashaInput",
+    "Dashas: Shodashottari Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/shodashottari/sookshma",
+    "DashaInput",
+    "Dashas: Shodashottari Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/shodashottari/prana",
+    "DashaInput",
+    "Dashas: Shodashottari Pranadasha"
+  ],
+  [
+    "/vedic/dashas/sthira/maha",
+    "DashaInput",
+    "Dashas: Sthira Mahadasha"
+  ],
+  [
+    "/vedic/dashas/sthira/antar",
+    "DashaInput",
+    "Dashas: Sthira Antardasha"
+  ],
+  [
+    "/vedic/dashas/sthira/pratyantar",
+    "DashaInput",
+    "Dashas: Sthira Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/sthira/sookshma",
+    "DashaInput",
+    "Dashas: Sthira Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/sthira/prana",
+    "DashaInput",
+    "Dashas: Sthira Pranadasha"
+  ],
+  [
+    "/vedic/dashas/shoola/maha",
+    "ShoolaInput",
+    "Dashas: Shoola Mahadasha"
+  ],
+  [
+    "/vedic/dashas/shoola/antar",
+    "ShoolaInput",
+    "Dashas: Shoola Antardasha"
+  ],
+  [
+    "/vedic/dashas/shoola/pratyantar",
+    "ShoolaInput",
+    "Dashas: Shoola Pratyantardasha"
+  ],
+  [
+    "/vedic/dashas/shoola/sookshma",
+    "ShoolaInput",
+    "Dashas: Shoola Sookshmadasha"
+  ],
+  [
+    "/vedic/dashas/shoola/prana",
+    "ShoolaInput",
+    "Dashas: Shoola Pranadasha"
+  ],
+  [
+    "/vedic/jaimini/karakas",
+    "ChartInput",
+    "Jaimini: Karakas (Chara + Naisargika)"
+  ],
+  [
     "/vedic/jaimini/chara-karakas",
     "ChartInput",
     "Jaimini: Chara Karakas (detailed)"
-  ],
-  [
-    "/vedic/jaimini/atmakaraka-navamsa",
-    "ChartInput",
-    "Jaimini: Karakamsa (AK in Navamsa)"
   ],
   [
     "/vedic/jaimini/padas",
@@ -245,9 +920,24 @@
     "Jaimini: Upapada Lagna (UL)"
   ],
   [
-    "/vedic/jaimini/yogas",
+    "/vedic/jaimini/aspects",
     "ChartInput",
-    "Jaimini: Yogas (basic AK/DK/PK set)"
+    "Jaimini: Aspects (Rasi + Graha drishti)"
+  ],
+  [
+    "/vedic/jaimini/drishti-rasi",
+    "ChartInput",
+    "Jaimini: Rasi Drishti (sign aspects)"
+  ],
+  [
+    "/vedic/jaimini/drishti-graha",
+    "ChartInput",
+    "Jaimini: Graha Drishti (planet aspects)"
+  ],
+  [
+    "/vedic/jaimini/atmakaraka-navamsa",
+    "ChartInput",
+    "Jaimini: Karakamsa (AK in Navamsa)"
   ],
   [
     "/vedic/jaimini/dasha-summary",
@@ -255,14 +945,19 @@
     "Jaimini: Running Dasha Summary"
   ],
   [
-    "/vedic/yogas/jaimini/dhana",
+    "/vedic/jaimini/yogas",
     "ChartInput",
-    "Yogas: Jaimini Dhana yoga"
+    "Jaimini: Yogas (basic AK/DK/PK set)"
   ],
   [
-    "/vedic/yogas/jaimini/raja",
+    "/vedic/jaimini/atmakaraka-rotation",
     "ChartInput",
-    "Yogas: Jaimini Raja yoga"
+    "Jaimini: Atmakaraka rotation (timeline)"
+  ],
+  [
+    "/vedic/jaimini/argala-analysis",
+    "ChartInput",
+    "Jaimini: Argala / Virodhargala scan"
   ],
   [
     "/vedic/kp/cusps",
@@ -275,9 +970,204 @@
     "KP: Sub-lords (cusps + planets)"
   ],
   [
-    "/human-design",
+    "/vedic/kp/ruling-planets",
     "ChartInput",
-    "Human Design Chart"
+    "KP: Ruling Planets"
+  ],
+  [
+    "/vedic/kp/horary",
+    "HoraryInput",
+    "KP: Horary chart (1..249)"
+  ],
+  [
+    "/vedic/kp/significators",
+    "ChartInput",
+    "KP: Significators (primary/secondary/tertiary)"
+  ],
+  [
+    "/vedic/kp/planet-cuspal-position",
+    "ChartInput",
+    "KP: Planet cuspal positions"
+  ],
+  [
+    "/vedic/kp/sub-sub-lord",
+    "SubSubLord",
+    "KP: Sub-sub-lord lookup"
+  ],
+  [
+    "/vedic/kp/asc-sub",
+    "ChartInput",
+    "KP: Ascendant sub-lord"
+  ],
+  [
+    "/vedic/kp/fortuna",
+    "ChartInput",
+    "KP: Part of Fortune"
+  ],
+  [
+    "/vedic/lal-kitab/teva",
+    "ChartInput",
+    "Lal Kitab: Teva (fixed-house chart)"
+  ],
+  [
+    "/vedic/lal-kitab/lal-kundali",
+    "ChartInput",
+    "Lal Kitab: Kundali (12-house grid)"
+  ],
+  [
+    "/vedic/lal-kitab/kismat",
+    "ChartInput",
+    "Lal Kitab: Kismat (fortune indicator)"
+  ],
+  [
+    "/vedic/lal-kitab/dasha",
+    "ChartInput",
+    "Lal Kitab: Dasha (35-year cycle)"
+  ],
+  [
+    "/vedic/lal-kitab/varshphal",
+    "Varshphal",
+    "Lal Kitab: Varshphal (annual)"
+  ],
+  [
+    "/vedic/lal-kitab/debts",
+    "ChartInput",
+    "Lal Kitab: Rin (6 ancestral debts)"
+  ],
+  [
+    "/vedic/lal-kitab/remedies",
+    "Remedies",
+    "Lal Kitab: Remedies (Upayas)"
+  ],
+  [
+    "/vedic/lal-kitab/planet-house-effect",
+    "PlanetHouseEffect",
+    "Lal Kitab: Planet-in-house effect"
+  ],
+  [
+    "/vedic/lal-kitab/blind-house",
+    "ChartInput",
+    "Lal Kitab: Blind houses (Andha bhava)"
+  ],
+  [
+    "/vedic/lal-kitab/sleeping-house",
+    "ChartInput",
+    "Lal Kitab: Sleeping houses"
+  ],
+  [
+    "/vedic/lal-kitab/prosperity",
+    "ChartInput",
+    "Lal Kitab: Sukh (prosperity yoga)"
+  ],
+  [
+    "/vedic/lal-kitab/life-graph",
+    "ChartInput",
+    "Lal Kitab: Life graph (age-by-age)"
+  ],
+  [
+    "/vedic/yogas/jaimini/raja",
+    "ChartInput",
+    "Yogas: Jaimini Raja yoga"
+  ],
+  [
+    "/vedic/yogas/jaimini/dhana",
+    "ChartInput",
+    "Yogas: Jaimini Dhana yoga"
+  ],
+  [
+    "/vedic/yogas/jaimini/daridra",
+    "ChartInput",
+    "Yogas: Jaimini Daridra yoga"
+  ],
+  [
+    "/vedic/yogas/jaimini/viparita",
+    "ChartInput",
+    "Yogas: Jaimini Viparita Raja yoga"
+  ],
+  [
+    "/vedic/yogas/jaimini/full",
+    "ChartInput",
+    "Yogas: Jaimini full summary"
+  ],
+  [
+    "/vedic/yogas/jaimini/karaka-yoga",
+    "ChartInput",
+    "Yogas: Jaimini Karaka yoga (all 8 karakas)"
+  ],
+  [
+    "/vedic/yogas/jaimini/karakamsa",
+    "ChartInput",
+    "Yogas: Karakamsa chart (12-house projection)"
+  ],
+  [
+    "/vedic/yogas/jaimini/shubha-graha",
+    "ChartInput",
+    "Yogas: Shubha-graha (functional natures)"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/manglik",
+    "ChartInput",
+    "Doshas: Lal Kitab Manglik"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/kalsarpa",
+    "ChartInput",
+    "Doshas: Lal Kitab Kalsarpa"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/pitra",
+    "ChartInput",
+    "Doshas: Lal Kitab Pitra"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/shrapit",
+    "ChartInput",
+    "Doshas: Lal Kitab Shrapit"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/rin",
+    "ChartInput",
+    "Doshas: Lal Kitab Rin (6 ancestral debts)"
+  ],
+  [
+    "/vedic/doshas/lal-kitab/full",
+    "ChartInput",
+    "Doshas: Lal Kitab full summary"
+  ],
+  [
+    "/vedic/doshas/kp/manglik",
+    "ChartInput",
+    "Doshas: KP Manglik"
+  ],
+  [
+    "/vedic/doshas/kp/kalasarpa",
+    "ChartInput",
+    "Doshas: KP Kalasarpa"
+  ],
+  [
+    "/vedic/doshas/kp/pitra",
+    "ChartInput",
+    "Doshas: KP Pitra"
+  ],
+  [
+    "/vedic/doshas/kp/sade-sati",
+    "SadeSati",
+    "Doshas: KP Sade Sati"
+  ],
+  [
+    "/vedic/doshas/kp/kemadruma",
+    "ChartInput",
+    "Doshas: KP Kemadruma"
+  ],
+  [
+    "/vedic/doshas/kp/full",
+    "ChartInput",
+    "Doshas: KP full summary"
+  ],
+  [
+    "/human-design/transits",
+    "HdTransits",
+    "HD Transits"
   ],
   [
     "/hd/incarnation-cross",
@@ -285,9 +1175,34 @@
     "Incarnation Cross"
   ],
   [
+    "/hd/dream-rave",
+    "ChartInput",
+    "Dream Rave"
+  ],
+  [
     "/hd/hologenetic",
     "ChartInput",
     "Hologenetic Profile"
+  ],
+  [
+    "/hd/group-overlay",
+    "MultiChart",
+    "HD Group Overlay"
+  ],
+  [
+    "/hd/sensitivity",
+    "ChartInput",
+    "HD Time Sensitivity"
+  ],
+  [
+    "/hd/rave-new-years",
+    "YearRange",
+    "Rave New Years"
+  ],
+  [
+    "/hd/design-date",
+    "ChartInput",
+    "HD Design Date"
   ],
   [
     "/hd/circuitry",
@@ -295,99 +1210,14 @@
     "HD Circuitry Analysis"
   ],
   [
-    "/profections",
-    "NatalTarget",
-    "Profections"
+    "/bazi/year-pillar",
+    "BaziDateInput",
+    "Year Pillar"
   ],
   [
-    "/firdaria",
-    "Firdaria",
-    "Firdaria"
-  ],
-  [
-    "/hellenistic/brennan/zodiacal-releasing-spirit",
-    "Zr",
-    "ZR from Spirit"
-  ],
-  [
-    "/hellenistic/brennan/zodiacal-releasing-fortune",
-    "Zr",
-    "ZR from Fortune"
-  ],
-  [
-    "/hellenistic/brennan/zr-loosing-of-bond",
-    "Zr",
-    "ZR Loosing of Bond"
-  ],
-  [
-    "/hellenistic/brennan/zr-peak-periods",
-    "Zr",
-    "ZR Peak Periods"
-  ],
-  [
-    "/hellenistic/brennan/lots-15",
-    "ChartInput",
-    "15 Hermetic Lots"
-  ],
-  [
-    "/hellenistic/brennan/profections-detail",
-    "Profections",
-    "Profections Detail"
-  ],
-  [
-    "/hellenistic/brennan/time-lord-stack",
-    "Profections",
-    "Time-Lord Stack"
-  ],
-  [
-    "/hellenistic/brennan/triplicity-rulers",
-    "ChartInput",
-    "Triplicity Rulers"
-  ],
-  [
-    "/hellenistic/hand/decennials",
-    "Decennials",
-    "Decennials"
-  ],
-  [
-    "/hellenistic/hand/sect-strength",
-    "ChartInput",
-    "Sect Strength Score"
-  ],
-  [
-    "/hellenistic/hand/bounds",
-    "ChartInput",
-    "Egyptian Bounds"
-  ],
-  [
-    "/hellenistic/greenbaum/daimon-tyche-axis",
-    "ChartInput",
-    "Daimon-Tyche Axis"
-  ],
-  [
-    "/hellenistic/greenbaum/lot-of-eros-detail",
-    "ChartInput",
-    "Lot of Eros Detail"
-  ],
-  [
-    "/cosmobiology/dial-90",
-    "ChartWithTnp",
-    "90° Dial"
-  ],
-  [
-    "/cosmobiology/midpoint-pictures",
-    "ChartWithTnp",
-    "Midpoint Pictures"
-  ],
-  [
-    "/cosmobiology/personal-point-tree",
-    "ChartWithTnp",
-    "Personal Point Tree"
-  ],
-  [
-    "/cosmobiology/uranian-tnps",
-    "ChartInput",
-    "Uranian TNPs"
+    "/bazi/month-pillar",
+    "BaziDateInput",
+    "Month Pillar"
   ],
   [
     "/bazi/four-pillars",
@@ -395,19 +1225,24 @@
     "Four Pillars (full)"
   ],
   [
-    "/bazi/luck-pillars",
-    "BaziLuckPillarsInput",
-    "Luck Pillars (Da Yun)"
-  ],
-  [
-    "/bazi/element-balance",
+    "/bazi/chart",
     "BaziChartInput",
-    "5-Element Balance"
+    "Full BaZi chart"
   ],
   [
-    "/bazi/ten-gods",
-    "BaziTenGodsInput",
-    "Ten Gods (Shi Shen)"
+    "/bazi/hidden-stems",
+    "BaziChartInput",
+    "Hidden stems (Cang Gan)"
+  ],
+  [
+    "/bazi/na-yin",
+    "BaziChartInput",
+    "Na Yin sound-element"
+  ],
+  [
+    "/bazi/life-stages",
+    "BaziChartInput",
+    "Twelve life stages"
   ],
   [
     "/bazi/symbolic-stars",
@@ -415,29 +1250,69 @@
     "Symbolic stars (Shen Sha)"
   ],
   [
+    "/bazi/interactions",
+    "BaziChartInput",
+    "Branch and stem interactions"
+  ],
+  [
+    "/bazi/strength",
+    "BaziChartInput",
+    "Day-master strength"
+  ],
+  [
+    "/bazi/day-master",
+    "BaziFourPillarsInput",
+    "Day Master"
+  ],
+  [
+    "/bazi/element-balance",
+    "BaziChartInput",
+    "5-Element Balance"
+  ],
+  [
+    "/bazi/yearly",
+    "BaziYearlyInput",
+    "Yearly Forecast"
+  ],
+  [
+    "/bazi/monthly",
+    "BaziMonthlyInput",
+    "Monthly Forecast"
+  ],
+  [
+    "/bazi/year-pillar-decade",
+    "BaziDecade",
+    "Year Pillars \u00d7 10"
+  ],
+  [
+    "/bazi/hour-pillar",
+    "BaziHourInput",
+    "Hour Pillar"
+  ],
+  [
+    "/bazi/ten-gods",
+    "BaziTenGodsInput",
+    "Ten Gods (Shi Shen)"
+  ],
+  [
+    "/bazi/luck-pillars",
+    "BaziLuckPillarsInput",
+    "Luck Pillars (Da Yun)"
+  ],
+  [
     "/ziwei/twelve-palaces",
     "ZiweiDateInput",
     "12 Palaces"
   ],
   [
-    "/ziwei/palace-career",
-    "ZiweiDateInput",
-    "Career Palace (Guanlu)"
+    "/ziwei/chart",
+    "ZiweiChartInput",
+    "Full Chart (computed)"
   ],
   [
-    "/ziwei/palace-wealth",
-    "ZiweiDateInput",
-    "Wealth Palace (Caibo)"
-  ],
-  [
-    "/ziwei/palace-destiny",
-    "ZiweiDateInput",
-    "Destiny Palace (Ming)"
-  ],
-  [
-    "/ziwei/full-chart",
-    "ZiweiDateInput",
-    "Full Chart (deprecated)"
+    "/ziwei/four-transformations",
+    "ZiweiSihuaInput",
+    "Four Transformations (\u56db\u5316)"
   ],
   [
     "/ziwei/main-stars",
@@ -445,119 +1320,129 @@
     "14 Main Stars"
   ],
   [
-    "/acg",
+    "/ziwei/full-chart",
+    "ZiweiDateInput",
+    "Full Chart (deprecated)"
+  ],
+  [
+    "/ziwei/palace-destiny",
+    "ZiweiDateInput",
+    "Destiny Palace (Ming)"
+  ],
+  [
+    "/ziwei/palace-siblings",
+    "ZiweiDateInput",
+    "Siblings Palace (Xiongdi)"
+  ],
+  [
+    "/ziwei/palace-spouse",
+    "ZiweiDateInput",
+    "Spouse Palace (Fuqi)"
+  ],
+  [
+    "/ziwei/palace-children",
+    "ZiweiDateInput",
+    "Children Palace (Zinu)"
+  ],
+  [
+    "/ziwei/palace-wealth",
+    "ZiweiDateInput",
+    "Wealth Palace (Caibo)"
+  ],
+  [
+    "/ziwei/palace-health",
+    "ZiweiDateInput",
+    "Health Palace (Ji'e)"
+  ],
+  [
+    "/ziwei/palace-travel",
+    "ZiweiDateInput",
+    "Travel Palace (Qianyi)"
+  ],
+  [
+    "/ziwei/palace-career",
+    "ZiweiDateInput",
+    "Career Palace (Guanlu)"
+  ],
+  [
+    "/ziwei/palace-property",
+    "ZiweiDateInput",
+    "Property Palace (Tianzhai)"
+  ],
+  [
+    "/cosmobiology/dial-90",
+    "ChartWithTnp",
+    "90\u00b0 Dial"
+  ],
+  [
+    "/cosmobiology/midpoint-pictures",
+    "ChartWithTnp",
+    "Midpoint Pictures"
+  ],
+  [
+    "/cosmobiology/sensitive-points",
+    "ChartWithTnp",
+    "Sensitive Points"
+  ],
+  [
+    "/cosmobiology/eight-harmonic-aspects",
+    "ChartWithTnp",
+    "8H Aspect Grid"
+  ],
+  [
+    "/cosmobiology/transit-midpoints",
+    "NatalTargetTnp",
+    "Transit Midpoints"
+  ],
+  [
+    "/cosmobiology/uranian-tnps",
     "ChartInput",
-    "Astrocartography (A*C*G)"
+    "Uranian TNPs"
   ],
   [
-    "/acg/best-places",
-    "AcgBestPlaces",
-    "Best places for a life category"
+    "/cosmobiology/cosmogram",
+    "ChartWithTnp",
+    "Cosmogram (90\u00b0 Render Data)"
   ],
   [
-    "/local-space",
-    "ChartInput",
-    "Local Space Chart"
+    "/cosmobiology/witte-formulas",
+    "ChartWithTnp",
+    "Witte Formulas"
   ],
   [
-    "/parans",
-    "ChartInput",
-    "Parans"
+    "/cosmobiology/lefeldt-extensions",
+    "ChartWithTnp",
+    "Lefeldt Extensions"
   ],
   [
-    "/relocation",
-    "Relocation",
-    "Relocation Chart"
+    "/cosmobiology/personal-point-tree",
+    "ChartWithTnp",
+    "Personal Point Tree"
   ],
   [
-    "/geodetic",
-    "Geodetic",
-    "Geodetic Equivalents"
+    "/kabbalah/gematria",
+    "KabbalahGematria",
+    "Gematria ciphers"
   ],
   [
-    "/business/founder-personality",
-    "BusinessBusinessInput",
-    "Founder Personality"
+    "/numerology/pythagorean/life-path",
+    "NumerologyNameDate",
+    "Life Path Number (pythagorean)"
   ],
   [
-    "/business/leadership-style",
-    "BusinessBusinessInput",
-    "Leadership Style"
+    "/numerology/pythagorean/expression",
+    "NumerologyNameDate",
+    "Expression / Destiny (pythagorean)"
   ],
   [
-    "/business/ideal-industry",
-    "BusinessBusinessInput",
-    "Ideal Industries"
+    "/numerology/pythagorean/soul-urge",
+    "NumerologyNameDate",
+    "Soul Urge / Heart's Desire (pythagorean)"
   ],
   [
-    "/business/marketing-style",
-    "BusinessBusinessInput",
-    "Marketing Style"
-  ],
-  [
-    "/business/customer-archetype",
-    "BusinessBusinessInput",
-    "Customer Archetype"
-  ],
-  [
-    "/business/risk-profile",
-    "BusinessBusinessInput",
-    "Risk Profile"
-  ],
-  [
-    "/financial/investor-archetype",
-    "FinancialFinancialInput",
-    "Investor Archetype"
-  ],
-  [
-    "/financial/wealth-house",
-    "FinancialFinancialInput",
-    "2nd & 8th House"
-  ],
-  [
-    "/financial/career-money-style",
-    "FinancialFinancialInput",
-    "Career Money Style"
-  ],
-  [
-    "/financial/risk-tolerance",
-    "FinancialFinancialInput",
-    "Risk Tolerance"
-  ],
-  [
-    "/modern/greene/archetypal-figures",
-    "ChartInput",
-    "Greene: Archetypal Figures"
-  ],
-  [
-    "/modern/greene/saturn-shadow",
-    "ChartInput",
-    "Greene: Saturn Shadow"
-  ],
-  [
-    "/modern/greene/individuation-path",
-    "ChartInput",
-    "Greene: Individuation Path"
-  ],
-  [
-    "/modern/arroyo/element-balance",
-    "ChartInput",
-    "Arroyo: Element Balance"
-  ],
-  [
-    "/modern/arroyo/water-houses-trauma",
-    "ChartInput",
-    "Arroyo: Water Houses Trauma"
-  ],
-  [
-    "/modern/rudhyar/personality-keynote",
-    "ChartInput",
-    "Rudhyar: Personality Keynote"
-  ],
-  [
-    "/destiny-matrix/ladini",
-    "DestinyMatrixLadini",
-    "Destiny Matrix: Ladini Method"
+    "/numerology/pythagorean/personality",
+    "NumerologyNameDate",
+    "Personality (pythagorean)"
   ],
   [
     "/numerology/pythagorean/birthday",
@@ -565,13 +1450,233 @@
     "Birthday (pythagorean)"
   ],
   [
+    "/numerology/pythagorean/maturity",
+    "NumerologyNameDate",
+    "Maturity (pythagorean)"
+  ],
+  [
+    "/numerology/pythagorean/balance",
+    "NumerologyNameDate",
+    "Balance (pythagorean)"
+  ],
+  [
+    "/numerology/pythagorean/challenge",
+    "NumerologyNameDate",
+    "Challenge Cycles (pythagorean)"
+  ],
+  [
+    "/numerology/pythagorean/pinnacles",
+    "NumerologyNameDate",
+    "Pinnacle Cycles (pythagorean)"
+  ],
+  [
+    "/numerology/pythagorean/personal-year",
+    "NumerologyPersonalYear",
+    "Personal Year (pythagorean)"
+  ],
+  [
+    "/numerology/chaldean/life-path",
+    "NumerologyNameDate",
+    "Life Path Number (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/expression",
+    "NumerologyNameDate",
+    "Expression / Destiny (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/soul-urge",
+    "NumerologyNameDate",
+    "Soul Urge / Heart's Desire (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/personality",
+    "NumerologyNameDate",
+    "Personality (chaldean)"
+  ],
+  [
     "/numerology/chaldean/birthday",
     "NumerologyNameDate",
     "Birthday (chaldean)"
   ],
   [
+    "/numerology/chaldean/maturity",
+    "NumerologyNameDate",
+    "Maturity (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/balance",
+    "NumerologyNameDate",
+    "Balance (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/challenge",
+    "NumerologyNameDate",
+    "Challenge Cycles (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/pinnacles",
+    "NumerologyNameDate",
+    "Pinnacle Cycles (chaldean)"
+  ],
+  [
+    "/numerology/chaldean/personal-year",
+    "NumerologyPersonalYear",
+    "Personal Year (chaldean)"
+  ],
+  [
+    "/numerology/kabbalistic/life-path",
+    "NumerologyNameDate",
+    "Life Path Number (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/expression",
+    "NumerologyNameDate",
+    "Expression / Destiny (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/soul-urge",
+    "NumerologyNameDate",
+    "Soul Urge / Heart's Desire (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/personality",
+    "NumerologyNameDate",
+    "Personality (kabbalistic)"
+  ],
+  [
     "/numerology/kabbalistic/birthday",
     "NumerologyNameDate",
     "Birthday (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/maturity",
+    "NumerologyNameDate",
+    "Maturity (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/balance",
+    "NumerologyNameDate",
+    "Balance (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/challenge",
+    "NumerologyNameDate",
+    "Challenge Cycles (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/pinnacles",
+    "NumerologyNameDate",
+    "Pinnacle Cycles (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic/personal-year",
+    "NumerologyPersonalYear",
+    "Personal Year (kabbalistic)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/life-path",
+    "NumerologyNameDate",
+    "Life Path Number (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/expression",
+    "NumerologyNameDate",
+    "Expression / Destiny (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/soul-urge",
+    "NumerologyNameDate",
+    "Soul Urge / Heart's Desire (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/personality",
+    "NumerologyNameDate",
+    "Personality (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/birthday",
+    "NumerologyNameDate",
+    "Birthday (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/maturity",
+    "NumerologyNameDate",
+    "Maturity (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/balance",
+    "NumerologyNameDate",
+    "Balance (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/challenge",
+    "NumerologyNameDate",
+    "Challenge Cycles (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/pinnacles",
+    "NumerologyNameDate",
+    "Pinnacle Cycles (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/kabbalistic-strict/personal-year",
+    "NumerologyPersonalYear",
+    "Personal Year (kabbalistic-strict)"
+  ],
+  [
+    "/numerology/vedic/life-path",
+    "NumerologyNameDate",
+    "Life Path Number (vedic)"
+  ],
+  [
+    "/numerology/vedic/expression",
+    "NumerologyNameDate",
+    "Expression / Destiny (vedic)"
+  ],
+  [
+    "/numerology/vedic/soul-urge",
+    "NumerologyNameDate",
+    "Soul Urge / Heart's Desire (vedic)"
+  ],
+  [
+    "/numerology/vedic/personality",
+    "NumerologyNameDate",
+    "Personality (vedic)"
+  ],
+  [
+    "/numerology/vedic/birthday",
+    "NumerologyNameDate",
+    "Birthday (vedic)"
+  ],
+  [
+    "/numerology/vedic/maturity",
+    "NumerologyNameDate",
+    "Maturity (vedic)"
+  ],
+  [
+    "/numerology/vedic/balance",
+    "NumerologyNameDate",
+    "Balance (vedic)"
+  ],
+  [
+    "/numerology/vedic/challenge",
+    "NumerologyNameDate",
+    "Challenge Cycles (vedic)"
+  ],
+  [
+    "/numerology/vedic/pinnacles",
+    "NumerologyNameDate",
+    "Pinnacle Cycles (vedic)"
+  ],
+  [
+    "/numerology/vedic/personal-year",
+    "NumerologyPersonalYear",
+    "Personal Year (vedic)"
+  ],
+  [
+    "/destiny-matrix/ladini",
+    "DestinyMatrixLadini",
+    "Destiny Matrix: Ladini Method"
   ]
 ]

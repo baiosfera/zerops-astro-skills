@@ -22,6 +22,17 @@ BASE_URL = os.getenv("FREEASTRO_API_URL", "https://api.freeastroapi.com")
 DEFAULT_TIMEOUT = 12.0
 
 
+def load_natal_catalog() -> list:
+    """Loads all 124 calculation operations from assets/natal_endpoints_catalog.json."""
+    catalog_path = Path(__file__).parent.parent / "assets" / "natal_endpoints_catalog.json"
+    if catalog_path.exists():
+        try:
+            return json.loads(catalog_path.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+    return []
+
+
 async def extract_freeastroapi(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
@@ -180,22 +191,95 @@ async def extract_freeastroapi(
         }
     }
 
-    post_endpoints = [
-        ("western_natal_tropical", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_placidus),
-        ("western_natal_tropical_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus),
-        ("western_natal_sidereal_fagan_campanus", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc),
-        ("western_natal_sidereal_lahiri", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri),
-        ("western_natal_insights", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus),
-        ("western_profections_annual", f"{BASE_URL}/api/v1/western/profections/annual", payload_profections),
-        ("numerology_profile_pythagorean", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
-        ("chinese_bazi_true_solar", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
-        ("chinese_bazi_flow", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow),
-        ("chinese_bazi_health", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health),
-        ("chinese_bazi_lifespan", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan),
-        ("vedic_kp_v2", f"{BASE_URL}/api/v2/vedic/kp", payload_kp),
-        ("vedic_vargas", f"{BASE_URL}/api/v2/vedic/vargas", payload_vargas),
-        ("astrocartography_lines", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg),
-    ]
+    catalog_path = Path(__file__).parent.parent / "assets" / "natal_endpoints_catalog.json"
+    endpoints_to_run = []
+
+    if catalog_path.exists():
+        try:
+            cat_data = json.loads(catalog_path.read_text(encoding="utf-8"))
+            for item in cat_data:
+                p = item["path"]
+                m = item.get("method", "POST").upper()
+
+                formatted_p = p.replace("{date}", f"{year:04d}-{month:02d}-{day:02d}")
+                url = f"{BASE_URL}{formatted_p}"
+
+                clean_key = p.strip("/").replace("/", "_").replace("-", "_").replace("{", "").replace("}", "")
+                if clean_key.startswith("api_v1_"):
+                    clean_key = clean_key[7:]
+                elif clean_key.startswith("api_v2_"):
+                    clean_key = clean_key[7:]
+                elif clean_key.startswith("api_v3_"):
+                    clean_key = clean_key[7:]
+
+                body = None
+                if m == "POST":
+                    if "/chinese/" in p:
+                        if "/flow" in p:
+                            body = payload_bazi_flow
+                        elif "/health" in p:
+                            body = payload_bazi_health
+                        elif "/lifespan" in p:
+                            body = payload_bazi_lifespan
+                        else:
+                            body = payload_bazi
+                    elif "/numerology/" in p:
+                        body = payload_numerology
+                    elif "/vedic/" in p:
+                        if "/kp" in p:
+                            body = payload_kp
+                        elif "/vargas" in p:
+                            body = payload_vargas
+                        else:
+                            body = {
+                                "year": year, "month": month, "day": day,
+                                "hour": hour, "minute": minute, "second": 0,
+                                "lat": lat, "lng": lng, "tz_str": tz_str,
+                                "ayanamsha": "lahiri"
+                            }
+                    elif "/astrocartography/" in p:
+                        body = payload_acg
+                    elif "/profections/" in p:
+                        body = payload_profections
+                    elif "/progressions/" in p or "/directions/" in p:
+                        body = {
+                            **base_western_payload,
+                            "target_year": current_year,
+                            "calendar_years": 80
+                        }
+                    elif "/electional/" in p:
+                        body = {
+                            "start_date": f"{current_year}-01-01",
+                            "end_date": f"{current_year}-12-31",
+                            "lat": lat, "lng": lng,
+                            "city": clean_city
+                        }
+                    elif "sidereal" in p or "campanus" in p:
+                        body = payload_tropical_campanus
+                    else:
+                        body = payload_tropical_placidus
+
+                endpoints_to_run.append((clean_key, m, url, body))
+        except Exception:
+            pass
+
+    if not endpoints_to_run:
+        endpoints_to_run = [
+            ("western_natal_tropical", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_placidus),
+            ("western_natal_tropical_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus),
+            ("western_natal_sidereal_fagan_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc),
+            ("western_natal_sidereal_lahiri", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri),
+            ("western_natal_insights", "POST", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus),
+            ("western_profections_annual", "POST", f"{BASE_URL}/api/v1/western/profections/annual", payload_profections),
+            ("numerology_profile_pythagorean", "POST", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
+            ("chinese_bazi_true_solar", "POST", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
+            ("chinese_bazi_flow", "POST", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow),
+            ("chinese_bazi_health", "POST", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health),
+            ("chinese_bazi_lifespan", "POST", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan),
+            ("vedic_kp_v2", "POST", f"{BASE_URL}/api/v2/vedic/kp", payload_kp),
+            ("vedic_vargas", "POST", f"{BASE_URL}/api/v2/vedic/vargas", payload_vargas),
+            ("astrocartography_lines", "POST", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg),
+        ]
 
     results: Dict[str, Any] = {
         "provider": "freeastro",
@@ -215,7 +299,7 @@ async def extract_freeastroapi(
         close_client = True
 
     try:
-        total_endpoints = len(post_endpoints)
+        total_endpoints = len(endpoints_to_run)
         results["endpoint_audits"] = []
 
         # 1. Audit report credits
@@ -227,8 +311,8 @@ async def extract_freeastroapi(
         except Exception:
             results["report_credits"] = {"available": 2, "plan": "Entry"}
 
-        # 2. Execute POST endpoints with atomic delta cache
-        for idx, (key_name, url, body) in enumerate(post_endpoints, 1):
+        # 2. Execute endpoints with atomic delta cache
+        for idx, (key_name, method, url, body) in enumerate(endpoints_to_run, 1):
             # Check delta cache
             if cache_manager and client_hash:
                 cached_data = cache_manager.get_endpoint("freeastro", key_name, client_hash)
@@ -248,7 +332,10 @@ async def extract_freeastroapi(
             t0 = time.perf_counter()
             try:
                 await asyncio.sleep(0.25)
-                resp = await client.post(url, headers=headers, json=body)
+                if method == "GET":
+                    resp = await client.get(url, headers=headers)
+                else:
+                    resp = await client.post(url, headers=headers, json=body)
                 results["calls_made"] += 1
                 lat = (time.perf_counter() - t0) * 1000.0
 
@@ -256,7 +343,10 @@ async def extract_freeastroapi(
                     print(f"⏳ [FreeAstro ({idx}/{total_endpoints})] 429 Rate Limit hit. Backing off 5.0s...", flush=True)
                     await asyncio.sleep(5.0)
                     t0 = time.perf_counter()
-                    resp = await client.post(url, headers=headers, json=body)
+                    if method == "GET":
+                        resp = await client.get(url, headers=headers)
+                    else:
+                        resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
                     lat = (time.perf_counter() - t0) * 1000.0
 
@@ -315,7 +405,7 @@ async def extract_freeastroapi(
                 })
 
         if results["failures"]:
-            results["status"] = "FAILED" if len(results["failures"]) == len(post_endpoints) else "PARTIAL"
+            results["status"] = "FAILED" if len(results["failures"]) == len(endpoints_to_run) else "PARTIAL"
         else:
             results["status"] = "SUCCESS"
 

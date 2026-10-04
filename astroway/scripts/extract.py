@@ -26,6 +26,46 @@ BASE_URL = os.getenv("ASTROWAY_URL", "https://api.astroway.info")
 DEFAULT_TIMEOUT = 16.0
 
 
+def transliterate_to_hebrew(text: str) -> str:
+    """
+    Deterministic phonetic transliterator from Latin alphabet to Hebrew letters.
+    Resolves AstroWay /v1/kabbalah/gematria requirement for pure Hebrew letters.
+    """
+    if not text:
+        return "קטלינה"
+    if any("\u0590" <= ch <= "\u05ff" for ch in text):
+        return text
+
+    mapping = {
+        "sh": "ש", "ch": "ח", "th": "ת", "ph": "פ", "tz": "צ", "ts": "צ",
+        "a": "א", "b": "ב", "c": "ק", "d": "ד", "e": "ה", "f": "פ",
+        "g": "ג", "h": "ה", "i": "י", "j": "י", "k": "ק", "l": "ל",
+        "m": "מ", "n": "נ", "o": "ו", "p": "פ", "q": "ק", "r": "ר",
+        "s": "ס", "t": "ט", "u": "ו", "v": "ו", "w": "ו", "x": "קס",
+        "y": "י", "z": "ז"
+    }
+
+    clean = text.lower().strip()
+    result = []
+    i = 0
+    n = len(clean)
+    while i < n:
+        if i + 2 <= n and clean[i:i+2] in mapping:
+            result.append(mapping[clean[i:i+2]])
+            i += 2
+        elif clean[i] in mapping:
+            result.append(mapping[clean[i]])
+            i += 1
+        elif clean[i].isspace():
+            result.append(" ")
+            i += 1
+        else:
+            i += 1
+
+    res_str = "".join(result)
+    return res_str if res_str.strip() else "קטלינה"
+
+
 def resolve_astroway_payload(
     path: str,
     ref: str,
@@ -116,9 +156,9 @@ def resolve_astroway_payload(
             "targetYear": current_year
         }
 
-    # 11. Kabbalah Gematria
+    # 11. Kabbalah Gematria (Hebrew transliterated)
     if "gematria" in path:
-        return {"text": name}
+        return {"text": transliterate_to_hebrew(name)}
 
     # 12. Dasha Inputs
     if ref == "DashaInput" or "/dashas/" in path:

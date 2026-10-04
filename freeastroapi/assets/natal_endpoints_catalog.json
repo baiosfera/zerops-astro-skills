@@ -1,0 +1,1188 @@
+[
+  {
+    "path": "/api/v1/ai/generate",
+    "method": "POST",
+    "schema": "AtomicReportRequest",
+    "summary": "Generate Atomic Report",
+    "tags": [
+      "AI Reports (Atomic)",
+      "AI Reports"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi",
+    "method": "POST",
+    "schema": "BaziRequest",
+    "summary": "Calculate BaZi (Four Pillars)",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi/dictionary",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Bazi Interaction & Star Dictionary",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi/flow",
+    "method": "POST",
+    "schema": "BaziFlowRequest",
+    "summary": "Calculate BaZi Flow (Annual/Monthly Pillars)",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi/health",
+    "method": "POST",
+    "schema": "BaziHealthRequest",
+    "summary": "Analyze BaZi Constitution & Health Tendencies",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi/lifespan",
+    "method": "POST",
+    "schema": "BaziLifespanRequest",
+    "summary": "Calculate Neijing Life Curve (Jing/Qi/Shen)",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/bazi/time-correction",
+    "method": "POST",
+    "schema": "BaziTimeCorrectionRequest",
+    "summary": "Calculate True Solar Time Corrections",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/calendar/{date}",
+    "method": "GET",
+    "schema": "",
+    "summary": "Convert Gregorian Date to Chinese Calendar",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/chinese/today",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Current BaZi Pillars (Time Now)",
+    "tags": [
+      "Chinese",
+      "chinese"
+    ]
+  },
+  {
+    "path": "/api/v1/ephemeris",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Ephemeris",
+    "tags": [
+      "Ephemeris",
+      "ephemeris"
+    ]
+  },
+  {
+    "path": "/api/v1/ephemeris/calculate",
+    "method": "POST",
+    "schema": "EphemerisRequest",
+    "summary": "Calculate Ephemeris",
+    "tags": [
+      "Ephemeris",
+      "ephemeris"
+    ]
+  },
+  {
+    "path": "/api/v1/geo/search",
+    "method": "GET",
+    "schema": "",
+    "summary": "Search Cities (Free)",
+    "tags": [
+      "Geo (Deprecated Feb 3, 2026)",
+      "geo"
+    ]
+  },
+  {
+    "path": "/api/v1/horoscope/daily/bulk",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Bulk Horoscope",
+    "tags": [
+      "Horoscope"
+    ]
+  },
+  {
+    "path": "/api/v1/horoscope/daily/personal",
+    "method": "POST",
+    "schema": "routers__v1__horoscope__PersonalHoroscopeRequest",
+    "summary": "Get Personal Horoscope",
+    "tags": [
+      "Horoscope"
+    ]
+  },
+  {
+    "path": "/api/v1/horoscope/daily/sign",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Sign Horoscope",
+    "tags": [
+      "Horoscope"
+    ]
+  },
+  {
+    "path": "/api/v1/moon/month",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Moon Month",
+    "tags": [
+      "Moon Phase"
+    ]
+  },
+  {
+    "path": "/api/v1/moon/phase",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Moon Phase",
+    "tags": [
+      "Moon Phase"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/calculate",
+    "method": "POST",
+    "schema": "NatalChartRequest",
+    "summary": "Calculate Natal",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/chart/",
+    "method": "POST",
+    "schema": "ExperimentalNatalChartRequest",
+    "summary": "Experimental Natal Chart",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/chart/solar-return",
+    "method": "POST",
+    "schema": "ExperimentalSolarReturnChartRequest",
+    "summary": "Experimental Solar Return Chart",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/chart/transits",
+    "method": "POST",
+    "schema": "ExperimentalTransitChartRequest",
+    "summary": "Experimental Transits Chart",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/experimental",
+    "method": "POST",
+    "schema": "",
+    "summary": "Experimental Natal Chart Closed",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/experimental/solar-return",
+    "method": "POST",
+    "schema": "ExperimentalSolarReturnChartRequest",
+    "summary": "Experimental Solar Return Chart",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/experimental/transits",
+    "method": "POST",
+    "schema": "ExperimentalTransitChartRequest",
+    "summary": "Experimental Transits Chart",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/report-credits",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Report Credits For Api Key",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/natal/report/{job_id}",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Psychological Report",
+    "tags": [
+      "Natal",
+      "natal"
+    ]
+  },
+  {
+    "path": "/api/v1/numerology/alphabets",
+    "method": "GET",
+    "schema": "",
+    "summary": "List immutable numerology alphabet and Gematria tables",
+    "tags": [
+      "Numerology",
+      "numerology"
+    ]
+  },
+  {
+    "path": "/api/v1/numerology/methods",
+    "method": "GET",
+    "schema": "",
+    "summary": "List supported numerology methods and policies",
+    "tags": [
+      "Numerology",
+      "numerology"
+    ]
+  },
+  {
+    "path": "/api/v1/numerology/profile",
+    "method": "POST",
+    "schema": "NumerologyProfileRequest",
+    "summary": "Calculate a versioned numerology profile",
+    "tags": [
+      "Numerology",
+      "numerology"
+    ]
+  },
+  {
+    "path": "/api/v1/sky-events",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Sky Events",
+    "tags": [
+      "Sky Events",
+      "sky-events"
+    ]
+  },
+  {
+    "path": "/api/v1/stats/public",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Public Stats",
+    "tags": [
+      "Public Stats"
+    ]
+  },
+  {
+    "path": "/api/v1/transits/calculate",
+    "method": "POST",
+    "schema": "TransitRequest",
+    "summary": "Calculate Transits",
+    "tags": [
+      "Transits",
+      "transits"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/batch",
+    "method": "POST",
+    "schema": "VedicBatchRequest",
+    "summary": "Run Vedic Batch",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/calculate",
+    "method": "POST",
+    "schema": "VedicChartRequest",
+    "summary": "Calculate Full Chart",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/chart",
+    "method": "POST",
+    "schema": "routers__v1__vedic__BaseChartRequest",
+    "summary": "Get Basic Chart",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/dasha",
+    "method": "POST",
+    "schema": "routers__v1__vedic__DashaRequest",
+    "summary": "Get Dasha",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/dasha/insights",
+    "method": "POST",
+    "schema": "routers__v1__vedic__DashaRequest",
+    "summary": "Get Dasha Insights",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/gochar/timeline",
+    "method": "POST",
+    "schema": "VedicGocharTimelineRequest",
+    "summary": "Get Gochar Timeline",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/gochar/timeline/insights",
+    "method": "POST",
+    "schema": "VedicGocharTimelineRequest",
+    "summary": "Get Gochar Timeline Insights",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/panchang",
+    "method": "POST",
+    "schema": "routers__v1__vedic__PanchangRequest",
+    "summary": "Get Panchang",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/strength",
+    "method": "POST",
+    "schema": "routers__v1__vedic__BaseChartRequest",
+    "summary": "Get Strength",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/transits/insights",
+    "method": "POST",
+    "schema": "VedicTransitInsightsRequest",
+    "summary": "Get Transit Insights",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/vargas",
+    "method": "POST",
+    "schema": "VargaRequest",
+    "summary": "Get Vargas",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/vedic/yogas",
+    "method": "POST",
+    "schema": "routers__v1__vedic__BaseChartRequest",
+    "summary": "Get Yogas",
+    "tags": [
+      "Vedic"
+    ]
+  },
+  {
+    "path": "/api/v1/western/astrocartography/city-check",
+    "method": "POST",
+    "schema": "AstrocartographyCityCheckRequest",
+    "summary": "Get Astrocartography City Check",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/astrocartography/lines",
+    "method": "POST",
+    "schema": "AstrocartographyLinesRequest",
+    "summary": "Get Astrocartography Lines",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/astrocartography/parans",
+    "method": "POST",
+    "schema": "AstrocartographyParansRequest",
+    "summary": "Get Astrocartography Parans",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/astrocartography/recommendations",
+    "method": "POST",
+    "schema": "AstrocartographyRecommendationsRequest",
+    "summary": "Get Astrocartography Recommendations",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/astrocartography/relocation",
+    "method": "POST",
+    "schema": "AstrocartographyRelocationRequest",
+    "summary": "Get Astrocartography Relocation",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/directions/primary",
+    "method": "POST",
+    "schema": "PrimaryDirectionsRequest",
+    "summary": "Get Primary Directions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/directions/primary/calendar",
+    "method": "POST",
+    "schema": "PrimaryDirectionsRequest",
+    "summary": "Get Primary Directions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/directions/primary/exact-aspects",
+    "method": "POST",
+    "schema": "PrimaryDirectionsRequest",
+    "summary": "Get Primary Directions Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/directions/primary/search",
+    "method": "POST",
+    "schema": "PrimaryDirectionsRequest",
+    "summary": "Search Primary Directions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/natal/insights",
+    "method": "POST",
+    "schema": "NatalInsightsRequest",
+    "summary": "Get Natal Insights",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/natal/insights/index-documents",
+    "method": "POST",
+    "schema": "NatalInsightsRequest",
+    "summary": "Get Natal Insight Index Documents",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/profections/annual",
+    "method": "POST",
+    "schema": "AnnualProfectionRequest",
+    "summary": "Get Annual Profections",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/converse-secondary",
+    "method": "POST",
+    "schema": "ConverseSecondaryProgressionsRequest",
+    "summary": "Get Converse Secondary Progressions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/converse-secondary/calendar",
+    "method": "POST",
+    "schema": "ProgressionCalendarRequest",
+    "summary": "Get Converse Secondary Progressions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/converse-secondary/exact-aspects",
+    "method": "POST",
+    "schema": "ExactAspectSearchRequest",
+    "summary": "Search Converse Secondary Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/converse-secondary/exact-ingresses",
+    "method": "POST",
+    "schema": "ExactIngressSearchRequest",
+    "summary": "Search Converse Secondary Exact Ingresses",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quaternary",
+    "method": "POST",
+    "schema": "QuaternaryProgressionsRequest",
+    "summary": "Get Quaternary Progressions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quaternary/calendar",
+    "method": "POST",
+    "schema": "ProgressionCalendarRequest",
+    "summary": "Get Quaternary Progressions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quaternary/exact-aspects",
+    "method": "POST",
+    "schema": "ExactAspectSearchRequest",
+    "summary": "Search Quaternary Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quaternary/exact-ingresses",
+    "method": "POST",
+    "schema": "ExactIngressSearchRequest",
+    "summary": "Search Quaternary Exact Ingresses",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quotidian",
+    "method": "POST",
+    "schema": "QuotidianProgressionsRequest",
+    "summary": "Get Quotidian Progressions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quotidian/calendar",
+    "method": "POST",
+    "schema": "ProgressionCalendarRequest",
+    "summary": "Get Quotidian Progressions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quotidian/exact-aspects",
+    "method": "POST",
+    "schema": "ExactAspectSearchRequest",
+    "summary": "Search Quotidian Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/quotidian/exact-ingresses",
+    "method": "POST",
+    "schema": "ExactIngressSearchRequest",
+    "summary": "Search Quotidian Exact Ingresses",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/secondary",
+    "method": "POST",
+    "schema": "SecondaryProgressionsRequest",
+    "summary": "Get Secondary Progressions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/secondary/calendar",
+    "method": "POST",
+    "schema": "ProgressionCalendarRequest",
+    "summary": "Get Secondary Progressions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/secondary/exact-aspects",
+    "method": "POST",
+    "schema": "ExactAspectSearchRequest",
+    "summary": "Search Secondary Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/secondary/exact-ingresses",
+    "method": "POST",
+    "schema": "ExactIngressSearchRequest",
+    "summary": "Search Secondary Exact Ingresses",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/tertiary",
+    "method": "POST",
+    "schema": "TertiaryProgressionsRequest",
+    "summary": "Get Tertiary Progressions",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/tertiary/calendar",
+    "method": "POST",
+    "schema": "ProgressionCalendarRequest",
+    "summary": "Get Tertiary Progressions Calendar",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/tertiary/exact-aspects",
+    "method": "POST",
+    "schema": "ExactAspectSearchRequest",
+    "summary": "Search Tertiary Exact Aspects",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/progressions/tertiary/exact-ingresses",
+    "method": "POST",
+    "schema": "ExactIngressSearchRequest",
+    "summary": "Search Tertiary Exact Ingresses",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/returns/calculate",
+    "method": "POST",
+    "schema": "PlanetReturnRequest",
+    "summary": "Get Planet Return",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/signs/midheaven",
+    "method": "POST",
+    "schema": "NatalChartRequest",
+    "summary": "Get Midheaven Sign",
+    "tags": [
+      "Western Signs",
+      "Western Signs"
+    ]
+  },
+  {
+    "path": "/api/v1/western/signs/moon",
+    "method": "POST",
+    "schema": "NatalChartRequest",
+    "summary": "Get Moon Sign",
+    "tags": [
+      "Western Signs",
+      "Western Signs"
+    ]
+  },
+  {
+    "path": "/api/v1/western/signs/rising",
+    "method": "POST",
+    "schema": "NatalChartRequest",
+    "summary": "Get Rising Sign",
+    "tags": [
+      "Western Signs",
+      "Western Signs"
+    ]
+  },
+  {
+    "path": "/api/v1/western/signs/sun",
+    "method": "POST",
+    "schema": "NatalChartRequest",
+    "summary": "Get Sun Sign",
+    "tags": [
+      "Western Signs",
+      "Western Signs"
+    ]
+  },
+  {
+    "path": "/api/v1/western/solar/calculate",
+    "method": "POST",
+    "schema": "SolarReturnRequest",
+    "summary": "Get Solar Return",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/transits/insights",
+    "method": "POST",
+    "schema": "TransitTimelineRequest",
+    "summary": "Get Transit Insights",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/transits/search",
+    "method": "POST",
+    "schema": "TransitSearchRequest",
+    "summary": "Search Transits",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/transits/timeline",
+    "method": "POST",
+    "schema": "TransitTimelineRequest",
+    "summary": "Get Transits Timeline",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v1/western/transits/timeline/index-documents",
+    "method": "POST",
+    "schema": "TransitTimelineRequest",
+    "summary": "Get Transits Timeline Index Documents",
+    "tags": [
+      "Western",
+      "Western Synastry"
+    ]
+  },
+  {
+    "path": "/api/v2/geo/search",
+    "method": "GET",
+    "schema": "",
+    "summary": "Search Cities (v2)",
+    "tags": [
+      "Geo v2",
+      "geo-v2"
+    ]
+  },
+  {
+    "path": "/api/v2/horoscope/daily/personal",
+    "method": "POST",
+    "schema": "routers__v2__horoscope__PersonalHoroscopeRequest",
+    "summary": "Get Personal Horoscope",
+    "tags": [
+      "Horoscope v2"
+    ]
+  },
+  {
+    "path": "/api/v2/horoscope/daily/sign",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Sign Horoscope",
+    "tags": [
+      "Horoscope v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/calculate",
+    "method": "POST",
+    "schema": "CalculateRequest",
+    "summary": "Get Full Vedic Calculate (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/chart",
+    "method": "POST",
+    "schema": "ChartRequest",
+    "summary": "Get Vedic Chart (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/chat",
+    "method": "POST",
+    "schema": "VedicChatRequest",
+    "summary": "Hosted Vedic Chat (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/dasha",
+    "method": "POST",
+    "schema": "routers__v2__vedic__DashaRequest",
+    "summary": "Get Vimshottari Dasha (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/dasha/insights",
+    "method": "POST",
+    "schema": "routers__v2__vedic__DashaRequest",
+    "summary": "Get Vimshottari Dasha Insights (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/gochar/timeline",
+    "method": "POST",
+    "schema": "GocharTimelineRequest",
+    "summary": "Get Vedic Gochar Timeline (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/gochar/timeline/insights",
+    "method": "POST",
+    "schema": "GocharTimelineRequest",
+    "summary": "Get Vedic Gochar Timeline Insights (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/horoscope/daily/personal",
+    "method": "POST",
+    "schema": "DailyVedicHoroscopeRequest",
+    "summary": "Get Daily Vedic Horoscope (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/kp",
+    "method": "POST",
+    "schema": "KPChartRequest",
+    "summary": "Get Complete KP Chart (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/kp/render",
+    "method": "POST",
+    "schema": "KPChartRenderRequest",
+    "summary": "Render KP Chart and Tables (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/muhurat/personalized-search",
+    "method": "POST",
+    "schema": "VedicMuhuratPersonalizedSearchRequest",
+    "summary": "Search auspicious Vedic windows with natal personalization (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/muhurat/search",
+    "method": "POST",
+    "schema": "VedicMuhuratSearchRequest",
+    "summary": "Search auspicious Vedic windows (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/panchang",
+    "method": "POST",
+    "schema": "routers__v2__vedic__PanchangRequest",
+    "summary": "Get Panchang (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/qa",
+    "method": "POST",
+    "schema": "VedicQARequest",
+    "summary": "Answer Vedic question (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/strength",
+    "method": "POST",
+    "schema": "routers__v2__vedic__BaseChartRequest",
+    "summary": "Get Vedic Strength (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/vargas",
+    "method": "POST",
+    "schema": "VargasRequest",
+    "summary": "Get Vedic Vargas (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/visual/chart",
+    "method": "POST",
+    "schema": "VedicVisualChartRequest",
+    "summary": "Render Vedic Visual Chart (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/vedic/yogas",
+    "method": "POST",
+    "schema": "routers__v2__vedic__BaseChartRequest",
+    "summary": "Get Vedic Yogas (v2)",
+    "tags": [
+      "Vedic v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/chart-similarity/famous-people",
+    "method": "POST",
+    "schema": "FamousPeopleChartSimilarityRequest",
+    "summary": "Compare Famous People Chart Similarity",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/chat",
+    "method": "POST",
+    "schema": "WesternChatRequest",
+    "summary": "Hosted Western Astrology Chat (v2)",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/invest-money/search",
+    "method": "POST",
+    "schema": "InvestMoneyElectionSearchRequest",
+    "summary": "Search Invest Money Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/job-audition/search",
+    "method": "POST",
+    "schema": "JobAuditionElectionSearchRequest",
+    "summary": "Search Job Audition Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/legal-proceedings/search",
+    "method": "POST",
+    "schema": "LegalProceedingsElectionSearchRequest",
+    "summary": "Search Legal Proceedings Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/making-contracts/search",
+    "method": "POST",
+    "schema": "MakingContractsElectionSearchRequest",
+    "summary": "Search Making Contracts Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/move-into-new-home/search",
+    "method": "POST",
+    "schema": "MoveIntoNewHomeElectionSearchRequest",
+    "summary": "Search Move Into New Home Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/physical-examination/search",
+    "method": "POST",
+    "schema": "PhysicalExaminationElectionSearchRequest",
+    "summary": "Search Physical Examination Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/purchase-car/search",
+    "method": "POST",
+    "schema": "PurchaseCarElectionSearchRequest",
+    "summary": "Search Purchase Car Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/purchase-property/search",
+    "method": "POST",
+    "schema": "PurchasePropertyElectionSearchRequest",
+    "summary": "Search Purchase Property Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/starting-journey/search",
+    "method": "POST",
+    "schema": "StartingJourneyElectionSearchRequest",
+    "summary": "Search Starting Journey Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v2/western/electional/wedding/search",
+    "method": "POST",
+    "schema": "WeddingElectionSearchRequest",
+    "summary": "Search Wedding Elections",
+    "tags": [
+      "Western v2"
+    ]
+  },
+  {
+    "path": "/api/v3/horoscope/daily/personal",
+    "method": "POST",
+    "schema": "routers__v3__horoscope__PersonalHoroscopeRequest",
+    "summary": "Get Personal Horoscope",
+    "tags": [
+      "Horoscope v3"
+    ]
+  },
+  {
+    "path": "/api/v3/horoscope/daily/sign",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Sign Horoscope",
+    "tags": [
+      "Horoscope v3"
+    ]
+  },
+  {
+    "path": "/api/v3/horoscope/weekly/personal",
+    "method": "POST",
+    "schema": "WeeklyPersonalHoroscopeRequest",
+    "summary": "Get Weekly Personal Horoscope",
+    "tags": [
+      "Horoscope v3"
+    ]
+  },
+  {
+    "path": "/moon-pulse/v1/moon",
+    "method": "GET",
+    "schema": "",
+    "summary": "Get Garmin-safe Moon Pulse data",
+    "tags": [
+      "Moon Pulse"
+    ]
+  },
+  {
+    "path": "/natal",
+    "method": "POST",
+    "schema": "SimpleNatalRequest",
+    "summary": "Calculate Simple Natal",
+    "tags": [
+      "Simple Natal",
+      "Simple Natal"
+    ]
+  }
+]

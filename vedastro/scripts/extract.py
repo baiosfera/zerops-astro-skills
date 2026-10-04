@@ -67,10 +67,13 @@ async def extract_vedastro(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
     client: Optional[httpx.AsyncClient] = None,
-    include_atomic: bool = False
+    include_atomic: bool = False,
+    cache_manager: Optional[Any] = None,
+    client_hash: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Extracts complete VedAstro PRO calculations for the given client data.
+    Supports atomic delta-cache skipping and recording.
     """
     key = api_key or os.getenv("VEDASTRO_API_KEY") or os.getenv("vedastro_apiKey")
     headers = {
@@ -187,6 +190,7 @@ async def extract_vedastro(
         "calls_made": 0,
         "data": {},
         "raw_responses": {},
+        "endpoint_audits": [],
         "failures": []
     }
 
@@ -196,14 +200,33 @@ async def extract_vedastro(
         close_client = True
 
     try:
-        for idx, (key_name, url, body) in enumerate(endpoints):
-            if idx > 0:
+        total_eps = len(endpoints)
+        for idx, (key_name, url, body) in enumerate(endpoints, 1):
+            # 1. Delta cache check
+            if cache_manager and client_hash:
+                cached_data = cache_manager.get_endpoint("vedastro", key_name, client_hash)
+                if cached_data is not None:
+                    print(f"⚡ [VedAstro ({idx}/{total_eps})] {key_name} -> [CACHED / SKIP]", flush=True)
+                    results["data"][key_name] = cached_data
+                    results["raw_responses"][key_name] = cached_data
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "CACHED",
+                        "http_status": 200,
+                        "latency_ms": 0.0,
+                        "error": None
+                    })
+                    continue
+
+            if results["calls_made"] > 0:
                 # Polite pacing to avoid API throttling
                 await asyncio.sleep(0.35)
 
+            t0 = time.perf_counter()
             try:
                 resp = await client.post(url, headers=headers, json=body)
                 results["calls_made"] += 1
+                lat = (time.perf_counter() - t0) * 1000.0
                 if resp.status_code == 200:
                     data = resp.json()
                     results["raw_responses"][key_name] = data
@@ -211,23 +234,80 @@ async def extract_vedastro(
                     if isinstance(data, dict):
                         status_field = str(data.get("Status", "")).lower()
                         if status_field == "pass":
-                            results["data"][key_name] = data.get("Payload", data)
+                            payload_val = data.get("Payload", data)
+                            results["data"][key_name] = payload_val
+                            if cache_manager and client_hash:
+                                cache_manager.set_endpoint("vedastro", key_name, client_hash, payload_val)
+                            print(f"✨ [VedAstro ({idx}/{total_eps})] {key_name} -> [200 OK Pass] ({lat:.1f}ms)", flush=True)
+                            results["endpoint_audits"].append({
+                                "endpoint": key_name,
+                                "status": "SUCCESS",
+                                "http_status": 200,
+                                "latency_ms": lat,
+                                "error": None
+                            })
                         elif status_field == "fail":
                             err_msg = str(data.get("Payload", "VedAstro calculation returned Status: Fail"))
+                            print(f"❌ [VedAstro ({idx}/{total_eps})] {key_name} -> [FAIL]: {err_msg}", flush=True)
                             results["failures"].append({"endpoint": key_name, "error": err_msg})
                             results["data"][key_name] = {"error": err_msg, "status": "FAIL"}
+                            results["endpoint_audits"].append({
+                                "endpoint": key_name,
+                                "status": "FAILED",
+                                "http_status": 200,
+                                "latency_ms": lat,
+                                "error": err_msg
+                            })
                         else:
                             results["data"][key_name] = data
+                            if cache_manager and client_hash:
+                                cache_manager.set_endpoint("vedastro", key_name, client_hash, data)
+                            print(f"✨ [VedAstro ({idx}/{total_eps})] {key_name} -> [200 OK] ({lat:.1f}ms)", flush=True)
+                            results["endpoint_audits"].append({
+                                "endpoint": key_name,
+                                "status": "SUCCESS",
+                                "http_status": 200,
+                                "latency_ms": lat,
+                                "error": None
+                            })
                     else:
                         results["data"][key_name] = data
+                        if cache_manager and client_hash:
+                            cache_manager.set_endpoint("vedastro", key_name, client_hash, data)
+                        print(f"✨ [VedAstro ({idx}/{total_eps})] {key_name} -> [200 OK] ({lat:.1f}ms)", flush=True)
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "SUCCESS",
+                            "http_status": 200,
+                            "latency_ms": lat,
+                            "error": None
+                        })
                 else:
+                    lat = (time.perf_counter() - t0) * 1000.0
                     err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                    print(f"❌ [VedAstro ({idx}/{total_eps})] {key_name} -> [HTTP {resp.status_code}]: {err_msg}", flush=True)
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "FAILED",
+                        "http_status": resp.status_code,
+                        "latency_ms": lat,
+                        "error": err_msg
+                    })
             except Exception as exc:
+                lat = (time.perf_counter() - t0) * 1000.0
                 err_msg = f"Exception: {type(exc).__name__} - {str(exc)}"
+                print(f"❌ [VedAstro ({idx}/{total_eps})] {key_name} -> [EXC]: {err_msg}", flush=True)
                 results["failures"].append({"endpoint": key_name, "error": err_msg})
                 results["data"][key_name] = {"error": err_msg}
+                results["endpoint_audits"].append({
+                    "endpoint": key_name,
+                    "status": "FAILED",
+                    "http_status": 500,
+                    "latency_ms": lat,
+                    "error": err_msg
+                })
 
         if results["failures"]:
             results["status"] = "FAILED" if len(results["failures"]) == len(endpoints) else "PARTIAL"
