@@ -26,6 +26,24 @@ def load_env_file(env_path: str = "/etc/environment") -> dict:
                     if key not in os.environ:
                         os.environ[key] = val
 
+    # Buscar también en archivos locales si existen
+    for extra_p in [Path("/var/www/astrokey.env"), Path("/var/www/.env")]:
+        if extra_p.exists():
+            with open(extra_p, "r", encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    if line.startswith("export "):
+                        line = line[7:].strip()
+                    key, val = line.split("=", 1)
+                    key = key.strip()
+                    val = val.strip().strip("'\"")
+                    if key and val:
+                        loaded[key] = val
+                        if key not in os.environ:
+                            os.environ[key] = val
+
     # Source zeropsenv.sh if present
     zp_env = Path("/var/www/zeropsenv.sh")
     if zp_env.exists():
@@ -78,6 +96,15 @@ class PipelineConfig:
         if len(key) <= 8:
             return "***"
         return f"{key[:4]}...{key[-4:]}"
+
+    def reload(self):
+        load_env_file()
+        self.freeastro_api_key = _get_key_tolerant("FREEASTRO_API_KEY", "FREEASTROAPI_KEY", "freeastroapi_key")
+        self.astrology_api_key = _get_key_tolerant("ASTROLOGY_API_IO", "astrology_api_io", "ASTROLOGY_API_KEY", "astrology_apiKey", "astrologyapi_key")
+        self.vedastro_api_key = _get_key_tolerant("VEDASTRO_API_KEY", "vedastro_apiKey", "VEDASTRO_KEY")
+        self.astroway_api_key = _get_key_tolerant("ASTROWAY_API_KEY", "astroway_apiKey", "ASTROWAY_KEY")
+        self.kundali_mcp_key = _get_key_tolerant("KUNDALI_MCP_KEY", "kundali_mcpKey", "KUNDALI_KEY")
+        self.nasa_api_key = _get_key_tolerant("NASA_API_KEY", "nasa_apiKey", default="DEMO_KEY")
 
     def report_status(self) -> dict:
         return {

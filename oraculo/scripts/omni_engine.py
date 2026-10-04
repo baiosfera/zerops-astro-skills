@@ -62,7 +62,25 @@ def parse_client_file(file_path: Path) -> dict:
         elif file_path.suffix.lower() == ".md" and file_path.with_suffix(".txt").exists():
             file_path = file_path.with_suffix(".txt")
         else:
-            raise FileNotFoundError(f"Archivo de consultante no encontrado: {file_path}")
+            # Resiliencia Diacrítica y Normalización Unicode (NFC/NFD/acento-insensible)
+            import unicodedata
+            def _strip_accents(s: str) -> str:
+                return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn").lower()
+
+            target_stem = _strip_accents(file_path.stem)
+            parent_dir = file_path.parent
+            resolved = None
+            if parent_dir.is_dir():
+                for candidate in parent_dir.iterdir():
+                    if candidate.is_file() and candidate.suffix.lower() in [".md", ".txt", ".json"]:
+                        if _strip_accents(candidate.stem) == target_stem:
+                            resolved = candidate
+                            break
+            if resolved and resolved.exists():
+                print(f"ℹ️ Archivo resuelto automáticamente por coincidencia diacrítica: {resolved}")
+                file_path = resolved
+            else:
+                raise FileNotFoundError(f"Archivo de consultante no encontrado: {file_path}")
     
     content = file_path.read_text(encoding="utf-8").strip()
     data = {}
@@ -238,9 +256,14 @@ def main():
     parser.add_argument("--allow-partial", action="store_true", help="Permitir compilación parcial ignorando la compuerta estricta de cobertura completa.")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
     parser.add_argument("--include-atomic", action="store_true", help="Incluir los 191 calculadores atómicos de VedAstro (197 endpoints totales)")
+    parser.add_argument("--astrology-key", help="Clave de Astrology-API.io para sobrescribir dinámicamente la del entorno")
     parser.add_argument("--dry-run", action="store_true", help="Dry run offline")
 
     args = parser.parse_args()
+
+    if getattr(args, "astrology_key", None):
+        os.environ["ASTROLOGY_API_IO"] = args.astrology_key.strip()
+        config.reload()
 
     input_file = args.file_flag or args.file_pos
     file_data = {}

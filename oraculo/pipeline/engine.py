@@ -624,10 +624,15 @@ class ExtractionEngine:
             "calculation_type": "all"
         }
 
+        lunar_dir = self.cache.cache_dir / "lunar"
+        has_lunar_files = lunar_dir.is_dir() and any(lunar_dir.glob("*.json"))
+
         lunar_ok = bool(
-            self.cache.get("lunar", "calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)})
+            has_lunar_files
+            or self.cache.get("lunar", "calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)})
             or self.cache.get("lunar", "calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})
             or self.cache.get("mcp", "lunar_calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})
+            or self.cache.get("mcp", "lunar_calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)})
         )
         zmanim_ok = bool(
             self.cache.get("zmanim", "zmanim_get_daily_times", zm_args)
@@ -1187,9 +1192,9 @@ class ExtractionEngine:
 
             # 6. Dispatch MCPs
             async def _run_mcps():
-                run_lunar = should_run("lunar", "mcp")
+                run_lunar = should_run("lunar", "mcp", "lunar_bazi", "bazi")
                 run_zmanim = should_run("zmanim", "mcp")
-                run_kundali = should_run("kundali", "mcp")
+                run_kundali = should_run("kundali", "mcp", "vedic")
 
                 if not (run_lunar or run_zmanim or run_kundali):
                     return
