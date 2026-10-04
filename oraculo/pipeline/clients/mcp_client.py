@@ -92,8 +92,10 @@ class UnifiedMcpClient:
         return None
 
     async def call_tool(self, server_name: str, tool_name: str, arguments: dict) -> dict:
-        # Check cache first
-        cached = self.cache.get("mcp", f"{server_name}_{tool_name}", arguments)
+        # Check cache first: check dedicated engine directory, then legacy mcp directory
+        cached = self.cache.get(server_name, tool_name, arguments)
+        if cached is None:
+            cached = self.cache.get("mcp", f"{server_name}_{tool_name}", arguments)
         if cached is not None:
             return cached
 
@@ -140,8 +142,8 @@ class UnifiedMcpClient:
                         if not payload:
                             payload = {"result": str(result)}
 
-                        # Cache output
-                        self.cache.set("mcp", f"{server_name}_{tool_name}", arguments, payload, http_status=200)
+                        # Cache output in dedicated provider folder
+                        self.cache.set(server_name, tool_name, arguments, payload, http_status=200)
                         return payload
 
             except Exception as e:

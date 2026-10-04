@@ -90,6 +90,8 @@ def resolve_astroway_payload(
     Constructs the exact schema-compliant payload for any AstroWay endpoint,
     fixing composite relocation, targetDate, targetAge, and specialized inputs.
     """
+    birth_year = int(date_str.split("-")[0]) if "-" in date_str else 1990
+
     # 1. Composite Relocation Chart
     if path in ("/relocation", "/v1/relocation"):
         return {
@@ -147,7 +149,7 @@ def resolve_astroway_payload(
     if "rave-new-years" in path:
         return {
             **base_payload,
-            "startYear": int(year),
+            "startYear": birth_year,
             "endYear": int(current_year)
         }
 
@@ -187,7 +189,7 @@ def resolve_astroway_payload(
             }
         if "year-pillar-decade" in path:
             return {
-                "startYear": int(year)
+                "startYear": birth_year
             }
         if "luck" in path or ref == "BaziLuckInput":
             return bazi_luck_payload

@@ -77,51 +77,77 @@ class ExtractionEngine:
 
             prov_results = [
                 r for r in results_list
-                if r.provider == provider or (provider == "freeastro" and r.provider in ("freeastro", "freeastroapi")) or (provider == "mcp" and "mcp" in r.provider)
+                if r.provider == provider
+                or (provider == "freeastro" and r.provider in ("freeastro", "freeastroapi"))
+                or (provider == "mcp" and "mcp" in r.provider)
+                or (provider == "lunar" and r.provider in ("lunar", "lunar_mcp"))
+                or (provider == "zmanim" and r.provider in ("zmanim", "zmanim_mcp"))
+                or (provider == "kundali" and r.provider in ("kundali", "kundali_mcp"))
             ]
 
-            audit_record = None
-            if is_cached and audit_file.exists():
+            effective_cached = is_cached or (bool(prov_results) and all(r.status == "CACHED" for r in prov_results))
+
+            # Read historical credit data if present to preserve balances on cached re-runs
+            prev_credits = {}
+            if audit_file.exists():
                 try:
                     with open(audit_file, "r", encoding="utf-8") as f:
-                        audit_record = json.load(f)
-                    if isinstance(audit_record, dict):
-                        audit_record["is_cached"] = True
-                        audit_record["timestamp_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+                        prev_rec = json.load(f)
+                    if isinstance(prev_rec, dict):
+                        prev_credits = prev_rec.get("credits_audit", {})
                 except Exception:
-                    audit_record = None
+                    pass
 
-            if audit_record is None:
-                consultant_name = client_data.get("preferred_name") or client_data.get("name") or "Unknown"
-                audit_record = {
-                    "provider": provider,
-                    "consultant": consultant_name,
-                    "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
-                    "status": status,
-                    "is_cached": is_cached,
-                    "total_endpoints": len(prov_results),
-                    "success_count": len([r for r in prov_results if r.status in ("SUCCESS", "CACHED")]),
-                    "failure_count": len([r for r in prov_results if r.status == "FAILED"]),
-                    "latency_ms": round(latency_ms, 2),
-                    "credits_audit": {
-                        "astroway_credits_remaining": credit_stats.get("astroway_credits_remaining"),
-                        "astroway_credits_used": credit_stats.get("astroway_credits_used"),
-                        "freeastro_report_credits": credit_stats.get("freeastro_report_credits"),
-                        "calls_made": credit_stats.get("calls_made", {}).get(provider, 0)
-                    },
-                    "endpoints": [
-                        {
-                            "endpoint": r.endpoint_key,
-                            "status": r.status,
-                            "http_status": r.http_status,
-                            "latency_ms": round(r.latency_ms, 2),
-                            "error": r.error
-                        }
-                        for r in prov_results
-                    ]
-                }
-                with open(audit_file, "w", encoding="utf-8") as f:
-                    json.dump(audit_record, f, indent=2, ensure_ascii=False)
+            consultant_name = client_data.get("preferred_name") or client_data.get("name") or "Unknown"
+
+            rem_aw = credit_stats.get("astroway_credits_remaining")
+            if rem_aw is None:
+                rem_aw = prev_credits.get("astroway_credits_remaining")
+
+            used_aw = credit_stats.get("astroway_credits_used")
+            if used_aw is None:
+                used_aw = prev_credits.get("astroway_credits_used")
+
+            rep_fa = credit_stats.get("freeastro_report_credits")
+            if rep_fa is None:
+                rep_fa = prev_credits.get("freeastro_report_credits")
+
+            calls_val = credit_stats.get("calls_made", {}).get(provider)
+            if calls_val is None:
+                if effective_cached:
+                    calls_val = 0
+                else:
+                    calls_val = prev_credits.get("calls_made", len(prov_results))
+
+            audit_record = {
+                "provider": provider,
+                "consultant": consultant_name,
+                "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                "status": status,
+                "is_cached": effective_cached,
+                "total_endpoints": len(prov_results),
+                "success_count": len([r for r in prov_results if r.status in ("SUCCESS", "CACHED")]),
+                "failure_count": len([r for r in prov_results if r.status == "FAILED"]),
+                "latency_ms": round(latency_ms, 2),
+                "credits_audit": {
+                    "astroway_credits_remaining": rem_aw,
+                    "astroway_credits_used": used_aw,
+                    "freeastro_report_credits": rep_fa,
+                    "calls_made": calls_val
+                },
+                "endpoints": [
+                    {
+                        "endpoint": r.endpoint_key,
+                        "status": r.status,
+                        "http_status": r.http_status,
+                        "latency_ms": round(r.latency_ms, 2),
+                        "error": r.error
+                    }
+                    for r in prov_results
+                ]
+            }
+            with open(audit_file, "w", encoding="utf-8") as f:
+                json.dump(audit_record, f, indent=2, ensure_ascii=False)
 
             # Generate individual Markdown audit
             md_content = self._render_provider_markdown(audit_record)
@@ -169,27 +195,45 @@ class ExtractionEngine:
         ]
 
         prov_low = provider.lower()
+        calls = credits_audit.get("calls_made", total)
+        calls_detail = "0 llamadas HTTP (100% Blindaje por Caché)" if (is_cached or calls == 0) else "Peticiones HTTP enviadas"
+
         if prov_low in ("astroway", "astroway_api"):
             rem = credits_audit.get("astroway_credits_remaining")
             used = credits_audit.get("astroway_credits_used")
             lim = credits_audit.get("astroway_credits_limit", 50000)
-            calls = credits_audit.get("calls_made", total)
             md.extend([
-                f"| **Llamadas Efectuadas** | `{calls}` | Peticiones HTTP enviadas |",
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
                 f"| **Créditos Gastados (Última llamada)** | `{used if used is not None else 'N/A'}` | Registrado en cabecera X-Credits-Used |",
                 f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'N/A'}` / `{lim}` | Plan Indie PRO (50.000 créditos/mes) |"
             ])
         elif prov_low in ("freeastro", "freeastroapi"):
             rep_cred = credits_audit.get("freeastro_report_credits", "N/A")
-            calls = credits_audit.get("calls_made", total)
             md.extend([
-                f"| **Llamadas Efectuadas** | `{calls}` | Peticiones HTTP enviadas |",
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
                 f"| **Créditos Reportados** | `{rep_cred}` | Estado de cuenta FreeAstro |",
                 "| **Nivel de Servicio** | `Free Tier Dedicado` | Sin costo financiero |"
             ])
+        elif prov_low in ("kundali", "kundali_mcp"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Motor Jyotish** | `Kundali Remote MCP` | Precision Shodashavarga & Dashas |",
+                "| **Autenticación** | `Bearer Token` | Akriti Engine 17.5.4 |"
+            ])
+        elif prov_low in ("lunar", "lunar_mcp"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Motor Calendárico** | `Lunar Local MCP` | BaZi Cuatro Pilares & Huangli |",
+                "| **Protocolo** | `stdio RPC` | Cálculo Solar Verdadero |"
+            ])
+        elif prov_low in ("zmanim", "zmanim_mcp"):
+            md.extend([
+                f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
+                "| **Motor Halájico** | `Zmanim Local MCP` | Tiempos de Oración & Shabat |",
+                "| **Protocolo** | `stdio RPC` | Gr\"a / MGA |"
+            ])
         else:
-            calls = credits_audit.get("calls_made", total)
-            md.append(f"| **Llamadas Efectuadas** | `{calls}` | Peticiones procesadas |")
+            md.append(f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |")
 
         md.extend([
             "",
@@ -375,23 +419,29 @@ class ExtractionEngine:
                             ))
 
         # 2. Hydrate MCP tools
-        lunar_bazi_args = {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)}
+        lunar_bazi_args = {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)}
+        lunar_bazi_legacy_args = {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)}
         if not mcp_results.get("lunar_mcp_calculate_bazi"):
-            cached_bazi = self.cache.get("mcp", "lunar_calculate_bazi", lunar_bazi_args)
+            cached_bazi = (
+                self.cache.get("lunar", "calculate_bazi", lunar_bazi_args)
+                or self.cache.get("lunar", "calculate_bazi", lunar_bazi_legacy_args)
+                or self.cache.get("mcp", "lunar_calculate_bazi", lunar_bazi_args)
+                or self.cache.get("mcp", "lunar_calculate_bazi", lunar_bazi_legacy_args)
+            )
             if cached_bazi:
                 mcp_results["lunar_mcp_calculate_bazi"] = cached_bazi
                 results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="calculate_bazi", status="CACHED", data=cached_bazi, http_status=200))
 
         lunar_stl_args = {"solar_date": date_str, "culture": "chinese"}
         if not mcp_results.get("lunar_mcp_solar_to_lunar"):
-            cached_stl = self.cache.get("mcp", "lunar_solar_to_lunar", lunar_stl_args)
+            cached_stl = self.cache.get("lunar", "solar_to_lunar", lunar_stl_args) or self.cache.get("mcp", "lunar_solar_to_lunar", lunar_stl_args)
             if cached_stl:
                 mcp_results["lunar_mcp_solar_to_lunar"] = cached_stl
                 results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="solar_to_lunar", status="CACHED", data=cached_stl, http_status=200))
 
         lunar_lh_args = {"date": date_str, "culture": "chinese"}
         if not mcp_results.get("lunar_mcp_get_lucky_hours"):
-            cached_lh = self.cache.get("mcp", "lunar_get_lucky_hours", lunar_lh_args)
+            cached_lh = self.cache.get("lunar", "get_lucky_hours", lunar_lh_args) or self.cache.get("mcp", "lunar_get_lucky_hours", lunar_lh_args)
             if cached_lh:
                 mcp_results["lunar_mcp_get_lucky_hours"] = cached_lh
                 results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="get_lucky_hours", status="CACHED", data=cached_lh, http_status=200))
@@ -405,12 +455,19 @@ class ExtractionEngine:
             "response_format": "json"
         }
         if not mcp_results.get("zmanim_mcp_daily_times"):
-            cached_zm = self.cache.get("mcp", "zmanim_zmanim_get_daily_times", zm_args)
+            cached_zm = self.cache.get("zmanim", "zmanim_get_daily_times", zm_args) or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", zm_args)
             if cached_zm:
                 mcp_results["zmanim_mcp_daily_times"] = cached_zm
                 results_list.append(ExtractionResult(provider="zmanim_mcp", endpoint_key="daily_times", status="CACHED", data=cached_zm, http_status=200))
 
         kd_args = {
+            "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
+            "latitude": float(lat),
+            "longitude": float(lng),
+            "school": "parashari",
+            "locale": "en"
+        }
+        kd_legacy_args = {
             "birth_datetime": f"{date_str}T{hour:02d}:{minute:02d}:00",
             "latitude": float(lat),
             "longitude": float(lng),
@@ -419,7 +476,12 @@ class ExtractionEngine:
             "calculation_type": "all"
         }
         if not mcp_results.get("kundali_mcp_kundali_calc"):
-            cached_kd = self.cache.get("mcp", "kundali_kundali", kd_args)
+            cached_kd = (
+                self.cache.get("kundali", "kundali", kd_args)
+                or self.cache.get("kundali", "kundali", kd_legacy_args)
+                or self.cache.get("mcp", "kundali_kundali", kd_args)
+                or self.cache.get("mcp", "kundali_kundali", kd_legacy_args)
+            )
             if cached_kd:
                 mcp_results["kundali_mcp_kundali_calc"] = cached_kd
                 results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali", status="CACHED", data=cached_kd, http_status=200))
@@ -433,7 +495,7 @@ class ExtractionEngine:
                 "school": "parashari",
                 "locale": "en"
             }
-            cached_km = self.cache.get("mcp", "kundali_kundali_milan", km_args)
+            cached_km = self.cache.get("kundali", "kundali_milan", km_args) or self.cache.get("mcp", "kundali_kundali_milan", km_args)
             if cached_km:
                 mcp_results["kundali_mcp_kundali_milan"] = cached_km
                 results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="CACHED", data=cached_km, http_status=200))
@@ -465,6 +527,46 @@ class ExtractionEngine:
         va_data = self.cache.get("vedastro", "full_extract", client_hash)
         va_ok = bool(va_data and isinstance(va_data, dict) and len(va_data.get("data", {})) >= 6)
 
+        zm_args = {
+            "location": city or "Unknown",
+            "latitude": lat,
+            "longitude": lng,
+            "date": date_str,
+            "time_zone": tz_str,
+            "response_format": "json"
+        }
+        kd_args = {
+            "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
+            "latitude": float(lat),
+            "longitude": float(lng),
+            "school": "parashari",
+            "locale": "en"
+        }
+        kd_legacy_args = {
+            "birth_datetime": f"{date_str}T{hour:02d}:{minute:02d}:00",
+            "latitude": float(lat),
+            "longitude": float(lng),
+            "timezone": tz_str,
+            "ayanamsha": "lahiri",
+            "calculation_type": "all"
+        }
+
+        lunar_ok = bool(
+            self.cache.get("lunar", "calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)})
+            or self.cache.get("lunar", "calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})
+            or self.cache.get("mcp", "lunar_calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})
+        )
+        zmanim_ok = bool(
+            self.cache.get("zmanim", "zmanim_get_daily_times", zm_args)
+            or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", zm_args)
+        )
+        kundali_ok = bool(
+            self.cache.get("kundali", "kundali", kd_args)
+            or self.cache.get("kundali", "kundali", kd_legacy_args)
+            or self.cache.get("mcp", "kundali_kundali", kd_args)
+            or self.cache.get("mcp", "kundali_kundali", kd_legacy_args)
+        )
+
         required = {
             "freeastro": fe_ok,
             "astroway": aw_ok,
@@ -472,9 +574,9 @@ class ExtractionEngine:
             "vedastro": va_ok,
             "hebcal": bool(self.cache.get("hebcal", "combined", client_hash)),
             "nasa": bool(self.cache.get("nasa", "asteroids", client_hash)),
-            "lunar_bazi": bool(self.cache.get("mcp", "lunar_calculate_bazi", {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}:00", "timezone_offset": int(tz_offset)})),
-            "zmanim": bool(self.cache.get("mcp", "zmanim_zmanim_get_daily_times", {"location": city or "Unknown", "latitude": lat, "longitude": lng, "date": date_str, "time_zone": tz_str, "response_format": "json"})),
-            "kundali": bool(self.cache.get("mcp", "kundali_kundali", {"birth_datetime": f"{date_str}T{hour:02d}:{minute:02d}:00", "latitude": float(lat), "longitude": float(lng), "timezone": tz_str, "ayanamsha": "lahiri", "calculation_type": "all"}))
+            "lunar_bazi": lunar_ok,
+            "zmanim": zmanim_ok,
+            "kundali": kundali_ok
         }
         missing = [k for k, v in required.items() if not v]
         return {
@@ -533,7 +635,7 @@ class ExtractionEngine:
 
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
         iso_local_str = f"{date_str}T{hour:02d}:{minute:02d}:00"
-        bazi_datetime_str = f"{date_str} {hour:02d}:{minute:02d}:00"
+        bazi_datetime_str = f"{date_str} {hour:02d}:{minute:02d}"
 
         rest_results: Dict[str, Dict[str, Any]] = {
             "freeastro": {},
@@ -942,8 +1044,8 @@ class ExtractionEngine:
 
                         # HebCal zmanim
                         try:
-                            z_url = f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}"
-                            resp = await http_client.get(z_url)
+                            z_url = f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}&tzid={tz_str}"
+                            resp = await http_client.get(z_url, headers={"User-Agent": "GentleAI-Hebcal/1.0"})
                             d = resp.json()
                             rest_results["hebcal"]["zmanim"] = d
                             results_list.append(ExtractionResult(provider="hebcal", endpoint_key="zmanim", status="SUCCESS", data=d, http_status=200))
@@ -985,7 +1087,15 @@ class ExtractionEngine:
                                 h_res = await http_client.get("https://ssd.jpl.nasa.gov/api/horizons.api", params=h_params, timeout=6.0)
                                 if h_res.status_code == 200:
                                     h_json = h_res.json()
-                                    d_ast = {"name": ast_name.capitalize(), "horizons_result": h_json.get("result", "")[:500]}
+                                    raw_text = h_json.get("result", "")
+                                    ephem_table = ""
+                                    if "$$SOE" in raw_text and "$$EOE" in raw_text:
+                                        ephem_table = raw_text.split("$$SOE")[1].split("$$EOE")[0].strip()
+                                    d_ast = {
+                                        "name": ast_name.capitalize(),
+                                        "horizons_result": raw_text[:500],
+                                        "ephemeris_table": ephem_table or raw_text
+                                    }
                                     rest_results["nasa"][f"asteroid_{ast_name}"] = d_ast
                                     results_list.append(ExtractionResult(provider="nasa", endpoint_key=f"asteroid_{ast_name}", status="SUCCESS", data=d_ast, http_status=200))
                                 else:
@@ -998,89 +1108,110 @@ class ExtractionEngine:
 
             # 6. Dispatch MCPs
             async def _run_mcps():
-                if not should_run("mcp", "lunar", "kundali", "zmanim"):
+                run_lunar = should_run("lunar", "mcp")
+                run_zmanim = should_run("zmanim", "mcp")
+                run_kundali = should_run("kundali", "mcp")
+
+                if not (run_lunar or run_zmanim or run_kundali):
                     return
-                # Lunar MCP calculate_bazi
-                try:
-                    bazi_res = await mcp_client.call_tool(
-                        "lunar", "calculate_bazi",
-                        {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}
-                    )
-                    mcp_results["lunar_mcp_calculate_bazi"] = bazi_res
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="calculate_bazi", status="SUCCESS", data=bazi_res, http_status=200))
-                except Exception as e:
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="calculate_bazi", status="FAILED", data={}, error=str(e)))
 
-                # Lunar MCP solar_to_lunar
-                try:
-                    stl_res = await mcp_client.call_tool(
-                        "lunar", "solar_to_lunar",
-                        {"solar_date": date_str, "culture": "chinese"}
-                    )
-                    mcp_results["lunar_mcp_solar_to_lunar"] = stl_res
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="solar_to_lunar", status="SUCCESS", data=stl_res, http_status=200))
-                except Exception as e:
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="solar_to_lunar", status="FAILED", data={}, error=str(e)))
+                if run_lunar:
+                    lunar_bazi_args = {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}
+                    lunar_bazi_legacy_args = {"birth_datetime": f"{bazi_datetime_str}:00", "timezone_offset": int(tz_offset)}
+                    cached_bazi = self.cache.get("lunar", "calculate_bazi", lunar_bazi_args) or self.cache.get("lunar", "calculate_bazi", lunar_bazi_legacy_args) or self.cache.get("mcp", "lunar_calculate_bazi", lunar_bazi_args) or self.cache.get("mcp", "lunar_calculate_bazi", lunar_bazi_legacy_args)
 
-                # Lunar MCP get_lucky_hours
-                try:
-                    lh_res = await mcp_client.call_tool(
-                        "lunar", "get_lucky_hours",
-                        {"date": date_str, "culture": "chinese"}
-                    )
-                    mcp_results["lunar_mcp_get_lucky_hours"] = lh_res
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="get_lucky_hours", status="SUCCESS", data=lh_res, http_status=200))
-                except Exception as e:
-                    results_list.append(ExtractionResult(provider="lunar_mcp", endpoint_key="get_lucky_hours", status="FAILED", data={}, error=str(e)))
+                    lunar_stl_args = {"solar_date": date_str, "culture": "chinese"}
+                    cached_stl = self.cache.get("lunar", "solar_to_lunar", lunar_stl_args) or self.cache.get("mcp", "lunar_solar_to_lunar", lunar_stl_args)
 
-                # Zmanim MCP daily_times
-                try:
-                    zm_res = await mcp_client.call_tool(
-                        "zmanim", "zmanim_get_daily_times",
-                        {"location": city or "Unknown", "latitude": lat, "longitude": lng, "date": date_str, "time_zone": tz_str, "response_format": "json"}
-                    )
-                    mcp_results["zmanim_mcp_daily_times"] = zm_res
-                    results_list.append(ExtractionResult(provider="zmanim_mcp", endpoint_key="daily_times", status="SUCCESS", data=zm_res, http_status=200))
-                except Exception as e:
-                    results_list.append(ExtractionResult(provider="zmanim_mcp", endpoint_key="daily_times", status="FAILED", data={}, error=str(e)))
+                    lunar_lh_args = {"date": date_str, "culture": "chinese"}
+                    cached_lh = self.cache.get("lunar", "get_lucky_hours", lunar_lh_args) or self.cache.get("mcp", "lunar_get_lucky_hours", lunar_lh_args)
 
-                # Kundali MCP
-                try:
-                    kd_res = await mcp_client.call_tool(
-                        "kundali", "kundali",
-                        {
-                            "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
-                            "latitude": float(lat),
-                            "longitude": float(lng),
+                    lunar_all_cached = bool(cached_bazi and cached_stl and cached_lh) and not self.refresh_pro
+
+                    try:
+                        bazi_res = cached_bazi if lunar_all_cached else await mcp_client.call_tool("lunar", "calculate_bazi", lunar_bazi_args)
+                        mcp_results["lunar_mcp_calculate_bazi"] = bazi_res
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="calculate_bazi", status="CACHED" if lunar_all_cached else "SUCCESS", data=bazi_res, http_status=200))
+                    except Exception as e:
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="calculate_bazi", status="FAILED", data={}, error=str(e)))
+
+                    try:
+                        stl_res = cached_stl if lunar_all_cached else await mcp_client.call_tool("lunar", "solar_to_lunar", lunar_stl_args)
+                        mcp_results["lunar_mcp_solar_to_lunar"] = stl_res
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="solar_to_lunar", status="CACHED" if lunar_all_cached else "SUCCESS", data=stl_res, http_status=200))
+                    except Exception as e:
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="solar_to_lunar", status="FAILED", data={}, error=str(e)))
+
+                    try:
+                        lh_res = cached_lh if lunar_all_cached else await mcp_client.call_tool("lunar", "get_lucky_hours", lunar_lh_args)
+                        mcp_results["lunar_mcp_get_lucky_hours"] = lh_res
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="get_lucky_hours", status="CACHED" if lunar_all_cached else "SUCCESS", data=lh_res, http_status=200))
+                    except Exception as e:
+                        results_list.append(ExtractionResult(provider="lunar", endpoint_key="get_lucky_hours", status="FAILED", data={}, error=str(e)))
+
+                    self._save_micro_audit("lunar", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=lunar_all_cached)
+
+                if run_zmanim:
+                    zm_args = {
+                        "location": city or "Unknown",
+                        "latitude": lat,
+                        "longitude": lng,
+                        "date": date_str,
+                        "time_zone": tz_str,
+                        "response_format": "json"
+                    }
+                    cached_zm = self.cache.get("zmanim", "zmanim_get_daily_times", zm_args) or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", zm_args)
+                    zmanim_cached = bool(cached_zm) and not self.refresh_pro
+
+                    try:
+                        zm_res = cached_zm if zmanim_cached else await mcp_client.call_tool("zmanim", "zmanim_get_daily_times", zm_args)
+                        mcp_results["zmanim_mcp_daily_times"] = zm_res
+                        results_list.append(ExtractionResult(provider="zmanim", endpoint_key="daily_times", status="CACHED" if zmanim_cached else "SUCCESS", data=zm_res, http_status=200))
+                    except Exception as e:
+                        results_list.append(ExtractionResult(provider="zmanim", endpoint_key="daily_times", status="FAILED", data={}, error=str(e)))
+
+                    self._save_micro_audit("zmanim", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=zmanim_cached)
+
+                if run_kundali:
+                    kd_args = {
+                        "birth_datetime": f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00",
+                        "latitude": float(lat),
+                        "longitude": float(lng),
+                        "school": "parashari",
+                        "locale": "en"
+                    }
+                    cached_kd = self.cache.get("kundali", "kundali", kd_args) or self.cache.get("mcp", "kundali_kundali", kd_args)
+                    partner = client_data.get("partner")
+                    cached_km = None
+                    km_args = None
+                    if partner and isinstance(partner, dict):
+                        p_dt = f"{partner.get('year', year):04d}-{partner.get('month', month):02d}-{partner.get('day', day):02d}T{partner.get('hour', hour):02d}:{partner.get('minute', minute):02d}:00"
+                        km_args = {
+                            "groom": {"birth_datetime": iso_local_str, "latitude": lat, "longitude": lng},
+                            "bride": {"birth_datetime": p_dt, "latitude": float(partner.get("lat", lat)), "longitude": float(partner.get("lng", lng))},
                             "school": "parashari",
                             "locale": "en"
                         }
-                    )
-                    mcp_results["kundali_mcp_kundali_calc"] = kd_res
-                    results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_calc", status="SUCCESS", data=kd_res, http_status=200))
-                except Exception as e:
-                    results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_calc", status="FAILED", data={}, error=str(e)))
+                        cached_km = self.cache.get("kundali", "kundali_milan", km_args) or self.cache.get("mcp", "kundali_kundali_milan", km_args)
 
-                # Kundali MCP kundali_milan (if partner data exists)
-                partner = client_data.get("partner")
-                if partner and isinstance(partner, dict):
+                    kundali_cached = bool(cached_kd) and (cached_km is not None or not partner) and not self.refresh_pro
+
                     try:
-                        p_dt = f"{partner.get('year', year):04d}-{partner.get('month', month):02d}-{partner.get('day', day):02d}T{partner.get('hour', hour):02d}:{partner.get('minute', minute):02d}:00"
-                        km_res = await mcp_client.call_tool(
-                            "kundali", "kundali_milan",
-                            {
-                                "groom": {"birth_datetime": iso_local_str, "latitude": lat, "longitude": lng},
-                                "bride": {"birth_datetime": p_dt, "latitude": float(partner.get("lat", lat)), "longitude": float(partner.get("lng", lng))},
-                                "school": "parashari",
-                                "locale": "en"
-                            }
-                        )
-                        mcp_results["kundali_mcp_kundali_milan"] = km_res
-                        results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="SUCCESS", data=km_res, http_status=200))
+                        kd_res = cached_kd if kundali_cached else await mcp_client.call_tool("kundali", "kundali", kd_args)
+                        mcp_results["kundali_mcp_kundali_calc"] = kd_res
+                        results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_calc", status="CACHED" if kundali_cached else "SUCCESS", data=kd_res, http_status=200))
                     except Exception as e:
-                        results_list.append(ExtractionResult(provider="kundali_mcp", endpoint_key="kundali_milan", status="FAILED", data={}, error=str(e)))
+                        results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_calc", status="FAILED", data={}, error=str(e)))
 
-                self._save_micro_audit("mcp", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=False)
+                    if partner and isinstance(partner, dict):
+                        try:
+                            km_res = cached_km if kundali_cached else await mcp_client.call_tool("kundali", "kundali_milan", km_args)
+                            mcp_results["kundali_mcp_kundali_milan"] = km_res
+                            results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_milan", status="CACHED" if kundali_cached else "SUCCESS", data=km_res, http_status=200))
+                        except Exception as e:
+                            results_list.append(ExtractionResult(provider="kundali", endpoint_key="kundali_milan", status="FAILED", data={}, error=str(e)))
+
+                    self._save_micro_audit("kundali", "SUCCESS", results_list, credit_stats, client_data, latency_ms=0.0, is_cached=kundali_cached)
 
             # Execute all tasks concurrently in TaskGroup
             async with asyncio.TaskGroup() as tg:

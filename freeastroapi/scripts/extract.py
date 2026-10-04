@@ -409,7 +409,15 @@ async def extract_freeastroapi(
                     elif schema in ("VedicBatchRequest",):
                         body = {
                             "items": [
-                                {"endpoint": "/v2/vedic/calculate", "payload": payload_vargas}
+                                {
+                                    "endpoint": "calculate",
+                                    "payload": {
+                                        "year": year, "month": month, "day": day,
+                                        "hour": hour, "minute": minute, "second": 0,
+                                        "lat": lat, "lng": lng, "tz_str": tz_str,
+                                        "ayanamsha": "lahiri"
+                                    }
+                                }
                             ]
                         }
                     elif "ElectionSearchRequest" in schema or "/electional/" in p:
@@ -464,6 +472,20 @@ async def extract_freeastroapi(
                     elif "/vedic/" in p:
                         if "/kp" in p: body = payload_kp
                         elif "/vargas" in p: body = payload_vargas
+                        elif "/batch" in p:
+                            body = {
+                                "items": [
+                                    {
+                                        "endpoint": "calculate",
+                                        "payload": {
+                                            "year": year, "month": month, "day": day,
+                                            "hour": hour, "minute": minute, "second": 0,
+                                            "lat": lat, "lng": lng, "tz_str": tz_str,
+                                            "ayanamsha": "lahiri"
+                                        }
+                                    }
+                                ]
+                            }
                         else:
                             body = {
                                 "year": year, "month": month, "day": day,
