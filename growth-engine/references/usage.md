@@ -452,15 +452,15 @@ export interface InvoicingProvider {
 
 ---
 
-## 7. High-Ticket Positioning & Lexical Cleanse (Anti-Slop Sovereign Copy)
+## 7. Offer Transparency & Anti-Slop Value Communication
 
-### 7.1 High-Ticket Filter Mechanism
-For high-end or restricted-access communities, events, or VIP memberships:
-- Transparently state the high-ticket price range and exclusive cover costs early in the landing and email narrative.
-- Use explicit admission criteria and premium pricing as a natural filter, eliminating unqualified leads before manual reviews.
+### 7.1 Audience Self-Qualification via Pricing Transparency
+For premium tiers, enterprise B2B, or high-value offers across any industry:
+- Clearly communicate pricing models, investment ranges, and commitment requirements upfront.
+- Use explicit value propositions and transparent constraints to pre-qualify prospects naturally, improving conversion rates and sales efficiency.
 
-### 7.2 Secular & Anti-Slop Lexical Guidelines
-- Replace pretentious jargon: replace "Curaduría" with "Dirección Artística" or "Producción Cultural".
-- Replace ambiguous staff titles: replace "Anfitrión/a" with "Equipo Organizador" or "Personal de Sala".
-- Eradicate pseudospiritual or dogmatic buzzwords ("sagrado", "sacrosanto") in favor of secular sovereign terms ("fundamental", "innegociable", "consentimiento informado").
+### 7.2 Anti-Slop Communication Principles
+- Eliminate generic buzzwords, unsubstantiated hype, and inflated marketing adjectives.
+- Prioritize concise, evidence-based descriptions of deliverables, outcomes, and service levels.
+
 
