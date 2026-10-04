@@ -1,15 +1,19 @@
-# Master Astrological APIs & MCP Systems Usage Guide (Dual-RAG SSoT V13.0)
+# Master Astrological APIs & MCP Systems Usage Guide (Dual-RAG SSoT v6.3)
 
-Este manual documenta de forma exhaustiva los contratos técnicos, endpoints REST, servidores MCP y esquemas de payload para la extracción astrológica de alta precisión en Fase 0 bajo la arquitectura de **Sharding por Dominios (*Domain Sharding*)**, **Consenso Canónico**, y la **Tríada Sagrada de Ingestión** (Feed + NotebookLM RAG + Author Persona).
+> **Documento Canónico:** `/var/www/.agents/skills/oraculo/references/usage.md`  
+> **Skill Gobernativa:** [`oraculo`](file:///var/www/.agents/skills/oraculo/SKILL.md)  
+> **Estándar:** Canon 12-15-9-4, CoHaLo v8.4, Positive Guidance & Zero Deletion Invariant.
+
+Este manual documenta de forma exhaustiva los contratos técnicos, endpoints REST, servidores MCP y esquemas de payload para la extracción astrológica de alta precisión en Fase 0 bajo la arquitectura de **Sharding por Dominios (*Domain Sharding*)**, **Consenso Canónico**, y el **Canon 12-15-9-4** (12 Bronze Shards, 15 Silver Shards, 9 Gold Feeds, 4 Platinum Artifacts).
 
 ---
 
 ## 1. Principios de Gobernanza CoHaLo & Blindaje de Créditos
 - **Zero-Waste Single-Pass (Extracción Atómica):** Fase 0 extrae el 100% de la matemática y textos interpretativos en un único pase concurrente al iniciar el diagnóstico.
 - **Prohibición de Re-consumo Post-Fase 0:** A partir de la finalización de Fase 0, queda prohibido volver a realizar llamadas a APIs externas de pago (`FreeAstroAPI`, `AstroWay REST`, `Astrology-API.io V3`, `VedAstro PRO`).
-- **SSoT Exclusivo en Disco:** Las fases 1 a 11 y todos los sub-oráculos (`oraculo-diag-a-psy` a `oraculo-diag-e-geo`) leen exclusivamente de `/var/www/baiosfera/ASTROLOGÍA/DIAG/<ID>/raw/`.
+- **SSoT Exclusivo en Disco:** Las fases 1 a 11 y todos los sub-oráculos (`oraculo-diag-a-psy` a `oraculo-diag-e-geo`, `orchesbrand`) leen exclusivamente de `/var/www/baiosfera/ASTROLOGÍA/DIAG/<ID>/raw/`.
 - **Cero Hardcoding de Claves:** Se leen desde las variables de entorno inyectadas por Zerops (`$FREEASTROAPI_KEY`, `$ASTROLOGY_API_KEY`, `$ASTROWAY_API_KEY`, `$VEDASTRO_API_KEY`, `$NASA_API_KEY`, etc.).
-- **Rate-Limits & Circuit Breakers:** Concurrencia estructurada con `asyncio.TaskGroup`, token-bucket por proveedor, reintentos exponenciales acotados (máximo 2) y timeouts estrictos (`timeout 15s` red, `timeout 10s` local):
+- **Rate-Limits & Circuit Breakers:** Concurrencia estructurada con token-bucket por proveedor, reintentos exponenciales acotados (máximo 2) y timeouts estrictos (`timeout 15s` red, `timeout 10s` local):
   - `FreeAstroAPI` (Astro Entry): 4.0 req/s (`sleep 0.25`).
   - `AstroWay REST` (Indie PRO): 0.5 req/s (`sleep 2.5`).
   - `Astrology-API.io V3`: 1.0 req/s (`sleep 1.0`).
@@ -21,36 +25,42 @@ Este manual documenta de forma exhaustiva los contratos técnicos, endpoints RES
 
 ## 2. Arquitectura Unificada del Pipeline Asíncrono (`pipeline/`)
 
-Toda la extracción, validación y consenso se ejecuta en un único proceso en memoria gobernado por [`scripts/omni_engine.py`](file:///var/www/.agents/skills/oraculo/scripts/omni_engine.py) y orquestado mediante [`pipeline/orchestrator.py`](file:///var/www/.agents/skills/oraculo/pipeline/orchestrator.py):
+Toda la extracción, validación, compilación y síntesis opera bajo la arquitectura modular y desacoplada del Canon 12-15-9-4:
 
 ```
-[scripts/omni_engine.py] (CLI Facade & Argument Parser)
+[scripts/omni_engine.py] (CLI Facade & Argument Parser: -x, -c, -s, --allow-partial)
        │
-       ▼
-[pipeline/orchestrator.py] (Async Concurrency Supervisor - asyncio.TaskGroup)
-       ├──> [pipeline/clients/rest_client.py] (HTTP/2 Connection Pool)
+       ├──> [pipeline/cache_crawler.py] (Dynamic Crawler & SHA-256 Cache Ingestor)
        │      ├── FreeAstroAPI (19 endpoints: Tropical, Sidereal, KP V2, BaZi, Num, ACG, Elections)
        │      ├── AstroWay REST (26 endpoints: 16 Vargas D1-D60, 10 Dashas, Jaimini, Evolutionary)
        │      ├── Astrology-API.io V3 (Core Numerology, Gematria, Houses, Relocation)
        │      ├── VedAstro PRO (Predictions 200+ Yogas/Doshas, AllPlanetData, AllHouseData, DasaAtRange)
        │      ├── NASA JPL Horizons (Asteroides 1-4 Ceres/Pallas/Juno/Vesta, Centauros Chiron/Chariklo, TNOs Eris)
-       │      └── HebCal REST (Converter, Zmanim 34 marcas solares, Shabbat, Festividades, Leyning)
-       │
-       ├──> [pipeline/clients/mcp_client.py] (Typed MCP Client)
-       │      ├── lunar MCP (calculate_bazi con birth_datetime, solar_to_lunar, get_moon_phase, fortune)
+       │      ├── HebCal REST (Converter, Zmanim 34 marcas solares, Shabbat, Festividades, Leyning)
+       │      ├── lunar MCP (calculate_bazi, solar_to_lunar, get_moon_phase, fortune)
        │      ├── kundali MCP (kundali con dasha_depth: 2, panchang, muhurat, festivals)
        │      └── zmanim MCP (daily_times: times + times_iso)
        │
-       ├──> [pipeline/consensus/] (Canonical Delegations & Ontological Mapping)
-       │      ├── chara_karakas.py (Ingestión canónica de AstroWay Jaimini Lahiri)
-       │      ├── numerology.py (Consolidación FreeAstroAPI + Astrology-API.io)
-       │      ├── tikkun.py (Síntesis Rav Berg enriquecida con Skipped Steps de AstroWay)
-       │      └── sefer_yetzirah.py (Mapeo canónico sobre fecha hebrea y gematria)
+       ├──> [pipeline/sharder.py] (Capa Oro: SharderEngine & Multi-Domain Consolidator)
+       │      ├── pipeline/domains/numerology.py (Consolidación Multidimensional Pitagórica, Caldea, Kabbalah)
+       │      ├── pipeline/domains/western_tropical.py (Placidus, 23 Casas, Sabian Symbols, Progresiones)
+       │      ├── pipeline/domains/western_sidereal.py (Fagan-Bradley, Campanus, Estrellas fijas)
+       │      ├── pipeline/domains/vedic_jyotish.py (Lagna Lahiri, Nakshatras, Shadbala, D1-D60, Chara Karakas)
+       │      ├── pipeline/domains/bazi_chinese.py (4 Pilares 60 Jiazi, Day Master, Yong Shen, 5 Elementos)
+       │      ├── pipeline/domains/human_design.py (BodyGraph, Circuitos, Cruz de Encarnación, PHS)
+       │      ├── pipeline/domains/kabbalah_hermetic.py (Sefer Yetzirah, Tikkun Nodal, Zmanim solares)
+       │      ├── pipeline/domains/timing_dashas.py (Timeline Unificado: Dashas 5 niveles, Profecciones, ZR)
+       │      └── pipeline/domains/geo_acg.py (Líneas planetarias ACG, cruces geográficos y relocalización)
+       │      │
+       │      ├──> 12 Bronze Shards JSON (raw/json/dumps/)
+       │      ├──> 15 Silver Relational Shards (PostgreSQL)
+       │      └──> 9 Feeds Quirúrgicos Markdown (raw/feeds/ <2.5 KB)
        │
-       └──> [pipeline/sharder/] (Deterministic File Generation)
-              ├── 10 Domain Shards JSON (raw/json/dumps/)
-              ├── 9 Feeds Quirúrgicos Markdown (raw/feeds/)
-              └── 3 Reportes LLM SSoT (raw/llm/) + Astrobranding Semiotics
+       └──> [pipeline/synthesis.py] (Capa Platino: SynthesisEngine - 4 Artefactos LLM/DTCG)
+              ├── raw/llm/coach_technical_sheet.md (12 Secciones Matemáticas SSoT)
+              ├── raw/llm/fase0_author_psychology.md (Constitución Ontológica del Autor)
+              ├── raw/llm/astrobranding_[marca].md (Dossier Semiótico de Marca y Arquetipos)
+              └── raw/llm/brandbook_[marca].json (Tokens W3C DTCG con $extensions.tailwind_v4)
 ```
 
 ---
@@ -119,21 +129,27 @@ Toda la extracción, validación y consenso se ejecuta en un único proceso en m
 
 ---
 
-## 4. Estructura de Salida SSoT (10 Shards & 9 Feeds)
+## 4. Estructura de Salida SSoT (Canon 12-15-9-4)
 
-### Los 10 Shards Canónicos (`raw/json/dumps/`):
+### A. Los 12 Shards Bronze JSON (`raw/json/dumps/`):
 1. `01_numerology_multi.json`: Pitagórica, Caldea, Ank Jyotish, Gematria (Astrology-API.io + FreeAstroAPI).
 2. `02_western_tropical.json`: Placidus Tropical, 23 Casas, Sabian Symbols, Progresiones Sec/Ter/Converse.
 3. `03_western_sidereal.json`: Fagan-Bradley Campanus, Casas Siderales de Astrology-API.io.
 4. `04_vedic_jyotish_kp.json`: Lahiri Whole Sign, KP V2, Kundali MCP, VedAstro Predictions + AllPlanet + AllHouse, AstroWay 16 Vargas D1-D60 + Dashas.
 5. `05_bazi_chinese_lunar.json`: BaZi True Solar, Da Yun Flow, AstroWay Four Pillars, Lunar MCP.
 6. `06_human_design.json`: BodyGraph completo, Circuitry, Incarnation Cross, PHS Sensitivity.
-7. `07_kabbalah_hermetic.json`: HebCal Converter, HebCal Zmanim, Zmanim MCP (`times` + `times_iso`), Gematria, Sefer Yetzirah, Tikkun Nodal enriquecido con Skipped Steps.
+7. `07_kabbalah_hermetic.json`: HebCal Converter, HebCal Zmanim, Zmanim MCP (`times` + `times_iso`), Gematria, Sefer Yetzirah, Tikkun Nodal con Skipped Steps.
 8. `08_timing_dashas_timelords.json`: Timeline Aggregator (Profecciones, Firdaria, Decennials, ZR), Vimshottari Dashas a 5 niveles, 10 Elecciones Comerciales.
 9. `09_geo_acg_relocation.json`: ACG Lines (FreeAstroAPI + AstroWay), Best Places, Relocalización.
 10. `10_cosmobiology_hellenistic_nasa.json`: Dial 90°, 15 Lots de Chris Brennan, ZR Peak Periods, Efemérides de Asteroides y Centauros de NASA Horizons (Ceres, Chiron, Pallas, Juno, Vesta, Eris).
+11. `11_traditional_medical_tcm.json`: MTC BaZi (órganos Zang-Fu, 5 elementos), temperamentos humorales y astrología médica tradicional.
+12. `12_fixed_stars_constellations.json`: 50+ estrellas fijas mayores (Ptolemaicas y Behenias), constelaciones siderales y declinaciones.
 
-### Los 9 Feeds Quirúrgicos Markdown (< 2.5 KB en `raw/feeds/`):
+### B. Los 15 Shards Relacionales Silver (PostgreSQL):
+Mapeo relacional estructurado para analítica y data mesh:
+`silver_profiles`, `silver_natal_planets`, `silver_natal_houses`, `silver_aspects_orbs`, `silver_vargas_d1_d60`, `silver_dashas_timeline`, `silver_bazi_pillars`, `silver_numerology_scores`, `silver_human_design_gates`, `silver_kabbalah_letters`, `silver_timing_transits`, `silver_astrocartography_lines`, `silver_fixed_stars`, `silver_health_tcm_elements`, `silver_brand_archetypes`.
+
+### C. Los 9 Feeds Quirúrgicos Markdown (< 2.5 KB en `raw/feeds/`):
 - `feed_fase1_num.md`: Matriz numerológica personal y comercial.
 - `feed_fase2_occ.md`: Sol, Luna, ASC, MC y balance elemental tropical.
 - `feed_fase3_sid.md`: Contraste ontológico Tropical vs. Sideral Fagan-Bradley.
@@ -144,12 +160,18 @@ Toda la extracción, validación y consenso se ejecuta en un único proceso en m
 - `feed_fase8_time.md`: Reloj temporal T0 (Pináculo activo, Da Yun activo, Dasha activa).
 - `feed_fase9_end.md`: Horizontes estratégicos, 4 tracks de mentoría y sesión 1:1.
 
+### D. Los 4 Artefactos Canónicos de Capa Platino (`raw/llm/`):
+- `coach_technical_sheet.md`: 12 secciones matemáticas puras (SSoT Fase 0).
+- `fase0_author_psychology.md`: Constitución ontológica, tono y resonancia psicológica del autor.
+- `astrobranding_[marca].md`: Dossier semiótico, arquetípico y directivas de diseño para Orchesbrand.
+- `brandbook_[marca].json`: Tokens de diseño en formato W3C DTCG con extensión `$extensions.tailwind_v4` para inyección directa en `@theme` de Tailwind CSS v4.
+
 ---
 
-## 5. Mapeo de Dominios para Sub-Oráculos
+## 5. Mapeo de Dominios para Sub-Oráculos & Orchesbrand
 - [`oraculo-diag-a-psy`](file:///var/www/.agents/skills/oraculo-diag-a-psy/SKILL.md): `02_western_tropical.json`, `06_human_design.json`, `10_cosmobiology_hellenistic_nasa.json`.
 - [`oraculo-diag-b-voc`](file:///var/www/.agents/skills/oraculo-diag-b-voc/SKILL.md): `04_vedic_jyotish_kp.json`, `05_bazi_chinese_lunar.json`, `feed_fase7_voc.md`.
 - [`oraculo-diag-c-mkt`](file:///var/www/.agents/skills/oraculo-diag-c-mkt/SKILL.md): `08_timing_dashas_timelords.json`, `feed_fase8_time.md`.
 - [`oraculo-diag-d-leg`](file:///var/www/.agents/skills/oraculo-diag-d-leg/SKILL.md): `04_vedic_jyotish_kp.json` (D30/D60), `07_kabbalah_hermetic.json`.
 - [`oraculo-diag-e-geo`](file:///var/www/.agents/skills/oraculo-diag-e-geo/SKILL.md): `09_geo_acg_relocation.json`.
-- [`orchesbrand`](file:///var/www/.agents/skills/orchesbrand/SKILL.md): `brand/astrobranding_semiotics.md`, `01_numerology_multi.json`.
+- [`orchesbrand`](file:///var/www/.agents/skills/orchesbrand/SKILL.md): Consume exclusivamente `raw/llm/astrobranding_[marca].md` (dossier semiótico) y `raw/llm/brandbook_[marca].json` (tokens W3C DTCG con `$extensions.tailwind_v4`), integrándose con sus 5 Decision Gates (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`).

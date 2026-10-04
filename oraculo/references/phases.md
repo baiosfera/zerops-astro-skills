@@ -1,5 +1,5 @@
-# 📜 Protocolos y Especificaciones Canónicas de Fases (Oráculo Maestro SSoT V7.6)
-*Arquitectura Agnóstica y Holística para Cualquier Consultante, Fecha y Coordenadas Natales*
+# 📜 Protocolos y Especificaciones Canónicas de Fases (Oráculo Maestro SSoT v6.3)
+*Arquitectura Agnóstica y Holística para Cualquier Consultante, Fecha y Coordenadas Natales (Canon 12-15-9-4)*
 
 ---
 
@@ -45,9 +45,9 @@
   - **CERO jerga corporativa de agencia ("c-suite", retainers fríos).**
   - Contenido: Síntesis de identidad, integración de memorias vocacionales (F1-F6), arquitectura energética de decisión, mapa de calor psicológico, manejo forense de objeciones para la sesión 1:1, protocolo de facilitación (60-90 min) y hoja de ruta táctica 30/60/90 días.
 - **Fase 11 (AstroBranding Semiótico 🎨 — Puente para Orchesbrand):**
-  - Destino físico: `raw/llm/astrobranding_semiotics.md` (y réplica en la raíz de la marca).
+  - Destino físico: `raw/llm/astrobranding_[marca].md` (dossier semiótico y arquetípico) y `raw/llm/brandbook_[marca].json` (tokens W3C DTCG con `$extensions.tailwind_v4`).
   - **El Puente Canónico SSoT:** La carta astral define el **Arquetipo Rector de la Marca**, su territorio psicológico y su manifiesto de soberanía. La suite Orchesbrand transforma ese arquetipo en tokens de diseño verificables mediante sus Decision Gates técnicos en 5 fases (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`).
-  - **Dominio de Responsabilidad Exclusiva:** Fase 11 emite exclusivamente directivas semióticas, arquetípicas y conceptuales. Delega la selección tipográfica de fuentes a `fontgen` y la derivación de paletas cromáticas OKLCH a `chroma`.
+  - **Dominio de Responsabilidad Exclusiva:** Fase 11 emite directivas semióticas, arquetípicas y conceptuales, junto con la especificación de tokens W3C DTCG estructurados para inyección directa en `@theme` de Tailwind CSS v4. Delega la selección tipográfica de fuentes a `fontgen` y la derivación de paletas cromáticas OKLCH a `chroma`.
   - **Fundamentación Semiótica Pura:** El puente semiótico se fundamenta exclusivamente en mitología arquetípica, psicología profunda y simbolismo ontológico, preservando la independencia técnica de los tokens de diseño.
 
 ---
@@ -71,13 +71,13 @@
 2. **`author_psychology_template.md`** (Fase 0): Constitución Ontológica y Resonancia Lingüística para `raw/llm/fase0_author_psychology.md`.
 3. **`fase_report_template.md`** (Fases 1 a 9): Estructura didáctica para los informes del cliente (`fases/fase1_num.md` a `fase9_end.md`).
 4. **`coach_report_template.md`** (Fase 10): Síntesis estratégica y hoja de ruta maestra del mentor (`raw/llm/coach_dashboard_[CLIENT].md`).
-5. **`astrobranding_template.md`** (Fase 11): Puente Semiótico de 6 Bloques para alimentar la suite Orchesbrand (`raw/llm/astrobranding_semiotics.md`), 100% alineado con los Decision Gates de `fontgen`, `symbol`, `chroma`, `kinetic` y `brandbook`.
+5. **`astrobranding_template.md`** (Fase 11): Puente Semiótico de 6 Bloques para alimentar la suite Orchesbrand (`raw/llm/astrobranding_[marca].md` y `brandbook_[marca].json`), 100% alineado con los Decision Gates de `fontgen`, `symbol`, `chroma`, `kinetic` y `brandbook`.
 
 ---
 
 # 🏛️ Especificación Canónica CoHaLo: Esquemas Dinámicos de Fases 1 a 9 (Reporte Básico)
 **Destino de Inserción:** `/var/www/.agents/skills/oraculo/references/phases.md`  
-**Gobernanza:** CoHaLo v6.8, Docu Engine, Skill-Improver, Zero Hardcoding Invariant  
+**Gobernanza:** Canon 12-15-9-4, CoHaLo v8.4, Docu Engine, Skill-Improver, Zero Hardcoding Invariant  
 **Carácter:** 100% Agnóstico, Dinámico y Computado desde APIs/MCPs para cualquier carta natal
 
 ---
