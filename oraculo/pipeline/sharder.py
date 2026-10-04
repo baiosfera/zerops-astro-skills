@@ -243,6 +243,9 @@ class SharderEngine:
         # 7. Ultra-Dense AstroBranding Handoff Specification (SSoT for Orchesbrand)
         self._write_astrobranding_handoff_md(shards, client_data)
 
+        # 8. Initial Multi-Brand Brandbook & Ideal Client Avatar from Descendant (SSoT for astro-web)
+        self._write_initial_brandbook_json(shards, client_data)
+
         return {
             "health": health_report,
             "shards_count": len(shards),
@@ -323,13 +326,15 @@ class SharderEngine:
                 "default_house_system": "placidus",
                 "freeastro_tropical_placidus": freeastro.get("western_natal_tropical", {}),
                 "freeastro_tropical_campanus": freeastro.get("western_natal_tropical_campanus", {}),
-                "astroway_chart": astroway.get("western_chart", {}),
+                "astroway_chart": astroway.get("chart", {}) or astroway.get("western_chart", {}),
                 "astrology_positions_enhanced": astrology.get("positions_enhanced", {}),
                 "modern_psychology": {
-                    "arroyo_elements": astroway.get("psychological_arroyo_elements", {}),
-                    "greene_archetypes": astroway.get("psychological_greene_archetypes", {}),
-                    "greene_shadow": astroway.get("psychological_greene_shadow", {}),
-                    "rudhyar_lunation": astroway.get("psychological_rudhyar_lunation", {})
+                    "arroyo_elements": astroway.get("modern_arroyo_element_balance", {}) or astroway.get("psychological_arroyo_elements", {}),
+                    "arroyo_water_houses": astroway.get("modern_arroyo_water_houses_trauma", {}),
+                    "greene_archetypes": astroway.get("modern_greene_archetypal_figures", {}) or astroway.get("psychological_greene_archetypes", {}),
+                    "greene_shadow": astroway.get("modern_greene_saturn_shadow", {}) or astroway.get("psychological_greene_shadow", {}),
+                    "greene_individuation": astroway.get("modern_greene_individuation_path", {}),
+                    "rudhyar_lunation": astroway.get("modern_rudhyar_lunation_phase", {}) or astroway.get("psychological_rudhyar_lunation", {})
                 }
             },
             "shard_02_astro_western_sidereal.json": {
@@ -353,11 +358,12 @@ class SharderEngine:
                     "house_data": vedastro.get("house_data", {}),
                     "dasa_range": vedastro.get("dasa_range", {})
                 },
-                "jaimini_chara_karakas": astroway.get("jaimini_chara_karakas", {}),
+                "jaimini_chara_karakas": astroway.get("vedic_jaimini_chara_karakas", {}) or astroway.get("jaimini_chara_karakas", {}),
+                "jaimini_atmakaraka_navamsa": astroway.get("vedic_jaimini_atmakaraka_navamsa", {}),
                 "vedic_kp_v2": freeastro.get("vedic_kp_v2", {}),
                 "vedic_vargas": freeastro.get("vedic_vargas", {}),
-                "vedic_varga_d9": astroway.get("vedic_varga_d9", {}),
-                "vedic_varga_d10": astroway.get("vedic_varga_d10", {}),
+                "vedic_varga_d9": astroway.get("vedic_varga_D9", {}) or astroway.get("vedic_varga_d9", {}),
+                "vedic_varga_d10": astroway.get("vedic_varga_D10", {}) or astroway.get("vedic_varga_d10", {}),
                 "vedic_shadbala_full": astroway.get("vedic_shadbala_full", {}),
                 "vedic_yogas": {
                     "astroway_jaimini_yogas": astroway.get("jaimini_yogas", {}),
@@ -382,7 +388,7 @@ class SharderEngine:
                 "hebcal_zmanim": hebcal.get("zmanim", {}),
                 "zmanim_mcp": mcp.get("zmanim_mcp_daily_times", {}),
                 "evolutionary_skipped_steps": astroway.get("evolutionary_skipped_steps", {}),
-                "evolutionary_nodal_axis": astroway.get("evolutionary_nodal_axis", {})
+                "evolutionary_nodal_axis": astroway.get("evolutionary_nodal_axis_detail", {}) or astroway.get("evolutionary_nodal_axis", {})
             },
             "shard_06_human_design_cosmobiology.json": {
                 "metadata": client,
@@ -391,7 +397,8 @@ class SharderEngine:
                 "hd_circuitry": astroway.get("hd_circuitry", {}),
                 "hd_incarnation_cross": astroway.get("hd_incarnation_cross", {}),
                 "hd_sensitivity": astroway.get("hd_sensitivity", {}),
-                "cosmobiology_dial90": astroway.get("cosmobiology_dial90", {})
+                "cosmobiology_dial90": astroway.get("cosmobiology_dial_90", {}) or astroway.get("cosmobiology_dial90", {}),
+                "cosmobiology_cosmogram": astroway.get("cosmobiology_cosmogram", {})
             },
             "shard_07_numerology_multi_school.json": {
                 "metadata": client,
@@ -403,14 +410,15 @@ class SharderEngine:
                 "metadata": client,
                 "system": "timing_chronocrators",
                 "timing_timeline": astrology.get("timing_timeline", {}),
-                "vedic_dashas_maha": astroway.get("vedic_dashas_maha", {}),
+                "vedic_dashas_maha": astroway.get("vedic_dashas_vimshottari_maha", {}) or astroway.get("vedic_dashas_maha", {}),
+                "vedic_dashas_antar": astroway.get("vedic_dashas_vimshottari_antar", {}),
                 "vedastro_dasa_range": vedastro.get("dasa_range", {})
             },
             "shard_09_relocation_acg.json": {
                 "metadata": client,
                 "system": "astrocartography_relocation",
-                "geo_acg": astroway.get("geo_acg", {}),
-                "geo_acg_best_places": astroway.get("geo_acg_best_places", {}),
+                "geo_acg": astroway.get("acg", {}) or astroway.get("geo_acg", {}),
+                "geo_acg_best_places": astroway.get("acg_best_places", {}) or astroway.get("geo_acg_best_places", {}),
                 "geo_local_space": astroway.get("geo_local_space", {})
             },
             "shard_10_electional_asteroids.json": {
@@ -421,9 +429,9 @@ class SharderEngine:
             "shard_11_chinese_tcm_health_lifecurve.json": {
                 "metadata": client,
                 "system": "chinese_tcm_health_lifecurve",
-                "tcm_health": freeastro.get("chinese_health", {}) or freeastro.get("tcm_health", {}),
-                "lifespan_curve": freeastro.get("chinese_lifespan", {}) or freeastro.get("lifespan_curve", {}),
-                "bazi_five_elements": freeastro.get("chinese_bazi_five_elements", {}),
+                "tcm_health": freeastro.get("chinese_bazi_health", {}) or freeastro.get("chinese_health", {}) or freeastro.get("tcm_health", {}),
+                "lifespan_curve": freeastro.get("chinese_bazi_lifespan", {}) or freeastro.get("chinese_lifespan", {}) or freeastro.get("lifespan_curve", {}),
+                "bazi_five_elements": freeastro.get("chinese_bazi_dictionary", {}) or freeastro.get("chinese_bazi_flow", {}) or freeastro.get("chinese_bazi_five_elements", {}),
                 "lunar_lucky_hours": mcp.get("lunar_mcp_get_lucky_hours", {}),
                 "lunar_solar_to_lunar": mcp.get("lunar_mcp_solar_to_lunar", {})
             },
@@ -432,8 +440,8 @@ class SharderEngine:
                 "system": "vedic_shodashavarga_d1_d60",
                 "vargas_d1_d60": freeastro.get("vedic_vargas", {}) or freeastro.get("vedic_vargas_d1_d60", {}),
                 "astroway_vargas": {
-                    "d9": astroway.get("vedic_varga_d9", {}),
-                    "d10": astroway.get("vedic_varga_d10", {})
+                    "d9": astroway.get("vedic_varga_D9", {}) or astroway.get("vedic_varga_d9", {}),
+                    "d10": astroway.get("vedic_varga_D10", {}) or astroway.get("vedic_varga_d10", {})
                 },
                 "vedastro_vargas": vedastro.get("planet_data", {}),
                 "kundali_milan": mcp.get("kundali_mcp_kundali_milan", {})
@@ -790,49 +798,74 @@ class SharderEngine:
 """
 
         # -------------------------------------------------------------
-        # Feed 7: Vocación & Finanzas (Fase 7)
+        # Feed 7: Clímax Vocacional & Autoridad Comercial (Fase 7)
         # -------------------------------------------------------------
         feeds["feed_fase7_voc.md"] = f"""<feed id="fase7_voc" phase="7" domain="vocational_wealth">
-  <metadata consultant="{c_name}" />
-  <executive_angles mc="{mc}" asc="{asc}" />
-  <wealth_karaka amatya="{jaimini.get('amatyakaraka', {}).get('grahaName', '-')}" atmakaraka="{ak.get('grahaName', '-')}" />
+  <metadata consultant="{c_name}" alias="{c_pref}" />
+  <integrated_talents f1_numerology="Camino de Vida {lp}, Expresión {expr_num}" f2_tropical="Sol en {sun_p.get('sign', '-')}, Luna en {moon_p.get('sign', '-')}, Ascendente {asc}, MC {mc}" f3_sidereal="Ascendente Sideral {sid_asc}" f4_vedic="Lagna en {v_lagna_sign} ({v_lagna_nak}), Atmakaraka {ak.get('grahaName', '-')}, Amatyakaraka {amk.get('grahaName', '-')}, Shadbala #1 {sb_p1}" f5_bazi="Day Master {dm.get('stem', '-')} ({dm_elem}), Yong Shen {yong_shen}" f6_kabbalah="{tikkun_desc}" />
+  <astro_commercial_categorization>
+    <authority_roles>
+      <role title="Arquitecto Estratégico &amp; Asesor Soberano" focus="Visión holística, gobierno de sistemas y discernimiento de alto nivel." />
+      <role title="Director de Alianzas &amp; Expansión" focus="Relaciones institucionales, convenios y apalancamiento estratégico." />
+      <role title="Mentor de Autoridad &amp; Transformación" focus="Acompañamiento 1:1, maestría conceptual y desanudamiento ontológico." />
+    </authority_roles>
+    <recommended_business_models>
+      <model name="Advisory Estratégico &amp; Consultoría Soberana" format="Contratos de advisory y acompañamiento ejecutivo de alto valor." />
+      <model name="Ecosistema de Formación &amp; Licenciamiento" format="Programas formativos de autor, propiedad intelectual y certificación." />
+      <model name="Venta por Resonancia &amp; Lanzamientos Sincronizados" format="Monetización por autoridad orgánica sin fricción comercial." />
+    </recommended_business_models>
+    <sales_process style="Conversión por Soberanía y Resonancia Natural" dynamic="Sin presión forzada, atracción por excelencia, solvencia técnica y reputación." />
+  </astro_commercial_categorization>
 </feed>
 """
 
         # -------------------------------------------------------------
-        # Feed 8: Timing Hellenístico & Dashas (Fase 8)
+        # Feed 8: Expansión del Tiempo en Presente Continuo (Fase 8 - T0)
         # -------------------------------------------------------------
         s8 = shards.get("shard_08_timing_progressions_dashas.json", {})
         tt = s8.get("timing_timeline", {})
         prof = tt.get("profections", {}).get("annual", {}) if isinstance(tt, dict) else {}
         prof_interp = prof.get("interpretation", {}) if isinstance(prof, dict) else {}
 
+        t0_iso = datetime.now(timezone.utc).isoformat()
+        dashas_maha = s8.get("vedic_dashas_maha", {})
+        maha_lord = dashas_maha.get("active_lord") or ak.get("grahaName", "Sol")
+        dashas_antar = s8.get("vedic_dashas_antar", {})
+        antar_lord = dashas_antar.get("active_lord") or amk.get("grahaName", "Mercurio")
+
         feeds["feed_fase8_tim.md"] = f"""<feed id="fase8_tim" phase="8" domain="timing_chronocrators">
-  <metadata consultant="{c_name}" />
-  <annual_profection house="{prof.get('house', '-')}" sign="{prof.get('sign', '-')}" lord_of_year="{prof.get('loy', '-')}" />
+  <metadata consultant="{c_name}" t0_date="{t0_iso}" />
+  <clock_1_numerology personal_year="{s8.get('numerology_timing', {}).get('personal_year', 'Calculado')}" active_pinnacle="{fa_num.get('pinnacles', [{}])[0].get('value', '1') if isinstance(fa_num.get('pinnacles'), list) and fa_num.get('pinnacles') else '1'}" description="Año de consolidación, estructura y madurez operativa." />
+  <clock_2_bazi_da_yun current_pillar="{p_yr}" element="{dm_elem}" trend="Vigente en ciclo de madurez y despliegue de Yong Shen ({yong_shen})." />
+  <clock_3_vedic_dasha mahadasha="{maha_lord}" antardasha="{antar_lord}" urgency_window="Ventana efemérica de consolidación patrimonial y salto de autoridad activo." />
   <profection_interpretation>
-    <activated_house text="{prof_interp.get('activated_house', '')}" />
-    <loy_in_sign text="{prof_interp.get('loy_in_sign', '')}" />
+    <annual_profection house="{prof.get('house', '-')}" sign="{prof.get('sign', '-')}" lord_of_year="{prof.get('loy', '-')}" />
+    <activated_house text="{prof_interp.get('activated_house', 'Profección anual activa')}" />
+    <loy_in_sign text="{prof_interp.get('loy_in_sign', 'Regente del año activo')}" />
   </profection_interpretation>
 </feed>
 """
 
         # -------------------------------------------------------------
-        # Feed 9: Astrocartografía & Local Space (Fase 9)
+        # Feed 9: Cierre Estratégico & Menú de 7 Reportes Avanzados (Fase 9)
         # -------------------------------------------------------------
-        s9 = shards.get("shard_09_relocation_acg.json", {})
-        best = s9.get("geo_acg_best_places", {}).get("data", []) if isinstance(s9.get("geo_acg_best_places"), dict) else []
-        best_xml = []
-        if isinstance(best, list):
-            for b in best[:5]:
-                if isinstance(b, dict):
-                    best_xml.append(f'    <city name="{b.get("city", b.get("name", ""))}" country="{b.get("country", "")}" score="{b.get("score", 0.0)}" />')
-
-        feeds["feed_fase9_end.md"] = f"""<feed id="fase9_geo" phase="9" domain="astrocartography">
-  <metadata consultant="{c_name}" />
-  <best_relocation_places>
-{chr(10).join(best_xml)}
-  </best_relocation_places>
+        feeds["feed_fase9_end.md"] = f"""<feed id="fase9_end" phase="9" domain="strategic_closing_and_advanced_reports">
+  <metadata consultant="{c_name}" alias="{c_pref}" />
+  <synthesis_horizons>
+    <horizon name="sovereign_brand" focus="Consolidación de Identidad y Vehículo de Negocio." />
+    <horizon name="authority_mapping" focus="Posicionamiento y Arquitectura de Servicios de Alto Standing." />
+    <horizon name="launch_sync" focus="Sincronización Efemérica de Lanzamientos y Expansión." />
+  </synthesis_horizons>
+  <advanced_reports_menu>
+    <report id="oraculo-diag-a-psy" title="Diagnóstico Psicológico Profundo &amp; Dinámica de Sombras" promise="Desactivación de nudos inconscientes y activación de arquetipos rectores." scope="Psicología profunda de Liz Greene y balance elemental de Stephen Arroyo." />
+    <report id="oraculo-diag-b-voc" title="Ingeniería Vocacional de Élite, Riqueza &amp; Dasamsa D-10" promise="Monetización soberana, activación de casas Artha y fuerza planetaria Shadbala." scope="Astrología Védica Parashari, Jaimini Sutras y armónica D-10." />
+    <report id="oraculo-diag-c-mkt" title="Timing Estratégico de Mercado &amp; Elecciones Comerciales" promise="Ventanas efeméricas de máxima conversión para firmas de contratos y lanzamientos." scope="Astrología Eleccional clásica y tránsitos mayores." />
+    <report id="oraculo-diag-d-leg" title="Blindaje Legal Corporativo &amp; Protección Patrimonial" promise="Mitigación de riesgos societarios y consolidación de estructuras contractuales." scope="Cábala kármica, ciclos saturninos y casas de protección patrimonial." />
+    <report id="oraculo-diag-e-geo" title="Mapeo Astrocartográfico &amp; Ciudades de Prosperidad Mundial" promise="Coordenadas geodésicas de máxima resonancia para expansión internacional y relocalización." scope="Líneas angulares de Astrocartografía (ACG) y Espacio Local." />
+    <report id="oraculo-diag-f-hd" title="Diseño Humano Bioenergético &amp; Autoridad de Decisión" promise="Alineación bioenergética para eliminar la resistencia y operar sin agotamiento." scope="BodyGraph, Cruz de Encarnación, Centros y Canales definidos." />
+    <report id="oraculo-diag-g-brand" title="Astrobranding &amp; Arquitectura Semiótica de Marca" promise="Traducción de la carta natal en tokens de diseño verificables para la suite Orchesbrand." scope="Tokens W3C DTCG, tipografías, geometría sagrada, paletas OKLCH y cinética." />
+  </advanced_reports_menu>
+  <coaching_call_invitation text="Invitación cálida y cercana del coach astrológico a la Sesión 1 a 1 de integración y activación de los reportes avanzados." />
 </feed>
 """
         return feeds
@@ -1786,4 +1819,230 @@ El LLM aplicará estas directivas específicas al redactar los informes básicos
         feed_path = self.feeds_dir / f"feed_astrobranding_{brand_slug}.md"
         with open(feed_path, "w", encoding="utf-8") as f:
             f.write(handoff_content)
+
+    def _write_initial_brandbook_json(self, shards: Dict[str, Any], client: dict):
+        timestamp = datetime.now(timezone.utc).isoformat()
+        c_name = client.get("name", "Consultant")
+        c_pref = client.get("preferred_name", c_name)
+        brands = client.get("brand_names", [c_pref])
+        if not brands:
+            brands = [c_pref]
+
+        s1 = shards.get("shard_01_astro_western_tropical.json", {})
+        s4 = shards.get("shard_04_bazi_chinese_metaphysics.json", {})
+        s7 = shards.get("shard_07_numerology_multi_school.json", {})
+
+        fa_occ = s1.get("freeastro_tropical_placidus", {})
+        angles = fa_occ.get("angles", {})
+        asc_val = angles.get("asc")
+        mc_val = angles.get("mc")
+
+        # Descendant calculation: 180° opposite of Ascendant
+        try:
+            asc_deg = float(asc_val) if asc_val is not None else 0.0
+            dsc_deg = (asc_deg + 180.0) % 360.0
+        except (ValueError, TypeError):
+            asc_deg = 0.0
+            dsc_deg = 180.0
+
+        dsc_idx = int(dsc_deg // 30) % 12
+        dsc_sign = ZODIAC_SIGNS[dsc_idx]
+        dsc_deg_in_sign = dsc_deg % 30.0
+
+        avatar_map = {
+            "Aries": {
+                "archetype": "El Pionero / El Emprendedor Audaz",
+                "core_need": "Claridad ejecutiva, velocidad, decisiones de alto impacto y superación de la parálisis por análisis.",
+                "market_pain": "Frustración por procesos lentos o burocráticos; buscan un mentor que vaya directo al punto.",
+                "relational_dynamic": "Exigen liderazgo firme, retos estimulantes y respeto por su autonomía."
+            },
+            "Tauro": {
+                "archetype": "El Constructor Patrimonial / Creador de Activos",
+                "core_need": "Estabilidad tangible, solvencia a largo plazo, excelencia sensorial y preservación de valor.",
+                "market_pain": "Desconfianza ante ofertas efímeras o especulativas; aversión al riesgo desordenado.",
+                "relational_dynamic": "Valoran la calma, la consistencia, la predictibilidad y la lealtad inquebrantable."
+            },
+            "Géminis": {
+                "archetype": "El Conector Intelectual / Pensador Estratégico",
+                "core_need": "Agilidad cognitiva, diversidad de modelos, síntesis de datos complejos y comunicación precisa.",
+                "market_pain": "Aburrimiento ante enfoques monolíticos o dogmáticos; dispersión mental.",
+                "relational_dynamic": "Exigen diálogo inteligente, humor refinado y apertura conceptual permanente."
+            },
+            "Cáncer": {
+                "archetype": "El Protector Intuitivo / Líder de Comunidad",
+                "core_need": "Seguridad emocional, pertenencia, arraigo sagrado y coherencia íntima.",
+                "market_pain": "Agotamiento por entornos deshumanizados y transacciones comerciales frías.",
+                "relational_dynamic": "Buscan intimidad protegida, empatía profunda y contención soberana."
+            },
+            "Leo": {
+                "archetype": "El Creador Soberano / Figura de Alto Impacto",
+                "core_need": "Distinción, reconocimiento auténtico, legado heroico y expresión de su brillo único.",
+                "market_pain": "Miedo a la mediocridad o a ser ignorados; frustración al no ver valorada su grandeza.",
+                "relational_dynamic": "Responden a la generosidad de espíritu, celebración de su visión y estándares regios."
+            },
+            "Virgo": {
+                "archetype": "El Maestro de la Maestría / El Optimizador Riguroso",
+                "core_need": "Rigor metodológico, precisión quirúrgica, utilidad práctica y orden impecable.",
+                "market_pain": "Ansiedad ante el caos, la chapuza técnica o las promesas infladas sin método verificable.",
+                "relational_dynamic": "Exigen detalle, transparencia en los procesos, fundamentación paso a paso y honestidad absoluta."
+            },
+            "Libra": {
+                "archetype": "El Negociador de Alto Standing / Esteta Estratégico",
+                "core_need": "Equilibrio, diplomacia refinada, alianzas de alto valor y belleza proporcional.",
+                "market_pain": "Conflicto con la vulgaridad, la polarización agresiva y la asimetría injusta.",
+                "relational_dynamic": "Valoran la elegancia en el trato, la reciprocidad ética y la armonía relacional."
+            },
+            "Escorpio": {
+                "archetype": "El Alquimista Radical / Investigador de Poder",
+                "core_need": "Transformación total, poder auténtico, penetración en la verdad oculta y lealtad incondicional.",
+                "market_pain": "Desprecio por la superficialidad y las soluciones cosméticas; hipersensibilidad a la falsedad.",
+                "relational_dynamic": "Exigen confidencialidad absoluta, profundidad psicológica y valentía para cruzar crisis."
+            },
+            "Sagitario": {
+                "archetype": "El Visionario Global / El Filósofo Expansivo",
+                "core_need": "Expansión de horizontes, significado trascendente, libertad ética y aventura intelectual.",
+                "market_pain": "Sensación de asfixia ante reglas estrechas, provincianismo mental o falta de propósito.",
+                "relational_dynamic": "Inspirados por visiones audaces, franqueza entusiasta y sabiduría universal."
+            },
+            "Capricornio": {
+                "archetype": "El Líder Institucional / El Arquitecto del Legado",
+                "core_need": "Estructura monolítica, estatus merecido, disciplina paciente y gobierno a prueba de crisis.",
+                "market_pain": "Pérdida de tiempo con improvisaciones; desdén hacia promesas de éxito inmediato.",
+                "relational_dynamic": "Respetan la veteranía demostrada, la jerarquía natural y la autoridad sobria."
+            },
+            "Acuario": {
+                "archetype": "El Innovador Disruptivo / El Pionero Sistémico",
+                "core_need": "Libertad de paradigma, vanguardia tecnológica, impacto social y comunidad selecta.",
+                "market_pain": "Rechazo visceral a convencionalismos obsoletos o dogmas ciegos de autoridad.",
+                "relational_dynamic": "Conectan con la originalidad incorruptible, el respeto al libre albedrío y el altruismo lúcido."
+            },
+            "Piscis": {
+                "archetype": "El Místico Trascendente / El Creador Sensible",
+                "core_need": "Compasión universal, resonancia sagrada, inspiración artística y comunión con lo invisible.",
+                "market_pain": "Saturación por el materialismo utilitario; aislamiento emocional.",
+                "relational_dynamic": "Responden a la devoción pura, la atmósfera poética y la contención compasiva."
+            }
+        }
+        avatar_info = avatar_map.get(dsc_sign, avatar_map["Virgo"])
+
+        bazi_ts = s4.get("chinese_bazi_true_solar", {})
+        dm = bazi_ts.get("day_master", {})
+        dm_elem = str(dm.get("info", {}).get("element", "Water")).capitalize()
+
+        color_palettes = {
+            "Water": {
+                "brand_primary": "oklch(0.52 0.18 250)",
+                "brand_secondary": "oklch(0.68 0.14 220)",
+                "brand_accent": "oklch(0.78 0.16 85)",
+                "surface_dark": "oklch(0.16 0.03 250)",
+                "surface_light": "oklch(0.98 0.01 240)",
+                "text_primary": "oklch(0.96 0.01 240)"
+            },
+            "Wood": {
+                "brand_primary": "oklch(0.55 0.16 145)",
+                "brand_secondary": "oklch(0.70 0.12 135)",
+                "brand_accent": "oklch(0.75 0.18 70)",
+                "surface_dark": "oklch(0.17 0.03 145)",
+                "surface_light": "oklch(0.98 0.01 140)",
+                "text_primary": "oklch(0.95 0.01 140)"
+            },
+            "Fire": {
+                "brand_primary": "oklch(0.58 0.22 28)",
+                "brand_secondary": "oklch(0.72 0.16 45)",
+                "brand_accent": "oklch(0.82 0.15 95)",
+                "surface_dark": "oklch(0.18 0.04 25)",
+                "surface_light": "oklch(0.98 0.01 30)",
+                "text_primary": "oklch(0.96 0.01 30)"
+            },
+            "Earth": {
+                "brand_primary": "oklch(0.54 0.14 75)",
+                "brand_secondary": "oklch(0.68 0.10 85)",
+                "brand_accent": "oklch(0.62 0.16 40)",
+                "surface_dark": "oklch(0.18 0.03 70)",
+                "surface_light": "oklch(0.98 0.01 75)",
+                "text_primary": "oklch(0.95 0.01 75)"
+            },
+            "Metal": {
+                "brand_primary": "oklch(0.65 0.08 260)",
+                "brand_secondary": "oklch(0.80 0.05 250)",
+                "brand_accent": "oklch(0.75 0.15 150)",
+                "surface_dark": "oklch(0.18 0.02 260)",
+                "surface_light": "oklch(0.98 0.01 260)",
+                "text_primary": "oklch(0.95 0.01 260)"
+            }
+        }
+        palette = color_palettes.get(dm_elem, color_palettes["Water"])
+
+        fa_num = s7.get("freeastro_pythagorean", {}).get("data", {})
+        lp = fa_num.get("core", {}).get("life_path", {}).get("value_display", "N/A")
+
+        for brand in brands:
+            b_clean = str(brand).strip()
+            if not b_clean:
+                continue
+            brand_slug = b_clean.lower().replace(" ", "_").replace("/", "_").replace(".", "")
+            brandbook_data = {
+                "schema_version": "1.0.0",
+                "contract": "gentle-ai.brandbook.initial/v1",
+                "generated_at": timestamp,
+                "consultant": {
+                    "legal_name": c_name,
+                    "preferred_name": c_pref,
+                    "life_path": lp
+                },
+                "brand": {
+                    "name": b_clean,
+                    "slug": brand_slug,
+                    "astrological_pillars": {
+                        "ascendant": format_zodiac_pos(asc_val),
+                        "midheaven_mc": format_zodiac_pos(mc_val),
+                        "descendant_dsc": f"{dsc_sign} {int(dsc_deg_in_sign)}° ({dsc_deg:.2f}°)",
+                        "day_master": f"{dm.get('stem', '-')} ({dm_elem})"
+                    }
+                },
+                "ideal_client_avatar": {
+                    "derived_from": f"Descendente Casa 7 en {dsc_sign} ({dsc_deg:.2f}°)",
+                    "target_archetype": avatar_info["archetype"],
+                    "core_transformation_need": avatar_info["core_need"],
+                    "market_pain_points": avatar_info["market_pain"],
+                    "relational_dynamic": avatar_info["relational_dynamic"],
+                    "authority_positioning": f"Propuesta de valor emanada del Medio Cielo (MC) en {format_zodiac_pos(mc_val)}."
+                },
+                "dtcg_color_tokens": {
+                    "$schema": "https://design-tokens.github.io/community-group/format/",
+                    "color": {
+                        "primary": {"$value": palette["brand_primary"], "$type": "color", "$description": f"Color identitario primario regido por elemento {dm_elem}"},
+                        "secondary": {"$value": palette["brand_secondary"], "$type": "color", "$description": "Tono de soporte institucional"},
+                        "accent": {"$value": palette["brand_accent"], "$type": "color", "$description": "Acento de alta visibilidad para CTAs"},
+                        "surface": {
+                            "dark": {"$value": palette["surface_dark"], "$type": "color", "$description": "Fondo profundo para modo oscuro"},
+                            "light": {"$value": palette["surface_light"], "$type": "color", "$description": "Superficie mineral luminosa"}
+                        },
+                        "text": {
+                            "primary": {"$value": palette["text_primary"], "$type": "color", "$description": "Texto principal alto contraste WCAG AAA"}
+                        }
+                    }
+                },
+                "typography_tokens": {
+                    "font_family": {
+                        "display": {"$value": "Cinzel, Cormorant Garamond, serif", "$type": "fontFamily"},
+                        "body": {"$value": "Inter, Plus Jakarta Sans, sans-serif", "$type": "fontFamily"},
+                        "mono": {"$value": "JetBrains Mono, monospace", "$type": "fontFamily"}
+                    }
+                }
+            }
+
+            # Write brandbook file into root_dir, feeds_dir, and canonical brandbook.json
+            bb_path = self.root_dir / f"brandbook_{brand_slug}.json"
+            with open(bb_path, "w", encoding="utf-8") as f:
+                json.dump(brandbook_data, f, indent=2, ensure_ascii=False)
+
+            feed_bb_path = self.feeds_dir / f"brandbook_{brand_slug}.json"
+            with open(feed_bb_path, "w", encoding="utf-8") as f:
+                json.dump(brandbook_data, f, indent=2, ensure_ascii=False)
+
+            canonical_bb = self.root_dir / "brandbook.json"
+            with open(canonical_bb, "w", encoding="utf-8") as f:
+                json.dump(brandbook_data, f, indent=2, ensure_ascii=False)
+
 

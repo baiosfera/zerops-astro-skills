@@ -472,10 +472,11 @@ class ExtractionEngine:
             if not rest_results.get(prov):
                 cached = self.cache.get(prov, endpoint, client_hash)
                 if cached:
-                    if prov in ("freeastro", "astroway", "astrologyapi", "vedastro"):
-                        data_payload = cached.get("data", cached) if isinstance(cached, dict) else cached
-                    else:
-                        data_payload = cached
+                    data_payload = cached
+                    if isinstance(data_payload, dict) and "data" in data_payload:
+                        data_payload = data_payload["data"]
+                    if isinstance(data_payload, dict) and "data" in data_payload and isinstance(data_payload["data"], dict):
+                        data_payload = data_payload["data"]
                     if data_payload and isinstance(data_payload, dict):
                         rest_results[prov] = data_payload
                         for ep_k, ep_v in data_payload.items():
@@ -484,6 +485,11 @@ class ExtractionEngine:
                                 data=ep_v if isinstance(ep_v, dict) else {"value": ep_v},
                                 http_status=200
                             ))
+            elif isinstance(rest_results.get(prov), dict):
+                # Safety unwrap if already present as full extract envelope
+                cur_payload = rest_results[prov]
+                if "data" in cur_payload and isinstance(cur_payload["data"], dict) and ("calls_made" in cur_payload or "raw_responses" in cur_payload or "mode" in cur_payload):
+                    rest_results[prov] = cur_payload["data"]
 
         # 2. Hydrate MCP tools
         lunar_bazi_args = {"birth_datetime": f"{date_str} {hour:02d}:{minute:02d}", "timezone_offset": int(tz_offset)}
