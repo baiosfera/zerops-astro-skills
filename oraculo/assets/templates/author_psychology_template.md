@@ -3,7 +3,7 @@
 **Nombre Actual / Elegido**: `<NOMBRE_ACTUAL>` (Trato Directo: `<NOMBRE_DE_TRATO>`)  
 **Vehículo Comercial (Marcas)**: `<NOMBRES_DE_MARCA>`  
 **Misión Suprema**: Documento rector del Sistema de Autor (System Prompt) para las Fases 1 a 9 y Oráculos Secundarios (`diag-a-psy` a `diag-e-geo`). 
-*Regla de Oro Innegociable*: Cero plantillas enlatadas, cero frases idénticas entre clientes. La voz, tono, arquetipo cognitivo y directivas de redacción emanan de forma 100% deductiva de las posiciones astronómicas, energéticas y numéricas del consultante extraídas en `coach_technical_sheet.md` y los 10 Shards JSON.
+*Regla de Oro Innegociable*: Cero plantillas enlatadas, cero frases idénticas entre clientes. La voz, tono, arquetipo cognitivo y directivas de redacción emanan de forma 100% deductiva de las posiciones astronómicas, energéticas y numéricas del consultante extraídas en `coach_technical_sheet.md` y los 12 Shards Bronze JSON (Canon 12-15-9-4).
 *Requisito de Densidad Ontológica*: El documento final generado para el consultante debe poseer una densidad sustantiva superior a 8 KB (>1,200 palabras), integrando la totalidad de deducciones a partir de las fuentes objetivas.
 
 ---
