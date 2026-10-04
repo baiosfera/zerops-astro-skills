@@ -95,7 +95,7 @@ Todas las skills se organizan en estructura plana en la raiz del repositorio (`/
 Para clonar e integrar en cualquier entorno o contenedor en menos de 2 segundos:
 
 ```bash
-git clone --depth 1 https://github.com/elplacerdc/zerops-astro-skills.git ~/.gemini/antigravity-cli/skills
+git clone --depth 1 https://github.com/baiosfera/zerops-astro-skills.git ~/.gemini/antigravity-cli/skills
 ```
 
 Licencia: Apache-2.0

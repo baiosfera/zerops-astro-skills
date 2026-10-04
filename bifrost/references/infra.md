@@ -92,7 +92,7 @@ In `config.json`:
         "dimension": 1,
         "ttl": 86400,
         "threshold": 0.8,
-        "default_cache_key": "elplacerdc-production-cache",
+        "default_cache_key": "production-cache",
         "vector_store_namespace": "BifrostLocalCache",
         "cache_by_model": true,
         "cache_by_provider": true

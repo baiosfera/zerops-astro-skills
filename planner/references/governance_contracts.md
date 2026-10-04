@@ -22,7 +22,7 @@
   * Skill snapshots are preserved strictly as uncompressed individual directories directly in:
     `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<version>.bak/`
   * Taxonomy is strictly flat and individual: each skill snapshot resides directly under `bak/skills/` without grouping folders, task-named directories, or archive formats (`.tar.gz`, `.zip`).
-  * **Strict Prohibition of Monolithic Repository Backups:** Code repositories (`zerops-astrobranding`, `elplacerdc`, etc.) and entire project folders rely exclusively on native Git/GitHub version control (`git commit`, `git tag`, `git checkout`). Creating `.bak` snapshots of whole repositories or monorepos to `bak/` or Google Drive is strictly prohibited to prevent storage bloat and workflow contamination.
+  * **Strict Prohibition of Monolithic Repository Backups:** Code repositories (`zerops-astrobranding`, `<client-repo>`, etc.) and entire project folders rely exclusively on native Git/GitHub version control (`git commit`, `git tag`, `git checkout`). Creating `.bak` snapshots of whole repositories or monorepos to `bak/` or Google Drive is strictly prohibited to prevent storage bloat and workflow contamination.
   * **Track B and C Exemption:** Application code, Zerops service deployments (Track B), and direct Google Drive content/data ops (Track C) are exempt from `bak/` snapshots.
 
 ---
