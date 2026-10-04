@@ -85,6 +85,9 @@ class ExtractionEngine:
                 try:
                     with open(audit_file, "r", encoding="utf-8") as f:
                         audit_record = json.load(f)
+                    if isinstance(audit_record, dict):
+                        audit_record["is_cached"] = True
+                        audit_record["timestamp_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
                 except Exception:
                     audit_record = None
 
@@ -451,10 +454,10 @@ class ExtractionEngine:
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
 
         fe_data = self.cache.get("freeastro", "full_extract", client_hash)
-        fe_ok = bool(fe_data and isinstance(fe_data, dict) and len(fe_data.get("data", {})) >= 120)
+        fe_ok = bool(fe_data and isinstance(fe_data, dict) and len(fe_data.get("data", {})) >= 50)
 
         aw_data = self.cache.get("astroway", "full_extract", client_hash)
-        aw_ok = bool(aw_data and isinstance(aw_data, dict) and len(aw_data.get("data", {})) >= 300)
+        aw_ok = bool(aw_data and isinstance(aw_data, dict) and len(aw_data.get("data", {})) >= 80)
 
         aa_data = self.cache.get("astrologyapi", "full_extract", client_hash)
         aa_ok = bool(aa_data and isinstance(aa_data, dict) and len(aa_data.get("data", {})) >= 6)
@@ -585,7 +588,7 @@ class ExtractionEngine:
                             isinstance(v, dict) and ("error" in v or v.get("status") == "FAIL")
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) >= 120:
+                        if not cached_has_err and len(cached.get("data", {})) >= 50:
                             rest_results["freeastro"] = cached.get("data", {})
                             credit_stats["freeastro_report_credits"] = cached.get("report_credits")
                             credit_stats["calls_made"]["freeastro"] = 0
@@ -670,7 +673,7 @@ class ExtractionEngine:
                             isinstance(v, dict) and ("error" in v or v.get("ok") is False)
                             for v in cached.get("data", {}).values()
                         )
-                        if not cached_has_err and len(cached.get("data", {})) >= 300:
+                        if not cached_has_err and len(cached.get("data", {})) >= 80:
                             rest_results["astroway"] = cached.get("data", {})
                             audit = cached.get("credits_audit", {})
                             credit_stats["astroway_credits_remaining"] = audit.get("remaining")

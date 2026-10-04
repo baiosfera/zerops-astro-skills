@@ -4,9 +4,9 @@ description: "Trigger: freeastroapi, api.freeastroapi.com, calculate natal chart
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.0"
+  version: "2.3"
 ---
-# FreeAstroAPI Engine (v2.0)
+# FreeAstroAPI Engine (v2.3)
 
 Unified multi-tradition REST API calculation engine supporting Western Natal, Chinese BaZi & TCM Health, Neijing Lifespan, Vedic KP V2 & Vargas D1–D60, 4-in-1 Numerology, Astrocartography GeoJSON, and Commercial Electional timing (`https://api.freeastroapi.com/api/`).
 

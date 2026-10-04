@@ -415,25 +415,39 @@ async def extract_astroway(
             url = f"{BASE_URL}/v1{path}" if not path.startswith("/v1") else f"{BASE_URL}{path}"
             t_start = time.perf_counter()
             try:
-                # Rate limit pacing: 0.35s between requests to respect Indie PRO limits
-                await asyncio.sleep(0.35)
-                resp = await client.post(url, headers=headers, json=body)
-                results["calls_made"] += 1
-
-                # Adaptive backoff on 429
-                if resp.status_code == 429:
-                    wait_sec = 6.0
-                    try:
-                        err_data = resp.json()
-                        m_wait = re.search(r"(\d+)\s*s", str(err_data))
-                        if m_wait:
-                            wait_sec = float(m_wait.group(1)) + 1.0
-                    except Exception:
-                        pass
-                    print(f"⏳ [AstroWay ({idx}/{total_eps})] 429 Rate Limit hit. Backing off {wait_sec}s...", flush=True)
-                    await asyncio.sleep(wait_sec)
+                # Rate limit pacing: 2.05s between requests to strictly respect Indie PRO limits (30 req/min)
+                max_retries = 3
+                attempt = 0
+                resp = None
+                while attempt <= max_retries:
+                    await asyncio.sleep(2.05)
                     resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
+                    if resp.status_code != 429:
+                        break
+
+                    attempt += 1
+                    if attempt > max_retries:
+                        break
+
+                    # Adaptive backoff respecting Retry-After and rate limit reset
+                    retry_after = resp.headers.get("Retry-After") or resp.headers.get("retry-after")
+                    wait_sec = 2.5
+                    if retry_after:
+                        try:
+                            wait_sec = float(retry_after) + 0.5
+                        except Exception:
+                            pass
+                    else:
+                        try:
+                            err_data = resp.json()
+                            m_wait = re.search(r"(\d+)\s*s", str(err_data))
+                            if m_wait:
+                                wait_sec = float(m_wait.group(1)) + 1.0
+                        except Exception:
+                            pass
+                    print(f"⏳ [AstroWay ({idx}/{total_eps})] 429 Rate Limit hit. Reintento {attempt}/{max_retries} en {wait_sec}s...", flush=True)
+                    await asyncio.sleep(wait_sec)
 
                 latency_ms = (time.perf_counter() - t_start) * 1000.0
 

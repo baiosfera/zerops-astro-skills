@@ -22,6 +22,22 @@ BASE_URL = os.getenv("FREEASTRO_API_URL", "https://api.freeastroapi.com")
 DEFAULT_TIMEOUT = 12.0
 
 
+def get_zodiac_sign(month: int, day: int) -> str:
+    """Returns western zodiac sign key for daily sign horoscope."""
+    if (month == 3 and day >= 21) or (month == 4 and day <= 19): return "aries"
+    if (month == 4 and day >= 20) or (month == 5 and day <= 20): return "taurus"
+    if (month == 5 and day >= 21) or (month == 6 and day <= 20): return "gemini"
+    if (month == 6 and day >= 21) or (month == 7 and day <= 22): return "cancer"
+    if (month == 7 and day >= 23) or (month == 8 and day <= 22): return "leo"
+    if (month == 8 and day >= 23) or (month == 9 and day <= 22): return "virgo"
+    if (month == 9 and day >= 23) or (month == 10 and day <= 22): return "libra"
+    if (month == 10 and day >= 23) or (month == 11 and day <= 21): return "scorpio"
+    if (month == 11 and day >= 22) or (month == 12 and day <= 21): return "sagittarius"
+    if (month == 12 and day >= 22) or (month == 1 and day <= 19): return "capricorn"
+    if (month == 1 and day >= 20) or (month == 2 and day <= 18): return "aquarius"
+    return "pisces"
+
+
 def load_natal_catalog() -> list:
     """Loads all 124 calculation operations from assets/natal_endpoints_catalog.json."""
     catalog_path = Path(__file__).parent.parent / "assets" / "natal_endpoints_catalog.json"
@@ -181,6 +197,48 @@ async def extract_freeastroapi(
     clean_city = unicodedata.normalize("NFKD", str(raw_city)).encode("ASCII", "ignore").decode("utf-8")
     clean_city = re.sub(r"[,\(\)].*$", "", clean_city).strip().split()[0] if clean_city.strip() else "Medellin"
 
+    date_str = f"{year:04d}-{month:02d}-{day:02d}"
+    datetime_iso = f"{date_str}T{hour:02d}:{minute:02d}:00"
+    now_utc = datetime.now(timezone.utc)
+    today_str = now_utc.strftime("%Y-%m-%d")
+    zodiac_sign = get_zodiac_sign(month, day)
+
+    # Base flat payloads
+    base_western_payload = {
+        "year": year, "month": month, "day": day,
+        "hour": hour, "minute": minute,
+        "lat": lat, "lng": lng, "tz_str": tz_str
+    }
+    payload_tropical_placidus = {**base_western_payload, "name": full_name, "house_system": "placidus", "zodiac_type": "tropical"}
+    payload_tropical_campanus = {**base_western_payload, "name": full_name, "house_system": "campanus", "zodiac_type": "tropical"}
+    payload_sidereal_fc = {
+        **base_western_payload,
+        "name": full_name,
+        "zodiac_type": "sidereal",
+        "sidereal_ayanamsa": "fagan_bradley",
+        "house_system": "campanus"
+    }
+    payload_sidereal_lahiri = {
+        **base_western_payload,
+        "name": full_name,
+        "zodiac_type": "sidereal",
+        "sidereal_ayanamsa": "lahiri",
+        "house_system": "whole_sign"
+    }
+
+    # Nested natal for directions & progressions (OpenAPI 3.1 SecondaryProgressionsNatalInput)
+    natal_nested_obj = {
+        "name": full_name,
+        "datetime": datetime_iso,
+        "time_known": True,
+        "location": {
+            "city": clean_city,
+            "lat": lat,
+            "lng": lng,
+            "tz_str": tz_str
+        }
+    }
+
     payload_profections = {
         "year": year, "month": month, "day": day,
         "hour": hour, "minute": minute,
@@ -200,8 +258,13 @@ async def extract_freeastroapi(
             for item in cat_data:
                 p = item["path"]
                 m = item.get("method", "POST").upper()
+                schema = item.get("schema", "")
 
-                formatted_p = p.replace("{date}", f"{year:04d}-{month:02d}-{day:02d}")
+                # Skip permanently closed/deprecated or invalid endpoints
+                if p == "/api/v1/natal/experimental" or "job_id" in p:
+                    continue
+
+                formatted_p = p.replace("{date}", date_str)
                 url = f"{BASE_URL}{formatted_p}"
 
                 clean_key = p.strip("/").replace("/", "_").replace("-", "_").replace("{", "").replace("}", "")
@@ -213,23 +276,158 @@ async def extract_freeastroapi(
                     clean_key = clean_key[7:]
 
                 body = None
+                params = None
+
                 if m == "POST":
-                    if "/chinese/" in p:
-                        if "/flow" in p:
-                            body = payload_bazi_flow
-                        elif "/health" in p:
-                            body = payload_bazi_health
-                        elif "/lifespan" in p:
-                            body = payload_bazi_lifespan
-                        else:
-                            body = payload_bazi
+                    if schema in ("PrimaryDirectionsRequest",) or "/directions/" in p:
+                        body = {
+                            "natal": natal_nested_obj,
+                            "range": {"start_date": f"{current_year}-01-01", "end_date": f"{current_year}-12-31", "limit": 100}
+                        }
+                    elif schema in ("ProgressionCalendarRequest",) or "/calendar" in p:
+                        body = {
+                            "natal": natal_nested_obj,
+                            "calendar": {"from": f"{current_year}-01-01", "to": f"{current_year}-12-31"}
+                        }
+                    elif schema in ("ExactAspectSearchRequest", "ExactIngressSearchRequest") or "exact-aspects" in p or "exact-ingresses" in p or "search" in p:
+                        body = {
+                            "natal": natal_nested_obj,
+                            "search": {"from": f"{current_year}-01-01", "to": f"{current_year}-12-31"}
+                        }
+                    elif schema in ("SecondaryProgressionsRequest",) or p.endswith("/progressions/secondary"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "secondary_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("ConverseSecondaryProgressionsRequest",) or p.endswith("/progressions/converse-secondary"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "converse_secondary_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("TertiaryProgressionsRequest",) or p.endswith("/progressions/tertiary"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "tertiary_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("QuaternaryProgressionsRequest",) or p.endswith("/progressions/quaternary"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "quaternary_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("QuotidianProgressionsRequest",) or p.endswith("/progressions/quotidian"):
+                        body = {
+                            "natal": natal_nested_obj,
+                            "quotidian_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("SolarArcProgressionsRequest",) or "solar-arc" in p:
+                        body = {
+                            "natal": natal_nested_obj,
+                            "solar_arc_progression": {"target_date": today_str}
+                        }
+                    elif schema in ("SolarReturnRequest", "ExperimentalSolarReturnChartRequest") or "solar-return" in p:
+                        body = {
+                            "natal": base_western_payload,
+                            "solar_return_year": current_year,
+                            "solar_return_city": clean_city
+                        }
+                    elif schema in ("TransitRequest", "ExperimentalTransitChartRequest") or "/transits" in p or p.endswith("/transits/calculate"):
+                        body = {
+                            "natal": base_western_payload,
+                            "transit_date": today_str,
+                            "current_city": clean_city
+                        }
+                    elif schema in ("TransitTimelineRequest",):
+                        body = {
+                            "natal": base_western_payload,
+                            "range_start": date_str,
+                            "range_end": today_str
+                        }
+                    elif schema in ("TransitSearchRequest",):
+                        body = {
+                            "natal": base_western_payload,
+                            "transit_planet": "Jupiter",
+                            "natal_point": "Sun"
+                        }
+                    elif schema in ("PlanetReturnRequest",):
+                        body = {
+                            "natal": base_western_payload,
+                            "return_target": {"body": "Moon", "year": current_year}
+                        }
+                    elif schema in ("AstrocartographyCityCheckRequest", "AstrocartographyRelocationRequest"):
+                        body = {
+                            "natal": base_western_payload,
+                            "city": clean_city
+                        }
+                    elif schema in ("AstrocartographyParansRequest",):
+                        body = {
+                            "natal": base_western_payload
+                        }
+                    elif schema in ("AstrocartographyLinesRequest", "AstrocartographyRecommendationsRequest") or "/astrocartography/" in p:
+                        body = payload_acg
+                    elif schema in ("AtomicReportRequest",) or "/ai/generate" in p:
+                        body = {
+                            **base_western_payload,
+                            "name": full_name,
+                            "city": clean_city,
+                            "report_type": "natal_summary"
+                        }
+                    elif "PersonalHoroscopeRequest" in schema or "/horoscope/daily/personal" in p:
+                        body = {
+                            "birth": base_western_payload,
+                            "date": today_str
+                        }
+                    elif schema in ("EphemerisRequest",) or "/ephemeris/calculate" in p:
+                        body = {
+                            "start": date_str,
+                            "end": date_str
+                        }
+                    elif schema in ("VedicGocharTimelineRequest", "GocharTimelineRequest"):
+                        body = {
+                            **payload_vargas,
+                            "range_start": date_str,
+                            "range_end": today_str
+                        }
+                    elif schema in ("VedicTransitInsightsRequest",):
+                        body = {
+                            **payload_vargas,
+                            "transit_year": current_year,
+                            "transit_month": month,
+                            "transit_day": day
+                        }
+                    elif schema in ("VedicBatchRequest",):
+                        body = {
+                            "items": [
+                                {"endpoint": "/v2/vedic/calculate", "payload": payload_vargas}
+                            ]
+                        }
+                    elif "ElectionSearchRequest" in schema or "/electional/" in p:
+                        body = {
+                            "search_window": {"start": f"{current_year}-01-01", "end": f"{current_year}-12-31"},
+                            "city": clean_city,
+                            "lat": lat,
+                            "lng": lng,
+                            "tz_str": tz_str
+                        }
+                    elif "FamousPeople" in schema:
+                        body = {"natal": base_western_payload}
+                    elif schema in ("WesternChatRequest", "VedicChatRequest"):
+                        body = {"message": f"Interpretación astrológica para {full_name}"}
+                    elif schema in ("VedicQARequest",):
+                        body = {"question": f"¿Cuál es el dasha regente de {full_name}?", "date": date_str, "time": f"{hour:02d}:{minute:02d}", "city": clean_city}
+                    elif schema in ("VedicMuhuratSearchRequest",):
+                        body = {"start_date": f"{current_year}-01-01", "end_date": f"{current_year}-12-31", "city": clean_city}
+                    elif schema in ("VedicMuhuratPersonalizedSearchRequest",):
+                        body = {"start_date": f"{current_year}-01-01", "end_date": f"{current_year}-12-31", "subject": base_western_payload, "city": clean_city}
+                    elif "/chinese/" in p:
+                        if "/flow" in p: body = payload_bazi_flow
+                        elif "/health" in p: body = payload_bazi_health
+                        elif "/lifespan" in p: body = payload_bazi_lifespan
+                        else: body = payload_bazi
                     elif "/numerology/" in p:
                         body = payload_numerology
                     elif "/vedic/" in p:
-                        if "/kp" in p:
-                            body = payload_kp
-                        elif "/vargas" in p:
-                            body = payload_vargas
+                        if "/kp" in p: body = payload_kp
+                        elif "/vargas" in p: body = payload_vargas
                         else:
                             body = {
                                 "year": year, "month": month, "day": day,
@@ -237,48 +435,44 @@ async def extract_freeastroapi(
                                 "lat": lat, "lng": lng, "tz_str": tz_str,
                                 "ayanamsha": "lahiri"
                             }
-                    elif "/astrocartography/" in p:
-                        body = payload_acg
                     elif "/profections/" in p:
                         body = payload_profections
-                    elif "/progressions/" in p or "/directions/" in p:
-                        body = {
-                            **base_western_payload,
-                            "target_year": current_year,
-                            "calendar_years": 80
-                        }
-                    elif "/electional/" in p:
-                        body = {
-                            "start_date": f"{current_year}-01-01",
-                            "end_date": f"{current_year}-12-31",
-                            "lat": lat, "lng": lng,
-                            "city": clean_city
-                        }
                     elif "sidereal" in p or "campanus" in p:
                         body = payload_tropical_campanus
                     else:
                         body = payload_tropical_placidus
+                elif m == "GET":
+                    if "/ephemeris" in p:
+                        params = {"start": date_str, "end": date_str}
+                    elif "/geo/search" in p:
+                        params = {"q": clean_city}
+                    elif "/horoscope/daily/sign" in p:
+                        params = {"sign": zodiac_sign}
+                    elif "/moon/month" in p:
+                        params = {"year": year, "month": month}
+                    elif "/sky-events" in p:
+                        params = {"date": today_str}
 
-                endpoints_to_run.append((clean_key, m, url, body))
+                endpoints_to_run.append((clean_key, m, url, body, params))
         except Exception:
             pass
 
     if not endpoints_to_run:
         endpoints_to_run = [
-            ("western_natal_tropical", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_placidus),
-            ("western_natal_tropical_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus),
-            ("western_natal_sidereal_fagan_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc),
-            ("western_natal_sidereal_lahiri", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri),
-            ("western_natal_insights", "POST", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus),
-            ("western_profections_annual", "POST", f"{BASE_URL}/api/v1/western/profections/annual", payload_profections),
-            ("numerology_profile_pythagorean", "POST", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology),
-            ("chinese_bazi_true_solar", "POST", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi),
-            ("chinese_bazi_flow", "POST", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow),
-            ("chinese_bazi_health", "POST", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health),
-            ("chinese_bazi_lifespan", "POST", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan),
-            ("vedic_kp_v2", "POST", f"{BASE_URL}/api/v2/vedic/kp", payload_kp),
-            ("vedic_vargas", "POST", f"{BASE_URL}/api/v2/vedic/vargas", payload_vargas),
-            ("astrocartography_lines", "POST", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg),
+            ("western_natal_tropical", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_placidus, None),
+            ("western_natal_tropical_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_tropical_campanus, None),
+            ("western_natal_sidereal_fagan_campanus", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_fc, None),
+            ("western_natal_sidereal_lahiri", "POST", f"{BASE_URL}/api/v1/natal/calculate", payload_sidereal_lahiri, None),
+            ("western_natal_insights", "POST", f"{BASE_URL}/api/v1/western/natal/insights", payload_tropical_placidus, None),
+            ("western_profections_annual", "POST", f"{BASE_URL}/api/v1/western/profections/annual", payload_profections, None),
+            ("numerology_profile_pythagorean", "POST", f"{BASE_URL}/api/v1/numerology/profile", payload_numerology, None),
+            ("chinese_bazi_true_solar", "POST", f"{BASE_URL}/api/v1/chinese/bazi", payload_bazi, None),
+            ("chinese_bazi_flow", "POST", f"{BASE_URL}/api/v1/chinese/bazi/flow", payload_bazi_flow, None),
+            ("chinese_bazi_health", "POST", f"{BASE_URL}/api/v1/chinese/bazi/health", payload_bazi_health, None),
+            ("chinese_bazi_lifespan", "POST", f"{BASE_URL}/api/v1/chinese/bazi/lifespan", payload_bazi_lifespan, None),
+            ("vedic_kp_v2", "POST", f"{BASE_URL}/api/v2/vedic/kp", payload_kp, None),
+            ("vedic_vargas", "POST", f"{BASE_URL}/api/v2/vedic/vargas", payload_vargas, None),
+            ("astrocartography_lines", "POST", f"{BASE_URL}/api/v1/western/astrocartography/lines", payload_acg, None),
         ]
 
     results: Dict[str, Any] = {
@@ -312,7 +506,7 @@ async def extract_freeastroapi(
             results["report_credits"] = {"available": 2, "plan": "Entry"}
 
         # 2. Execute endpoints with atomic delta cache
-        for idx, (key_name, method, url, body) in enumerate(endpoints_to_run, 1):
+        for idx, (key_name, method, url, body, params) in enumerate(endpoints_to_run, 1):
             # Check delta cache
             if cache_manager and client_hash:
                 cached_data = cache_manager.get_endpoint("freeastro", key_name, client_hash)
@@ -333,7 +527,7 @@ async def extract_freeastroapi(
             try:
                 await asyncio.sleep(0.25)
                 if method == "GET":
-                    resp = await client.get(url, headers=headers)
+                    resp = await client.get(url, headers=headers, params=params)
                 else:
                     resp = await client.post(url, headers=headers, json=body)
                 results["calls_made"] += 1
@@ -344,14 +538,17 @@ async def extract_freeastroapi(
                     await asyncio.sleep(5.0)
                     t0 = time.perf_counter()
                     if method == "GET":
-                        resp = await client.get(url, headers=headers)
+                        resp = await client.get(url, headers=headers, params=params)
                     else:
                         resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
                     lat = (time.perf_counter() - t0) * 1000.0
 
                 if resp.status_code == 200:
-                    data = resp.json()
+                    try:
+                        data = resp.json()
+                    except Exception:
+                        data = {"format": "svg" if "<svg" in resp.text else "text", "content": resp.text}
                     results["raw_responses"][key_name] = data
 
                     if isinstance(data, dict) and (data.get("status") == "error" or "error" in data):
