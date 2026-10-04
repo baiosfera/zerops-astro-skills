@@ -4,10 +4,10 @@ description: "Trigger: oraculo, fase 0, fase0, carta natal, astrologia. Ejecuta 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "6.2" # pipeline engine version: "6.2"
+  version: "6.3" # pipeline engine version: "6.3"
 ---
 
-# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v6.2)
+# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v6.3)
 
 ## Activation Contract
 Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y puente semiótico a `orchesbrand`.
@@ -17,17 +17,17 @@ Ante cualquier solicitud de "fase 0", "fase0", "carta natal": la ausencia de `ra
 `python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py <ruta>`
 o mediante el wrapper directo:
 `bash /var/www/.agents/skills/oraculo/scripts/fase0.sh <ruta>`
-Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards PostgreSQL, 10 feeds Gold, Ficha Técnica y `fase0_author_psychology.md`).
+Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards PostgreSQL, 9 feeds enciclopédicos Gold, y en Capa Platino los 4 artefactos en `raw/llm/`).
 
 ## Hard Rules (CoHaLo Positive Guidance)
 - **Regla 1 (Arquitectura Federada):** Cada sub-skill astrológica mantiene su extractor canónico y referencias oficiales. Oráculo actúa como conductor asíncrono y sintetizador.
 - **Regla 2 (Motor Matemático):** Python extrae cómputos exactos y literatura clásica verbatim. Cero textos inventados en el motor.
-- **Regla 3 (Virtual Data Lakehouse & Canon 12-15-10):**
+- **Regla 3 (Virtual Data Lakehouse Decoupled Canon 12-15-9-4):**
   - **Bronze**: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
   - **Silver**: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json` con punteros RFC 6901.
-  - **Gold**: 10 Feeds Quirúrgicos en `raw/feeds/` para agentes de marca downstream.
+  - **Gold (`-c` / `--compile`)**: Universal dynamic cache crawler ingesta 100% de `raw/json/cache/` (498+ archivos) sin hardcoding, deduplica payloads y alimenta 9 feeds enciclopédicos multi-fuente en `raw/feeds/`.
+  - **Platinum (`-s` / `--synthesis`)**: Síntesis de 4 artefactos en `raw/llm/`: `coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md` y `brandbook_[marca].json` (W3C DTCG tokens con `$extensions.tailwind_v4` `@theme` y variables CSS para `astro-web`).
   - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
-  - **LLM**: `fase0_author_psychology.md` (>8 KB) y `coach_technical_sheet.md` (12 secciones en español).
 - **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
 - **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
 - **Regla 6 (Indivisibilidad SSoT):** Replicación exacta en `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/oraculo/`.

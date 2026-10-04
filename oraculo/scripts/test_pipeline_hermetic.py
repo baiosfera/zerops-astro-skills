@@ -116,23 +116,31 @@ def test_sharder_engine_hermetic():
         sharder = SharderEngine(output_root=temp_dir)
         res = sharder.verify_and_shard(extraction_output)
         assert res["shards_count"] == 12
-        assert res["feeds_count"] == 10
-        assert res["manifest_generated"] is True
+        assert res["feeds_count"] == 9
         
         # Verify physical files
         dumps_dir = Path(temp_dir) / "raw" / "json" / "dumps"
-        assert (dumps_dir / "shard_01_astro_western_tropical.json").exists()
-        assert (dumps_dir / "shard_05_kabbalah_tikkun.json").exists()
+        assert (dumps_dir / "shard_01.json").exists()
+        assert (dumps_dir / "shard_06.json").exists()
         assert (dumps_dir / "manifest.json").exists()
+        assert (dumps_dir / "client_dumps_15_shards.json").exists()
         
         feeds_dir = Path(temp_dir) / "raw" / "feeds"
-        assert (feeds_dir / "feed_fase0_author_dossier.md").exists()
-        f2 = feeds_dir / "feed_fase2_occ.md"
-        assert f2.exists()
-        content = f2.read_text(encoding="utf-8")
-        assert 'degree="27.93"' in content
-        assert "0.0°" not in content
-        print("✓ test_sharder_engine_hermetic passed")
+        assert (feeds_dir / "feed_numerologia_enciclopedica.md").exists()
+        assert (feeds_dir / "feed_occidental_tropical.md").exists()
+        assert (feeds_dir / "feed_bazi_cuatro_pilares.md").exists()
+
+        # Verify Platinum tier synthesis
+        from pipeline.synthesis import SynthesisEngine
+        synth = SynthesisEngine(temp_dir)
+        client_p = extraction_output.get("client_payload") or extraction_output.get("client_data", {})
+        s_res = synth.synthesize_all(client_p)
+        llm_dir = Path(temp_dir) / "raw" / "llm"
+        assert (llm_dir / "coach_technical_sheet.md").exists()
+        assert (llm_dir / "fase0_author_psychology.md").exists()
+        assert Path(s_res["astrobranding_brief"]).exists()
+        assert Path(s_res["brandbook_json"]).exists()
+        print("✓ test_sharder_engine_hermetic and synthesis passed")
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 

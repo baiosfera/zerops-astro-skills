@@ -26,6 +26,7 @@ if str(SKILL_ROOT) not in sys.path:
 from pipeline.config import config
 from pipeline.engine import ExtractionEngine
 from pipeline.sharder import SharderEngine, ExtractionFatalError
+from pipeline.synthesis import SynthesisEngine
 from pipeline.data_lake import VirtualDataLake
 
 
@@ -232,7 +233,8 @@ def main():
     parser.add_argument("--apis", help="Lista de APIs a ejecutar separadas por coma (ej: astrologyapi,astroway,freeastro,vedastro). Por defecto: todas.")
     parser.add_argument("--exclude", help="Lista de APIs a excluir separadas por coma.")
     parser.add_argument("-x", "--extract", action="store_true", help="Solo ejecutar extracción y persistencia en caché (no compilar feeds).")
-    parser.add_argument("-c", "--compile", action="store_true", help="Compilar shards, feeds y reportes desde caché verificado.")
+    parser.add_argument("-c", "--compile", action="store_true", help="Compilar shards y feeds (Capa Oro) desde caché verificado.")
+    parser.add_argument("-s", "--synthesis", action="store_true", help="Sintetizar reportes de marca, brandbook y psicología de autor en raw/llm/ (Capa Platino).")
     parser.add_argument("--allow-partial", action="store_true", help="Permitir compilación parcial ignorando la compuerta estricta de cobertura completa.")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
     parser.add_argument("--include-atomic", action="store_true", help="Incluir los 191 calculadores atómicos de VedAstro (197 endpoints totales)")
@@ -378,7 +380,7 @@ def main():
             include_atomic=getattr(args, "include_atomic", False)
         )
 
-        is_extraction_only = args.extract or (bool(args.apis) and not args.compile)
+        is_extraction_only = args.extract or (bool(args.apis) and not args.compile and not args.synthesis)
 
         if is_extraction_only:
             print("=" * 70)
@@ -401,6 +403,22 @@ def main():
                 print(f"   Podés continuar extrayendo modularmente con: python3 omni_engine.py {input_file} --apis <proveedor>")
             else:
                 print("\n🎉 ¡Universo astrológico 100% completo en caché! Listo para compilar con: -c")
+            print("=" * 70)
+            return 0
+
+        if args.synthesis and not args.compile:
+            print("=" * 70)
+            print("✨ MODO SÍNTESIS PURA (-s / --synthesis) — CAPA PLATINO LLM")
+            print("=" * 70)
+            synth = SynthesisEngine(client_dir)
+            synth_summary = synth.synthesize_all(client_payload)
+            print("=" * 70)
+            print("✅ Síntesis Capa Platino finalizada con éxito:")
+            print(f"  • Directorio base: {client_dir}")
+            print(f"  • Ficha Técnica SSoT: {synth_summary['coach_technical_sheet']}")
+            print(f"  • Psicología de Autor: {synth_summary['author_psychology']}")
+            print(f"  • Master Brief Astrobranding: {synth_summary['astrobranding_brief']}")
+            print(f"  • Brandbook DTCG Tokens: {synth_summary['brandbook_json']}")
             print("=" * 70)
             return 0
 
@@ -445,20 +463,29 @@ def main():
         print(f"📦 Compilando feeds y shards desde lago de datos (Cobertura: {cov['pct']}%)...")
         extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
 
-        # Ejecutar verificación de salud, sharding de 12 shards y feeds
+        # Ejecutar verificación de salud, sharding de 12 shards y 9 feeds (Capa Oro)
         sharder = SharderEngine(output_root=client_dir)
         shard_summary = sharder.verify_and_shard(extraction_output)
+
+        # Capa Platino: Síntesis de artefactos LLM y Brandbook DTCG Tokens
+        synth = SynthesisEngine(client_dir)
+        synth_summary = synth.synthesize_all(client_payload)
 
         # Silver Tier: Cargar Virtual Data Lake y compilar master dump omni_dump_mega.json
         lake = VirtualDataLake(Path(client_dir) / "raw")
         master_dump_path = lake.export_master_dump()
 
         print("=" * 70)
-        print("✅ Pipeline ejecutado con éxito total y paridad de calidad SSoT (Canon 12-15-10):")
+        print("✅ Pipeline ejecutado con éxito total y paridad de calidad SSoT (Canon 12-15-9-4):")
         print(f"  • Directorio base: {client_dir}")
-        print(f"  • 12 Shards Físicos JSON: {client_dir}/raw/json/dumps/ ({shard_summary['shards_count']} shards)")
-        print(f"  • 15 Shards Relacionales: {client_dir}/raw/json/dumps/client_dumps_15_shards.json")
-        print(f"  • 10 Feeds Gold Markdown: {client_dir}/raw/feeds/ ({shard_summary['feeds_count']} feeds)")
+        print(f"  • 12 Shards Físicos JSON (Bronze): {client_dir}/raw/json/dumps/ ({shard_summary['shards_count']} shards)")
+        print(f"  • 15 Shards Relacionales (Silver): {client_dir}/raw/json/dumps/client_dumps_15_shards.json")
+        print(f"  • 9 Feeds Enciclopédicos (Gold): {client_dir}/raw/feeds/ ({shard_summary['feeds_count']} feeds)")
+        print(f"  • 4 Artefactos LLM & DTCG Tokens (Platinum): {client_dir}/raw/llm/")
+        print(f"    - Ficha Técnica SSoT: {synth_summary['coach_technical_sheet']}")
+        print(f"    - Psicología de Autor: {synth_summary['author_psychology']}")
+        print(f"    - Master Brief Astrobranding: {synth_summary['astrobranding_brief']}")
+        print(f"    - Brandbook DTCG Tokens: {synth_summary['brandbook_json']}")
         print(f"  • Silver Manifest: {client_dir}/raw/json/dumps/manifest.json")
         print(f"  • Master Dump: {master_dump_path}")
         print(f"  • Micro-Auditorías Atómicas: {client_dir}/raw/json/audit/")
