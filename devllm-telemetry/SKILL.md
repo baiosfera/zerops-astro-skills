@@ -15,7 +15,7 @@ Activate when tracking AI model token expenditures and costs in USD (`llm_teleme
 ## Hard Rules
 - **Non-Blocking Telemetry**: Ingesting LLM metrics or system health logs must NEVER block the main request/response lifecycle. Always use background promises (`setImmediate`) or NATS events.
 - **Zero Memory Bloat**: Never deploy heavy standalone observability containers (Prometheus, Grafana, Datadog). All technical dashboards and metrics reside natively inside Directus 11+ Insights (~0 MB extra RAM).
-- **Backup Verification**: Health pollers must verify that `.sql.gz` backups exist in `/mnt/baiostorage/backups/postgresql/` and are under 26 hours old.
+- **Backup Verification**: Health pollers must verify that `.sql.gz` backups exist in `/mnt/localstorage/backups/postgresql/` and are under 26 hours old.
 - **Fractal CoHaLo**: Enforce strict hygiene (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans (`manage_task action="kill"`), sensor (Directus telemetry record probe).
 - **Zero Deletion**: Consult [`references/usage.md`](file:///var/www/.agents/skills/devllm-telemetry/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/devllm-telemetry/references/infra.md) for full lossless APIs.
 

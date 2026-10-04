@@ -270,7 +270,7 @@ export class ERPNextClient {
 # /var/www/scripts/backup-postgres.sh
 set -euo pipefail
 
-BACKUP_DIR="/mnt/baiostorage/backups/postgresql"
+BACKUP_DIR="/mnt/localstorage/backups/postgresql"
 TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
 TARGET_FILE="${BACKUP_DIR}/backup_${TIMESTAMP}.sql.gz"
 RETENTION_DAYS=7
@@ -320,7 +320,7 @@ Dispatches completed sales orders from Directus to Frappe Cloud ERPNext asynchro
 Protects public APIs against brute-force attacks using atomic Valkey Redis pipelining.
 
 ### Pattern 5: Deterministic pg_dump Backup Execution
-Runs scheduled database backups to POSIX shared storage (`/mnt/baiostorage/backups/`) with automated 7-day retention pruning.
+Runs scheduled database backups to POSIX shared storage (`/mnt/localstorage/backups/`) with automated 7-day retention pruning.
 
 ### Pattern 6: Resilient PostgreSQL Upsert & Phone Variant Normalization
 Prevents raw PostgreSQL unique constraint violations (`leads_email_key` / `leads_whatsapp_key`) during user checkout or registration. Generates phone variants (+57, 57, 10-digit), performs multi-variant queries, updates existing records without colliding on unique keys, and guarantees zero HTTP 500 errors in digital payment flows.

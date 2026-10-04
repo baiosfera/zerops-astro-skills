@@ -67,7 +67,7 @@ def parse_rut_text(text):
 
     # Extract NIT & DV
     # Typical header: 5. Número de Identificación Tributaria (NIT) ... 6. DV
-    # Next line has spaced digits like: 4 3 9 8 5 8 6 3    2
+    # Next line has spaced digits like: 9 0 0 1 2 3 4 5 6    1
     nit_match = re.search(r'Número de Identificación Tributaria.*?(\d[\s\d]{6,15})\s+(\d)\s+(?:Impuestos|IDENTIFICACIÓN)', text, re.DOTALL | re.IGNORECASE)
     if nit_match:
         raw_nit = re.sub(r'\s+', '', nit_match.group(1))
@@ -105,32 +105,27 @@ def parse_rut_text(text):
         data["address"] = addr_match.group(1).strip()
 
     # Location line: 38. País ... 39. Departamento ... 40. Ciudad/Municipio
-    # Line below has: COLOMBIA   1 6 9 Antioquia   0 5 Envigado   2 6 6
+    # Line below has: COLOMBIA   1 6 9 [Departamento]   0 5 [Ciudad]   2 6 6
     loc_match = re.search(r'38\.\s*País.*?40\.\s*Ciudad/Municipio\s*\n\s*([^\n]+)', text, re.IGNORECASE)
     if loc_match:
         loc_line = loc_match.group(1).strip()
-        # Find City name before digits at the end of the line
-        c_m = re.search(r'(?:0\s*5|Antioquia)\s+([A-Za-zÁÉÍÓÚáéíóúñÑ\s]+?)\s+(\d[\s\d]*)$', loc_line)
-        if c_m:
-            data["city"] = c_m.group(1).strip()
-            data["city_code"] = re.sub(r'\s+', '', c_m.group(2))
-        elif "Envigado" in loc_line:
-            data["city"] = "Envigado"
-            data["city_code"] = "266"
-    elif "Envigado" in text:
-        data["city"] = "Envigado"
-        data["city_code"] = "266"
+        dept_city_match = re.search(r'(?:COLOMBIA|\d[\s\d]{2,4})\s+([A-Za-zÁÉÍÓÚáéíóúñÑ\s]+?)\s+(\d[\s\d]*)\s+([A-Za-zÁÉÍÓÚáéíóúñÑ\s]+?)\s+(\d[\s\d]*)$', loc_line)
+        if dept_city_match:
+            data["department"] = dept_city_match.group(1).strip()
+            data["city"] = dept_city_match.group(3).strip()
+            data["city_code"] = re.sub(r'\s+', '', dept_city_match.group(4))
+        else:
+            c_m = re.search(r'([A-Za-zÁÉÍÓÚáéíóúñÑ\s]+?)\s+(\d[\s\d]*)$', loc_line)
+            if c_m:
+                data["city"] = c_m.group(1).strip()
+                data["city_code"] = re.sub(r'\s+', '', c_m.group(2))
 
-    # Department: 39. Departamento ... Antioquia
-    if "Antioquia" in text:
-        data["department"] = "Antioquia"
-
-    # Email: 42. Correo electrónico ... caticalau@hotmail.com
+    # Email: 42. Correo electrónico ... contacto@empresa.com
     email_match = re.search(r'42\.\s*Correo electrónico\s*([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', text, re.IGNORECASE)
     if email_match:
         data["email"] = email_match.group(1).strip()
 
-    # Phone: 44. Teléfono 1 ... 3 0 4 5 7 8 1 0 3 2
+    # Phone: 44. Teléfono 1 ... 3 0 0 1 2 3 4 5 6 7
     phone_match = re.search(r'44\.\s*Teléfono\s*1\s*([\d\s]{7,20})', text, re.IGNORECASE)
     if phone_match:
         data["phone"] = re.sub(r'\s+', '', phone_match.group(1))

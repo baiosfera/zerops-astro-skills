@@ -27,7 +27,7 @@ Activar para ejecutar el pipeline completo de branding o coordinar la generació
   - Conformidad estricta con el JSON Schema correspondiente en `assets/schemas/`.
   - En caso de error de validación, reintentar con diagnóstico específico (máximo 2 intentos).
 - **4. Respeto a Contratos de Fase:** Asegurar monocromía estricta en `symbol` (F2), 3 ecosistemas OKLCH en `chroma` (F3), 3 presets 60fps en `kinetic` (F4) y tokens W3C DTCG en `brandbook` (F5).
-- **5. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/baiostorage/DIAG/[MARCA]/`.
+- **5. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/localstorage/DIAG/[MARCA]/`.
 
 ## References
 - `references/pipeline.md` — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.

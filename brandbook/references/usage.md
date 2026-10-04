@@ -20,8 +20,8 @@ Cuando otro agente de IA (como `sdd-apply`, un scaffold de Astro, Next.js o Payl
   "name": "NombreDeMarca",
   "version": "1.0.0",
   "brand": {
-    "name": { "$value": "CATALINA GLAMUR", "$type": "string" },
-    "slogan": { "$value": "Quiet Luxury Athleisure", "$type": "string" }
+    "name": { "$value": "Acme Brand", "$type": "string" },
+    "slogan": { "$value": "Timeless Modern Design", "$type": "string" }
   },
   "color": {
     "brand": {

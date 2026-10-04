@@ -27,7 +27,7 @@ Evolution Go delivers webhooks for incoming WhatsApp messages (`messages.upsert`
   "message": {
     "id": "BAE5F1289123",
     "conversationType": "individual",
-    "text": "¿Tienen el enterizo velvet en talla M?",
+    "text": "¿Tienen el producto en talla M?",
     "hasMedia": false
   }
 }

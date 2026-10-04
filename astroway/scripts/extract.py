@@ -473,7 +473,7 @@ def main():
         "hour": 3, "minute": 0,
         "lat": 6.2340437, "lng": -75.5731248,
         "tz_offset": -5.0,
-        "name": "Catalina",
+        "name": "Consultant",
         "gender": "female"
     }
 

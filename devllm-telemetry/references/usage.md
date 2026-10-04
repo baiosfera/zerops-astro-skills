@@ -127,7 +127,7 @@ export async function pollSystemHealth() {
     const dlqCount = await redis.llen('bull:dlq:failed').catch(() => 0);
 
     // 3. Verify Latest PostgreSQL Backup on Shared Storage
-    const backupDir = '/mnt/baiostorage/backups/postgresql';
+    const backupDir = '/mnt/localstorage/backups/postgresql';
     let lastBackupStatus = 'unknown';
     let lastBackupSizeMb = 0;
 
@@ -238,7 +238,7 @@ Wraps AI API calls (OpenAI, Anthropic, Gemini, DeepSeek) using `trackLLMCall()` 
 Runs a lightweight background poller task in `aiworker` or `directus` sampling NATS `:8222/varz` and Valkey memory footprint.
 
 ### Pattern 3: Automated Database Backup Integrity Verification
-Validates that `pg_dump` snapshots exist in `/mnt/baiostorage/backups/postgresql/`, are under 26 hours old, and have non-zero file sizes.
+Validates that `pg_dump` snapshots exist in `/mnt/localstorage/backups/postgresql/`, are under 26 hours old, and have non-zero file sizes.
 
 ### Pattern 4: Directus Insights Dashboard for Executive LLMOps Tracking
 Provides technical leadership with real-time visibility into AI expenses and system load using native Directus panels.

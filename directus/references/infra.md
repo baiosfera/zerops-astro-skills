@@ -25,8 +25,8 @@ This manual provides production-grade infrastructure blueprints, multi-service `
 │                  │ Media uploads                                         ▼                             │
 │                  ▼                              ┌──────────────────────────────────────────────────┐   │
 │   ┌──────────────────────────────┐              │ Intelligent AI / LLM & Telemetry Worker (aiworker│   │
-│   │ Shared Storage (baiostorage) │              │ (python@3.12 / nodejs@24)                        │   │
-│   │ /mnt/baiostorage/directus    │              │ - Consumes NATS events, LLMOps Telemetry & RAG   │   │
+│   │ Shared Storage (localstorage) │              │ (python@3.12 / nodejs@24)                        │   │
+│   │ /mnt/localstorage/directus    │              │ - Consumes NATS events, LLMOps Telemetry & RAG   │   │
 │   └──────────────────────────────┘              └────────────────────────┬─────────────────────────┘   │
 │                                                                          │                             │
 │                  ┌───────────────────────────────────────────────────────┴─────────┐                   │
@@ -79,7 +79,7 @@ services:
     enableSubdomainAccess: true
 
   # 8. Persistent Shared Storage for Directus Uploads & Media
-  - hostname: baiostorage
+  - hostname: localstorage
     type: shared-storage
 ```
 
@@ -108,8 +108,8 @@ zerops:
       prepareCommands:
         - sudo apt-get update && sudo apt-get install -y ffmpeg curl ca-certificates
         # Ensure uploads storage directory permissions on FUSE mount
-        - sudo mkdir -p /mnt/baiostorage/directus/uploads 2>/dev/null || true
-        - sudo chmod -R 777 /mnt/baiostorage/directus/uploads 2>/dev/null || true
+        - sudo mkdir -p /mnt/localstorage/directus/uploads 2>/dev/null || true
+        - sudo chmod -R 777 /mnt/localstorage/directus/uploads 2>/dev/null || true
 
       initCommands:
         # Atomic cluster bootstrap on every release (idempotent)
@@ -146,7 +146,7 @@ zerops:
         # File Storage
         STORAGE_LOCATIONS: "local"
         STORAGE_LOCAL_DRIVER: "local"
-        STORAGE_LOCAL_ROOT: "/mnt/baiostorage/directus/uploads"
+        STORAGE_LOCAL_ROOT: "/mnt/localstorage/directus/uploads"
         
         # Security & Secrets
         KEY: "GENERATE_RANDOM_KEY_IN_ZEROPS_PROJECT"
@@ -184,7 +184,7 @@ zerops:
 | `SYNCHRONIZATION_STORE`| Cluster | Multi-node cluster synchronization via Valkey (`"redis"`) |
 | `MESSENGER_STORE` | Realtime | Multi-node WebSocket pub/sub store (`"redis"`) |
 | `WEBSOCKETS_ENABLED` | Realtime | Enable real-time WebSocket subscriptions (`"true"`) |
-| `STORAGE_LOCAL_ROOT` | Media | Path on shared storage mount (`"/mnt/baiostorage/directus/uploads"`) |
+| `STORAGE_LOCAL_ROOT` | Media | Path on shared storage mount (`"/mnt/localstorage/directus/uploads"`) |
 | `AUTH_PROVIDERS` | Auth | Authentication providers list (e.g. `"google"`) |
 | `AUTH_GOOGLE_CLIENT_ID`| OAuth | Google Cloud Console OAuth Client ID |
 | `AUTH_GOOGLE_CLIENT_SECRET`| OAuth | Google Cloud Console OAuth Client Secret |

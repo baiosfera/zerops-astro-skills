@@ -28,8 +28,8 @@ This manual provides production-grade infrastructure blueprints, NATS Server HTT
 │   ┌──────────────────────────────┐                                       │                             │
 │   │ Valkey In-Memory Cache (cache│                                       ▼                             │
 │   │ - Memory footprint info      │              ┌──────────────────────────────────────────────────┐   │
-│   │ - DLQ depth inspection       │              │ Persistent Shared Storage (baiostorage)          │   │
-│   └──────────────────────────────┘              │ /mnt/baiostorage/backups/postgresql/*.sql.gz     │   │
+│   │ - DLQ depth inspection       │              │ Persistent Shared Storage (localstorage)          │   │
+│   └──────────────────────────────┘              │ /mnt/localstorage/backups/postgresql/*.sql.gz     │   │
 │                                                 └──────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```

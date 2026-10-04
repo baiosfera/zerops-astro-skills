@@ -24,7 +24,7 @@ This manual provides production-grade deployment architectures, Bun 1.3 runtime 
 │   │ ├─ Runtime: bun@1.3.9 (Incus LXC Container)                                                    │   │
 │   │ ├─ Compute: Elastic Autoscaling (minCpu: 1, maxCpu: 4, minRam: 0.5, maxRam: 4.0)               │   │
 │   │ ├─ Ports: 3000 (HTTP)                                                                          │   │
-│   │ └─ Mount: /mnt/baiostorage/astro/ (POSIX FUSE Shared Storage)                                  │   │
+│   │ └─ Mount: /mnt/localstorage/astro/ (POSIX FUSE Shared Storage)                                  │   │
 │   └──────────────────────────────────┬─────────────────────────────┬───────────────────────────────┘   │
 │                                      │                             │                                   │
 │                                      │ HTTP / REST                 │ TCP / RPC                         │

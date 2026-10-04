@@ -25,8 +25,8 @@ This manual provides the production-grade infrastructure blueprints, multi-servi
 │                  │ Media uploads                                         ▼                             │
 │                  ▼                              ┌──────────────────────────────────────────────────┐   │
 │   ┌──────────────────────────────┐              │ Intelligent AI / LLM Agent Worker (aiworker)     │   │
-│   │ Shared Storage (baiostorage) │              │ (python@3.12 / nodejs@20)                        │   │
-│   │ /mnt/baiostorage/evolutiongo │              │ - Consumes NATS events & executes OpenAI/Whisper │   │
+│   │ Shared Storage (localstorage) │              │ (python@3.12 / nodejs@20)                        │   │
+│   │ /mnt/localstorage/evolutiongo │              │ - Consumes NATS events & executes OpenAI/Whisper │   │
 │   └──────────────────────────────┘              └────────────────────────┬─────────────────────────┘   │
 │                                                                          │                             │
 │                  ┌───────────────────────────────────────────────────────┴─────────┐                   │
@@ -79,7 +79,7 @@ services:
     enableSubdomainAccess: true
 
   # 8. Persistent Shared Storage for Media & Attachments
-  - hostname: baiostorage
+  - hostname: localstorage
     type: shared-storage
 ```
 
@@ -108,8 +108,8 @@ zerops:
       prepareCommands:
         - sudo apk add --no-cache ca-certificates tzdata curl
         # Prepare persistent media directory on NFS mount
-        - sudo mkdir -p /mnt/baiostorage/evolutiongo/media 2>/dev/null || true
-        - sudo chmod -R 777 /mnt/baiostorage/evolutiongo/media 2>/dev/null || true
+        - sudo mkdir -p /mnt/localstorage/evolutiongo/media 2>/dev/null || true
+        - sudo chmod -R 777 /mnt/localstorage/evolutiongo/media 2>/dev/null || true
 
       initCommands:
         # Ensure database schemas exist before starting service
@@ -170,8 +170,8 @@ zerops:
 
 When handling incoming audio notes, PDFs, images, and stickers:
 
-1. Mount shared storage volume: `/mnt/baiostorage/evolutiongo/media`
-2. Apply permission shield: `sudo chmod -R 777 /mnt/baiostorage/evolutiongo`
+1. Mount shared storage volume: `/mnt/localstorage/evolutiongo/media`
+2. Apply permission shield: `sudo chmod -R 777 /mnt/localstorage/evolutiongo`
 3. If using S3/MinIO compatible object store, set:
    - `MINIO_ENABLED: "true"`
    - `MINIO_ENDPOINT: "storage.yourdomain.com"`

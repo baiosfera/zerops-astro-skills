@@ -14,7 +14,7 @@ This manual provides production-grade backend deployment architectures, database
 │   │ Directus 11+ (directus:8055)     │ │ FastAPI (fastapi:8000)           │                            │
 │   │ ├─ Runtime: nodejs@24 (Ubuntu)   │ │ ├─ Runtime: python@3.12 (Granian)│                            │
 │   │ ├─ Auth & Headless CRUD          │ │ ├─ pgvector HNSW Semantic Search │                            │
-│   │ └─ Mount: /mnt/baiostorage/      │ │ └─ Mount: /mnt/baiostorage/      │                            │
+│   │ └─ Mount: /mnt/localstorage/      │ │ └─ Mount: /mnt/localstorage/      │                            │
 │   └────────────────┬─────────────────┘ └────────────────┬─────────────────┘                            │
 │                    │                                    │                                              │
 │                    │ asyncpg / pg TCP                   │ NATS TCP                                     │
@@ -29,9 +29,9 @@ This manual provides production-grade backend deployment architectures, database
 │                    │ BullMQ Queues                      │ POSIX FUSE Mount                             │
 │                    ▼                                    ▼                                              │
 │   ┌──────────────────────────────────┐ ┌──────────────────────────────────┐                            │
-│   │ Valkey 7.2 (cache:6379)          │ │ Shared Storage (baiostorage)     │                            │
+│   │ Valkey 7.2 (cache:6379)          │ │ Shared Storage (localstorage)     │                            │
 │   │ ├─ In-Memory Cache & Sessions    │ │ ├─ Engine: SeaweedFS POSIX FUSE  │                            │
-│   │ ├─ Rate Limiting Sliding Window  │ │ ├─ Mount: /mnt/baiostorage/      │                            │
+│   │ ├─ Rate Limiting Sliding Window  │ │ ├─ Mount: /mnt/localstorage/      │                            │
 │   │ └─ Queue: erpnext-sync, email    │ │ └─ Permissions: chmod -R 777     │                            │
 │   └──────────────────────────────────┘ └──────────────────────────────────┘                            │
 └────────────────────────────────────────────────────────────────────────────────────────────────────────┘

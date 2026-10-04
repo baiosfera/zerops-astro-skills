@@ -400,7 +400,7 @@ Astro SSR frontend embeds a reactive pairing island that renders dynamic QR code
 Leverages Go goroutines in Evolution Go to dispatch thousands of interactive messages with rate limiting managed by Valkey token buckets.
 
 ### Pattern 5: Resilient S3/Shared Storage Media Ingestion
-Stores received media, invoices, and sticker webp files durably on `/mnt/baiostorage/evolutiongo` with automatic MIME validation.
+Stores received media, invoices, and sticker webp files durably on `/mnt/localstorage/evolutiongo` with automatic MIME validation.
 
 ### Pattern 6: E.164 Intelligent Auto-Deduction & Canonical Routing (Colombia +57)
 Ensures phone numbers entered in frontend contact or lead capture forms are automatically canonicalized. In Colombian deployments, 10-digit numbers starting with `3` are auto-inferred as `+57`, returning the canonical E.164 string (`+573...`), pure digits for Evolution Go (`573...`), and display formatting. Prevents catastrophic routing to Netherlands (+31) in `wa.me/` URLs.

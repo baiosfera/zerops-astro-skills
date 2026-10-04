@@ -133,10 +133,10 @@ Authentication for all endpoints requires:
 ```json
 {
   "doc": {
-    "organization_name": "Inversiones San Jerónimo S.A.S.",
+    "organization_name": "Empresa Ejemplo S.A.S.",
     "first_name": "Carlos",
     "last_name": "Gómez",
-    "email": "carlos.gomez@sanjeronimo.co",
+    "email": "carlos.gomez@ejemplo.co",
     "mobile_no": "+573001234567",
     "currency": "COP",
     "deal_value": 85000000.0,

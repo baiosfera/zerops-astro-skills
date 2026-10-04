@@ -10,7 +10,7 @@ ENGINE_SCRIPT="$SCRIPT_DIR/omni_engine.py"
 
 if [ $# -lt 1 ]; then
     echo "Uso: bash $0 <ruta_archivo_consultante>"
-    echo "Ejemplo: bash $0 /var/www/baiosfera/ASTROLOGÍA/DIAG/CATALINA_GLAMUR_AGY/Catalina.txt"
+    echo "Ejemplo: bash $0 /var/www/baiosfera/ASTROLOGÍA/DIAG/CLIENTE_EJEMPLO/Cliente.txt"
     exit 1
 fi
 

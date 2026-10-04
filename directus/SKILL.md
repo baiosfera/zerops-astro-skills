@@ -15,7 +15,7 @@ Activate when architecting, provisioning, configuring, extending, or deploying D
 ## Hard Rules
 - **Atomic Bootstrap**: Must run `zsc execOnce ${appVersionId} --retryUntilSuccessful -- npx directus bootstrap` in `run.initCommands`.
 - **Ubuntu Baseline**: Must run on `os: ubuntu` (Debian glibc) for native `sharp` (libvips) image processing.
-- **Persistent Media**: Uploads map to `/mnt/baiostorage/directus/uploads/` with `chmod -R 777`.
+- **Persistent Media**: Uploads map to `/mnt/localstorage/directus/uploads/` with `chmod -R 777`.
 - **Valkey Sync**: Multi-node clusters set `CACHE_STORE="redis"`, `SYNCHRONIZATION_STORE="redis"`, and `MESSENGER_STORE="redis"` to `${cache_connectionString}`.
 - **Non-Blocking Telemetry**: `llm_telemetry_logs` and ERP sync use non-blocking async calls or NATS events.
 - **Fractal CoHaLo**: Enforce hygiene (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans (`manage_task action="kill"`), sensor (HTTP `200` on `/server/health`).
@@ -41,7 +41,7 @@ Activate when architecting, provisioning, configuring, extending, or deploying D
 1. Provision multi-service stack via Zerops `import.yaml`.
 2. Configure `zerops.yaml` with Node.js 24 on `os: ubuntu` with `sharp` support and `zsc execOnce` bootstrap.
 3. Wire cache and synchronization to Valkey (`CACHE_REDIS: ${cache_connectionString}`) and database to PostgreSQL 18.
-4. Mount persistent storage to `/mnt/baiostorage/directus/uploads` with `chmod -R 777`.
+4. Mount persistent storage to `/mnt/localstorage/directus/uploads` with `chmod -R 777`.
 5. Connect Directus Flows for NATS event dispatching and deploy RAG extension hooks for `pgvector`.
 6. Verify gateway health via physical sensor probe (`curl -f http://directus:8055/server/health`).
 

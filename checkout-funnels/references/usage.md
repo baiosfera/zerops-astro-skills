@@ -100,7 +100,8 @@ export async function generateAndSendCodOtp(orderId: string, phone: string): Pro
   await valkey.set(`cod:otp:${orderId}`, otp, 'EX', 600); // 10 min TTL
 
   // Send WhatsApp message via Evolution Go
-  await fetch(`http://evolutiongo:8080/message/sendText/sales-main`, {
+  const instance = process.env.WA_INSTANCE || 'default';
+  await fetch(`http://evolutiongo:8080/message/sendText/${instance}`, {
     method: 'POST',
     headers: { 'apikey': process.env.EVOGO_API_KEY || 'key', 'Content-Type': 'application/json' },
     body: JSON.stringify({

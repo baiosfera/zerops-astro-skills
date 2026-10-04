@@ -18,7 +18,7 @@ graph TD
         
         Valkey["Servicio Valkey 7.2 (Queue Engine)<br/>• Colas: social-instagram, social-tiktok, etc.<br/>• Puerto: 6379"]
         
-        Seaweed["Almacenamiento SeaweedFS<br/>• Montaje: /mnt/baiostorage/media/<br/>• Videos MP4, Portadas JPG, PDFs"]
+        Seaweed["Almacenamiento SeaweedFS<br/>• Montaje: /mnt/localstorage/media/<br/>• Videos MP4, Portadas JPG, PDFs"]
     end
 
     subgraph Social_APIs["Redes Sociales Externas"]
@@ -79,5 +79,5 @@ X_ACCESS_TOKEN_SECRET="toksec123..."
 VALKEY_HOST="valkey"
 VALKEY_PORT="6379"
 VALKEY_CONNECTION_STRING="redis://valkey:6379"
-MEDIA_STORAGE_PATH="/mnt/baiostorage/media"
+MEDIA_STORAGE_PATH="/mnt/localstorage/media"
 ```

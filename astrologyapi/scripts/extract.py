@@ -285,7 +285,7 @@ def main():
         "hour": 3, "minute": 0,
         "lat": 6.2340437, "lng": -75.5731248,
         "tz_str": "America/Bogota",
-        "name": "Catalina"
+        "name": "Consultant"
     }
 
     if args.client_file and Path(args.client_file).exists():
