@@ -11,7 +11,9 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import sys
+import time
 from typing import Any, Dict, Optional
 import unicodedata
 import httpx
@@ -23,7 +25,9 @@ DEFAULT_TIMEOUT = 12.0
 async def extract_freeastroapi(
     client_data: Dict[str, Any],
     api_key: Optional[str] = None,
-    client: Optional[httpx.AsyncClient] = None
+    client: Optional[httpx.AsyncClient] = None,
+    cache_manager: Optional[Any] = None,
+    client_hash: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Extracts all core astronomical, numerological, and BaZi calculations from FreeAstroAPI.
@@ -211,6 +215,9 @@ async def extract_freeastroapi(
         close_client = True
 
     try:
+        total_endpoints = len(post_endpoints)
+        results["endpoint_audits"] = []
+
         # 1. Audit report credits
         try:
             cred_resp = await client.get(f"{BASE_URL}/api/v1/natal/report-credits", headers=headers)
@@ -220,36 +227,92 @@ async def extract_freeastroapi(
         except Exception:
             results["report_credits"] = {"available": 2, "plan": "Entry"}
 
-        # 2. Execute POST endpoints
-        for key_name, url, body in post_endpoints:
+        # 2. Execute POST endpoints with atomic delta cache
+        for idx, (key_name, url, body) in enumerate(post_endpoints, 1):
+            # Check delta cache
+            if cache_manager and client_hash:
+                cached_data = cache_manager.get_endpoint("freeastro", key_name, client_hash)
+                if cached_data is not None:
+                    print(f"⚡ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [CACHED / SKIP]", flush=True)
+                    results["data"][key_name] = cached_data
+                    results["raw_responses"][key_name] = cached_data
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "CACHED",
+                        "http_status": 200,
+                        "latency_ms": 0.0,
+                        "error": None
+                    })
+                    continue
+
+            t0 = time.perf_counter()
             try:
                 await asyncio.sleep(0.25)
                 resp = await client.post(url, headers=headers, json=body)
                 results["calls_made"] += 1
+                lat = (time.perf_counter() - t0) * 1000.0
 
                 if resp.status_code == 429:
-                    await asyncio.sleep(1.0)
+                    print(f"⏳ [FreeAstro ({idx}/{total_endpoints})] 429 Rate Limit hit. Backing off 5.0s...", flush=True)
+                    await asyncio.sleep(5.0)
+                    t0 = time.perf_counter()
                     resp = await client.post(url, headers=headers, json=body)
                     results["calls_made"] += 1
+                    lat = (time.perf_counter() - t0) * 1000.0
 
                 if resp.status_code == 200:
                     data = resp.json()
                     results["raw_responses"][key_name] = data
-                    
+
                     if isinstance(data, dict) and (data.get("status") == "error" or "error" in data):
                         err_msg = data.get("error", data.get("message", "Error in response"))
+                        print(f"❌ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [ERROR] ({lat:.1f}ms): {err_msg}", flush=True)
                         results["failures"].append({"endpoint": key_name, "error": err_msg})
                         results["data"][key_name] = {"error": err_msg}
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "FAILED",
+                            "http_status": 200,
+                            "latency_ms": lat,
+                            "error": str(err_msg)
+                        })
                     else:
+                        print(f"✨ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [200 OK] ({lat:.1f}ms)", flush=True)
                         results["data"][key_name] = data
+                        if cache_manager and client_hash:
+                            cache_manager.set_endpoint("freeastro", key_name, client_hash, data)
+                        results["endpoint_audits"].append({
+                            "endpoint": key_name,
+                            "status": "SUCCESS",
+                            "http_status": 200,
+                            "latency_ms": lat,
+                            "error": None
+                        })
                 else:
                     err_msg = f"HTTP {resp.status_code}: {resp.text[:150]}"
+                    print(f"❌ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [HTTP {resp.status_code}] ({lat:.1f}ms)", flush=True)
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
+                    results["endpoint_audits"].append({
+                        "endpoint": key_name,
+                        "status": "FAILED",
+                        "http_status": resp.status_code,
+                        "latency_ms": lat,
+                        "error": err_msg
+                    })
             except Exception as exc:
+                lat = (time.perf_counter() - t0) * 1000.0
                 err_msg = f"Exception: {type(exc).__name__} - {str(exc)}"
+                print(f"❌ [FreeAstro ({idx}/{total_endpoints})] {key_name} -> [{type(exc).__name__}] ({lat:.1f}ms): {err_msg}", flush=True)
                 results["failures"].append({"endpoint": key_name, "error": err_msg})
                 results["data"][key_name] = {"error": err_msg}
+                results["endpoint_audits"].append({
+                    "endpoint": key_name,
+                    "status": "FAILED",
+                    "http_status": 500,
+                    "latency_ms": lat,
+                    "error": err_msg
+                })
 
         if results["failures"]:
             results["status"] = "FAILED" if len(results["failures"]) == len(post_endpoints) else "PARTIAL"
