@@ -172,6 +172,52 @@ if [ "$IS_TRACK_A" -eq 1 ]; then
         else
             echo "✓ Respaldos pre-mutación formalizados con nomenclatura canónica"
         fi
+
+        # 7.1 Cross-Validation Semántica: Skills mutadas en Sección 4 vs Respaldos en Nodo 1
+        SKILL_CHECK_OUTPUT=$(python3 -c '
+import re, os, sys
+
+plan_path = sys.argv[1]
+try:
+    with open(plan_path, "r", encoding="utf-8") as f:
+        text = f.read()
+except Exception:
+    sys.exit(0)
+
+s4_match = re.search(r"## 4\. Plan de Ejecución.*?(?=## 5)", text, re.DOTALL)
+s4_text = s4_match.group(0) if s4_match else ""
+
+n1_match = re.search(r"### 🔹 Nodo 1.*?(?=### 🔹 Nodo 2)", s4_text, re.DOTALL)
+n1_text = n1_match.group(0) if n1_match else ""
+
+skills_dir = "/var/www/.agents/skills"
+if not os.path.isdir(skills_dir):
+    sys.exit(0)
+
+skills = [d for d in os.listdir(skills_dir) if os.path.isdir(os.path.join(skills_dir, d)) and not d.startswith(".")]
+
+errors = 0
+for sk in skills:
+    pattern = r"(\.agents/skills/" + re.escape(sk) + r"\b|skills/" + re.escape(sk) + r"\b|skill\s+" + re.escape(sk) + r"\b)"
+    if re.search(pattern, s4_text, re.IGNORECASE):
+        has_bak = ("bak/skills/" + sk) in n1_text
+        if not has_bak:
+            print(f"❌ Infracción Track A: El plan modifica la skill \x27{sk}\x27 en Nodo 4, pero NO declara su respaldo en bak/skills/{sk} en Nodo 1")
+            errors += 1
+        else:
+            print(f"✓ Respaldo pre-mutación de skill \x27{sk}\x27 verificado en Nodo 1")
+
+sys.exit(errors)
+' "$PLAN_PATH" 2>&1)
+        SKILL_CHECK_STATUS=$?
+        if [ "$SKILL_CHECK_STATUS" -ne 0 ]; then
+            echo "$SKILL_CHECK_OUTPUT"
+            ERRORS=$((ERRORS + SKILL_CHECK_STATUS))
+        else
+            if [ -n "$SKILL_CHECK_OUTPUT" ]; then
+                echo "$SKILL_CHECK_OUTPUT"
+            fi
+        fi
     else
         echo "❌ Falta declaración explícita de Nodo/Paso 1 de Respaldos Pre-Mutación (N1) para Track A"
         ERRORS=$((ERRORS + 1))
@@ -188,6 +234,14 @@ if [ "$IS_TRACK_A" -eq 1 ]; then
         echo "❌ Violación SSoT: Los planes de Track A deben contemplar sincronización hacia unisetup.sh y Google Drive"
         ERRORS=$((ERRORS + 1))
     fi
+
+    # 8.1 Track A: Paridad con repositorio soberano zerops-astro-skills
+    if grep -qiE "(zerops-astro-skills|git push)" "$PLAN_PATH"; then
+        echo "✓ Paridad con repositorio soberano zerops-astro-skills validada para Track A"
+    else
+        echo "❌ Violación de Paridad Git: Los planes de Track A deben contemplar sincronización y git push hacia zerops-astro-skills"
+        ERRORS=$((ERRORS + 1))
+    fi
 else
     echo "✓ Track B/C: Mapeo de SSoT desacoplado a su entorno correspondiente"
 fi
@@ -197,6 +251,12 @@ if grep -q "## 5.*Matriz de Control" "$PLAN_PATH"; then
     if grep -qiE "(exit code 0|exit 0|HTTP 200|200 OK|exitcode 0)" "$PLAN_PATH"; then
         echo "✓ Sección 5 (Matriz de Control con sensores de atestación física) presente"
         SECTION_5_TEXT=$(sed -n '/## 5.*Matriz de Control/,/## 6/p' "$PLAN_PATH")
+
+        # 9.0 Veto Reality Over Checklist Theater: Prohibido usar exclusivamente 'test -f' en la matriz
+        if echo "$SECTION_5_TEXT" | grep -qiE "\|\s*test\s+-f\s+"; then
+            echo "❌ Violación Reality Over Checklist Theater: Prohibido usar verificaciones cosméticas 'test -f' en la Matriz de Control; use compiladores AST (py_compile), sintaxis (bash -n), o aserciones de software"
+            ERRORS=$((ERRORS + 1))
+        fi
         if [ "$IS_TRACK_A" -eq 1 ]; then
             # 9.1 Atestación de los 8 Nodos en Matriz de Control (Track A)
             MISSING_MATRIX_NODES=0

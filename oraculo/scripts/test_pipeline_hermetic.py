@@ -195,11 +195,57 @@ def test_virtual_data_lake_hermetic():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+def test_zero_data_no_hallucinations():
+    """
+    CoHaLo Positive Guidance Invariant:
+    Atestigua físicamente que cuando la extracción de datos es vacía o carece de cómputos,
+    el motor SharderEngine y los dominios astrológicos NO alucinan fallbacks hardcodeados
+    (ciudades ficticias, pilares falsos o deidades mock). Las estructuras deben permanecer
+    vacías ({}, []) o con strings no asignados ("").
+    """
+    temp_dir = tempfile.mkdtemp()
+    try:
+        empty_payload = {
+            "client_payload": {"name": "Zero Data Test", "birth_date": "1990-01-01", "birth_time": "12:00"},
+            "extraction_results": []
+        }
+        sharder = SharderEngine(output_root=temp_dir)
+        res = sharder.verify_and_shard(empty_payload)
+        assert res["shards_count"] == 12
+        assert res["feeds_count"] == 9
+
+        dumps_dir = Path(temp_dir) / "raw" / "json" / "dumps"
+
+        # 1. BaZi: zero hardcoded day master or fake four pillars
+        s4 = json.loads((dumps_dir / "shard_04.json").read_text(encoding="utf-8"))
+        assert s4["data"]["day_master"]["name"] == ""
+        assert s4["data"]["four_pillars"] == {}
+        assert s4["data"]["ten_gods"] == {}
+
+        # 2. ACG: zero hardcoded mock cities in best_places_ranking
+        s8 = json.loads((dumps_dir / "shard_08.json").read_text(encoding="utf-8"))
+        bp = s8["data"]["best_places_ranking"]
+        assert bp["career_wealth"] == []
+        assert bp["love_partnerships"] == []
+        assert bp["creativity_fame"] == []
+        assert bp["spiritual_retreat"] == []
+
+        # 3. Silver Shard 15: multi-brand vibrational index must be empty
+        s15 = json.loads((dumps_dir / "client_dumps_15_shards.json").read_text(encoding="utf-8"))
+        assert s15["shard_15"]["data"] == []
+
+        print("✓ test_zero_data_no_hallucinations passed (zero mock fallbacks)")
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     test_config_and_rate_limiter()
     test_rest_client_headers()
     test_circuit_breaker()
     test_sharder_engine_hermetic()
     test_virtual_data_lake_hermetic()
+    test_zero_data_no_hallucinations()
     print("All hermetic tests passed successfully (exit code 0).")
+
 

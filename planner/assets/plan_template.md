@@ -43,7 +43,7 @@ flowchart TD
 
 1. **Invariante de Dominio:** [Regla de arquitectura o negocio].
 2. **Clasificación Tri-Track:**
-   - **Track A (Skills & Tooling):** Modificación de tooling/skills/python/scripts. Requiere `bak/skills/`, 100% Technical English, Semver bump, SSoT mirror a `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/` y refresco obligatorio de `skill-registry`.
+   - **Track A (Skills & Tooling):** Modificación de tooling/skills/python/scripts. Requiere `bak/skills/`, 100% Technical English, Semver bump, SSoT mirror a `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/`, sincronización y `git push origin main` a `/var/www/zerops-astro-skills`, y refresco obligatorio de `skill-registry`.
    - **Track B (Zerops Workloads):** Despliegue de workloads. [`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) y [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md) operan como tablas de enrutamiento. Versionado nativo en Git/GitHub (cero bak de repositorios enteros).
    - **Track C (Direct SSoT Data/Content):** Ediciones directas en Google Drive (`/var/www/baiosfera/...`). Cero ceremonias de 8 nodos; validación basada en integridad y links.
 3. **Invariante de Cero Eliminación (Skill-Improver):** Toda lógica previa, heurística o especificación técnica se preserva íntegramente mediante modularización a `references/` o `assets/`.

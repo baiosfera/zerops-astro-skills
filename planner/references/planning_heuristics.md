@@ -137,10 +137,10 @@
   2. **$N_2$ (SSoT Indivisibility):** Verification of `unisetup.sh-first` contract and Google Drive mirror parity.
   3. **$N_3$ (Semver Bump):** Bump version in YAML frontmatter, script headers, and docs.
   4. **$N_4$ (Cero Eliminación & CoHaLo):** Semantic diff audit via `skill-improver`, positive guidance, closed domain.
-  5. **$N_5$ (Despliegue Tri-Destino):** Mirroring to `/var/www/`, Google Drive SSoT, and `~/.gemini/antigravity-cli/skills/`.
+  5. **$N_5$ (Despliegue Tri-Destino & Git Push Soberano):** Mirroring to Google Drive SSoT (`0zcp-123/.agents/skills/`), sincronización hacia `/var/www/zerops-astro-skills/` y ejecución obligatoria de `git push origin main`.
   6. **$N_6$ (Sensores Físicos):** Execution of local validator (`scripts/<target>-validate.sh`) and multi-skill suite (`skills-suite-validate.sh`).
   7. **$N_7$ (Sensor de Skill Registry):** Independent execution and physical grep validation of `gentle-ai skill-registry refresh --force`.
-  8. **$N_8$ (Auto-Purge & LTM Commit):** Direct clean deletion of temporary plans (`rm -f /var/www/artifacts/...`) and memory persistence via `mem_save`.
+  8. **$N_8$ (Auto-Purge, Git Parity & LTM Commit):** Verificación de git status limpio en repositorios soberanos, archivo de plan ejecutado (`plan-archive <plan> --executed`), purga de borradores superseded y persistencia en Engram (`mem_save`).
 - **Pre-Flight Validation Rejection:** Any plan that merges, skips, or renames these nodes without prior architectural authorization fails the pre-flight gate.
 
 ---
