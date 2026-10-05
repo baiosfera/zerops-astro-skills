@@ -28,6 +28,7 @@ PROVIDER_CANONICAL_MAP = {
     "astrologyapi": "astrologyapi",
     "bazi_mcp": "bazi_mcp",
     "bazi": "bazi_mcp",
+    "lunar": "bazi_mcp",
     "zmanim_mcp": "zmanim_mcp",
     "zmanim": "zmanim_mcp",
     "kundali_mcp": "kundali_mcp",

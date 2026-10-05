@@ -404,7 +404,7 @@ def main():
                 "astroway": ["astroway"],
                 "astrologyapi": ["astrologyapi", "astrology_api_io"],
                 "vedastro": ["vedastro"],
-                "bazi_mcp": ["bazi_mcp", "bazi"],
+                "bazi_mcp": ["bazi_mcp", "bazi", "lunar"],
                 "kundali_mcp": ["kundali_mcp", "kundali"],
                 "zmanim_mcp": ["zmanim_mcp", "zmanim"],
                 "hebcal": ["hebcal"],
@@ -475,6 +475,14 @@ def main():
                     excluded_providers = [p.lower().strip() for p in exc_manifest.get("excluded_providers", [])]
             except Exception:
                 pass
+
+        if exclude_list:
+            for item in exclude_list:
+                item_lower = item.lower().strip()
+                if item_lower == "mcp":
+                    excluded_providers.extend(["bazi_mcp", "kundali_mcp", "zmanim_mcp"])
+                else:
+                    excluded_providers.append(item_lower)
 
         unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
 
