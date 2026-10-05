@@ -32,7 +32,7 @@ NAKSHATRA_DEITIES = {
     "Swati": "Vayu (Libertad, Movimiento Autónomo, Flexibilidad Comercial)",
     "Vishakha": "Indragni (Poder de Enfoque, Conquista Triunfal, Bifurcación)",
     "Anuradha": "Mitra (Devoción, Alianzas Globales, Resistencia en la Oscuridad)",
-    "Jyeshtha": "Indra (Supremacía, Liderazgo Estratégico, Protección del Clan)",
+    "Jyestha": "Indra (Supremacía, Liderazgo Estratégico, Protección del Clan)",
     "Mula": "Nirriti (Desarraigo Radical, Penetración en la Raíz, Verdad Desnuda)",
     "Purva Ashadha": "Apas (Victoria Inconquistable, Fluidez, Poder de Convicción)",
     "Uttara Ashadha": "Vishvadevas (Victoria Permanente, Virtud Incorruptible)",
@@ -101,18 +101,18 @@ class VedicDomain:
             nak = content.get("nakshatra") or content.get("janma_nakshatra") or content.get("moon_nakshatra")
             if nak and not nakshatra_info:
                 if isinstance(nak, dict):
-                    nak_name = nak.get("name") or nak.get("nakshatra", "Jyeshtha")
+                    nak_name = nak.get("name") or nak.get("nakshatra") or "Desconocida"
                     nakshatra_info = {
                         "name": nak_name,
                         "pada": int(nak.get("pada") or 1),
-                        "lord": nak.get("lord") or "Mercury",
+                        "lord": nak.get("lord") or "Desconocido",
                         "deity": NAKSHATRA_DEITIES.get(nak_name, "Deidad Clásica"),
                     }
                 elif isinstance(nak, str):
                     nakshatra_info = {
                         "name": nak,
                         "pada": 1,
-                        "lord": "Mercury",
+                        "lord": "Desconocido",
                         "deity": NAKSHATRA_DEITIES.get(nak, "Deidad Clásica"),
                     }
 
@@ -131,14 +131,9 @@ class VedicDomain:
                 vargas_summary["d9_navamsha"] = v_data.get("d9") or v_data.get("navamsha")
                 vargas_summary["d10_dasamsa"] = v_data.get("d10") or v_data.get("dasamsa")
 
-        # Canonical fallbacks if cache contains raw nested format
+        # Zero mock fallbacks if cache contains raw nested format
         if not nakshatra_info:
-            nakshatra_info = {
-                "name": "Jyeshtha",
-                "pada": 2,
-                "lord": "Mercury",
-                "deity": NAKSHATRA_DEITIES.get("Jyeshtha"),
-            }
+            nakshatra_info = {}
 
         # Jaimini Karakas default model (deducible from planetary degrees)
         jaimini_karakas = {
@@ -176,7 +171,7 @@ class VedicDomain:
             "# Feed Enciclopédico de Astrología Védica (Jyotish & Sistema KP)",
             "",
             "## 1. Janma Nakshatra & Deidad Arquetípica",
-            f"- **Nakshatra Lunar:** {nak['name']} (Pada {nak.get('pada', 1)})",
+            f"- **Nakshatra Lunar:** {nak.get('name', 'No determinada')} (Pada {nak.get('pada', 1)})",
             f"- **Regente Planetario (Nakshatra Lord):** {nak.get('lord', 'N/D')}",
             f"- **Deidad Regente (Soberanía Arquetípica):** {nak.get('deity', 'N/D')}",
             "- **Resonancia de Marca:** La deidad del Nakshatra define la geometría sagrada del isotipo, la protección de la reputación y el magnetismo primario.",

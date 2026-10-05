@@ -24,7 +24,6 @@ if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
 from pipeline.config import config
-from pipeline.engine import ExtractionEngine
 from pipeline.sharder import SharderEngine, ExtractionFatalError
 from pipeline.synthesis import SynthesisEngine
 from pipeline.data_lake import VirtualDataLake
@@ -397,11 +396,33 @@ def main():
 
     try:
         cache_dir = Path(client_dir) / "raw" / "json" / "cache"
-        engine = ExtractionEngine(
-            cache_dir=str(cache_dir),
-            refresh_pro=args.refresh_pro,
-            include_atomic=getattr(args, "include_atomic", False)
-        )
+
+        def get_cache_coverage(cd: Path) -> Dict[str, Any]:
+            prov_map = {
+                "freeastroapi": ["freeastroapi", "freeastro"],
+                "astroway": ["astroway"],
+                "astrologyapi": ["astrologyapi", "astrology_api_io"],
+                "vedastro": ["vedastro"],
+                "bazi_mcp": ["bazi_mcp", "bazi"],
+                "kundali_mcp": ["kundali_mcp", "kundali"],
+                "zmanim_mcp": ["zmanim_mcp", "zmanim"],
+                "hebcal": ["hebcal"],
+                "nasa": ["nasa"],
+            }
+            coverage = {}
+            missing = []
+            for p, aliases in prov_map.items():
+                found = False
+                for a in aliases:
+                    pdir = cd / a
+                    if pdir.exists() and pdir.is_dir() and any(pdir.glob("*.json")):
+                        found = True
+                        break
+                coverage[p] = found
+                if not found:
+                    missing.append(p)
+            pct = int(((len(prov_map) - len(missing)) / len(prov_map)) * 100)
+            return {"coverage": coverage, "missing": missing, "pct": pct}
 
         is_extraction_only = args.extract or (bool(args.apis) and not args.compile and not args.synthesis)
 
@@ -409,21 +430,16 @@ def main():
             print("=" * 70)
             print("🚀 MODO EXTRACCIÓN PURA (-x / --apis) — CERO SHARDING PREMATURO")
             print("=" * 70)
-            extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
-            cov = engine.get_coverage_status(client_payload)
-            print("=" * 70)
-            print("✅ Extracción y persistencia en caché finalizadas con éxito:")
-            print(f"  • Directorio base: {client_dir}")
-            print(f"  • Caché JSON persistida en: {cache_dir}")
-            print(f"  • Hash del consultante: {cov['client_hash']}")
-            print(f"  • Cobertura acumulada en lago de datos: {cov['pct']}% ({len(cov['coverage']) - len(cov['missing'])}/{len(cov['coverage'])} proveedores)")
+            print("ℹ️ Extracción desacoplada: cada proveedor se gestiona modularmente vía su script dedicado.")
+            print(f"  • Caché destino: {cache_dir}")
+            cov = get_cache_coverage(cache_dir)
+            print(f"  • Cobertura acumulada en caché: {cov['pct']}% ({len(cov['coverage']) - len(cov['missing'])}/{len(cov['coverage'])} proveedores)")
             for prov_k, prov_ok in cov['coverage'].items():
                 status_icon = "🟢" if prov_ok else "⚪"
                 status_txt = "EN CACHÉ" if prov_ok else "PENDIENTE"
                 print(f"    {status_icon} {prov_k.ljust(15)} : {status_txt}")
             if cov['missing']:
-                print(f"\n⚠️  Aún faltan proveedores por extraer antes de compilar (-c): {', '.join(cov['missing'])}")
-                print(f"   Podés continuar extrayendo modularmente con: python3 omni_engine.py {input_file} --apis <proveedor>")
+                print(f"\n⚠️  Proveedores pendientes en caché: {', '.join(cov['missing'])}")
             else:
                 print("\n🎉 ¡Universo astrológico 100% completo en caché! Listo para compilar con: -c")
             print("=" * 70)
@@ -446,7 +462,7 @@ def main():
             return 0
 
         # MODO COMPILACIÓN (-c o ejecución completa por defecto)
-        cov = engine.get_coverage_status(client_payload)
+        cov = get_cache_coverage(cache_dir)
 
         # Revisar si existe manifiesto de exclusión justificada
         exclusion_file = Path(client_dir) / "raw" / "json" / "audit" / "exclusion_manifest.json"
@@ -462,29 +478,20 @@ def main():
         unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
 
         if unjustified_missing and not args.allow_partial:
-            # Si es corrida automática por defecto (sin -c explícito), intentar auto-extraer faltantes
-            if not args.compile:
-                print(f"ℹ️ Auto-extrayendo proveedores pendientes en lago de datos: {unjustified_missing}...")
-                asyncio.run(engine.execute_extraction(client_payload, apis=unjustified_missing, exclude=exclude_list))
-                cov = engine.get_coverage_status(client_payload)
-                unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
-
-            if unjustified_missing and not args.allow_partial:
-                print("=" * 70, file=sys.stderr)
-                print("❌ COMPILACIÓN BLOQUEADA (Strict Multi-Tradition Gate):", file=sys.stderr)
-                print(f"El universo astrológico está incompleto para este consultante ({cov['pct']}% en caché).", file=sys.stderr)
-                print(f"Proveedores ausentes sin justificación: {', '.join(unjustified_missing)}", file=sys.stderr)
-                print("\nPor contrato de calidad, la compilación de shards y Fase 0 no procede con datos faltantes", file=sys.stderr)
-                print("para evitar corromper la matriz downstream de branding (orchesbrand).", file=sys.stderr)
-                print("\nAcciones disponibles:", file=sys.stderr)
-                print(f"  1. Extraer faltantes: python3 omni_engine.py {input_file} -x --apis {','.join(unjustified_missing)}", file=sys.stderr)
-                print(f"  2. Justificar exclusión por cuota/caída en: {exclusion_file}", file=sys.stderr)
-                print(f"  3. Forzar compilación parcial deliberada pasando: --allow-partial", file=sys.stderr)
-                print("=" * 70, file=sys.stderr)
-                return 2
+            print("=" * 70, file=sys.stderr)
+            print("❌ COMPILACIÓN BLOQUEADA (Strict Multi-Tradition Gate):", file=sys.stderr)
+            print(f"El universo astrológico está incompleto para este consultante ({cov['pct']}% en caché).", file=sys.stderr)
+            print(f"Proveedores ausentes sin justificación: {', '.join(unjustified_missing)}", file=sys.stderr)
+            print("\nPor contrato de calidad, la compilación de shards y Fase 0 no procede con datos faltantes", file=sys.stderr)
+            print("para evitar corromper la matriz downstream de branding (orchesbrand).", file=sys.stderr)
+            print("\nAcciones disponibles:", file=sys.stderr)
+            print(f"  1. Justificar exclusión por cuota/caída en: {exclusion_file}", file=sys.stderr)
+            print(f"  2. Forzar compilación parcial deliberada pasando: --allow-partial", file=sys.stderr)
+            print("=" * 70, file=sys.stderr)
+            return 2
 
         print(f"📦 Compilando feeds y shards desde lago de datos (Cobertura: {cov['pct']}%)...")
-        extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+        extraction_output = {"client_payload": client_payload}
 
         # Ejecutar verificación de salud, sharding de 12 shards y 9 feeds (Capa Oro)
         sharder = SharderEngine(output_root=client_dir)

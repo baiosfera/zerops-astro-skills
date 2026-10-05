@@ -73,10 +73,11 @@ class ACGDomain:
                 {"planet": "Mercury", "line_type": "MC (Midheaven)", "description": "Línea de Comunicación Digital, Medios Masivos y Lanzamientos."},
             ]
 
+        # Leave empty if no data in dumps - zero mock fallbacks
         if not best_places["career_wealth"]:
-            best_places["career_wealth"] = ["Nueva York (EE.UU.)", "Londres (Reino Unido)", "Madrid (España)", "Miami (EE.UU.)", "Bogotá (Colombia)"]
+            best_places["career_wealth"] = []
         if not best_places["love_partnerships"]:
-            best_places["love_partnerships"] = ["París (Francia)", "Florencia (Italia)", "Buenos Aires (Argentina)"]
+            best_places["love_partnerships"] = []
 
         return {
             "domain": "acg",

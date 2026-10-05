@@ -53,10 +53,10 @@ class BaZiDomain:
     def synthesize(self) -> Dict[str, Any]:
         """Synthesizes BaZi Four Pillars, Day Master, 10 Gods, and Yong Shen."""
         four_pillars: Dict[str, Any] = {}
-        day_master = "Gui (Water Yin)"
-        dm_element = "Water"
-        dm_polarity = "Yin"
-        yong_shen = "Earth / Metal"
+        day_master = ""
+        dm_element = ""
+        dm_polarity = ""
+        yong_shen = ""
 
         ten_gods: Dict[str, str] = {}
         tcm_balance: Dict[str, Any] = {}
@@ -91,14 +91,9 @@ class BaZiDomain:
                 for k, v in sg.items():
                     ten_gods[k] = str(v)
 
-        # Default canonical four pillars if raw nested format
+        # Zero mock fallbacks if raw nested format missing
         if not four_pillars:
-            four_pillars = {
-                "year_pillar": {"stem": "Jia", "branch": "Zi", "element": "Wood/Water"},
-                "month_pillar": {"stem": "Bing", "branch": "Yin", "element": "Fire/Wood"},
-                "day_pillar": {"stem": "Gui", "branch": "Si", "element": "Water/Fire (Day Master)"},
-                "hour_pillar": {"stem": "Ren", "branch": "Xu", "element": "Water/Earth"},
-            }
+            four_pillars = {}
 
         # TCM organ balance
         tcm_balance = {
@@ -113,12 +108,12 @@ class BaZiDomain:
                 "name": day_master,
                 "element": dm_element,
                 "polarity": dm_polarity,
-                "archetype": "The Rain / Cloud (El Agua Nebulosa e Intuitiva)",
+                "archetype": f"{dm_polarity} {dm_element}".strip() or "Arquetipo BaZi",
             },
             "yong_shen": {
                 "element": yong_shen,
                 "translation": ELEMENT_TRANSLATIONS.get(yong_shen, yong_shen),
-                "strategic_role": "Elemento Balancín y Correctivo: Aporta solidez, estructura y orden al flujo creativo del consultante.",
+                "strategic_role": f"Elemento Balancín y Correctivo: {yong_shen}" if yong_shen else "Balance Elemental",
             },
             "ten_gods": ten_gods,
             "tcm_health": tcm_balance,
@@ -136,8 +131,8 @@ class BaZiDomain:
             "# Feed Enciclopédico de Metafísica China BaZi (Cuatro Pilares del Destino)",
             "",
             "## 1. Amo del Día (Day Master / 日主 Ri Zhu)",
-            f"- **Day Master:** {dm['name']} ({dm['archetype']})",
-            f"- **Elemento y Polaridad:** {dm['element']} {dm['polarity']}",
+            f"- **Day Master:** {dm.get('name', 'N/D')} ({dm.get('archetype', 'Arquetipo')})",
+            f"- **Elemento y Polaridad:** {dm.get('element', 'N/D')} {dm.get('polarity', '')}",
             "- **Resonancia Psicológica y de Negocio:** Define la naturaleza íntima del consultante, su ritmo de combustión mental y su postura ante el mercado.",
             "",
             "## 2. Los Cuatro Pilares (JiaZi / 四柱)",
@@ -152,7 +147,7 @@ class BaZiDomain:
         lines.extend([
             "",
             "## 3. Elemento Balancín y Correctivo (Yong Shen / 用神)",
-            f"- **Yong Shen Identificado:** {ys['element']} ({ys['translation']})",
+            f"- **Yong Shen Identificado:** {ys.get('element', 'N/D')} ({ys.get('translation', 'N/D')})",
             f"- **Función Estratégica en Marca:** {ys['strategic_role']}",
             "- **Aplicación en Paleta de Color:** El Yong Shen dicta el color correctivo y de contraste indispensable en el Brandbook para evitar la fatiga psíquica del fundador.",
             "",

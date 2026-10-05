@@ -28,11 +28,11 @@ class HDCosmobiologyDomain:
 
     def synthesize(self) -> Dict[str, Any]:
         """Synthesizes Human Design and Cosmobiology data."""
-        hd_type = "Projector (Proyector)"
-        strategy = "Wait for the Invitation (Esperar la Invitación Formal)"
-        authority = "Emotional / Solar Plexus (Autoridad Emocional / Claridad en la Ola)"
-        profile = "3/5 Martyr / Heretic (Mártir / Hereje — Experimentación Pragmática y Soluciones Universales)"
-        cross = "Right Angle Cross of the Four Directions (Cruz de Ángulo Recto de las Cuatro Direcciones)"
+        hd_type = ""
+        strategy = ""
+        authority = ""
+        profile = ""
+        cross = ""
 
         defined_centers: List[str] = []
         open_centers: List[str] = []
@@ -112,7 +112,7 @@ class HDCosmobiologyDomain:
             "### Centros Definidos vs Centros Abiertos (Dinámica de Sabiduría)",
             f"- **Centros Definidos (Emisión Constante):** {', '.join(hd['defined_centers'])}",
             f"- **Centros Abiertos (Recepción y Sabiduría del Mercado):** {', '.join(hd['open_centers'])}",
-            "- **Impacto en Funnels y Ventas:** El tipo de energía y la estrategia determinan cómo debe posicionarse la oferta (ej: un Proyector nunca hace prospección en frío agresiva; atrae por maestría y reconocimiento).",
+            "- **Impacto en Funnels y Ventas:** El tipo de energía y la estrategia determinan cómo debe posicionarse la oferta comercial según la autoridad y el diseño energético individual.",
             "",
             "## 2. Cosmobiología de Reinhold Ebertin & Dial de 90° (Halbsummen)",
             "- **Puntos Medios Clave (Midpoints):**",

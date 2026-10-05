@@ -249,8 +249,8 @@ class SynthesisEngine:
 ## 8. Astrocartografía ACG & Ciudades de Poder
 | Tipo de Línea | Vector Planetario y Proyección |
 |---|---|
-| Carrera y Dinero | {acg.get('best_places_ranking', {}).get('career_wealth', ['N/D'])[0]} |
-| Alianzas y Deseabilidad | {acg.get('best_places_ranking', {}).get('love_partnerships', ['N/D'])[0]} |
+| Carrera y Dinero | {(acg.get('best_places_ranking', {}).get('career_wealth') or ['N/D'])[0]} |
+| Alianzas y Deseabilidad | {(acg.get('best_places_ranking', {}).get('love_partnerships') or ['N/D'])[0]} |
 
 ## 9. Numerología Multidimensional (Fundador & Marcas)
 | Nombre Analizado | Camino de Vida / Expresión | Deseo del Alma | Vibración Caldea |
@@ -275,13 +275,13 @@ class SynthesisEngine:
 
         return f"""# Perfil Psicológico de Autor & Pautas de Voz y Tono (Fase 0)
 
-> **Contrato de Operación para Modelos Downstream (CoHaLo Positive Guidance):**
+> **Pautas de Voz y Tono para Modelos Downstream:**
 > Este documento establece la voz soberana, la cadencia cognitiva y las directrices de comunicación con las que los reportes de Fases 1 a 9 y la suite `oraculo-diag-*` deben interactuar con {name}.
 
 ## 1. Esencia Psicológica y Arquetipo Dominante
-- **Naturaleza Intramuros (Day Master BaZi):** {dm.get('name', 'Gui Agua Yin')}. {name} opera con la sutileza, la agudeza perceptiva y la fluidez envolvente del agua profunda.
-- **Temperamento Elemental (Stephen Arroyo):** Dominancia en {elem.get('dominant_element', 'Agua')}. Su motivación nace de la resonancia emocional, el sentido de trascendencia y la conexión humana auténtica.
-- **Mecánica Energética (Diseño Humano):** {h_hd.get('energy_type', 'Proyector')}. Su genialidad radica en la visión panorámica, el diagnóstico certero de sistemas y la optimización de procesos.
+- **Naturaleza Intramuros (Day Master BaZi):** {dm.get('name', 'Determinado por la carta')}. {name} opera con la sutileza, la agudeza perceptiva y la visión estratégica de su diseño original.
+- **Temperamento Elemental (Stephen Arroyo):** Dominancia en {elem.get('dominant_element', 'Elemental')}. Su motivación nace de la resonancia emocional, el sentido de trascendencia y la conexión humana auténtica.
+- **Mecánica Energética (Diseño Humano):** {h_hd.get('energy_type', 'Auténtico')}. Su genialidad radica en su diseño energético singular, el diagnóstico certero de sistemas y la optimización de procesos.
 
 ## 2. Pautas Positivas de Voz y Tono (Communication Directives)
 - **Claridad Intelectual y Agilidad:** Emplear argumentos estructurados, deductivos y elegantes. Presentar los conceptos con sofisticación y rigor técnico.
@@ -369,9 +369,9 @@ class SynthesisEngine:
             },
             "typography": {
                 "fontFamily": {
-                    "display": {"$type": "fontFamily", "$value": ["Cinzel", "serif"]},
-                    "body": {"$type": "fontFamily", "$value": ["Plus Jakarta Sans", "sans-serif"]},
-                    "mono": {"$type": "fontFamily", "$value": ["JetBrains Mono", "monospace"]},
+                    "display": {"$type": "fontFamily", "$value": ["var(--font-display, serif)", "serif"]},
+                    "body": {"$type": "fontFamily", "$value": ["var(--font-body, sans-serif)", "sans-serif"]},
+                    "mono": {"$type": "fontFamily", "$value": ["var(--font-mono, monospace)", "monospace"]},
                 },
                 "fontSize": {
                     "display": {"$type": "dimension", "$value": "clamp(2.5rem, 5vw + 1rem, 4.5rem)"},
@@ -403,8 +403,8 @@ class SynthesisEngine:
                         "--color-surface": neutrals["surface"]["oklch"],
                         "--color-text": neutrals["text"]["oklch"],
                         "--color-muted": neutrals["muted"]["oklch"],
-                        "--font-display": "Cinzel, serif",
-                        "--font-body": "Plus Jakarta Sans, sans-serif",
+                        "--font-display": "var(--font-display, serif)",
+                        "--font-body": "var(--font-body, sans-serif)",
                     }
                 },
                 "css_variables": {

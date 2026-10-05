@@ -36,6 +36,34 @@ PROVIDER_CANONICAL_MAP = {
     "nasa": "nasa",
 }
 
+ALIAS_CANONICAL_MAP = {
+    # FreeAstroAPI semantic alias normalization
+    "western_natal_tropical": "natal_calculate",
+    "freeastro_western_natal_tropical": "freeastro_natal_calculate",
+    "chinese_bazi_true_solar": "chinese_bazi",
+    "freeastro_chinese_bazi_true_solar": "freeastro_chinese_bazi",
+    "western_astrocartography_lines": "astrocartography_lines",
+    "freeastro_western_astrocartography_lines": "freeastro_astrocartography_lines",
+    "vedic_kp_v2": "vedic_kp",
+    "freeastro_vedic_kp_v2": "freeastro_vedic_kp",
+    "western_numerology_profile": "numerology_profile",
+    "freeastro_western_numerology_profile": "freeastro_numerology_profile",
+}
+
+
+def unwrap_payload(content: Any) -> Any:
+    """Recursively unwraps response envelopes (_provider, data, ok, xml_parsed) without losing data."""
+    if isinstance(content, dict):
+        if "_provider" in content and "data" in content and isinstance(content["data"], (dict, list)):
+            return unwrap_payload(content["data"])
+        if "ok" in content and "data" in content and isinstance(content["data"], (dict, list)):
+            return unwrap_payload(content["data"])
+        if "xml_parsed" in content and isinstance(content["xml_parsed"], (dict, list)):
+            return unwrap_payload(content["xml_parsed"])
+        if len(content) == 1 and "data" in content and isinstance(content["data"], (dict, list)):
+            return unwrap_payload(content["data"])
+    return content
+
 
 def compute_payload_hash(data: Any) -> str:
     """Computes a deterministic hash of JSON payload structure for deduplication."""
@@ -109,11 +137,17 @@ class CacheCrawler:
                 provider_raw = file_path.parent.name
                 provider = PROVIDER_CANONICAL_MAP.get(provider_raw.lower(), provider_raw.lower())
 
+                file_stem = file_path.stem.lower()
+                canonical_alias = ALIAS_CANONICAL_MAP.get(file_stem, file_stem)
+
                 entry = {
                     "path": str(file_path),
                     "file_name": file_name,
+                    "file_stem": file_stem,
+                    "canonical_alias": canonical_alias,
                     "provider": provider,
-                    "content": content,
+                    "content": unwrap_payload(content),
+                    "raw_content": content,
                     "payload_hash": p_hash,
                     "is_duplicate_payload": is_duplicate,
                     "rel_path": str(file_path.relative_to(self.cache_root)),
