@@ -43,9 +43,10 @@ class KabbalahDomain:
 
     def synthesize(self) -> Dict[str, Any]:
         """Synthesizes Hebrew calendar, Zmanim, and Tikkun metrics."""
-        hebrew_date = "5750 Tevet"
+        hebrew_date = ""
+        parashat_hashavua = ""
         halachic_times: Dict[str, str] = {}
-        tikkun_summary = TIKKUN_TAXONOMY.get("Capricorn", "Tikkun de Manifestación y Alquimia de Deseos")
+        tikkun_summary = ""
 
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
@@ -55,6 +56,11 @@ class KabbalahDomain:
             h_date = content.get("hebrew_date") or content.get("hebrew") or content.get("date_hebrew")
             if h_date:
                 hebrew_date = str(h_date)
+
+            # Look for parasha from HebCal
+            parasha = content.get("parasha") or content.get("torah_portion") or content.get("parashat_hashavua")
+            if parasha and not parashat_hashavua:
+                parashat_hashavua = str(parasha)
 
             # Look for Zmanim solar times
             times = content.get("times") or content.get("zmanim") or content.get("halachic_times")
@@ -70,16 +76,25 @@ class KabbalahDomain:
                 elif isinstance(tk, dict):
                     tikkun_summary = tk.get("description") or tk.get("summary") or tikkun_summary
 
+            # Or derive Tikkun by North Node sign if present
+            nn = content.get("north_node") or content.get("true_node")
+            if isinstance(nn, dict) and not tikkun_summary:
+                nn_sign = nn.get("sign") or nn.get("sign_name")
+                if nn_sign and nn_sign in TIKKUN_TAXONOMY:
+                    tikkun_summary = TIKKUN_TAXONOMY[nn_sign]
+
+        commercial_app = f"Integración del Tikkun ({tikkun_summary}) en la vasija de valor y servicio." if tikkun_summary else ""
+
         return {
             "domain": "kabbalah",
             "hebrew_calendar": {
                 "hebrew_date": hebrew_date,
-                "parashat_hashavua": "Vayechi / Vaera (Porción de la Torá semanal)",
+                "parashat_hashavua": parashat_hashavua,
             },
             "zmanim_halachic_times": halachic_times,
             "tikkun_rav_berg": {
                 "correction_theme": tikkun_summary,
-                "commercial_application": "Trascender la resistencia interna al éxito para transformarla en vasija de compartir y valor masivo.",
+                "commercial_application": commercial_app,
             },
             "source_files_count": len(self.raw_data_map),
         }

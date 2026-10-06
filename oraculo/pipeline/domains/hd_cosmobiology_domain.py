@@ -67,9 +67,9 @@ class HDCosmobiologyDomain:
                         cosmo_midpoints.append(str(mp))
 
         if not defined_centers:
-            defined_centers = ["Solar Plexus (Emocional)", "Throat (Garganta)", "G / Identity (Centro del Ser)"]
+            defined_centers = []
         if not open_centers:
-            open_centers = ["Head (Corona)", "Ajna (Mente)", "Heart / Ego", "Sacral (Generador)", "Spleen (Bazo)", "Root (Raíz)"]
+            open_centers = []
 
         return {
             "domain": "hd_cosmobiology",
@@ -84,11 +84,8 @@ class HDCosmobiologyDomain:
                 "active_channels": active_channels,
             },
             "cosmobiology_dial_90": {
-                "ebertin_midpoints": cosmo_midpoints or [
-                    "Sol/Luna = Ascendente (Integración de vida consciente e inconsciente)",
-                    "Júpiter/Pluto = Medio Cielo (Capacidad de liderazgo a gran escala)",
-                ],
-                "uranian_tnps_active": "Cupido (Comunidades y Alianzas Estéticas), Apollon (Multiplicidad y Éxito Comercial)",
+                "ebertin_midpoints": cosmo_midpoints,
+                "uranian_tnps_active": "",
             },
             "source_files_count": len(self.raw_data_map),
         }

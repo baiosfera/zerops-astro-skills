@@ -25,6 +25,7 @@ if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
 from pipeline.config import config
+from pipeline.engine import ExtractionEngine
 from pipeline.sharder import SharderEngine, ExtractionFatalError
 from pipeline.synthesis import SynthesisEngine
 from pipeline.data_lake import VirtualDataLake
@@ -163,11 +164,15 @@ def parse_client_file(file_path: Path) -> dict:
                 continue
 
             if k:
-                # Normalizar si el valor tiene fecha en español
-                m_date = re.search(r"\b(\d{1,2})\s+de\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)\s+de\s+(\d{4})\b", v, re.IGNORECASE)
+                # Normalizar si el valor tiene fecha en español o formato numérico común
+                m_date = re.search(r"\b(\d{1,2})\s+(?:de\s+)?([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)(?:\s+de)?\s+(\d{4})\b", v, re.IGNORECASE)
                 if m_date and m_date.group(2).lower() in MONTHS_ES:
                     m_num = MONTHS_ES[m_date.group(2).lower()]
                     v = f"{int(m_date.group(3)):04d}-{m_num:02d}-{int(m_date.group(1)):02d}"
+                else:
+                    m_dmy = re.search(r"\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b", v)
+                    if m_dmy:
+                        v = f"{int(m_dmy.group(3)):04d}-{int(m_dmy.group(2)):02d}-{int(m_dmy.group(1)):02d}"
                 # Normalizar si el valor tiene hora con am/pm
                 m_time = re.search(r"\b(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?\b", v, re.IGNORECASE)
                 if m_time and ("hora" in k or "tob" in k):
@@ -183,8 +188,8 @@ def parse_client_file(file_path: Path) -> dict:
                     v = f"{h:02d}:{mn}"
                 data[k] = v
             else:
-                # Fecha en español (ej: 18 de enero de 1986)
-                m_date = re.search(r"\b(\d{1,2})\s+de\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)\s+de\s+(\d{4})\b", line, re.IGNORECASE)
+                # Fecha en español (ej: 18 de enero de 1986 o 18 enero 1986) o numérica (19.10.1998, 19/10/1998, 19-10-1998)
+                m_date = re.search(r"\b(\d{1,2})\s+(?:de\s+)?([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)(?:\s+de)?\s+(\d{4})\b", line, re.IGNORECASE)
                 if m_date:
                     m_name = m_date.group(2).lower()
                     if m_name in MONTHS_ES:
@@ -192,6 +197,15 @@ def parse_client_file(file_path: Path) -> dict:
                         d_num = int(m_date.group(1))
                         y_num = int(m_date.group(3))
                         data["dob"] = f"{y_num:04d}-{m_num:02d}-{d_num:02d}"
+                        continue
+                else:
+                    m_dmy = re.search(r"\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b", line)
+                    if m_dmy:
+                        data["dob"] = f"{int(m_dmy.group(3)):04d}-{int(m_dmy.group(2)):02d}-{int(m_dmy.group(1)):02d}"
+                        continue
+                    m_iso = re.search(r"\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b", line)
+                    if m_iso:
+                        data["dob"] = f"{int(m_iso.group(1)):04d}-{int(m_iso.group(2)):02d}-{int(m_iso.group(3)):02d}"
                         continue
 
                 # Hora (ej: 03:00)
@@ -299,16 +313,16 @@ def main():
     # Fecha (dob)
     dob = args.dob or file_data.get("dob") or file_data.get("fecha") or file_data.get("fecha_nacimiento") or file_data.get("fecha de nacimiento")
     if dob:
-        m_date = re.search(r"\b(\d{1,2})\s+de\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)\s+de\s+(\d{4})\b", str(dob), re.IGNORECASE)
+        m_date = re.search(r"\b(\d{1,2})\s+(?:de\s+)?([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)(?:\s+de)?\s+(\d{4})\b", str(dob), re.IGNORECASE)
         if m_date and m_date.group(2).lower() in MONTHS_ES:
             m_num = MONTHS_ES[m_date.group(2).lower()]
             dob = f"{int(m_date.group(3)):04d}-{m_num:02d}-{int(m_date.group(1)):02d}"
         else:
-            m_iso = re.search(r"(\d{4})[-/](\d{1,2})[-/](\d{1,2})", str(dob))
+            m_iso = re.search(r"(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})", str(dob))
             if m_iso:
                 dob = f"{int(m_iso.group(1)):04d}-{int(m_iso.group(2)):02d}-{int(m_iso.group(3)):02d}"
             else:
-                m_dmy = re.search(r"(\d{1,2})[-/](\d{1,2})[-/](\d{4})", str(dob))
+                m_dmy = re.search(r"(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})", str(dob))
                 if m_dmy:
                     dob = f"{int(m_dmy.group(3)):04d}-{int(m_dmy.group(2)):02d}-{int(m_dmy.group(1)):02d}"
 
@@ -371,7 +385,19 @@ def main():
     print("-" * 70)
 
     # Calcular offset horario canónico
-    y, m, d = [int(x) for x in dob.split("-")]
+    m_norm = re.search(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", str(dob))
+    if m_norm:
+        y, m, d = int(m_norm.group(1)), int(m_norm.group(2)), int(m_norm.group(3))
+    else:
+        parts = [p for p in re.split(r"[-/. ]", str(dob)) if p.strip()]
+        if len(parts) == 3:
+            if len(parts[0]) == 4:
+                y, m, d = int(parts[0]), int(parts[1]), int(parts[2])
+            else:
+                d, m, y = int(parts[0]), int(parts[1]), int(parts[2])
+        else:
+            raise ValueError(f"Formato de fecha inválido o no reconocido: '{dob}'")
+    dob = f"{y:04d}-{m:02d}-{d:02d}"
     h, mn = [int(x) for x in tob.split(":")[:2]]
 
     tz_offset = -5.0
@@ -397,33 +423,11 @@ def main():
 
     try:
         cache_dir = Path(client_dir) / "raw" / "json" / "cache"
-
-        def get_cache_coverage(cd: Path) -> Dict[str, Any]:
-            prov_map = {
-                "freeastroapi": ["freeastroapi", "freeastro"],
-                "astroway": ["astroway"],
-                "astrologyapi": ["astrologyapi", "astrology_api_io"],
-                "vedastro": ["vedastro"],
-                "bazi_mcp": ["bazi_mcp", "bazi", "lunar"],
-                "kundali_mcp": ["kundali_mcp", "kundali"],
-                "zmanim_mcp": ["zmanim_mcp", "zmanim"],
-                "hebcal": ["hebcal"],
-                "nasa": ["nasa"],
-            }
-            coverage = {}
-            missing = []
-            for p, aliases in prov_map.items():
-                found = False
-                for a in aliases:
-                    pdir = cd / a
-                    if pdir.exists() and pdir.is_dir() and any(pdir.glob("*.json")):
-                        found = True
-                        break
-                coverage[p] = found
-                if not found:
-                    missing.append(p)
-            pct = int(((len(prov_map) - len(missing)) / len(prov_map)) * 100)
-            return {"coverage": coverage, "missing": missing, "pct": pct}
+        engine = ExtractionEngine(
+            cache_dir=str(cache_dir),
+            refresh_pro=args.refresh_pro,
+            include_atomic=getattr(args, "include_atomic", False)
+        )
 
         is_extraction_only = args.extract or (bool(args.apis) and not args.compile and not args.synthesis)
 
@@ -431,16 +435,20 @@ def main():
             print("=" * 70)
             print("🚀 MODO EXTRACCIÓN PURA (-x / --apis) — CERO SHARDING PREMATURO")
             print("=" * 70)
-            print("ℹ️ Extracción desacoplada: cada proveedor se gestiona modularmente vía su script dedicado.")
-            print(f"  • Caché destino: {cache_dir}")
-            cov = get_cache_coverage(cache_dir)
-            print(f"  • Cobertura acumulada en caché: {cov['pct']}% ({len(cov['coverage']) - len(cov['missing'])}/{len(cov['coverage'])} proveedores)")
+            extraction_output = asyncio.run(engine.execute_extraction(client_payload, apis=apis_list, exclude=exclude_list))
+            cov = engine.get_coverage_status(client_payload)
+            print("=" * 70)
+            print("✅ Extracción y persistencia en caché finalizadas con éxito:")
+            print(f"  • Directorio base: {client_dir}")
+            print(f"  • Caché JSON persistida en: {cache_dir}")
+            print(f"  • Hash del consultante: {cov['client_hash']}")
+            print(f"  • Cobertura acumulada en lago de datos: {cov['pct']}% ({len(cov['coverage']) - len(cov['missing'])}/{len(cov['coverage'])} proveedores)")
             for prov_k, prov_ok in cov['coverage'].items():
                 status_icon = "🟢" if prov_ok else "⚪"
                 status_txt = "EN CACHÉ" if prov_ok else "PENDIENTE"
                 print(f"    {status_icon} {prov_k.ljust(15)} : {status_txt}")
             if cov['missing']:
-                print(f"\n⚠️  Proveedores pendientes en caché: {', '.join(cov['missing'])}")
+                print(f"\n⚠️  Aún faltan proveedores por extraer antes de compilar (-c): {', '.join(cov['missing'])}")
             else:
                 print("\n🎉 ¡Universo astrológico 100% completo en caché! Listo para compilar con: -c")
             print("=" * 70)
@@ -463,7 +471,7 @@ def main():
             return 0
 
         # MODO COMPILACIÓN (-c o ejecución completa por defecto)
-        cov = get_cache_coverage(cache_dir)
+        cov = engine.get_coverage_status(client_payload)
 
         # Revisar si existe manifiesto de exclusión justificada
         exclusion_file = Path(client_dir) / "raw" / "json" / "audit" / "exclusion_manifest.json"
@@ -487,17 +495,25 @@ def main():
         unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
 
         if unjustified_missing and not args.allow_partial:
-            print("=" * 70, file=sys.stderr)
-            print("❌ COMPILACIÓN BLOQUEADA (Strict Multi-Tradition Gate):", file=sys.stderr)
-            print(f"El universo astrológico está incompleto para este consultante ({cov['pct']}% en caché).", file=sys.stderr)
-            print(f"Proveedores ausentes sin justificación: {', '.join(unjustified_missing)}", file=sys.stderr)
-            print("\nPor contrato de calidad, la compilación de shards y Fase 0 no procede con datos faltantes", file=sys.stderr)
-            print("para evitar corromper la matriz downstream de branding (orchesbrand).", file=sys.stderr)
-            print("\nAcciones disponibles:", file=sys.stderr)
-            print(f"  1. Justificar exclusión por cuota/caída en: {exclusion_file}", file=sys.stderr)
-            print(f"  2. Forzar compilación parcial deliberada pasando: --allow-partial", file=sys.stderr)
-            print("=" * 70, file=sys.stderr)
-            return 2
+            # Si es corrida automática por defecto (sin -c explícito), intentar auto-extraer faltantes
+            if not args.compile:
+                print(f"ℹ️ Auto-extrayendo proveedores pendientes en lago de datos: {unjustified_missing}...")
+                asyncio.run(engine.execute_extraction(client_payload, apis=unjustified_missing, exclude=exclude_list))
+                cov = engine.get_coverage_status(client_payload)
+                unjustified_missing = [m for m in cov['missing'] if m not in excluded_providers]
+
+            if unjustified_missing and not args.allow_partial:
+                print("=" * 70, file=sys.stderr)
+                print("❌ COMPILACIÓN BLOQUEADA (Strict Multi-Tradition Gate):", file=sys.stderr)
+                print(f"El universo astrológico está incompleto para este consultante ({cov['pct']}% en caché).", file=sys.stderr)
+                print(f"Proveedores ausentes sin justificación: {', '.join(unjustified_missing)}", file=sys.stderr)
+                print("\nPor contrato de calidad, la compilación de shards y Fase 0 no procede con datos faltantes", file=sys.stderr)
+                print("para evitar corromper la matriz downstream de branding (orchesbrand).", file=sys.stderr)
+                print("\nAcciones disponibles:", file=sys.stderr)
+                print(f"  1. Justificar exclusión por cuota/caída en: {exclusion_file}", file=sys.stderr)
+                print(f"  2. Forzar compilación parcial deliberada pasando: --allow-partial", file=sys.stderr)
+                print("=" * 70, file=sys.stderr)
+                return 2
 
         print(f"📦 Compilando feeds y shards desde lago de datos (Cobertura: {cov['pct']}%)...")
         extraction_output = {"client_payload": client_payload}

@@ -64,14 +64,9 @@ class ACGDomain:
                 feats = content.get("features", [])
                 geojson_features_count = len(feats)
 
-        # Default canonical ACG power lines if missing in raw API dumps
+        # Zero mock fallbacks: represent missing data honestly as empty collections
         if not power_lines:
-            power_lines = [
-                {"planet": "Jupiter", "line_type": "MC (Midheaven)", "description": "Línea de Máxima Expansión Financiera y Crecimiento de Marca."},
-                {"planet": "Sun", "line_type": "MC (Midheaven)", "description": "Línea de Liderazgo Soberano, Reconocimiento Público y Autoridad."},
-                {"planet": "Venus", "line_type": "AS (Ascendant)", "description": "Línea de Magnetismo Estético, Atracción de Clientes y RRPP."},
-                {"planet": "Mercury", "line_type": "MC (Midheaven)", "description": "Línea de Comunicación Digital, Medios Masivos y Lanzamientos."},
-            ]
+            power_lines = []
 
         # Leave empty if no data in dumps - zero mock fallbacks
         if not best_places["career_wealth"]:

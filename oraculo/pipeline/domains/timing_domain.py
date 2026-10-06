@@ -28,14 +28,22 @@ class TimingDomain:
 
     def synthesize(self) -> Dict[str, Any]:
         """Synthesizes predictive chronocrator cycles."""
-        current_mahadasha = "Mercury (Budha)"
-        current_antardasha = "Venus (Shukra)"
-        dasha_dates = "2024-2027"
+        current_mahadasha = ""
+        current_antardasha = ""
+        dasha_dates = ""
 
-        profection_house = 5
-        profection_lord = "Jupiter"
-        firdaria_current = "Sun / Mercury (Firdaria Diurna)"
-        zr_spirit_peak = "Nivel II en Sagitario (Clímax de Vocación y Reconocimiento)"
+        # Hellenistic annual profection: (age % 12) + 1
+        from datetime import datetime
+        birth_year = self.client.get("year")
+        current_year = datetime.now().year
+        if birth_year and isinstance(birth_year, int):
+            age = max(0, current_year - birth_year)
+            profection_house = (age % 12) + 1
+        else:
+            profection_house = None
+        profection_lord = ""
+        firdaria_current = ""
+        zr_spirit_peak = ""
 
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
@@ -51,7 +59,8 @@ class TimingDomain:
             # Look for Profections
             prof = content.get("profection") or content.get("annual_profection")
             if isinstance(prof, dict):
-                profection_house = int(prof.get("house") or profection_house)
+                if prof.get("house"):
+                    profection_house = int(prof.get("house"))
                 profection_lord = prof.get("lord") or prof.get("ruler") or profection_lord
 
             # Look for Firdaria
@@ -64,18 +73,21 @@ class TimingDomain:
             if isinstance(zr, str):
                 zr_spirit_peak = zr
 
+        commercial_meaning = f"Ventana bajo regencia de {current_mahadasha}-{current_antardasha}." if (current_mahadasha and current_antardasha) else ""
+        activation_area = f"Casa {profection_house}: Activación por ciclo profectivo anual." if profection_house else ""
+
         return {
             "domain": "timing",
             "vimshottari_dasha": {
                 "mahadasha": current_mahadasha,
                 "antardasha": current_antardasha,
                 "active_window": dasha_dates,
-                "commercial_meaning": f"Ventana de maduración intelectual y monetización estética bajo {current_mahadasha}-{current_antardasha}.",
+                "commercial_meaning": commercial_meaning,
             },
             "annual_profections": {
                 "active_house": profection_house,
                 "time_lord_ruler": profection_lord,
-                "activation_area": f"Casa {profection_house}: Proyectos creativos, autoexpresión y generación de activos propios.",
+                "activation_area": activation_area,
             },
             "persian_firdaria": {
                 "current_period": firdaria_current,

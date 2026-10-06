@@ -59,7 +59,7 @@ class VedicDomain:
     def synthesize(self) -> Dict[str, Any]:
         """Builds an encyclopedic Vedic matrix."""
         shadbala_data: Dict[str, Any] = {}
-        dominant_planet = "Mercury"
+        dominant_planet = ""
         max_shadbala = 0.0
 
         kp_sub_lords: Dict[str, Any] = {}
@@ -131,20 +131,27 @@ class VedicDomain:
                 vargas_summary["d9_navamsha"] = v_data.get("d9") or v_data.get("navamsha")
                 vargas_summary["d10_dasamsa"] = v_data.get("d10") or v_data.get("dasamsa")
 
-        # Zero mock fallbacks if cache contains raw nested format
+            # 6. Jaimini Chara Karakas from Astroway or VedAstro
+            jck = content.get("jaimini_chara_karakas") or content.get("jaimini_karakas") or content.get("karakas")
+            if isinstance(jck, dict) and not jaimini_karakas:
+                j_data = jck.get("data", jck)
+                if isinstance(j_data, dict) and "ranking" in j_data:
+                    for item in j_data["ranking"]:
+                        role = item.get("role", "")
+                        graha = item.get("grahaName") or item.get("planet", "")
+                        if role and graha:
+                            jaimini_karakas[role] = graha
+                elif isinstance(j_data, dict):
+                    for k_role, k_graha in j_data.items():
+                        if isinstance(k_graha, str):
+                            jaimini_karakas[str(k_role)] = k_graha
+
+        # Zero mock fallbacks: honest empty representations
         if not nakshatra_info:
             nakshatra_info = {}
 
-        # Jaimini Karakas default model (deducible from planetary degrees)
-        jaimini_karakas = {
-            "Atmakaraka (AK - Rey del Alma)": "Mercurio / Luna",
-            "Amatyakaraka (AmK - Ministro de Carrera / Oficio)": "Sol / Júpiter",
-            "Bhratrikaraka (BK - Hermanos y Gurús)": "Marte",
-            "Matrikaraka (MK - Madre y Raíces)": "Venus",
-            "Putrakaraka (PK - Intelecto y Creación)": "Júpiter",
-            "Gnatikaraka (GK - Desafíos y Competencia)": "Saturno",
-            "Darakaraka (DK - Esposo y Clientes Frontales)": "Venus",
-        }
+        if not jaimini_karakas:
+            jaimini_karakas = {}
 
         return {
             "domain": "vedic",

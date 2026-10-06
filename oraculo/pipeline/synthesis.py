@@ -187,6 +187,16 @@ class SynthesisEngine:
         h_hd = hd.get("human_design", {})
         vd = tim.get("vimshottari_dasha", {})
 
+        fagan_deg = sid.get('fagan_bradley', {}).get('ayanamsa_degrees')
+        fagan_str = f"{fagan_deg:.2f}°" if fagan_deg is not None else "N/D"
+        lahiri_deg = sid.get('lahiri', {}).get('ayanamsa_degrees')
+        lahiri_str = f"{lahiri_deg:.2f}°" if lahiri_deg is not None else "N/D"
+        delta_arc = sid.get('comparative_delta', {}).get('fagan_vs_lahiri_arcminutes')
+        delta_str = f"{delta_arc}' de arco" if delta_arc is not None else "N/D"
+
+        max_r = sb.get('max_rupas')
+        rupas_str = f"{max_r:.2f} Rupas" if (max_r is not None and isinstance(max_r, (int, float))) else "N/D"
+
         return f"""# Ficha Técnica Matemática SSoT (Coach Technical Sheet)
 
 ## 1. Identidad y Coordenadas Natales
@@ -211,16 +221,16 @@ class SynthesisEngine:
 ## 3. Astrología Sideral & Ayanamsas Comparativos
 | Parámetro | Medición Cuántica |
 |---|---|
-| Ayanamsa Fagan-Bradley | {sid.get('fagan_bradley', {}).get('ayanamsa_degrees', 24.75):.2f}° |
-| Ayanamsa Lahiri | {sid.get('lahiri', {}).get('ayanamsa_degrees', 23.77):.2f}° |
-| Delta Comparativo Fagan-Lahiri | {sid.get('comparative_delta', {}).get('fagan_vs_lahiri_arcminutes', 59.0)}' de arco |
+| Ayanamsa Fagan-Bradley | {fagan_str} |
+| Ayanamsa Lahiri | {lahiri_str} |
+| Delta Comparativo Fagan-Lahiri | {delta_str} |
 
 ## 4. Astrología Védica Jyotish & Fuerzas Shadbala
 | Parámetro | Métrica Védica |
 |---|---|
 | Janma Nakshatra | {ved.get('nakshatra', {}).get('name', 'N/D')} (Pada {ved.get('nakshatra', {}).get('pada', 1)}) |
 | Deidad del Nakshatra | {ved.get('nakshatra', {}).get('deity', 'N/D')} |
-| Planeta Dominante Shadbala | {sb.get('dominant_planet', 'N/D')} ({sb.get('max_rupas', 0.0):.2f} Rupas) |
+| Planeta Dominante Shadbala | {sb.get('dominant_planet') or 'N/D'} ({rupas_str}) |
 
 ## 5. Metafísica China BaZi (Cuatro Pilares)
 | Pilar | Tronco Celeste (Stem) | Rama Terrestre (Branch) |
@@ -315,9 +325,9 @@ class SynthesisEngine:
 - **Arquitectura de Precios y Monetización (Casa 2):** Cúspide en {tripod.get('house_2_wealth', {}).get('sign', 'N/D')}. Posicionamiento premium y anclaje de alto valor.
 
 ## 2. Tríada Sistémica del Avatar de Cliente Ideal (ICP)
-- **Casa 7 (Espejo Relacional & Conversión Frontal):** Cúspide en {triad.get('house_7_mirror', 'N/D')}. Clientes que buscan agilidad mental, diálogo inteligente y cero dogmas.
-- **Casa 8 (Inversión High-Ticket & Transformación):** Cúspide en {triad.get('house_8_high_ticket', 'N/D')}. Compradores dispuestos a transformaciones profundas y alianzas estratégicas.
-- **Casa 11 (Comunidad & Audiencia Orgánica):** Cúspide en {triad.get('house_11_community', 'N/D')}. Tribu basada en ideales compartidos y visión de futuro.
+- **Casa 7 (Espejo Relacional & Conversión Frontal):** Cúspide en {triad.get('house_7_mirror', 'N/D')}.
+- **Casa 8 (Inversión High-Ticket & Transformación):** Cúspide en {triad.get('house_8_high_ticket', 'N/D')}.
+- **Casa 11 (Comunidad & Audiencia Orgánica):** Cúspide en {triad.get('house_11_community', 'N/D')}.
 - **Venus (Deseabilidad & Magnetismo Estético):** Signo {triad.get('venus', {}).get('sign', 'N/D')} en Casa {triad.get('venus', {}).get('house', 'N/D')}.
 
 ## 3. Paleta Bipolar Epistémica OKLCH (Esencia + Balancín Yong Shen)
@@ -331,11 +341,11 @@ class SynthesisEngine:
 
 ## 4. Geometría Sagrada del Símbolo & Nakshatra
 - **Nakshatra Lunar:** {nak.get('name', 'N/D')} (Deidad: {nak.get('deity', 'N/D')}).
-- **Vector Simbólico:** El isotipo corporativo incorpora líneas de soberanía, protección estratégica y maestría formal.
+- **Vector Simbólico:** Isotipo y geometría sagrada alineados al Nakshatra {nak.get('name', 'N/D')}.
 
 ## 5. Cadencia Cinética & Motion Design (GSAP 60fps)
 - **Duración Base de Transición:** 0.8s con curva `cubic-bezier(0.16, 1, 0.3, 1)` (Swift Precision).
-- **Justificación Astrológica:** Basado en el alto Chesta Bala de Mercurio en Capricornio. Cero animaciones erráticas; pura elegancia ejecutiva.
+- **Justificación Astrológica:** Basado en la configuración planetaria dominante ({ved.get('shadbala', {}).get('dominant_planet', 'N/D')}) y el elemento de esencia ({elem.get('dominant_element', 'N/D')}).
 """
 
     def _render_brandbook_json(self, brand_name: str, west: Dict[str, Any], bazi: Dict[str, Any],

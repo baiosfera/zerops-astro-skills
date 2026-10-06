@@ -61,11 +61,10 @@ class SiderealDomain:
                                 "house": int(p_data.get("house") or 1),
                             }
 
-        # Canonical Ayanamsa estimations if missing in raw API dumps
-        # (Fagan-Bradley ~24.75°, Lahiri ~23.77° circa 2026, typical delta ~0.98° / ~59 arcminutes)
-        fagan_val = ayanamsas.get("fagan_bradley", 24.75)
-        lahiri_val = ayanamsas.get("lahiri", 23.77)
-        delta_arcmin = round(abs(fagan_val - lahiri_val) * 60, 1)
+        # Zero mock fallbacks: represent missing data honestly
+        fagan_val = ayanamsas.get("fagan_bradley")
+        lahiri_val = ayanamsas.get("lahiri")
+        delta_arcmin = round(abs(fagan_val - lahiri_val) * 60, 1) if (fagan_val is not None and lahiri_val is not None) else None
 
         # Cross of Malta / Mundoscope Angles (Casas Angulares en Primer Vertical)
         mundoscope = {
@@ -87,7 +86,7 @@ class SiderealDomain:
             },
             "comparative_delta": {
                 "fagan_vs_lahiri_arcminutes": delta_arcmin,
-                "note": "Desplazamiento canónico de ~59 minutos de arco entre el zócalo babilónico Fagan y la referencia védica Lahiri.",
+                "note": "Desplazamiento calculado entre Fagan-Bradley y Lahiri." if delta_arcmin is not None else "",
             },
             "mundoscope_cross_of_malta": mundoscope,
             "source_files_count": len(self.raw_data_map),
@@ -100,13 +99,17 @@ class SiderealDomain:
         lahiri = d["lahiri"]
         delta = d["comparative_delta"]
 
+        f_deg_str = f"{fagan['ayanamsa_degrees']:.2f}°" if fagan.get('ayanamsa_degrees') is not None else "N/D"
+        l_deg_str = f"{lahiri['ayanamsa_degrees']:.2f}°" if lahiri.get('ayanamsa_degrees') is not None else "N/D"
+        d_arc_str = f"{delta['fagan_vs_lahiri_arcminutes']} minutos de arco. {delta['note']}" if delta.get('fagan_vs_lahiri_arcminutes') is not None else "N/D"
+
         lines = [
             "# Feed Enciclopédico de Astrología Sideral (Fagan-Bradley & Mundoscopio)",
             "",
             "## 1. Topología de Ayanamsas & Comparativa Cuántica",
-            f"- **Ayanamsa Fagan-Bradley:** {fagan['ayanamsa_degrees']:.2f}° (Zócalo Babilónico / Primer Vertical de Campanus)",
-            f"- **Ayanamsa Lahiri / Chitra-Paksha:** {lahiri['ayanamsa_degrees']:.2f}° (Referencia Védica Oficial Sideral)",
-            f"- **Delta Comparativo:** {delta['fagan_vs_lahiri_arcminutes']} minutos de arco (~59'). {delta['note']}",
+            f"- **Ayanamsa Fagan-Bradley:** {f_deg_str} (Zócalo Babilónico / Primer Vertical de Campanus)",
+            f"- **Ayanamsa Lahiri / Chitra-Paksha:** {l_deg_str} (Referencia Védica Oficial Sideral)",
+            f"- **Delta Comparativo:** {d_arc_str}",
             "",
             "## 2. Mundoscopio & Cruz de Malta (Campanus Prime Vertical)",
             "- **Ángulos Mundanos de Trascendencia:**",
