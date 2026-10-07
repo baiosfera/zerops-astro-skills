@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Deterministic Physical Plan Linter & Validation Sensor (plan-validate.sh)
-# Version: 2.4 (Tri-Track Decoupled Lifecycle & Monolithic Backup Guard)
+# Version: 2.5 (Blindaje Anti-Freeze FUSE & 4 Tracks)
 # Zero LLM Tokens | Bounded Execution < 100ms | 100% Deterministic
 # ==============================================================================
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 
-trap 'find "$(dirname "${BASH_SOURCE[0]}")/.." -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$(dirname "${BASH_SOURCE[0]}")/.." -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+trap 'rm -rf "$SCRIPT_DIR/__pycache__" "$SCRIPT_DIR"/*.pyc 2>/dev/null || true' EXIT
 
 PLAN_PATH="${1:-}"
 
@@ -75,18 +76,22 @@ fi
 IS_TRACK_A=0
 IS_TRACK_B=0
 IS_TRACK_C=0
+IS_TRACK_D=0
 
 if grep -qiE "Track A" "$PLAN_PATH"; then
     IS_TRACK_A=1
     echo "✓ Clasificación de Track validada: Track A (Gobernanza, Skills & Platform Tooling)"
 elif grep -qiE "Track B" "$PLAN_PATH"; then
     IS_TRACK_B=1
-    echo "✓ Clasificación de Track validada: Track B (Zerops Workloads & App Repos)"
+    echo "✓ Clasificación de Track validada: Track B (Chasis Central Zerops Astrobranding)"
 elif grep -qiE "Track C" "$PLAN_PATH"; then
     IS_TRACK_C=1
-    echo "✓ Clasificación de Track validada: Track C (Direct SSoT Data & Content Ops)"
+    echo "✓ Clasificación de Track validada: Track C (Workloads & Apps con Plantilla Universal v4)"
+elif grep -qiE "Track D" "$PLAN_PATH"; then
+    IS_TRACK_D=1
+    echo "✓ Clasificación de Track validada: Track D (Direct SSoT Data & Content Ops)"
 else
-    echo "❌ Falta declaración explícita de Track (Track A, Track B o Track C)"
+    echo "❌ Falta declaración explícita de Track (Track A, Track B, Track C o Track D)"
     ERRORS=$((ERRORS + 1))
 fi
 

@@ -8,11 +8,11 @@ export PYTHONDONTWRITEBYTECODE=1
 
 REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
 SKILL_DIR="$(cd "$(dirname "$REAL_SCRIPT")/.." && pwd)"
-trap 'find "$SKILL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -type f -name "*.pyc" -delete 2>/dev/null || true' EXIT
+trap 'rm -rf "$SKILL_DIR/scripts/__pycache__" "$SKILL_DIR/scripts"/*.pyc 2>/dev/null || true' EXIT
 ERRORS=0
 
 echo "============================================================"
-echo "  [Planner v3.8] Sensor de Validación CoHaLo SOTA (v3.1)"
+echo "  [Planner v3.9] Sensor de Validación CoHaLo SOTA (v3.2)"
 echo "============================================================"
 
 # 1. Validar integridad de archivos SSoT

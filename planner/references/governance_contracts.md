@@ -86,7 +86,7 @@
 
 ---
 
-## 6. Tri-Track Governance Contract & Mandatory Closed-Topology Sensor Gate
+## 6. Quad-Track Governance Contract & Mandatory Closed-Topology Sensor Gate
 
 - **Track A (Skill Governance & SSoT Tooling):**
   * Applies to: Skills (`.agents/skills/`), Python platform scripts (`.bin/hooks/tool-guard.py`, etc.), provisioning scripts (`setup-*.sh`, `unisetup.sh`, `iniciar.sh`), core rules (`AGENTS.md`, `00-SUPREME-DIRECTIVE.md`).
@@ -95,19 +95,20 @@
     2. $N_2$: `unisetup.sh-first` parity and Google Drive mirror synchronization.
     3. $N_3$: Semver version bump in YAML frontmatter and internal scripts.
     4. $N_4$: Zero Deletion Invariant audit via `skill-improver` and CoHaLo positive guidance.
-    5. $N_5$: Multi-destination deployment (`/var/www/`, Google Drive SSoT, `~/.gemini/antigravity-cli/`).
-    6. $N_6$: Multi-layer physical sensors (`scripts/<target>-validate.sh` + `skills-suite-validate.sh`).
+    5. $N_5$: Multi-destination deployment (`/var/www/`, Google Drive SSoT, and `git push origin main` to `zerops-astro-skills`).
+    6. $N_6$: Multi-layer physical sensors (`scripts/<target>-validate.sh` + `skills-suite-validate`).
     7. $N_7$: Independent Skill Registry sensor executing `gentle-ai skill-registry refresh --force` (`exit code 0`).
     8. $N_8$: Clean auto-purge (`rm -f /var/www/artifacts/...`) and Engram LTM commit (`mem_save`).
   * Rejection Invariant: Delegating $N_7$ to installer side-effects or omitting any of the 8 nodes in Section 4 or Section 5 triggers immediate plan rejection.
-- **Track B (Zerops Workload Deployment):**
-  * Applies to: Application code, Zerops services, database migrations, CI/CD pipelines (`/var/www/{service}/`).
-  * Versioning & Rollback: Native Git/GitHub commits, tags, and branches. Zero whole-repo `.bak` copies.
-  * Agile Lifecycle: Structured execution steps adapted to the workload (e.g. Topology / Manifests, Provision / Migrations, Build / Deploy, E2E Verification & Healthcheck HTTP 200).
-  * Mandatory Pre-Condition: `zcp-validate yaml <import.yaml>`.
-  * Master Dispatch Umbrella Rule: Umbrella skills ([`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) and [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md)) operate strictly as routing tables, never as hostnames.
-  * Domain Isolation: Operates exclusively on application code and Zerops service runtimes, isolating tooling files and SSoT infrastructure from application deploys.
-- **Track C (Direct SSoT Data & Content Ops):**
+- **Track B (Chasis Central Zerops Astrobranding):**
+  * Applies to: Chasis central `/var/www/zerops-astrobranding/` (plantilla Astro 5 SSR, librerías compartidas y scripts base).
+  * Versioning & Rollback: Git/GitHub commits y branches nativos. Cero respaldos monolíticos `.bak` de repositorios.
+  * Ciclo de entrega: Commit y `git push origin main` hacia el repositorio soberano `zerops-astrobranding`.
+- **Track C (Workloads & Apps Derivadas con Plantilla Universal v4):**
+  * Applies to: Código de aplicaciones de clientes, microservicios, bases de datos y pipelines de CI/CD en Zerops (`/var/www/{service}/`).
+  * Desacoplamiento upstream: El chasis `zerops-astrobranding` opera estrictamente como `upstream` remoto. El proyecto de la aplicación posee su propio origen Git y sus propios pipelines GitOps en Zerops, prohibiendo ensuciar o empujar código hacia el chasis central.
+  * Mandatory Pre-Condition: `zcp-validate yaml <import.yaml>`. Despliegue GitOps y verificación en vivo vía subdominio Zerops (`HTTP 200 OK`).
+- **Track D (Direct SSoT Data & Content Ops):**
   * Applies to: Direct modifications of business data, Markdown documents, brandbooks, JSON configurations, email templates, and assets in Google Drive (`/var/www/baiosfera/...`).
   * Versioning & Rollback: Google Drive native version history and trash. Zero `bak/` requirements.
   * Agile Content Lifecycle: Inspection / Grounding, Surgical Mutation, Integrity & Links Validation, LTM Commit via `mem_save`.

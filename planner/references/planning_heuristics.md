@@ -15,12 +15,15 @@
 
 ---
 
-## 2. Cumulative Evolutionary Plan Versioning & Anti-Amnesia Consolidation Law
+## 2. Cumulative Evolutionary Plan Versioning, Anti-Cháchara & Anti-Amnesia Law
 
 - **Operational Standard:** Master plans record the verifiable engineering timeline:
   1. Each revision increments the version suffix: `_v1.md` $\to$ `_v2.md` $\to$ `_v3.md`.
-  2. Prior versioned plan files remain immutable historical records during drafting.
+  2. Prior versioned plan files remain immutable historical records during drafting, archived to `archive/<name>_vN.superseded.md`.
   3. Every new version MUST inherit, consolidate, and synthesize all prior state, forensic findings, and requirements, integrating new decisions into a unified single source of truth.
+  4. **F4 Feedback Loop Mandate & Invariante Anti-Cháchara:** Al recibir cualquier corrección, objeción o feedback en F4, el agente tiene terminantemente prohibido responder únicamente con prosa explicativa en el chat ("tenés razón el..."). Está obligado a materializar en disco `_v(N+1).md` como superset estricto antes de emitir su respuesta.
+  5. **Linear Direct API Synergy:** Linear opera de forma determinista mediante `/var/www/.bin/linear-cli` consumiendo `https://api.linear.app/graphql` (<300ms). Cada nodo del plan en F5 actualiza su estado en Linear (In Progress $\to$ sensor exit 0 $\to$ Done).
+  6. **Blindaje Anti-Freeze FUSE:** Vetado cualquier `find`, `grep -r` o barrido ciego sobre `/var/www/baiosfera/`. Limpiezas de `__pycache__` se acotan localmente al directorio del script.
 - **Mandatory 6-Vector Cumulative Audit Gate (Anti-Amnesia Pre-Flight)**: Before emitting `_v(N+1).md`, the agent must execute a strict comparative audit against `_v1` through `_vN` ensuring zero loss across 6 critical vectors:
   1. **Forensic Diagnoses & Root Causes**: All problem analyses and pathologies identified in earlier versions must be preserved and expanded, never silently dropped.
   2. **Inventory of Target Files**: Every file identified in prior versions remains explicitly in scope.

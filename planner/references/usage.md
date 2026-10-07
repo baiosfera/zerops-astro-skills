@@ -68,9 +68,9 @@ La meta-skill `planner` no es un documento estático ni un receptor pasivo de te
 
 ---
 
-## 2. Gobernanza Tri-Track SSoT & Máquina de Estados F0–F5
+## 2. Gobernanza Quad-Track SSoT & Máquina de Estados F0–F5
 
-Todo plan generado bajo `planner` se bifurca formalmente en una de tres pistas operativas:
+Todo plan generado bajo `planner` se bifurca formalmente en una de cuatro pistas operativas:
 
 ### 2.1 Track A: Skill Governance & SSoT Tooling
 Aplica a cambios en el ecosistema de habilidades (`.agents/skills/`), scripts Python de plataforma, scripts aprovisionadores (`setup-*.sh`, `unisetup.sh`, `iniciar.sh`) y directivas de gobernanza maestras.
@@ -79,20 +79,24 @@ Ejecuta de forma rigurosa la **Topología Cerrada de 8 Nodos**:
 2. **$N_2$ (Mapeo SSoT unisetup.sh):** Registro del activo en `unisetup.sh` y scripts provisionadores correspondientes.
 3. **$N_3$ (SemVer Invariant):** Incremento semántico en YAML frontmatter y cabeceras de script.
 4. **$N_4$ (Zero Deletion & CoHaLo):** Verificación física de preservación total de directivas vía `skill-improver` / `docu` C3.
-5. **$N_5$ (Espejo Google Drive):** Sincronización atómica bidireccional hacia `0zcp-123/`.
-6. **$N_6$ (Sensores Físicos):** Ejecución de `<skill>-validate.sh` y `skills-suite-validate.sh` retornando `exit code 0`.
+5. **$N_5$ (Espejo Google Drive & Git Push Soberano):** Sincronización hacia `0zcp-123/` y `git push origin main` hacia `zerops-astro-skills`.
+6. **$N_6$ (Sensores Físicos):** Ejecución de `<skill>-validate.sh` y `skills-suite-validate` retornando `exit code 0`.
 7. **$N_7$ (Skill Registry):** Refresco y validación independiente vía `gentle-ai skill-registry refresh --force`.
 8. **$N_8$ (Auto-Purge & LTM):** Purga de planes temporales en `/var/www/artifacts/` y persistencia en Engram mediante `mem_save`.
 
-### 2.2 Track B: Zerops Workload Deployment
-Aplica a código de aplicaciones, microservicios, bases de datos y pipelines de CI/CD en Zerops (`/var/www/{service}/`).
-- Consume [`bknd`](file:///var/www/.agents/skills/bknd/SKILL.md) y [`frnt`](file:///var/www/.agents/skills/frnt/SKILL.md) como tablas de enrutamiento.
-- **Rollback y versionado NATIVO en Git/GitHub:** El control de versiones y rollback de código se delega soberanamente a Git/GitHub (ramas, tags y commits), eliminando respaldos monolíticos de repositorios hacia carpetas `.bak`.
-- **Exención de 8 Nodos y Backups Redundantes:** Despliegues greenfield (servicios nuevos) o cambios en repositorios prescinden de respaldo pre-mutación en `bak/` y pasos de `unisetup.sh`.
-- Validación pre-vuelo estricta con `zcp-validate yaml <import.yaml>`.
-- Despliegue GitOps y verificación en vivo vía subdominio Zerops (`HTTP 200 OK`).
+### 2.2 Track B: Chasis Central Zerops Astrobranding
+Aplica al chasis central `/var/www/zerops-astrobranding` (plantilla Astro 5 SSR compartida, tokens base y herramientas).
+- Versionado y rollback NATIVO en Git/GitHub (ramas, tags y commits). Prohibido `.bak` monolíticos de repositorios.
+- Despliegue y validación de componentes del chasis.
+- Cierre con commit y `git push origin main` al repositorio de `zerops-astrobranding`.
 
-### 2.3 Track C: Direct SSoT Data, Content & Business Assets
+### 2.3 Track C: Workloads & Apps Derivadas (Plantilla Universal v4)
+Aplica a aplicaciones de clientes y microservicios desplegados en Zerops (`webdev`, tiendas, APIs) derivados de la Plantilla Universal v4.
+- Modelo GitOps Multi-Servicio (`<app>-prod` en `main`, `<app>-stage` en `stage`).
+- Repositorio de cliente propio con remoto `origin` en GitHub. El chasis actúa estrictamente como `upstream` (`git remote add upstream ...`) para recibir mejoras sin empujar código del cliente hacia él.
+- Validación pre-vuelo con `zcp-validate yaml <import.yaml>`. Despliegue GitOps y verificación en vivo vía subdominio Zerops (`HTTP 200 OK`).
+
+### 2.4 Track D: Direct SSoT Data, Content & Business Assets
 Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de configuración de negocio, plantillas de correo y assets en Google Drive (`/var/www/baiosfera/...`).
 - **Cero ceremonias de plataforma:** Prescinde de respaldos en `bak/` (Google Drive provee historial nativo de versiones y papelera), `unisetup.sh`, SemVer en frontmatter y refresco de `skill-registry`.
 - **Ciclo ágil:** Paso 1 (Grounding e Inspección), Paso 2 (Mutación Quirúrgica / Transformación), Paso 3 (Validación de Integridad de Esquemas / Links) y Paso 4 (Persistencia en Engram LTM vía `mem_save`).
