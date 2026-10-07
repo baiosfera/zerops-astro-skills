@@ -32,33 +32,60 @@ class SiderealDomain:
         lahiri_planets: Dict[str, Any] = {}
         ayanamsas: Dict[str, float] = {}
 
+        zodiac_names = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+
+        def _resolve_sign(val: Any) -> str:
+            if isinstance(val, int) and 0 <= val < 12:
+                return zodiac_names[val]
+            if isinstance(val, int) and 1 <= val <= 12:
+                return zodiac_names[val - 1]
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+            return "Unknown"
+
         # Look for sidereal or ayanamsa files
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
                 continue
 
-            # Check for ayanamsa values
-            if "ayanamsa" in content:
-                val = content["ayanamsa"]
-                if isinstance(val, (int, float)):
-                    ayanamsas[key] = float(val)
-                elif isinstance(val, dict):
-                    for k, v in val.items():
+            # Check for ayanamsa / ayanamsha values
+            ay_raw = content.get("ayanamsa") or content.get("ayanamsha")
+            if ay_raw is not None:
+                if isinstance(ay_raw, (int, float)):
+                    ay_float = float(ay_raw)
+                    ayanamsas[key] = ay_float
+                    if "fagan" in key.lower():
+                        ayanamsas["fagan_bradley"] = ay_float
+                    elif "lahiri" in key.lower() or "vedic" in key.lower():
+                        if "lahiri" not in ayanamsas:
+                            ayanamsas["lahiri"] = ay_float
+                elif isinstance(ay_raw, dict):
+                    for k, v in ay_raw.items():
                         if isinstance(v, (int, float)):
                             ayanamsas[f"{key}_{k}"] = float(v)
 
-            # Check for sidereal planets
-            s_planets = content.get("sidereal_planets") or content.get("fagan_bradley_planets") or content.get("planets")
+            # Check for sidereal planets (dict or list format)
+            s_planets = content.get("sidereal_planets") or content.get("fagan_bradley_planets") or (content.get("planets") if "sidereal" in key.lower() or "varga" in key.lower() else None)
+            target = fagan_planets if "fagan" in key.lower() else lahiri_planets
             if isinstance(s_planets, dict):
                 for p_name, p_data in s_planets.items():
-                    if isinstance(p_data, dict):
-                        target = fagan_planets if "fagan" in key.lower() else lahiri_planets
-                        if p_name not in target:
+                    if isinstance(p_data, dict) and p_name not in target:
+                        target[p_name] = {
+                            "name": p_name,
+                            "sign": _resolve_sign(p_data.get("sign") or p_data.get("sign_name")),
+                            "degree": float(p_data.get("degree") or p_data.get("degreeInSign") or p_data.get("degree_in_sign") or 0.0),
+                            "house": int(p_data.get("house") or 1),
+                        }
+            elif isinstance(s_planets, list):
+                for p_item in s_planets:
+                    if isinstance(p_item, dict):
+                        p_name = p_item.get("name") or p_item.get("planet")
+                        if p_name and p_name not in target:
                             target[p_name] = {
                                 "name": p_name,
-                                "sign": p_data.get("sign") or p_data.get("sign_name", "Unknown"),
-                                "degree": float(p_data.get("degree") or p_data.get("norm_degree") or 0.0),
-                                "house": int(p_data.get("house") or 1),
+                                "sign": _resolve_sign(p_item.get("sign") or p_item.get("sign_name")),
+                                "degree": float(p_item.get("degree") or p_item.get("degreeInSign") or p_item.get("degree_in_sign") or 0.0),
+                                "house": int(p_item.get("house") or 1),
                             }
 
         # Zero mock fallbacks: represent missing data honestly

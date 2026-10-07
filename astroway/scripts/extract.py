@@ -31,8 +31,8 @@ def transliterate_to_hebrew(text: str) -> str:
     Deterministic phonetic transliterator from Latin alphabet to Hebrew letters.
     Resolves AstroWay /v1/kabbalah/gematria requirement for pure Hebrew letters.
     """
-    if not text:
-        return "קטלינה"
+    if not text or not text.strip():
+        return ""
     if any("\u0590" <= ch <= "\u05ff" for ch in text):
         return text
 
@@ -478,6 +478,7 @@ async def extract_astroway(
 
     try:
         total_eps = len(endpoints)
+        consecutive_402 = 0
         for idx, (key_name, path, body) in enumerate(endpoints, 1):
             # 1. Delta Cache Check: Skip if already extracted with HTTP 200
             if cache_manager and client_hash:
@@ -602,6 +603,11 @@ async def extract_astroway(
                             "credits_used": credits_used_call
                         })
                 else:
+                    is_sub_expired = resp.status_code == 402 or "SUBSCRIPTION_EXPIRED" in resp.text
+                    if is_sub_expired:
+                        consecutive_402 += 1
+                    else:
+                        consecutive_402 = 0
                     err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
                     results["failures"].append({"endpoint": key_name, "error": err_msg})
                     results["data"][key_name] = {"error": err_msg}
@@ -615,6 +621,9 @@ async def extract_astroway(
                         "credits_used": credits_used_call,
                         "error": err_msg
                     })
+                    if consecutive_402 >= 2 or is_sub_expired:
+                        print(f"⚠️  [AstroWay Circuit Breaker] Suscripción expirada / HTTP 402 detectado. Abortando llamadas en vivo para evitar bloqueo.", flush=True)
+                        break
             except Exception as exc:
                 latency_ms = (time.perf_counter() - t_start) * 1000.0
                 err_msg = f"Exception: {type(exc).__name__} - {str(exc)}"

@@ -118,13 +118,14 @@ class CacheCrawler:
 
                 try:
                     with open(file_path, "r", encoding="utf-8", errors="replace") as f:
-                        content = json.load(f)
+                        raw_text = f.read()
+                        content = json.loads(raw_text)
                 except Exception as e:
                     logger.debug(f"Failed to read/parse {file_path}: {e}")
                     continue
 
                 # Deduplication by payload signature (e.g. duplicate full extracts)
-                p_hash = compute_payload_hash(content)
+                p_hash = hashlib.sha256(raw_text.encode("utf-8")).hexdigest()
                 is_duplicate = False
                 if p_hash:
                     if p_hash in self.payload_signatures:

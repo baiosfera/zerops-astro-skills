@@ -43,28 +43,75 @@ class HDCosmobiologyDomain:
             if not isinstance(content, dict):
                 continue
 
-            # Look for Human Design properties
+            # Look for Human Design properties: nested or directly at root (AstroWay unwrapped)
             hd = content.get("human_design") or content.get("bodygraph")
+            if not hd and ("type" in content and ("strategy" in content or "authority" in content or "centers" in content)):
+                hd = content
+
             if isinstance(hd, dict):
-                hd_type = hd.get("type", hd_type)
-                strategy = hd.get("strategy", strategy)
-                authority = hd.get("authority", authority)
-                profile = hd.get("profile", profile)
-                cross = hd.get("incarnation_cross", cross)
-                if "defined_centers" in hd and isinstance(hd["defined_centers"], list):
-                    defined_centers = hd["defined_centers"]
-                if "open_centers" in hd and isinstance(hd["open_centers"], list):
-                    open_centers = hd["open_centers"]
-                if "channels" in hd and isinstance(hd["channels"], list):
-                    active_channels = [str(c) for c in hd["channels"]]
+                if not hd_type and hd.get("type"):
+                    hd_type = str(hd.get("type"))
+                if not strategy and hd.get("strategy"):
+                    strategy = str(hd.get("strategy"))
+                if not authority and hd.get("authority"):
+                    authority = str(hd.get("authority"))
+                if not profile and hd.get("profile"):
+                    prof_val = hd.get("profile")
+                    if isinstance(prof_val, dict):
+                        profile = prof_val.get("profile") or f"{prof_val.get('personalityLine')}/{prof_val.get('designLine')}"
+                    else:
+                        profile = str(prof_val)
+                if not cross and (hd.get("cross") or hd.get("incarnation_cross")):
+                    cross_val = hd.get("cross") or hd.get("incarnation_cross")
+                    if isinstance(cross_val, dict):
+                        cross = cross_val.get("name") or str(cross_val)
+                    else:
+                        cross = str(cross_val)
+
+                # Centers (AstroWay centers is a list of dicts: [{"name": "Head", "defined": False, "open": True}, ...])
+                if "centers" in hd and isinstance(hd["centers"], list) and not defined_centers:
+                    for c in hd["centers"]:
+                        if isinstance(c, dict):
+                            c_name = c.get("name") or "Unknown"
+                            if c.get("defined") is True:
+                                defined_centers.append(c_name)
+                            elif c.get("open") is True or c.get("defined") is False:
+                                open_centers.append(c_name)
+                        elif isinstance(c, str):
+                            defined_centers.append(c)
+
+                if "defined_centers" in hd and isinstance(hd["defined_centers"], list) and not defined_centers:
+                    defined_centers = [str(c) for c in hd["defined_centers"]]
+                if "open_centers" in hd and isinstance(hd["open_centers"], list) and not open_centers:
+                    open_centers = [str(c) for c in hd["open_centers"]]
+
+                # Channels (AstroWay channels is a list of dicts: [{"gate1": 3, "gate2": 60, "centerA": "Sacral", "centerB": "Root"}, ...])
+                if "channels" in hd and isinstance(hd["channels"], list) and not active_channels:
+                    for ch in hd["channels"]:
+                        if isinstance(ch, dict):
+                            g1 = ch.get("gate1") or ch.get("from_gate")
+                            g2 = ch.get("gate2") or ch.get("to_gate")
+                            cA = ch.get("centerA") or ""
+                            cB = ch.get("centerB") or ""
+                            if g1 and g2:
+                                active_channels.append(f"{g1}-{g2} ({cA}-{cB})" if (cA and cB) else f"{g1}-{g2}")
+                            elif "name" in ch:
+                                active_channels.append(str(ch["name"]))
+                        else:
+                            active_channels.append(str(ch))
 
             # Look for Cosmobiology midpoints or 90 dial
             cb = content.get("cosmobiology") or content.get("dial_90") or content.get("midpoints")
+            if not cb and ("dial90" in content or "midpoints" in content):
+                cb = content
             if isinstance(cb, dict):
-                mp_list = cb.get("midpoints") or cb.get("aspects_90")
+                mp_list = cb.get("midpoints") or cb.get("aspects_90") or cb.get("points")
                 if isinstance(mp_list, list) and not cosmo_midpoints:
                     for mp in mp_list[:6]:
-                        cosmo_midpoints.append(str(mp))
+                        if isinstance(mp, dict):
+                            cosmo_midpoints.append(f"{mp.get('planet1', '')}/{mp.get('planet2', '')} = {mp.get('focal', '')}")
+                        else:
+                            cosmo_midpoints.append(str(mp))
 
         if not defined_centers:
             defined_centers = []

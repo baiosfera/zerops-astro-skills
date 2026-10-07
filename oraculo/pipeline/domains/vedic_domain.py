@@ -73,23 +73,46 @@ class VedicDomain:
             if not isinstance(content, dict):
                 continue
 
-            # 1. Shadbala from Kundali MCP or VedAstro
+            # 1. Shadbala from AstroWay, Kundali MCP, or VedAstro
             sb = content.get("shadbala") or content.get("shad_bala")
             if isinstance(sb, dict):
                 for p_name, p_sb in sb.items():
                     if isinstance(p_sb, dict):
                         rupas = float(p_sb.get("total_rupas") or p_sb.get("rupas") or 0.0)
-                        virupas = float(p_sb.get("virupas") or (rupas * 60))
-                        chesta = float(p_sb.get("chesta_bala") or p_sb.get("chesta") or 0.0)
-                        shadbala_data[p_name] = {
-                            "rupas": rupas,
-                            "virupas": virupas,
-                            "chesta_bala": chesta,
-                            "rank": int(p_sb.get("rank") or 1),
-                        }
-                        if rupas > max_shadbala:
-                            max_shadbala = rupas
-                            dominant_planet = p_name
+                        if rupas == 0.0 and any(k.endswith("_bala") for k in p_sb.keys()):
+                            tot_v = sum(float(v) for k, v in p_sb.items() if k.endswith("_bala") and isinstance(v, (int, float)))
+                            rupas = round(tot_v / 60.0, 2)
+                        virupas = float(p_sb.get("virupas") or (rupas * 60.0))
+                        chesta = float(p_sb.get("chesta_bala") or p_sb.get("chesta") or p_sb.get("cheshta_bala") or 0.0)
+                        if p_name not in shadbala_data or rupas > shadbala_data[p_name].get("rupas", 0.0):
+                            shadbala_data[p_name] = {
+                                "rupas": rupas,
+                                "virupas": virupas,
+                                "chesta_bala": chesta,
+                                "rank": int(p_sb.get("rank") or 1),
+                            }
+                            if rupas > max_shadbala:
+                                max_shadbala = rupas
+                                dominant_planet = p_name
+            elif "shadbala" in key.lower() and isinstance(content.get("items"), list):
+                # AstroWay shadbala items pattern: planetName, totalRupa, totalVirupa
+                for item in content["items"]:
+                    if isinstance(item, dict):
+                        p_name = item.get("planetName") or item.get("name") or (str(item.get("planet")) if "planet" in item else "")
+                        rupas = float(item.get("totalRupa") or item.get("rupas") or item.get("total_rupas") or 0.0)
+                        virupas = float(item.get("totalVirupa") or (rupas * 60.0))
+                        ratio = float(item.get("ratio") or 1.0)
+                        rank_v = int(item.get("rank") or 1)
+                        if p_name and (p_name not in shadbala_data or rupas > shadbala_data[p_name].get("rupas", 0.0)):
+                            shadbala_data[p_name] = {
+                                "rupas": rupas,
+                                "virupas": round(virupas, 1),
+                                "ratio": ratio,
+                                "rank": rank_v,
+                            }
+                            if rupas > max_shadbala:
+                                max_shadbala = rupas
+                                dominant_planet = p_name
 
             # 2. KP System (Sub-Lords, Star Lords)
             if "kp" in key.lower() or "sub_lord" in content:
@@ -97,8 +120,14 @@ class VedicDomain:
                     if "sub_lord" in k or "star_lord" in k or "lord" in k:
                         kp_sub_lords[k] = v
 
-            # 3. Nakshatra info
+            # 3. Nakshatra info from root or Moon planet
             nak = content.get("nakshatra") or content.get("janma_nakshatra") or content.get("moon_nakshatra")
+            if not nak and "planets" in content and isinstance(content["planets"], list):
+                for p in content["planets"]:
+                    if isinstance(p, dict) and p.get("name") in ("Moon", "Chandra") and p.get("nakshatra"):
+                        nak = p.get("nakshatra")
+                        break
+
             if nak and not nakshatra_info:
                 if isinstance(nak, dict):
                     nak_name = nak.get("name") or nak.get("nakshatra") or "Desconocida"
@@ -192,7 +221,8 @@ class VedicDomain:
             lines.append("- *Las 6 fuerzas Shadbala se calculan determinísticamente desde los datos de Kundali MCP y VedAstro.*")
         else:
             for p, val in sb["planetary_strengths"].items():
-                lines.append(f"  * **{p}:** {val['rupas']:.2f} Rupas ({val['virupas']:.0f} Virupas) | Chesta Bala: {val['chesta_bala']:.1f}")
+                ch_b = val.get("chesta_bala", val.get("ratio", 0.0))
+                lines.append(f"  * **{p}:** {val['rupas']:.2f} Rupas ({val['virupas']:.0f} Virupas) | Chesta / Ratio: {ch_b:.2f}")
 
         lines.extend([
             "",

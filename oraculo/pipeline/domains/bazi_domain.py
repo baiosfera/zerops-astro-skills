@@ -65,25 +65,73 @@ class BaZiDomain:
             if not isinstance(content, dict):
                 continue
 
-            # Look for four pillars
+            # Look for four pillars (dict or list format)
             fp = content.get("four_pillars") or content.get("pillars") or content.get("bazi_chart")
-            if isinstance(fp, dict) and not four_pillars:
+            if isinstance(fp, list) and not four_pillars:
+                pillars_dict = {}
+                for item in fp:
+                    if isinstance(item, dict):
+                        p_key = (item.get("name") or item.get("label") or item.get("pillar_name") or "").lower()
+                        stem_val = item.get("stem") or item.get("gan")
+                        if not stem_val and isinstance(item.get("gan_info"), dict):
+                            stem_val = item["gan_info"].get("name")
+                        branch_val = item.get("branch") or item.get("zhi")
+                        if not branch_val and isinstance(item.get("zhi_info"), dict):
+                            branch_val = item["zhi_info"].get("name")
+                        elem_val = item.get("stemElement") or item.get("element")
+                        if not elem_val and isinstance(item.get("gan_info"), dict):
+                            elem_val = item["gan_info"].get("element")
+                        if p_key in ("year", "month", "day", "hour"):
+                            pillars_dict[p_key] = {
+                                "stem": stem_val or "Unknown",
+                                "branch": branch_val or "Unknown",
+                                "element": elem_val or "",
+                                "animal": item.get("animal") or item.get("animalName") or "",
+                                "pillar": item.get("pillar") or f"{stem_val}-{branch_val}"
+                            }
+                if len(pillars_dict) >= 3:
+                    four_pillars = pillars_dict
+            elif isinstance(fp, dict) and not four_pillars:
                 four_pillars = fp
 
-            # Look for Day Master
-            dm = content.get("day_master") or content.get("dm")
-            if dm and isinstance(dm, (str, dict)):
+            # Look for Day Master (AstroWay dayMaster or FreeAstro day_master)
+            dm = content.get("day_master") or content.get("dayMaster") or content.get("dm")
+            if dm and not day_master:
                 if isinstance(dm, str):
                     day_master = dm
                 elif isinstance(dm, dict):
-                    day_master = dm.get("name") or dm.get("stem") or day_master
-                    dm_element = dm.get("element", dm_element)
-                    dm_polarity = dm.get("polarity", dm_polarity)
+                    # FreeAstro nested info: {"stem": "...", "info": {"name": "Ji", "element": "Earth", "polarity": "Yin"}}
+                    if isinstance(dm.get("info"), dict):
+                        day_master = dm["info"].get("name") or dm.get("pinyin") or dm.get("stem") or day_master
+                        dm_element = dm["info"].get("element") or dm_element
+                        dm_polarity = dm["info"].get("polarity") or dm_polarity
+                    else:
+                        day_master = dm.get("name") or dm.get("stem") or day_master
+                        dm_element = dm.get("element") or dm.get("elementName", dm_element)
+                        dm_polarity = dm.get("polarity", dm_polarity)
+                    if not dm_polarity and dm.get("yin") is True:
+                        dm_polarity = "Yin"
+                    elif not dm_polarity and dm.get("yin") is False:
+                        dm_polarity = "Yang"
 
-            # Look for Yong Shen (Useful God)
+            # Derive element and polarity from Day Master stem table if needed
+            if day_master and day_master in STEMS_ELEMENTS and not dm_element:
+                dm_element, dm_polarity = STEMS_ELEMENTS[day_master]
+
+            # Look for Yong Shen (Useful God / Favorable Element)
             ys = content.get("yong_shen") or content.get("useful_god") or content.get("favorable_element")
-            if ys and isinstance(ys, str):
+            if ys and isinstance(ys, str) and not yong_shen:
                 yong_shen = ys
+            # AstroWay strength favorable elements
+            if not yong_shen and isinstance(content.get("strength"), dict):
+                fav_elems = content["strength"].get("favourableElements")
+                if isinstance(fav_elems, list) and fav_elems:
+                    yong_shen = fav_elems[0]
+            # FreeAstro summary favorable elements
+            if not yong_shen and isinstance(content.get("summary"), dict):
+                fav_elems = content["summary"].get("favorable_elements")
+                if isinstance(fav_elems, list) and fav_elems:
+                    yong_shen = fav_elems[0]
 
             # 10 Gods (Shi Shen)
             sg = content.get("ten_gods") or content.get("shi_shen")
@@ -91,15 +139,27 @@ class BaZiDomain:
                 for k, v in sg.items():
                     ten_gods[k] = str(v)
 
+            # TCM Health insights from FreeAstro TCM endpoints
+            if "constitution" in content and isinstance(content["constitution"], (dict, str)):
+                tcm_balance["constitution"] = content["constitution"]
+            if "susceptibility_themes" in content and isinstance(content["susceptibility_themes"], list):
+                tcm_balance["susceptibility"] = content["susceptibility_themes"]
+
+        # Final Day Master fallback from day pillar if still missing
+        if not day_master and "day" in four_pillars and isinstance(four_pillars["day"], dict):
+            day_master = four_pillars["day"].get("stem", "Unknown")
+            if day_master in STEMS_ELEMENTS:
+                dm_element, dm_polarity = STEMS_ELEMENTS[day_master]
+
         # Zero mock fallbacks if raw nested format missing
         if not four_pillars:
             four_pillars = {}
 
         # TCM organ balance
-        tcm_balance = {
-            "predominant_organs": TCM_ORGAN_MAP.get(dm_element, "Sistema Integral"),
-            "elemental_nourishment": f"Nutrir el elemento balancín ({yong_shen}) para optimizar vitalidad y claridad mental.",
-        }
+        if "predominant_organs" not in tcm_balance:
+            tcm_balance["predominant_organs"] = TCM_ORGAN_MAP.get(dm_element, "Sistema Integral")
+        if "elemental_nourishment" not in tcm_balance:
+            tcm_balance["elemental_nourishment"] = f"Nutrir el elemento balancín ({yong_shen}) para optimizar vitalidad y claridad mental." if yong_shen else "Equilibrio pentacromático según TCM."
 
         return {
             "domain": "bazi",

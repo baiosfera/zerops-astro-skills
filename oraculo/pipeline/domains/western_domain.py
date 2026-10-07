@@ -52,72 +52,171 @@ class WesternDomain:
         houses: Dict[int, Dict[str, Any]] = {}
         aspects: List[Dict[str, Any]] = []
 
-        # Extract planets and houses from available cache files
+        # Zodiac sign reference for longitude conversion
+        zodiac_names = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+
+        def _lon_to_sign_deg(lon_val: float) -> tuple[str, float]:
+            l = float(lon_val) % 360.0
+            idx = int(l // 30) % 12
+            return zodiac_names[idx], round(l % 30.0, 2)
+
+        # Extract planets, houses, and aspects from available cache files
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
                 continue
+
+            # Check for houses in content first so planet house placement can be computed
+            h_data = content.get("houses") or content.get("house_cusps") or content.get("chart_data", {}).get("houses")
+            if isinstance(h_data, dict):
+                # AstroWay pattern: {"system": "P", "cusps": [120.5, ...], "ascendant": 120.5}
+                if "cusps" in h_data and isinstance(h_data["cusps"], list):
+                    raw_cusps = h_data["cusps"]
+                    if len(raw_cusps) == 13:
+                        raw_cusps = raw_cusps[1:]
+                    for idx, c_val in enumerate(raw_cusps[:12], 1):
+                        if idx not in houses and isinstance(c_val, (int, float)):
+                            s_name, s_deg = _lon_to_sign_deg(c_val)
+                            houses[idx] = {
+                                "house": idx,
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": float(c_val)
+                            }
+                # Standard keyed dict pattern: {"1": {...}, "2": {...}}
+                for h_num, h_val in h_data.items():
+                    try:
+                        num = int(h_num)
+                        if num not in houses and isinstance(h_val, dict):
+                            if "longitude" in h_val:
+                                s_name, s_deg = _lon_to_sign_deg(h_val["longitude"])
+                                lon_f = float(h_val["longitude"])
+                            elif "cusp" in h_val and isinstance(h_val["cusp"], (int, float)) and h_val["cusp"] > 30.0:
+                                s_name, s_deg = _lon_to_sign_deg(h_val["cusp"])
+                                lon_f = float(h_val["cusp"])
+                            else:
+                                s_name = h_val.get("sign") or h_val.get("sign_name", "Unknown")
+                                s_deg = float(h_val.get("degree") or h_val.get("cusp") or 0.0)
+                                lon_f = 0.0
+                            houses[num] = {
+                                "house": num,
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": lon_f
+                            }
+                    except (ValueError, TypeError):
+                        pass
+            elif isinstance(h_data, list) and h_data:
+                # AstroWay or Swiss Ephemeris list of floats: [c1, c2, ...]
+                if isinstance(h_data[0], (int, float)):
+                    raw_cusps = h_data
+                    if len(raw_cusps) == 13:
+                        raw_cusps = raw_cusps[1:]
+                    for idx, c_val in enumerate(raw_cusps[:12], 1):
+                        if idx not in houses and isinstance(c_val, (int, float)):
+                            s_name, s_deg = _lon_to_sign_deg(c_val)
+                            houses[idx] = {
+                                "house": idx,
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": float(c_val)
+                            }
+                # Standard list of dicts: [{"house": 1, ...}]
+                else:
+                    for idx, h_item in enumerate(h_data, 1):
+                        if isinstance(h_item, dict) and idx not in houses:
+                            if "longitude" in h_item:
+                                s_name, s_deg = _lon_to_sign_deg(h_item["longitude"])
+                                lon_f = float(h_item["longitude"])
+                            else:
+                                s_name = h_item.get("sign") or h_item.get("sign_name", "Unknown")
+                                s_deg = float(h_item.get("degree") or h_item.get("cusp") or 0.0)
+                                lon_f = 0.0
+                            houses[idx] = {
+                                "house": int(h_item.get("house") or idx),
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": lon_f
+                            }
 
             # Check for planets in content
             p_data = content.get("planets") or content.get("bodies") or content.get("chart_data", {}).get("planets")
             if isinstance(p_data, dict):
                 for p_name, p_val in p_data.items():
                     if isinstance(p_val, dict) and p_name not in planets:
+                        if "longitude" in p_val:
+                            s_name, s_deg = _lon_to_sign_deg(p_val["longitude"])
+                            lon_f = float(p_val["longitude"])
+                        else:
+                            s_name = p_val.get("sign") or p_val.get("sign_name", "Unknown")
+                            s_deg = float(p_val.get("degree") or p_val.get("norm_degree") or 0.0)
+                            lon_f = 0.0
                         planets[p_name] = {
                             "name": p_name,
-                            "sign": p_val.get("sign") or p_val.get("sign_name", "Unknown"),
-                            "degree": float(p_val.get("degree") or p_val.get("norm_degree") or 0.0),
+                            "sign": s_name,
+                            "degree": s_deg,
+                            "longitude": lon_f,
                             "house": int(p_val.get("house") or 1),
-                            "retrograde": bool(p_val.get("is_retro") or p_val.get("retrograde", False)),
-                            "speed": float(p_val.get("speed") or 1.0),
+                            "retrograde": bool(p_val.get("is_retro") or p_val.get("isRetrograde") or p_val.get("retrograde", False)),
+                            "speed": float(p_val.get("speed") or p_val.get("speedLong") or 1.0),
                         }
             elif isinstance(p_data, list):
                 for p_item in p_data:
                     if isinstance(p_item, dict):
                         p_name = p_item.get("name") or p_item.get("planet")
                         if p_name and p_name not in planets:
+                            if "longitude" in p_item:
+                                s_name, s_deg = _lon_to_sign_deg(p_item["longitude"])
+                                lon_f = float(p_item["longitude"])
+                            else:
+                                s_name = p_item.get("sign") or p_item.get("sign_name", "Unknown")
+                                s_deg = float(p_item.get("degree") or p_item.get("norm_degree") or 0.0)
+                                lon_f = 0.0
                             planets[p_name] = {
                                 "name": p_name,
-                                "sign": p_item.get("sign") or p_item.get("sign_name", "Unknown"),
-                                "degree": float(p_item.get("degree") or p_item.get("norm_degree") or 0.0),
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": lon_f,
                                 "house": int(p_item.get("house") or 1),
-                                "retrograde": bool(p_item.get("is_retro") or p_item.get("retrograde", False)),
-                                "speed": float(p_item.get("speed") or 1.0),
+                                "retrograde": bool(p_item.get("is_retro") or p_item.get("isRetrograde") or p_item.get("retrograde", False)),
+                                "speed": float(p_item.get("speed") or p_item.get("speedLong") or 1.0),
                             }
-
-            # Check for houses in content
-            h_data = content.get("houses") or content.get("house_cusps") or content.get("chart_data", {}).get("houses")
-            if isinstance(h_data, dict):
-                for h_num, h_val in h_data.items():
-                    try:
-                        num = int(h_num)
-                        if num not in houses and isinstance(h_val, dict):
-                            houses[num] = {
-                                "house": num,
-                                "sign": h_val.get("sign") or h_val.get("sign_name", "Unknown"),
-                                "degree": float(h_val.get("degree") or h_val.get("cusp") or 0.0),
-                            }
-                    except (ValueError, TypeError):
-                        pass
-            elif isinstance(h_data, list):
-                for idx, h_item in enumerate(h_data, 1):
-                    if isinstance(h_item, dict) and idx not in houses:
-                        houses[idx] = {
-                            "house": int(h_item.get("house") or idx),
-                            "sign": h_item.get("sign") or h_item.get("sign_name", "Unknown"),
-                            "degree": float(h_item.get("degree") or h_item.get("cusp") or 0.0),
-                        }
 
             # Check for aspects
             asp_data = content.get("aspects") or content.get("chart_data", {}).get("aspects")
             if isinstance(asp_data, list) and not aspects:
                 for a in asp_data:
                     if isinstance(a, dict):
-                        aspects.append({
-                            "body1": a.get("body1") or a.get("planet1"),
-                            "body2": a.get("body2") or a.get("planet2"),
-                            "aspect": a.get("aspect") or a.get("type"),
-                            "orb": float(a.get("orb") or 0.0),
-                        })
+                        b1 = a.get("body1") or a.get("planet1")
+                        b2 = a.get("body2") or a.get("planet2")
+                        asp_type = a.get("aspect") or a.get("type")
+                        if isinstance(asp_type, dict):
+                            asp_type = asp_type.get("name") or str(asp_type)
+                        orb_val = float(a.get("orb") or a.get("exactAngle") or 0.0)
+                        if b1 and b2 and asp_type:
+                            aspects.append({
+                                "body1": str(b1),
+                                "body2": str(b2),
+                                "aspect": str(asp_type),
+                                "orb": orb_val,
+                            })
+
+        # Re-compute planet house placements if houses cusps are available with valid longitudes
+        if len(houses) == 12 and any(h.get("longitude", 0.0) > 0 for h in houses.values()):
+            cusp_lons = {h_idx: houses[h_idx].get("longitude", 0.0) for h_idx in range(1, 13)}
+            for p_name, p_info in planets.items():
+                p_lon = p_info.get("longitude", 0.0)
+                if p_lon > 0.0:
+                    for h_idx in range(1, 13):
+                        c_start = cusp_lons[h_idx]
+                        c_end = cusp_lons[(h_idx % 12) + 1]
+                        if c_start < c_end:
+                            if c_start <= p_lon < c_end:
+                                p_info["house"] = h_idx
+                                break
+                        else:  # wrap around 360
+                            if p_lon >= c_start or p_lon < c_end:
+                                p_info["house"] = h_idx
+                                break
 
         # Calculate Arroyo's 4 Elements balance
         element_counts = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}

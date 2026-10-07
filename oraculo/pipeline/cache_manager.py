@@ -39,7 +39,8 @@ class CacheManager:
         else:
             filename = f"{provider}_{safe_endpoint}_{h}.json"
         provider_dir = self.cache_dir / provider.lower()
-        provider_dir.mkdir(parents=True, exist_ok=True)
+        if not check_read:
+            provider_dir.mkdir(parents=True, exist_ok=True)
         target = provider_dir / filename
         if check_read and not target.exists():
             if safe_endpoint == "full_extract":

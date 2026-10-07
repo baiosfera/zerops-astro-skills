@@ -27,7 +27,6 @@ if str(SKILL_ROOT) not in sys.path:
 from pipeline.config import config
 from pipeline.engine import ExtractionEngine
 from pipeline.sharder import SharderEngine, ExtractionFatalError
-from pipeline.synthesis import SynthesisEngine
 from pipeline.data_lake import VirtualDataLake
 
 
@@ -266,7 +265,6 @@ def main():
     parser.add_argument("--exclude", help="Lista de APIs a excluir separadas por coma.")
     parser.add_argument("-x", "--extract", action="store_true", help="Solo ejecutar extracción y persistencia en caché (no compilar feeds).")
     parser.add_argument("-c", "--compile", action="store_true", help="Compilar shards y feeds (Capa Oro) desde caché verificado.")
-    parser.add_argument("-s", "--synthesis", action="store_true", help="Sintetizar reportes de marca, brandbook y psicología de autor en raw/llm/ (Capa Platino).")
     parser.add_argument("--allow-partial", action="store_true", help="Permitir compilación parcial ignorando la compuerta estricta de cobertura completa.")
     parser.add_argument("--refresh-pro", action="store_true", help="Bypass cache for paid Pro APIs")
     parser.add_argument("--include-atomic", action="store_true", help="Incluir los 191 calculadores atómicos de VedAstro (197 endpoints totales)")
@@ -287,21 +285,33 @@ def main():
         file_path = Path(input_file).resolve()
         file_data = parse_client_file(file_path)
 
-    # Consolidar parámetros
-    birth_name = file_data.get("birth_name") or file_data.get("nombre_nacimiento") or file_data.get("nombre de nacimiento") or args.name or file_data.get("name") or file_data.get("nombre") or "Consultant"
-    current_name = file_data.get("current_name") or file_data.get("nombre_actual") or file_data.get("nombre actual") or file_data.get("nombre actual (cambio)") or birth_name
-    names = args.name or file_data.get("name") or file_data.get("nombre") or current_name
-    # Marcas
+    def _clean_str(val: Any) -> str:
+        if not val:
+            return ""
+        s = str(val).strip()
+        if re.match(r"^[-—_.\s]+$", s) or s.lower() in ("n/a", "none", "null", "---", "--", "-"):
+            return ""
+        return s
+
+    # Consolidar parámetros con sanitización estricta anti-placeholders
+    raw_bname = _clean_str(file_data.get("birth_name") or file_data.get("nombre_nacimiento") or file_data.get("nombre de nacimiento") or args.name or file_data.get("name") or file_data.get("nombre"))
+    birth_name = raw_bname or "Consultant"
+
+    raw_cname = _clean_str(file_data.get("current_name") or file_data.get("nombre_actual") or file_data.get("nombre actual") or file_data.get("nombre actual (cambio)"))
+    current_name = raw_cname or birth_name
+    names = _clean_str(args.name) or current_name
+
+    # Marcas: filtrar estrictamente para evitar marcas '---' o vacías
     brand_names_raw = file_data.get("brand_names") or file_data.get("marcas") or file_data.get("marca") or []
     if isinstance(brand_names_raw, str):
-        brand_list = [b.strip() for b in brand_names_raw.split(",") if b.strip()]
+        brand_list = [_clean_str(b) for b in brand_names_raw.split(",") if _clean_str(b)]
     elif isinstance(brand_names_raw, list):
-        brand_list = [str(b).strip() for b in brand_names_raw if str(b).strip()]
+        brand_list = [_clean_str(b) for b in brand_names_raw if _clean_str(b)]
     else:
         brand_list = []
 
-    spoken_name = file_data.get("spoken_name") or file_data.get("trato")
-    if not spoken_name:
+    raw_spoken = _clean_str(file_data.get("spoken_name") or file_data.get("trato"))
+    if not raw_spoken:
         matched_token = None
         context_str = f"{file_path.stem if file_path else ''} {' '.join(brand_list)}".lower()
         for token in (current_name + " " + birth_name).split():
@@ -309,6 +319,8 @@ def main():
                 matched_token = token.capitalize()
                 break
         spoken_name = matched_token or (birth_name.split()[0] if birth_name != "Consultant" else "Consultant")
+    else:
+        spoken_name = raw_spoken
 
     # Fecha (dob)
     dob = args.dob or file_data.get("dob") or file_data.get("fecha") or file_data.get("fecha_nacimiento") or file_data.get("fecha de nacimiento")
@@ -429,7 +441,7 @@ def main():
             include_atomic=getattr(args, "include_atomic", False)
         )
 
-        is_extraction_only = args.extract or (bool(args.apis) and not args.compile and not args.synthesis)
+        is_extraction_only = args.extract or (bool(args.apis) and not args.compile)
 
         if is_extraction_only:
             print("=" * 70)
@@ -451,22 +463,6 @@ def main():
                 print(f"\n⚠️  Aún faltan proveedores por extraer antes de compilar (-c): {', '.join(cov['missing'])}")
             else:
                 print("\n🎉 ¡Universo astrológico 100% completo en caché! Listo para compilar con: -c")
-            print("=" * 70)
-            return 0
-
-        if args.synthesis and not args.compile:
-            print("=" * 70)
-            print("✨ MODO SÍNTESIS PURA (-s / --synthesis) — CAPA PLATINO LLM")
-            print("=" * 70)
-            synth = SynthesisEngine(client_dir)
-            synth_summary = synth.synthesize_all(client_payload)
-            print("=" * 70)
-            print("✅ Síntesis Capa Platino finalizada con éxito:")
-            print(f"  • Directorio base: {client_dir}")
-            print(f"  • Ficha Técnica SSoT: {synth_summary['coach_technical_sheet']}")
-            print(f"  • Psicología de Autor: {synth_summary['author_psychology']}")
-            print(f"  • Master Brief Astrobranding: {synth_summary['astrobranding_brief']}")
-            print(f"  • Brandbook DTCG Tokens: {synth_summary['brandbook_json']}")
             print("=" * 70)
             return 0
 
@@ -522,25 +518,16 @@ def main():
         sharder = SharderEngine(output_root=client_dir)
         shard_summary = sharder.verify_and_shard(extraction_output)
 
-        # Capa Platino: Síntesis de artefactos LLM y Brandbook DTCG Tokens
-        synth = SynthesisEngine(client_dir)
-        synth_summary = synth.synthesize_all(client_payload)
-
         # Silver Tier: Cargar Virtual Data Lake y compilar master dump omni_dump_mega.json
         lake = VirtualDataLake(Path(client_dir) / "raw")
         master_dump_path = lake.export_master_dump()
 
         print("=" * 70)
-        print("✅ Pipeline ejecutado con éxito total y paridad de calidad SSoT (Canon 12-15-9-4):")
+        print("✅ Compilación matemática y sharding finalizados con éxito (Canon 12-15-9):")
         print(f"  • Directorio base: {client_dir}")
         print(f"  • 12 Shards Físicos JSON (Bronze): {client_dir}/raw/json/dumps/ ({shard_summary['shards_count']} shards)")
         print(f"  • 15 Shards Relacionales (Silver): {client_dir}/raw/json/dumps/client_dumps_15_shards.json")
         print(f"  • 9 Feeds Enciclopédicos (Gold): {client_dir}/raw/feeds/ ({shard_summary['feeds_count']} feeds)")
-        print(f"  • 4 Artefactos LLM & DTCG Tokens (Platinum): {client_dir}/raw/llm/")
-        print(f"    - Ficha Técnica SSoT: {synth_summary['coach_technical_sheet']}")
-        print(f"    - Psicología de Autor: {synth_summary['author_psychology']}")
-        print(f"    - Master Brief Astrobranding: {synth_summary['astrobranding_brief']}")
-        print(f"    - Brandbook DTCG Tokens: {synth_summary['brandbook_json']}")
         print(f"  • Silver Manifest: {client_dir}/raw/json/dumps/manifest.json")
         print(f"  • Master Dump: {master_dump_path}")
         print(f"  • Micro-Auditorías Atómicas: {client_dir}/raw/json/audit/")

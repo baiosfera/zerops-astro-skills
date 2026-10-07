@@ -76,9 +76,22 @@ class NumerologyDomain:
 
     def synthesize(self) -> Dict[str, Any]:
         """Builds a comprehensive multi-system numerology matrix."""
-        birth_name = self.client.get("name", "Consultant")
-        current_name = self.client.get("preferred_name", birth_name)
-        brands = self.client.get("brand_names", [])
+        raw_b = str(self.client.get("name") or "Consultant").strip()
+        birth_name = raw_b if raw_b not in ("---", "--", "-", "N/A", "None") else "Consultant"
+
+        raw_p = str(self.client.get("preferred_name") or "").strip()
+        if not raw_p or raw_p in ("---", "--", "-", "N/A", "None"):
+            current_name = birth_name
+        else:
+            current_name = raw_p
+
+        raw_brands = self.client.get("brand_names", [])
+        if isinstance(raw_brands, str):
+            raw_brands = [raw_brands]
+        brands = [
+            b.strip() for b in raw_brands
+            if isinstance(b, str) and b.strip() and b.strip() not in ("---", "--", "-", "N/A", "None")
+        ]
 
         # 1. Founder Core Numbers
         dob_y = int(self.client.get("year", 1990))
@@ -101,8 +114,6 @@ class NumerologyDomain:
         # 2. Multi-Brand Analysis
         brands_analysis = []
         for b in brands:
-            if not b.strip():
-                continue
             pyth = calculate_pythagorean(b)
             chald = calculate_chaldean(b)
             # Harmony with Founder
@@ -183,13 +194,12 @@ class NumerologyDomain:
             f"- **Deseo del Alma (Soul Urge / Heart's Desire):** {f['birth_name_pythagorean']['soul_urge']}",
             f"- **Personalidad Exterior (Personality Number):** {f['birth_name_pythagorean']['personality']}",
             f"- **Vibración Caldea Compuesta (Chaldean Compound):** {f['birth_name_chaldean']['compound_number']} / {f['birth_name_chaldean']['single_number']}",
-            "",
-            "## 2. Auditoría Vibracional de Marcas Comerciales (Brand Vibrational Matrix)",
         ]
 
-        if not data["brands"]:
-            lines.append("- *No se registraron marcas comerciales adicionales en el perfil del consultante.*")
-        else:
+        if data["brands"]:
+            lines.extend([
+                "## 2. Auditoría Vibracional de Marcas Comerciales (Brand Vibrational Matrix)",
+            ])
             for b in data["brands"]:
                 lines.extend([
                     f"### Marca: {b['brand_name']}",
@@ -202,7 +212,7 @@ class NumerologyDomain:
                 ])
 
         lines.extend([
-            "## 3. Fuentes Primarias e Integración Multiproveedor",
+            "## Fuentes Primarias e Integración Multiproveedor",
             f"- Archivos procesados dinámicamente desde lago de datos: {len(data['multi_provider_sources'])}",
             "- Métricas trianguladas: Pitágoras (Occidental), Caldeo (Babilónico), Gemátrico y Cheiro (Védico).",
             ""

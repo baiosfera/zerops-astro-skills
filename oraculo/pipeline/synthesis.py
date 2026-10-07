@@ -277,7 +277,8 @@ class SynthesisEngine:
     def _render_author_psychology(self, cp: Dict[str, Any], west: Dict[str, Any],
                                   bazi: Dict[str, Any], ved: Dict[str, Any], hd: Dict[str, Any]) -> str:
         """Renders the SSoT System Prompt for downstream coaches / agents under CoHaLo Positive Guidance."""
-        name = cp.get("preferred_name", cp.get("name", "Consultant"))
+        raw_n = str(cp.get("preferred_name") or "").strip()
+        name = raw_n if raw_n and raw_n not in ("---", "--", "-", "N/A", "None") else str(cp.get("name") or "Consultant")
         dm = bazi.get("day_master", {})
         elem = west.get("arroyo_elements", {})
         h_hd = hd.get("human_design", {})
@@ -286,23 +287,18 @@ class SynthesisEngine:
         return f"""# Perfil Psicológico de Autor & Pautas de Voz y Tono (Fase 0)
 
 > **Pautas de Voz y Tono para Modelos Downstream:**
-> Este documento establece la voz soberana, la cadencia cognitiva y las directrices de comunicación con las que los reportes de Fases 1 a 9 y la suite `oraculo-diag-*` deben interactuar con {name}.
+> Este documento establece las coordenadas epistemológicas calculadas con las que los reportes de Fases 1 a 9 y la suite `oraculo-diag-*` deben interactuar con {name}.
 
-## 1. Esencia Psicológica y Arquetipo Dominante
-- **Naturaleza Intramuros (Day Master BaZi):** {dm.get('name', 'Determinado por la carta')}. {name} opera con la sutileza, la agudeza perceptiva y la visión estratégica de su diseño original.
-- **Temperamento Elemental (Stephen Arroyo):** Dominancia en {elem.get('dominant_element', 'Elemental')}. Su motivación nace de la resonancia emocional, el sentido de trascendencia y la conexión humana auténtica.
-- **Mecánica Energética (Diseño Humano):** {h_hd.get('energy_type', 'Auténtico')}. Su genialidad radica en su diseño energético singular, el diagnóstico certero de sistemas y la optimización de procesos.
+## 1. Coordenadas Psicológicas y Arquetípicas del Consultante
+- **Amo del Día (Day Master BaZi):** {dm.get('name', 'N/D')} ({dm.get('element', 'N/D')} {dm.get('polarity', '')}).
+- **Temperamento Elemental (Stephen Arroyo):** Dominancia en {elem.get('dominant_element', 'N/D')} ({elem.get('percentages', {}).get(elem.get('dominant_element', 'Water'), 0.0)}% del mapa total).
+- **Mecánica Energética (Diseño Humano):** Tipo {h_hd.get('energy_type', 'N/D')} | Estrategia: {h_hd.get('strategy', 'N/D')} | Autoridad: {h_hd.get('inner_authority', 'N/D')} | Perfil: {h_hd.get('profile', 'N/D')}.
+- **Vector de Fuerza Planetaria (Shadbala Védico):** Planeta regente dominante {sb.get('dominant_planet', 'N/D')} con {sb.get('max_rupas', 0.0):.2f} Rupas.
 
-## 2. Pautas Positivas de Voz y Tono (Communication Directives)
-- **Claridad Intelectual y Agilidad:** Emplear argumentos estructurados, deductivos y elegantes. Presentar los conceptos con sofisticación y rigor técnico.
-- **Reconocimiento de la Soberanía Personal:** Comunicar desde la posición de un par de alto standing. Dirigirse a {name} honrando su autoridad y discernimiento natural.
-- **Ritmo de Exposición Dinámico:** Mantener una cadencia firme y vivaz (impulsada por el regente de Shadbala: {sb.get('dominant_planet', 'Mercurio')}). Sintetizar los fundamentos con precisión antes de profundizar en la táctica.
-- **Validación Emocional Previa a la Acción:** Conectar primero con el propósito y la resonancia del consultante, para luego aterrizar las directrices operativas.
-
-## 3. Arquitectura de Decisión y Consejo
-- Invitar a la reflexión estratégica mediante preguntas profundas que activen su autoridad interna ({h_hd.get('inner_authority', 'Emocional')}).
-- Presentar recomendaciones enmarcadas como oportunidades de expansión, liderazgo y legado duradero.
-- Resaltar siempre el valor pragmático de las configuraciones astrológicas, traduciendo símbolos clásicos en ventajas competitivas contemporáneas.
+## 2. Directrices Dinámicas para el Modelo Downstream (Cero Plantillas Estáticas)
+- **Adaptación al Perfil Energético:** Modular la interlocución según la autoridad interna del consultante ({h_hd.get('inner_authority', 'N/D')}) y su estrategia ({h_hd.get('strategy', 'N/D')}).
+- **Enfoque Elemental:** Sintonizar con la dominancia de {elem.get('dominant_element', 'N/D')} respetando el balance de los cuatro elementos de Arroyo.
+- **Rigor Matemático:** Cada afirmación interpretativa debe fundamentarse exclusivamente en los shards JSON y feeds enciclopédicos de la Capa Oro.
 """
 
     def _render_astrobranding(self, brand_name: str, cp: Dict[str, Any], west: Dict[str, Any],

@@ -99,7 +99,11 @@ class ExtractionEngine:
                 except Exception:
                     pass
 
-            consultant_name = client_data.get("preferred_name") or client_data.get("name") or "Unknown"
+            c_cand = str(client_data.get("preferred_name") or "").strip()
+            if not c_cand or c_cand in ("---", "--", "-", "N/A", "None"):
+                consultant_name = client_data.get("name") or "Unknown"
+            else:
+                consultant_name = c_cand
 
             rem_aw = credit_stats.get("astroway_credits_remaining")
             if rem_aw is None:
@@ -112,6 +116,14 @@ class ExtractionEngine:
             rep_fa = credit_stats.get("freeastro_report_credits")
             if rep_fa is None:
                 rep_fa = prev_credits.get("freeastro_report_credits")
+
+            rem_as = credit_stats.get("astrologyapi_credits_remaining")
+            if rem_as is None:
+                rem_as = prev_credits.get("astrologyapi_credits_remaining")
+
+            used_as = credit_stats.get("astrologyapi_credits_used")
+            if used_as is None:
+                used_as = prev_credits.get("astrologyapi_credits_used")
 
             calls_val = credit_stats.get("calls_made", {}).get(provider)
             if calls_val is None:
@@ -134,6 +146,8 @@ class ExtractionEngine:
                     "astroway_credits_remaining": rem_aw,
                     "astroway_credits_used": used_aw,
                     "freeastro_report_credits": rep_fa,
+                    "astrologyapi_credits_remaining": rem_as,
+                    "astrologyapi_credits_used": used_as,
                     "calls_made": calls_val
                 },
                 "endpoints": [
@@ -227,9 +241,9 @@ class ExtractionEngine:
             used = credits_audit.get("astrologyapi_credits_used")
             md.extend([
                 f"| **Llamadas Efectuadas** | `{calls}` | {calls_detail} |",
-                f"| **Créditos Gastados** | `{used if used is not None else '0'}` | Consumo por llamada API |",
-                f"| **Créditos Restantes (Saldo)** | `{rem if rem is not None else 'Activo / Ilimitado'}` | Plan Developer PRO |",
-                "| **Plan / Nivel de Servicio** | `Developer PRO` | API REST Astrology-API.io |"
+                f"| **Créditos Gastados (Llamadas)** | `{used if used is not None else (0 if is_cached else calls)}` | 1 crédito consumido por llamada POST |",
+                f"| **Créditos Restantes (Saldo Estimado)** | `{rem if rem is not None else '50 / mes'}` | Cupo mensual Free Tier (50 req/mes) |",
+                "| **Plan / Nivel de Servicio** | `Developer Free (50 calls/mo)` | API REST Astrology-API.io |"
             ])
         elif prov_low in ("vedastro", "vedastro_api"):
             md.extend([
@@ -455,7 +469,7 @@ class ExtractionEngine:
         lng = float(client_data.get("lng", 0.0))
         tz_offset = float(client_data.get("tz_offset", -5.0))
         tz_str = client_data.get("tz_str", "UTC")
-        city = client_data.get("city", client_data.get("preferred_name", "Unknown"))
+        city = client_data.get("city") or "Bogota"
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
 
         # 1. Hydrate REST providers
@@ -585,7 +599,7 @@ class ExtractionEngine:
         lng = float(client_data.get("lng", 0.0))
         tz_offset = float(client_data.get("tz_offset", -5.0))
         tz_str = client_data.get("tz_str", "UTC")
-        city = client_data.get("city", client_data.get("preferred_name", "Unknown"))
+        city = client_data.get("city") or "Bogota"
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
 
         fe_data = self.cache.get("freeastro", "full_extract", client_hash)
@@ -709,7 +723,7 @@ class ExtractionEngine:
         lng = float(client_data.get("lng", 0.0))
         tz_offset = float(client_data.get("tz_offset", -5.0))
         tz_str = client_data.get("tz_str", "UTC")
-        city = client_data.get("city", client_data.get("preferred_name", "Unknown"))
+        city = client_data.get("city") or "Bogota"
 
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
         iso_local_str = f"{date_str}T{hour:02d}:{minute:02d}:00"
