@@ -6,10 +6,12 @@ set -euo pipefail
 
 export PYTHONDONTWRITEBYTECODE=1
 
-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$REAL_SCRIPT")"
+SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Trap cleanup on exit to eliminate any bytecode artifacts
-trap 'find "$SKILL_DIR" -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; find "$SKILL_DIR" -name "*.pyc" -delete 2>/dev/null || true' EXIT INT TERM
+trap 'rm -rf "$SCRIPT_DIR/__pycache__" "$SCRIPT_DIR"/*.pyc 2>/dev/null || true' EXIT INT TERM
 
 ERRORS=0
 

@@ -5,7 +5,9 @@
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 
-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$REAL_SCRIPT")"
+SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ERRORS=0
 
 echo "============================================================"
