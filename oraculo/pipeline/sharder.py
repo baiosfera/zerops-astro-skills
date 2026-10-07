@@ -83,7 +83,8 @@ class SharderEngine:
         # 2. Instantiate 9 Domain Engines
         num_engine = NumerologyDomain(crawler.get_domain_files("numerology"), client_payload)
         west_engine = WesternDomain(crawler.get_domain_files("western"), client_payload)
-        sid_engine = SiderealDomain(crawler.get_domain_files("sidereal"), client_payload)
+        sid_files = crawler.get_domain_files("sidereal") or crawler.get_domain_files("vedic")
+        sid_engine = SiderealDomain(sid_files, client_payload)
         ved_engine = VedicDomain(crawler.get_domain_files("vedic"), client_payload)
         bazi_engine = BaZiDomain(crawler.get_domain_files("bazi"), client_payload)
         kab_engine = KabbalahDomain(crawler.get_domain_files("kabbalah"), client_payload)

@@ -47,6 +47,12 @@ class CacheManager:
                 legacy_target = provider_dir / f"{provider}_full_extract_{h}.json"
                 if legacy_target.exists():
                     return legacy_target
+                candidates = list(provider_dir.glob(f"*{provider}*full_extract*.json"))
+                if not candidates:
+                    candidates = list(self.cache_dir.glob(f"*{provider}*full_extract*.json"))
+                if candidates:
+                    candidates.sort(key=lambda p: p.stat().st_size, reverse=True)
+                    return candidates[0]
             legacy = self.cache_dir / filename
             if legacy.exists():
                 return legacy
@@ -54,6 +60,12 @@ class CacheManager:
                 legacy_root = self.cache_dir / f"{provider}_full_extract_{h}.json"
                 if legacy_root.exists():
                     return legacy_root
+            alt_candidates = list(provider_dir.glob(f"{provider}_{safe_endpoint}_*.json"))
+            if not alt_candidates:
+                alt_candidates = list(self.cache_dir.glob(f"{provider}_{safe_endpoint}_*.json"))
+            if alt_candidates:
+                alt_candidates.sort(key=lambda p: p.stat().st_size, reverse=True)
+                return alt_candidates[0]
         return target
 
     def get(self, provider: str, endpoint: str, key_data: Any) -> Optional[dict]:

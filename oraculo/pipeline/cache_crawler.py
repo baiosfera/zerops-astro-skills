@@ -190,8 +190,10 @@ class CacheCrawler:
         if provider in ["astroway", "freeastroapi", "astrologyapi"] and any(k in content_keys for k in ["planets", "houses", "aspects", "elements_distribution"]):
             matched_domains.add("western")
 
-        # 3. Sidereal (Fagan-Bradley, Campanus, Mundoscope)
-        if any(k in fname or k in rel_path for k in ["sidereal", "fagan", "bradley", "campanus", "mundoscope", "malta", "ayanamsa"]):
+        # 3. Sidereal (Fagan-Bradley, Campanus, Mundoscope, Ayanamsas)
+        if any(k in fname or k in rel_path for k in ["sidereal", "fagan", "bradley", "campanus", "mundoscope", "malta", "ayanamsa", "varga_d1_", "vedic_calculate", "nakshatra"]):
+            matched_domains.add("sidereal")
+        if "ayanamsa" in content_keys or "ayanamsha" in content_keys or "sidereal_planets" in content_keys or "fagan_bradley_planets" in content_keys:
             matched_domains.add("sidereal")
 
         # 4. Vedic (Jyotish, KP, Kundali, VedAstro, Shadbala, D1-D60)

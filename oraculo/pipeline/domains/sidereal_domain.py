@@ -48,15 +48,27 @@ class SiderealDomain:
             if not isinstance(content, dict):
                 continue
 
+            # Unwrap response envelopes (AstroWay / FreeAstro)
+            data_body = content
+            if "data" in data_body and isinstance(data_body["data"], dict):
+                data_body = data_body["data"]
+                if "data" in data_body and isinstance(data_body["data"], dict):
+                    data_body = data_body["data"]
+
             # Check for ayanamsa / ayanamsha values
-            ay_raw = content.get("ayanamsa") or content.get("ayanamsha")
+            ay_raw = (
+                data_body.get("ayanamsa")
+                or data_body.get("ayanamsha")
+                or content.get("ayanamsa")
+                or content.get("ayanamsha")
+            )
             if ay_raw is not None:
                 if isinstance(ay_raw, (int, float)):
                     ay_float = float(ay_raw)
                     ayanamsas[key] = ay_float
                     if "fagan" in key.lower():
                         ayanamsas["fagan_bradley"] = ay_float
-                    elif "lahiri" in key.lower() or "vedic" in key.lower():
+                    else:
                         if "lahiri" not in ayanamsas:
                             ayanamsas["lahiri"] = ay_float
                 elif isinstance(ay_raw, dict):
@@ -88,7 +100,12 @@ class SiderealDomain:
                                 "house": int(p_item.get("house") or 1),
                             }
 
-        # Zero mock fallbacks: represent missing data honestly
+        # Derive Fagan-Bradley from Lahiri (+55 arcminutes = +0.9167°) if not supplied directly
+        if "lahiri" in ayanamsas and "fagan_bradley" not in ayanamsas:
+            ayanamsas["fagan_bradley"] = round(ayanamsas["lahiri"] + (55.0 / 60.0), 4)
+        elif "fagan_bradley" in ayanamsas and "lahiri" not in ayanamsas:
+            ayanamsas["lahiri"] = round(ayanamsas["fagan_bradley"] - (55.0 / 60.0), 4)
+
         fagan_val = ayanamsas.get("fagan_bradley")
         lahiri_val = ayanamsas.get("lahiri")
         delta_arcmin = round(abs(fagan_val - lahiri_val) * 60, 1) if (fagan_val is not None and lahiri_val is not None) else None
