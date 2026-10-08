@@ -23,7 +23,7 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 
 | Use Case | Action / Protocol | Reference |
 |---|---|---|
-| Inflow Grounding (F0) | 12-engine cascade | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
+| Inflow Grounding (F0) | 12-engine cascade | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`research`](file:///var/www/.agents/skills/research/SKILL.md) · [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md) |
 | Skill Governance (Track A) | Physical 8-node harness | [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) · [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md) · [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) |
 | Governance Contracts | SSoT indivisibility | [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) |
 | Plan Integrity (F4) | Sincronizar y Crear Issue | `linear-cli issue create` |
