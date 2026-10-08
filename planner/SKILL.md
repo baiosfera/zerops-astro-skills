@@ -18,7 +18,7 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 - **Rule 3.1 (1-to-1 Atomicity & Project Isolation)**: EVERY new Master Plan MUST instantiate a NEW dedicated Linear Project (Epic). Inside that project, EVERY task/node must map to a single isolated `[BAI-X]` Issue. NEVER group multiple tasks or sub-steps into a single monolithic BAI ticket.
 - **Rule 3 (Linear State Machine, Anti-Amnesia Consolidation & Token Economy)**: El planner erradica el bloat de tokens migrando 100% la burocracia de planes al sistema de tickets Linear. Todo plan, paso a paso, descubrimiento o ajuste de feedback se consolida de forma acumulativa en la descripción de los Issues y Sub-issues en Linear (vía `linear-cli issue create` y `linear-cli issue update`). Se vincula el Issue ID raíz en `/var/www/artifacts/linear_active.json` para destrabar los arneses de mutación. F4 Feedback Loop Mandate: Todo ajuste de diseño o feedback exige registrar y consolidar las adiciones o sustracciones en el Issue/Sub-issue correspondiente antes de pedir Go. F5 Parity: Linear opera mediante `/usr/local/bin/linear-cli` conectando a `https://api.linear.app/graphql`, indexando cada nodo a un ID (`BAI-*`). Tras la atestación de compiladores/tests, se avanza el estado del Issue a "Done" (`linear-cli update-status "Done"`).
 - **Rule 4 (SSoT Indivisibility & Universal Clean-Room Virgin ZCP Law)**: Tooling assets reside in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/` and provision via `unisetup.sh`. Clean-room benchmark requires 0 drift (`ssot-parity-check` exit 0). Blindaje Anti-Freeze FUSE: Prohibido ejecutar comandos recursivos ciegos (`find`, `grep -r`) sobre montajes remotos de Google Drive sin podar (`-prune`); los sensores y herramientas residen fijos en `/usr/local/bin/`.
-- **Rule 5 (Closed Lifecycle Topology & Cross-Repo Sync Gate)**: All bootstrap changes (like `iniciar.sh`) MUST trigger an immediate backup to SSoT Drive and explicit `git push` to ALL involved repos (`zerops-astrobranding`, etc.). Tracks execute closed milestones with zero omission.
+- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: All bootstrap changes (like `iniciar.sh`) MUST trigger an immediate backup to SSoT Drive and explicit `git push` to ALL involved repos (`zerops-astrobranding`, etc.). Tracks execute closed milestones with zero omission.
 
 ## Decision Gates
 
@@ -43,3 +43,9 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
 - [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) · [`references/control_matrix_standard.md`](file:///var/www/.agents/skills/planner/references/control_matrix_standard.md)
+
+
+## Cierre Obligatorio del Plan (Engram y Skill-Registry)
+Todo plan maestro generado en Linear DEBE incluir, como hitos finales explícitos, los siguientes tickets de gobernanza:
+1. **Actualización de Registro (Si aplica):** Si el plan involucra crear o modificar habilidades, incluir un issue para ejecutar `skill-registry` (para mapear la nueva firma de la skill).
+2. **Cierre de Memoria (Mandatorio):** Un issue final innegociable dedicado exclusivamente a registrar la bitácora arquitectónica ejecutando `mem_session_summary` en Engram.
