@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "using-git-worktrees",
+  "sourcePath": "skills/using-git-worktrees",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:add9d040baa0b06718e64e98e04d2d834238b218ca5cfdc844e95b2043ae39ca"
+}

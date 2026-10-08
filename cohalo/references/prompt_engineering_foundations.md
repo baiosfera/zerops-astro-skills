@@ -1,4 +1,4 @@
-# CoHaLo Reference Manual: Prompt Engineering Foundations & Positive Guidance (v7.0)
+# CoHaLo Reference Manual: Prompt Engineering Foundations & Positive Guidance (v8.4)
 
 ## 1. Concepto Fundamental
 El **Prompt Engineering** en la arquitectura CoHaLo es la disciplina de formular contratos de interfaz semántica no ambiguos, estructurados y matemáticamente orientados para motores de inferencia. Trata al modelo fundacional exclusivamente como un **procesador semántico probabilístico**, eliminando suposiciones de memoria estática y garantizando reproducibilidad.
@@ -64,7 +64,7 @@ La **Guía Positiva** define con precisión milimétrica la única rama válida 
 
 ### 4.3 Matriz de Conversión: De Negativismo Novato a Positive Guidance SOTA
 
-| Intención / Objetivo | Directiva Negativa Novata (Legacy) ❌ | Especificación Positiva SOTA (CoHaLo v7.0) ✅ | Justificación Técnica |
+| Intención / Objetivo | Directiva Negativa Novata (Legacy) ❌ | Especificación Positiva SOTA (CoHaLo v8.4) ✅ | Justificación Técnica |
 |---|---|---|---|
 | **Formato de Salida** | *"No uses markdown, no agregues saludos, no pongas texto, solo dame el json."* | `Emit strictly a valid JSON object matching <schema>, starting with '{' and ending with '}'.` | Guía la decodificación directamente hacia los delimitadores JSON sin activar tokens de texto. |
 | **Límites de Longitud** | *"Prohibido escribir respuestas largas o aburridas. No te extiendas."* | `Constrain the response to a concise summary of 3 to 5 bullet points, each under 20 words.` | Reemplaza adjetivos subjetivos por cotas numéricas medibles en la ventana de contexto. |

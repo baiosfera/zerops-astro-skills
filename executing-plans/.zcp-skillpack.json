@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "executing-plans",
+  "sourcePath": "skills/executing-plans",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:93e318d1cba972c9f1a6d684be5de0ec45632c0d3d8e4db185a1ef586ff3949e"
+}

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "andrej-karpathy-skills",
+  "generation": "a1ac0b7c-240d-4f26-9637-6641153f1ef2",
+  "target": "agents",
+  "skillName": "karpathy-guidelines",
+  "sourcePath": "skills/karpathy-guidelines",
+  "commit": "2c606141936f1eeef17fa3043a72095b4765b9c2",
+  "digest": "sha256:ca481e8ce7d6165ee2f49e3b6583bab11ae73b18e3e477e17fb95bc0d40503cf"
+}

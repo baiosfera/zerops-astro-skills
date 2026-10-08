@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "finishing-a-development-branch",
+  "sourcePath": "skills/finishing-a-development-branch",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:1d53cc13213219700a5621f9dfda802b8b047c5b6afa4533aee3dd6fe295d6dc"
+}

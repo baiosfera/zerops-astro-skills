@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "systematic-debugging",
+  "sourcePath": "skills/systematic-debugging",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:c70dbb89df5bb521c2cbb71977454b7a9b0f8c78009cd33e3e52290a7fd6d2c0"
+}

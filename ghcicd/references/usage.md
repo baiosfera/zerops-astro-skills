@@ -176,7 +176,33 @@ jobs:
           service-id: ${{ secrets.ZEROPS_PROD_SERVICE_ID }}
 ```
 
-### B. Staging Deployment Workflow (`.github/workflows/stage.yaml`)
+### B. Development Deployment Workflow (`.github/workflows/deploy-dev.yaml`)
+Deploys code to the development service whenever commits are pushed to the `dev` branch, following the Option B canonical pattern:
+
+```yaml
+name: Deploy WebDev to Zerops
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    name: Deploy to Zerops Development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Zerops WebDev
+        uses: zeropsio/actions@v1.0.2
+        with:
+          access-token: ${{ secrets.ZEROPS_TOKEN }}
+          service-id: ${{ secrets.ZEROPS_DEV_SERVICE_ID }}
+```
+
+### C. Staging Deployment Workflow (`.github/workflows/stage.yaml`)
 Deploys code to the staging preview service whenever commits are pushed to the `stage` branch:
 
 ```yaml
@@ -201,7 +227,7 @@ jobs:
           service-id: ${{ secrets.ZEROPS_STAGE_SERVICE_ID }}
 ```
 
-### C. Semantic Tagged Release Workflow (`.github/workflows/release.yaml`)
+### D. Semantic Tagged Release Workflow (`.github/workflows/release.yaml`)
 Triggers production deployments exclusively when signed semantic tags are pushed (`v1.0.0`, `v2.3.1`):
 
 ```yaml

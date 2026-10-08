@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "verification-before-completion",
+  "sourcePath": "skills/verification-before-completion",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:1d80038a14eccadfa42f6f1c5925ccd466e7de91193c03e04f3d6a569b68c21c"
+}

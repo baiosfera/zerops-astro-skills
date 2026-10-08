@@ -36,7 +36,7 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 2. **F1 (Clarification Gate)**: Ask 1 concise question for ambiguities, stopping immediately.
 3. **F2 (Dual-RAG Pre-Plan)**: Verify [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) and map closed 8-node sequence.
 4. **F3 (Validation Feedforward)**: Validate topology with static linters (`zcp-validate`).
-5. **F4 (Plan Offload & Halt)**: **Organización Linear**: Nivel 1 (Tareas/Bugfixes) en un solo Issue; Nivel 2 (Sistemas/Features grandes) en un Epic/Project con Issues agrupados. Crear Epic o Issue estructurado en Linear detallando los requerimientos, referenciar el ID en `/var/www/artifacts/linear_active.json`, y HALT (freno de mano) en chat solicitando exclusivamente el Go del usuario.
+5. **F4 (Plan Offload & Halt)**: **Organización Linear**: Enforce the creation of a NEW Linear Project for EVERY plan, without exception. Strictly isolate each domain in a separate BAI Issue. Create the Project and Issues via Linear CLI detailing the requirements, reference the active Issue ID in `/var/www/artifacts/linear_active.json`, and HALT (freno de mano) en chat solicitando exclusivamente el Go del usuario.
 6. **F5 (Execution & Parity)**: Execute Track steps (8 nodes $N_1$ to $N_8$ for Track A; agile deployment/verification milestones for Track B/C). Bounded execution (`timeout 10s`). Al completar cada sub-tarea y validar con tests, actualizar el estado en Linear a "Done", y realizar `ssot-parity-check` y `git push` respectivos.
 
 ## References

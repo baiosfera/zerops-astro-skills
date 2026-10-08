@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "writing-plans",
+  "sourcePath": "skills/writing-plans",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:41c931f7d68b6c876c5053e153ec698c17d2ba3fa96762f60ea384f876f1281f"
+}

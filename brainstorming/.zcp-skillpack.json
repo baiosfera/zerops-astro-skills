@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "packId": "superpowers",
+  "generation": "786b24ac-7782-4e78-850e-43f00d49ec70",
+  "target": "agents",
+  "skillName": "brainstorming",
+  "sourcePath": "skills/brainstorming",
+  "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+  "digest": "sha256:2cbcf459cfae39c02e0a75e09274cacbbf03bb8f9b467cb527283583ea75e877"
+}
