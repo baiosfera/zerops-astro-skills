@@ -9,7 +9,6 @@
 ## 1. Zero-Latency Artifact Synthesis Heuristic
 
 - **Core Principle:** Fast, deterministic alignment between user intent and executable specifications.
-- **Operational Rule:** The exact moment a requirement, correction, or architectural adjustment is agreed upon, the agent synthesizes the updated versioned artifact (`<plan_name>_vN.md`) in the exact same turn.
 - **Artifact File Generation:** Plans in `/var/www/artifacts/*.md` are written via terminal execution (`cat << 'EOF' > /var/www/artifacts/<plan>.md`) or standard file writing without UI artifact metadata, preventing permission boundaries.
 - **Delivery Standard:** Output the updated plan artifact and provide its clickable markdown link immediately.
 
@@ -59,7 +58,6 @@
 ## 6. Zero Chat Bloat & Brevity Invariant
 
 - **Directive:** Chat responses remain concise, executive, and decision-oriented.
-- **Offloading Rule:** Detailed architectures, deep matrices, and schemas reside exclusively inside `/var/www/artifacts/<plan_name>_vN.md` or `references/`. Chat contains only the concise summary and clickable markdown links.
 
 ---
 
@@ -143,7 +141,6 @@
   5. **$N_5$ (Despliegue Tri-Destino & Git Push Soberano):** Mirroring to Google Drive SSoT (`0zcp-123/.agents/skills/`), sincronización hacia `/var/www/zerops-astro-skills/` y ejecución obligatoria de `git push origin main`.
   6. **$N_6$ (Sensores Físicos):** Execution of local validator (`scripts/<target>-validate.sh`) and multi-skill suite (`skills-suite-validate.sh`).
   7. **$N_7$ (Sensor de Skill Registry):** Independent execution and physical grep validation of `gentle-ai skill-registry refresh --force`.
-  8. **$N_8$ (Auto-Purge, Git Parity & LTM Commit):** Verificación de git status limpio en repositorios soberanos, archivo de plan ejecutado (`plan-archive <plan> --executed`), purga de borradores superseded y persistencia en Engram (`mem_save`).
 - **Pre-Flight Validation Rejection:** Any plan that merges, skips, or renames these nodes without prior architectural authorization fails the pre-flight gate.
 
 ---
@@ -158,14 +155,9 @@
 ## 18. Anti-Desbocado Invariant & Mandatory F4 Halt Gate
 
 - **Core Principle:** Rushing into code execution without a structured blueprint is classified as undisciplined hacking (vibecoding) and is strictly banned. Planning is the supreme physical safeguard against hallucinations, forgotten dependencies, regressions, and context exhaustion.
-- **Mandatory Planning Scope:** For any non-trivial task, architectural refactor, multi-file change, or feature implementation, plan generation in `/var/www/artifacts/<plan_name>_vN.md` is strictly **MANDATORY**.
-- **The F4 Halt Contract & Univoque Go Predicate:** Once the versioned plan is synthesized and validated deterministically via `plan-validate` (exit code 0), the agent **MUST IMMEDIATELY HALT AND STOP CALLING TOOLS**, requesting explicit user confirmation ("Go") before mutating any project files in Phase F5.
   1. **Strict Boolean Go Predicate:** Transitioning to F5 REQUIRES an explicit univoque affirmative token (`\b(go|adelante|procede|ejecuta|ejecutá|aprobado|dale|si)\b`) AND the total absence of interrogative punctuation (`?`, `¿`) or doubt phrases (`por qué`, `qué pasó`, `espera`).
   2. **Interrogative / Diagnostic Hold:** If the user turn contains questions, status queries, or discussion, the agent strictly remains in F4, answers the inquiry, and DOES NOT mutate code.
 - **Single Active Plan & Artifact Lifecycle Invariant:**
-  1. Exactly ONE active plan resides in `/var/www/artifacts/<name>_vN.md`.
-  2. During evolutionary versioning (`_v1.md` $\to$ `_v2.md`), superseded drafts move immediately to `/var/www/artifacts/archive/<name>_v(N-1).superseded.md`.
-  3. At Node 8 closure in F5, the executed plan moves to `/var/www/artifacts/archive/<name>_vN.executed.md` or is purged (`rm -f`), eradicating the "zombie plans" security hole in `tool-guard.py`.
 
 ---
 
@@ -181,7 +173,6 @@
 ## 20. Linear Dual-Track Synergy: Micro-Plans vs Macro-Roadmaps
 
 - **Bifurcated Issue Tracking Standard:**
-  1. **Micro-Tasks & Single Milestones (Local Disk Artifacts):** Scoped changes (1–5 files, single-session refactors) stay strictly local at `/var/www/artifacts/<plan_name>_vN.md`. Zero external API calls, instantaneous generation, zero round-trip latency, and zero token waste.
   2. **Macro-Initiatives & Full Deployments (Linear Project Sync):** High-level roadmap initiatives, cross-service orchestrations (e.g. `zerops-astrobranding full deployment`), and multi-day epics are synchronized to Linear via Linear MCP (`linear_create_issue`, `linear_update_issue`) under the designated workspace project (e.g. `zerops-astrobranding`, Team `BAI`).
 - **Context Relief:** Offloading full epic roadmaps and milestones to Linear preserves precious LLM context window across compactions and session restarts, allowing the agent to query active issues on demand while giving the human visual dashboard oversight.
 

@@ -17,7 +17,7 @@ echo "============================================================"
 
 # 1. Validar integridad de archivos SSoT
 echo "• Validando archivos contractuales..."
-for f in "SKILL.md" "references/usage.md" "references/planning_heuristics.md" "references/governance_contracts.md" "references/control_matrix_standard.md" "assets/plan_template.md"; do
+for f in "SKILL.md" "references/usage.md" "references/planning_heuristics.md" "references/governance_contracts.md" "references/control_matrix_standard.md"; do
     if [ -f "$SKILL_DIR/$f" ] && [ -s "$SKILL_DIR/$f" ]; then
         echo "  ✓ $f presente ($(wc -l < "$SKILL_DIR/$f") líneas)"
     else
@@ -61,7 +61,7 @@ fi
 echo "• Validando Hard Rules y Decision Gates..."
 if grep -q "Rule 1 (CoHaLo Positive Guidance & Continuous Present Inflow)" "$SKILL_DIR/SKILL.md" && \
    grep -q "Rule 2 (Dual-Track SSoT Governance & Lifecycle Bifurcation)" "$SKILL_DIR/SKILL.md" && \
-   grep -q "Rule 3 (Immutable Plan Versions, Anti-Amnesia Consolidation & Token Economy)" "$SKILL_DIR/SKILL.md" && \
+   grep -q "Rule 3 (Linear State Machine, Anti-Amnesia Consolidation & Token Economy)" "$SKILL_DIR/SKILL.md" && \
    grep -Eq "Rule 4 \(SSoT Indivisibility.*(unisetup\.sh-First|Universal Clean-Room Virgin ZCP)" "$SKILL_DIR/SKILL.md" && \
    grep -q "Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)" "$SKILL_DIR/SKILL.md"; then
     echo "  ✓ Las 5 Hard Rules de CoHaLo v3.1 validadas en SKILL.md."
@@ -88,14 +88,6 @@ else
     echo "  ✓ Cero cláusulas permisivas de carpetas agrupadas en governance_contracts.md."
 fi
 
-# 7. Validar plantilla atemporal en assets/plan_template.md
-echo "• Validando atemporalidad en cabecera de plan_template.md..."
-if grep -E "Planner v|CoHaLo v|Supreme Directive v" "$SKILL_DIR/assets/plan_template.md" >/dev/null 2>&1; then
-    echo "  ❌ Error: plan_template.md contiene versiones hardcodeadas en cabecera o matriz."
-    ERRORS=$((ERRORS + 1))
-else
-    echo "  ✓ plan_template.md validado como 100% atemporal y canónico."
-fi
 
 # 8. Validar sintaxis Bash de scripts internos
 echo "• Validando sintaxis de scripts internos..."

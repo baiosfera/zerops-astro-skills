@@ -74,7 +74,6 @@
 - **Operative Correspondence Rule & Prohibition of Cosmetic Badging:**
   * Every governing skill declared in the header MUST map to an active, verifiable operation in the plan body.
   * Any specialized skill (e.g. `Docu`, `CoHaLo`) appearing in the header MUST have an explicit row in the Section 5 Attestation Matrix running a physical execution sensor (`*.sh` or binary returning `exit code 0`).
-  * Declaring specialized skills in the header without an active physical execution sensor in Section 5 is classified as "Compliance Theater" and triggers immediate rejection by `plan-validate` (`exit code 1`).
 
 ---
 
@@ -131,8 +130,5 @@
 ## 8. Artifacts Lifecycle & Archive Retention Policy
 
 - **Core Principle:** Implementation and governance plans stored in `/var/www/artifacts/` serve strictly as construction scaffolds.
-- **Immediate Superseded Purge:** Under the Cumulative Evolutionary Truth Protocol, version `_v(N+1)` is a strict superset of `_vN`. As soon as a newer version is executed, all prior versions (`*.superseded.md`) are immediately purged from both `/var/www/artifacts/` and `/var/www/artifacts/archive/`.
-- **Active Session Retention for Executed Plans:** Upon successful completion of Phase F5, active plans are moved to `/var/www/artifacts/archive/<name>_vN.executed.md` and retained throughout the active session to provide immediate provenance, auditability, and context.
-- **Session-End Archive Purge:** During the session close protocol (`mem_session_end`), all `*.executed.md` files in `/var/www/artifacts/archive/` are automatically purged to prevent context contamination in subsequent cold starts.
 - **Handover Immunity Invariant:** Architectural assets matching `HANDOVER_PATTERN` (`_handover`, `_blueprint`, `_roadmap`, `_dossier`) are permanent and 100% immune to any automated purge or truncation routine.
 

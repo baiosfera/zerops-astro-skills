@@ -113,7 +113,6 @@ Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de co
 | Nueva Habilidad | `skill-creator` | Scaffolding canónico de 3 niveles | [`skill-creator/SKILL.md`](file:///var/www/.agents/skills/skill-creator/SKILL.md) |
 | Arneses & Presupuesto Tokens | `cohalo` | Bounded execution (`timeout 10s`) | [`cohalo/SKILL.md`](file:///var/www/.agents/skills/cohalo/SKILL.md) |
 | Despliegue de Workload Zerops | `bknd` / `frnt` | Validación `zcp-validate` y CI/CD | [`bknd/SKILL.md`](file:///var/www/.agents/skills/bknd/SKILL.md) · [`frnt/SKILL.md`](file:///var/www/.agents/skills/frnt/SKILL.md) |
-| Validación de Plan en Disco | `planner` | `plan-validate <plan.md>` (<100ms) | [`scripts/plan-validate.sh`](file:///var/www/.agents/skills/planner/scripts/plan-validate.sh) |
 | Linear Roadmap Sync (Epics) | `linear` | Sincronización de Epics/Roadmap | [`mcp/linear/`](file:///var/www/baiosfera/0ZEROPS-AGY/0zcp-123/mcp/schemas/linear/) |
 | Sensor Físico de la Skill | `planner` | `bash scripts/planner-validate.sh` | [`scripts/planner-validate.sh`](file:///var/www/.agents/skills/planner/scripts/planner-validate.sh) |
 
@@ -121,8 +120,4 @@ Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de co
 
 ## 4. Estándar de Planes en Disco, Halt Gate & Ciclo de Auto-Purga
 
-1. **Ruta Transitoria:** Todo plan se redacta en español en `/var/www/artifacts/<plan_name>_vN.md` con `RequestFeedback: false`, en formato condensado de alta densidad.
-2. **Invariante de Versionamiento Evolutivo Acumulativo (Anti-Amnesia):** Toda nueva versión `_v(N+1).md` es obligatoriamente un superset estricto de `_vN.md`. Preserva el 100% de requerimientos funcionales, tareas, rutas y descubrimientos previos, depurando exclusivamente lo erróneo y sumando el nuevo alcance sin pérdida de contexto.
-3. **Mandato Anti-Desbocado & F4 Halt Gate:** La ejecución de código de aplicación requiere autorización explícita previa ('Go' del usuario). Todo plan debe ser validado físicamente con `plan-validate <ruta>` arrojando `exit code 0` y el agente debe detenerse a esperar el `"go"` humano.
 4. **Política Cuantitativa de Linear:** Linear es obligatorio para macro-tareas (>10k tokens, multi-archivo, multi-sesión) asegurando persistencia de estado inter-sesión sin saturar la ventana de contexto. Las micro-tareas (fixes puntuales o modificaciones de un solo archivo) ejecutan directamente sin emisión de tickets en Linear para economía de tokens.
-5. **Archival & Purga Post-Atestación:** Una vez completada la Fase F5 y confirmada por sensores físicos, el plan se archiva mediante `plan-archive <plan> --executed`, purga automáticamente borradores superseded obsoletos en `artifacts/archive/` y se almacena el resumen final en Engram (`mem_save`), garantizando cero acumulación de deuda técnica.

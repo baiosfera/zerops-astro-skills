@@ -42,4 +42,3 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
 - [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) · [`references/control_matrix_standard.md`](file:///var/www/.agents/skills/planner/references/control_matrix_standard.md)
-- [`assets/plan_template.md`](file:///var/www/.agents/skills/planner/assets/plan_template.md) · [`scripts/plan-archive.sh`](file:///var/www/.agents/skills/planner/scripts/plan-archive.sh)
