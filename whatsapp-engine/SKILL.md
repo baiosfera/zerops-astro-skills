@@ -10,22 +10,14 @@ metadata:
 # `whatsapp-engine` — WhatsApp Messaging & AI Orchestrator (v2.0)
 
 ## Activation Contract
-Deploying Evolution Go (`whatsmeow`), Meta WhatsApp Cloud API v21.0, QR/Passkey pairing, anti-ban warmup, webhooks, Bifrost LLM Gateway (`http://bifrost:8080/v1`), dynamic SSoT identity (`$SYSTEM_PROMPT_PATH`), or NATS JetStream event decoupling in Zerops.
+Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup, Bifrost LLM Gateway (`http://bifrost:8080/v1`), dynamic SSoT identity (`$SYSTEM_PROMPT_PATH`), or NATS JetStream in Zerops.
 
 ## Hard Rules & Positive Guidance
-- **Brand SSoT Ingestion**: Ingest conversational personas dynamically via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` with continuous present temporal awareness (UTC-5) and zero hardcoded dates.
-- **Bifrost LLM & Whisper Integration**: Route completions through `http://bifrost:8080/v1/chat/completions` and voice note transcriptions through `http://bifrost:8080/v1/audio/transcriptions` supplying `Authorization: Bearer <vk>`. If audio cannot be decoded, reply with graceful brand empathy instead of dropping the message.
-- **Multi-Identifier Sliding Human Takeover (2h)**: When the operator replies from phone (`fromMe: true`), lock the customer's remote chat identifier (`key.remoteJid` / `info.Chat`), NEVER the operator's sender LID. Lock both phone and LID in Valkey (`wa:human_takeover:${id}`). Operator commands: `#bot` clears takeover immediately, `#mute` silences for 24h.
-- **Quoted Message Context Preservation**: Parse `contextInfo.quotedMessage` from incoming messages and prepend it to the user prompt (`[Mensaje citado: "..."]\n<texto>`) so the LLM retains immediate contextual grounding when users reply to previous questions.
-- **Strict Route Whitelist Grounding (Zero 404s)**: Ground all recommended URLs strictly on the verified catalog of Astro routes. The LLM is strictly prohibited from guessing, hallucinating, or synthesizing URLs outside the explicit whitelist.
-- **Mandatory Tuteo & Anti-Slop Persona**: Conversational persona MUST address users with warm informal "tú", eradicating cold "usted" and generic support-bot bullet lists. Address cultural terms positively (e.g. clarify ethical facilitation vs paid hostesses without negative prompting). Simulate human typing delays (2.5s - 7s).
-- **Ambassador Loop & Frequency Capping**: Promote 3-referral free ticket loop only at high-delight moments. Enforce a 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`) to prevent repetitive spam.
-- **Asynchronous Decoupling**: Acknowledge webhooks under 10ms by publishing events to NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id`.
-- **Anti-Ban Protocol**: Follow progressive warmup schedules in [`anti_ban_warmup_guide.md`](file:///var/www/.agents/skills/whatsapp-engine/assets/anti_ban_warmup_guide.md).
-- **Valkey Idempotency**: Enforce deduplication (`SET lock:wa:msg:${id} 1 NX EX 3600`) and buffers in Valkey 7.2.
-- **Zerops Footprint**: Run Evolution Go on `alpine/go@1.22` with PostgreSQL schemas (`evogo_auth`, `evogo_users`), consuming ~25-45 MB RAM.
-- **Secret Hygiene**: Reference `$GLOBAL_API_KEY` and connection strings by variable name.
-- **Process Hygiene**: Bound CLI commands (`timeout 10s`) and verify state with deterministic sensors.
+- **Brand SSoT & Persona**: Ingest personas via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` (UTC-5). Use warm informal "tú", avoiding cold support lists. Ground catalog links strictly in verified Astro routes.
+- **Bifrost LLM & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` and voice notes to `http://bifrost:8080/v1/audio/transcriptions` with Bearer key.
+- **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`, never LID) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted message context (`contextInfo.quotedMessage`).
+- **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 2.5s–7s typing delays.
+- **Decoupling & Hygiene**: Acknowledge webhooks <10ms via NATS JetStream `events.whatsapp.incoming`. Deduplicate in Valkey 7.2 (`SET lock:wa:msg:${id} 1 NX EX 3600`). Run Evolution Go on `alpine/go@1.22` with PostgreSQL schemas (`evogo_auth`, `evogo_users`). Bound CLI commands (`timeout 10s`).
 
 ## Decision Gates
 
@@ -41,16 +33,15 @@ Deploying Evolution Go (`whatsmeow`), Meta WhatsApp Cloud API v21.0, QR/Passkey 
 | Validation | Attest structure, frontmatter, tokens & links | [`whatsapp-engine-validate.sh`](file:///var/www/.agents/skills/whatsapp-engine/scripts/whatsapp-engine-validate.sh) |
 
 ## Execution Steps
-1. Deploy Evolution Go runtime on Zerops Alpine with dual PostgreSQL schemas (`evogo_auth`, `evogo_users`).
-2. Inject brand directives via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH`.
-3. Configure webhook ingress to broadcast incoming events to NATS JetStream `events.whatsapp.incoming`.
-4. Deploy asynchronous consumer workers calling Bifrost LLM Gateway on port 8080.
-5. Apply anti-ban warmup schedule for new phone instances.
-6. Verify service health and contract compliance via `scripts/whatsapp-engine-validate.sh`.
+1. Deploy Evolution Go on Zerops Alpine with PostgreSQL schemas (`evogo_auth`, `evogo_users`).
+2. Ingest brand persona via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH`.
+3. Stream webhooks to NATS JetStream `events.whatsapp.incoming`.
+4. Run async AI consumers via Bifrost LLM Gateway on port 8080.
+5. Apply warmup and verify with `scripts/whatsapp-engine-validate.sh`.
 
 ## Output Contract
-- High-throughput, memory-efficient WhatsApp bot on Zerops Incus LXC.
-- Sub-20ms webhook acknowledgment, brand-aligned conversations, and passing physical sensors.
+- Memory-efficient WhatsApp bot in Zerops Incus LXC.
+- Sub-20ms webhook acknowledgment, brand-aligned AI, and passing physical sensors.
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/whatsapp-engine/references/usage.md) — 4D matrix, Passkeys, and messaging API.
