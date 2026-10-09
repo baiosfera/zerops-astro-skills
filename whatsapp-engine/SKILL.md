@@ -13,9 +13,12 @@ metadata:
 Deploying Evolution Go (`whatsmeow`), Meta WhatsApp Cloud API v21.0, QR/Passkey pairing, anti-ban warmup, webhooks, Bifrost LLM Gateway (`http://bifrost:8080/v1`), dynamic SSoT identity (`$SYSTEM_PROMPT_PATH`), or NATS JetStream event decoupling in Zerops.
 
 ## Hard Rules & Positive Guidance
-- **Brand SSoT Ingestion**: Ingest conversational personas dynamically via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH`.
-- **Bifrost LLM Integration**: Route completions through `http://bifrost:8080/v1/chat/completions` (port 8080 is standard).
-- **Asynchronous Decoupling**: Acknowledge webhooks under 20ms by publishing events to NATS JetStream `events.whatsapp.incoming`.
+- **Brand SSoT Ingestion**: Ingest conversational personas dynamically via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` with continuous present temporal awareness (UTC-5) and zero hardcoded dates.
+- **Bifrost LLM Integration**: Route completions through `http://bifrost:8080/v1/chat/completions` supplying required `Authorization: Bearer <vk>` headers.
+- **Sliding Human Takeover (2h)**: When the operator replies from phone (`fromMe: true`), silence the bot for 2 hours (`wa:human_takeover:${phone}`). Operator commands `#bot` immediately reactivates, `#mute` silences for 24h.
+- **Mandatory Tuteo & Realistic Presence**: Conversational persona MUST address users with warm informal "tú", eradicating cold "usted". Simulate human presence with typing delays (3.5s - 8s) proportional to message length.
+- **Ambassador Loop & Frequency Capping**: Promote 3-referral free ticket loop only at high-delight moments. Enforce a 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`) to prevent repetitive spam.
+- **Asynchronous Decoupling**: Acknowledge webhooks under 10ms by publishing events to NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id`.
 - **Anti-Ban Protocol**: Follow progressive warmup schedules in [`anti_ban_warmup_guide.md`](file:///var/www/.agents/skills/whatsapp-engine/assets/anti_ban_warmup_guide.md).
 - **Valkey Idempotency**: Enforce deduplication (`SET lock:wa:msg:${id} 1 NX EX 3600`) and buffers in Valkey 7.2.
 - **Zerops Footprint**: Run Evolution Go on `alpine/go@1.22` with PostgreSQL schemas (`evogo_auth`, `evogo_users`), consuming ~25-45 MB RAM.
