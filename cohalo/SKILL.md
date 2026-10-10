@@ -30,16 +30,15 @@ Activate when architecting, authoring, auditing, or executing agent workflows, p
 | **Purge** | Antipatterns removal, Pink Elephant elimination | [`references/antipatterns_deprecations.md`](file:///var/www/.agents/skills/cohalo/references/antipatterns_deprecations.md) |
 | **HArness** | Reality sensors (`exit code 0`), AST, process hygiene | [`references/harness.md`](file:///var/www/.agents/skills/cohalo/references/harness.md) |
 | **LOops** | 6-phase FSM (F0-F5), circuit breaker (2 retries), HITL | [`references/loops.md`](file:///var/www/.agents/skills/cohalo/references/loops.md) |
-| **Sensor** | Deterministic validator checking v8.3 & Positive Guidance | [`scripts/cohalo-validate.sh`](file:///var/www/.agents/skills/cohalo/scripts/cohalo-validate.sh) |
+| **Sensor** | Universal Capability Sensor (Standard v3.3) | `skills-suite-validate` |
 
 ## Commands
 ```bash
-# Execute deterministic physical validation sensor
-bash /var/www/.agents/skills/cohalo/scripts/cohalo-validate.sh
+# Execute universal physical validation sensor
+skills-suite-validate
 ```
 
 ## Resources
 - [`references/context.md`](file:///var/www/.agents/skills/cohalo/references/context.md) · [`references/context_engineering_caching.md`](file:///var/www/.agents/skills/cohalo/references/context_engineering_caching.md)
 - [`references/prompt_engineering_foundations.md`](file:///var/www/.agents/skills/cohalo/references/prompt_engineering_foundations.md) · [`references/sota_reasoning_prompting.md`](file:///var/www/.agents/skills/cohalo/references/sota_reasoning_prompting.md)
 - [`references/antipatterns_deprecations.md`](file:///var/www/.agents/skills/cohalo/references/antipatterns_deprecations.md) · [`references/harness.md`](file:///var/www/.agents/skills/cohalo/references/harness.md) · [`references/loops.md`](file:///var/www/.agents/skills/cohalo/references/loops.md)
-- [`scripts/cohalo-validate.sh`](file:///var/www/.agents/skills/cohalo/scripts/cohalo-validate.sh)
