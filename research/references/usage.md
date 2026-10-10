@@ -26,6 +26,23 @@ Mandatory when analyzing large external codebases, synthesizing 10+ sources, or 
 3. The subagent executes the 7-phase cascade and writes the dossier to `/var/www/artifacts/<target>_research_report.md`.
 4. The parent agent ingests the executive summary and links the report.
 
+### 1.1 Uncontaminated Query Engineering (Zero Internal Jargon Leakage)
+A critical failure mode in agentic research is **Query Contamination**: searching the web using internal, project-specific terminology, local prompt acronyms, or circular jargon (e.g. searching for "CoHaLo supreme directive phase F4 in Zerops"). This yields either zero results or self-referential echo chambers.
+
+**Core Rules for Uncontaminated Querying:**
+1. **Translate to Industry Standards:** Map any internal engineering concept to standard industry terminology:
+   - "CoHaLo context engineering" ➔ `"context engineering" "prompt caching" LLM prefix stability`
+   - "Harness reality over checklist theater" ➔ `"agent harness" deterministic evaluation AST "exit code 0"`
+   - "Dual-RAG skill unbundling" ➔ `"progressive disclosure" agent skills prompt modularization`
+   - "Plan-First Gate" ➔ `"spec-driven development" AI agent state machine plan review`
+2. **Multi-Engine Specialization:**
+   - Use **Exa** (`web_search_exa`) for deep code signatures, GitHub repositories, and architectural benchmarks.
+   - Use **Tavily** (`tavily_search`) for fresh release versions, changelogs, breaking changes, and dates.
+   - Use **Context7** (`resolve-library-id` ➔ `query-docs`) for authoritative library types and package function signatures.
+   - Use **Jina Reader** (`r.jina.ai/<url>`) for full verbatim markdown extraction of canonical pages (never rely solely on 2-line snippets).
+   - Use **Brave** (`brave_web_search`) for broad web index coverage and developer blogs.
+3. **Triangulate Independently:** Never trust a single source or a single search engine. Cross-reference at least two independent primary sources before establishing technical claims.
+
 ---
 
 ## 2. Exhaustive 12-Engine Catalog & Tool Recipes

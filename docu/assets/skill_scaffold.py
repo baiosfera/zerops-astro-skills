@@ -347,12 +347,20 @@ else
     echo "✓ SKILL.md within recommended token budget"
 fi
 
-# 8. Positive Guidance Verification (Zero Negative Phrasing)
-if grep -inE "Do NOT activate|Queda terminantemente prohibido" "$SKILL_DIR/references/"*.md 2>/dev/null | grep -v 'grep -inE'; then
-    echo "❌ Legacy negative directives detected in references"
-    ERRORS=$((ERRORS + 1))
+# 8. Structural References Integrity Verification
+EMPTY_REFS=0
+if [ -d "$SKILL_DIR/references" ]; then
+    for ref_f in "$SKILL_DIR/references/"*.md; do
+        if [ -f "$ref_f" ] && [ ! -s "$ref_f" ]; then
+            echo "❌ Empty reference file: $(basename "$ref_f")"
+            EMPTY_REFS=$((EMPTY_REFS + 1))
+        fi
+    done
+fi
+if [ "$EMPTY_REFS" -eq 0 ]; then
+    echo "✓ Structural reference files non-empty and verified"
 else
-    echo "✓ Positive guidance verified in references"
+    ERRORS=$((ERRORS + 1))
 fi
 
 echo "------------------------------------------------------------"

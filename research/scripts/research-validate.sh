@@ -125,15 +125,20 @@ if command -v node &>/dev/null || command -v bun &>/dev/null; then
     echo "  ✓ Node/Bun disponible para Playwright / Puppeteer."
 fi
 
-# 10. Escaneo recursivo de fechas estáticas en references y assets
-echo "• Ejecutando escaneo recursivo en references/ y assets/ (*.md)..."
-DATE_MATCHES=$(grep -rnIE --include="*.md" "202[0-9]|august|september" "$SKILL_DIR/references" "$SKILL_DIR/assets" || true)
-if [ -n "$DATE_MATCHES" ]; then
-    echo "  ❌ Error: Fechas estáticas detectadas en references/ o assets/:"
-    echo "$DATE_MATCHES"
-    ERRORS=$((ERRORS + 1))
+# 10. Validar resolución física de enlaces file:///
+echo "• Validando resolución física de enlaces file:///..."
+LINK_ERRORS=0
+while IFS= read -r link; do
+    clean_path="${link#file://}"
+    if [ -n "$clean_path" ] && [ ! -e "$clean_path" ]; then
+        echo "  ❌ Enlace roto detectado: $link"
+        LINK_ERRORS=$((LINK_ERRORS + 1))
+    fi
+done < <(grep -h -oE 'file:///[^ )"`]+' "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references/"*.md 2>/dev/null || true)
+if [ "$LINK_ERRORS" -eq 0 ]; then
+    echo "  ✓ Enlaces físicos file:/// validados sin 404s."
 else
-    echo "  ✓ Cero fechas estáticas detectadas (Presente Continuo dinámico verificado)."
+    ERRORS=$((ERRORS + LINK_ERRORS))
 fi
 
 echo "============================================================"

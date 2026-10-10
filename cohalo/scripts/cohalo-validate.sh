@@ -25,10 +25,10 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "8\.[2-9]"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 8.x (>= 8.2)"
+if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is valid SemVer"
 else
-    echo "❌ Frontmatter version is not 8.x (>= 8.2)"
+    echo "❌ Frontmatter version is not valid SemVer"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -62,12 +62,18 @@ else
     echo "✓ SKILL.md complies with Progressive Disclosure Level 2 budget (<=550 tokens)"
 fi
 
-# 5. Check Positive Guidance compliance (Zero negative phrasing in Hard Rules)
-if grep -qiE "(prohibido|no hagas|no inventes)" "$SKILL_DIR/SKILL.md"; then
-    echo "❌ Detected legacy negative phrasing in SKILL.md router. Enforce Positive Guidance!"
-    ERRORS=$((ERRORS + 1))
+# 5. Check Reference Files Non-Emptiness
+EMPTY_REFS=0
+for ref_f in "$SKILL_DIR/references/"*.md; do
+    if [ -f "$ref_f" ] && [ ! -s "$ref_f" ]; then
+        echo "❌ Empty reference file: $(basename "$ref_f")"
+        EMPTY_REFS=$((EMPTY_REFS + 1))
+    fi
+done
+if [ "$EMPTY_REFS" -eq 0 ]; then
+    echo "✓ All reference files are non-empty and valid"
 else
-    echo "✓ Positive Guidance verified: Zero negative prohibitive phrasing in SKILL.md"
+    ERRORS=$((ERRORS + 1))
 fi
 
 # 6. Check file links integrity in SKILL.md

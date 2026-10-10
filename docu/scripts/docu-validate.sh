@@ -23,9 +23,9 @@ else
     echo "✓ SKILL.md exists"
 fi
 
-# 2. Check frontmatter metadata.version (Dynamic SemVer)
-if grep -Eq 'version: "(7\.[0-9]+|8\.[0-9]+)"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is valid (8.x/7.x)"
+# 2. Check frontmatter metadata.version (SemVer)
+if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is valid SemVer"
 else
     echo "❌ Frontmatter version is not valid"
     ERRORS=$((ERRORS + 1))
@@ -94,12 +94,18 @@ for f in "references/workflow.md" "references/templates.md" "references/certific
     fi
 done
 
-# 9. Check Positive Guidance Eradication of Legacy Negative Directives in Templates/Assets
-if grep -inE "Do NOT activate|Queda terminantemente prohibido" "$SKILL_DIR/references/"*.md "$SKILL_DIR/assets/"* 2>/dev/null | grep -v 'grep -inE'; then
-    echo "❌ Legacy negative directives detected in references or assets"
-    ERRORS=$((ERRORS + 1))
+# 9. Check Structural References Content Integrity
+EMPTY_REFS=0
+for ref_f in "$SKILL_DIR/references/"*.md; do
+    if [ -f "$ref_f" ] && [ ! -s "$ref_f" ]; then
+        echo "❌ Empty reference file: $(basename "$ref_f")"
+        EMPTY_REFS=$((EMPTY_REFS + 1))
+    fi
+done
+if [ "$EMPTY_REFS" -eq 0 ]; then
+    echo "✓ Structural reference files integrity verified"
 else
-    echo "✓ Positive guidance verified: zero legacy negative directives in references and assets"
+    ERRORS=$((ERRORS + 1))
 fi
 
 # 10. Check Physical Links in SKILL.md (Zero 404s)

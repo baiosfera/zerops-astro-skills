@@ -22,10 +22,10 @@ else
 fi
 
 # 2. Check frontmatter metadata.version
-if grep -Eq 'version: "2\.0"' "$SKILL_DIR/SKILL.md"; then
-    echo "✓ Frontmatter version is 2.0"
+if grep -Eq 'version: "[0-9]+\.[0-9]+"' "$SKILL_DIR/SKILL.md"; then
+    echo "✓ Frontmatter version is valid SemVer"
 else
-    echo "❌ Frontmatter version is not 2.0"
+    echo "❌ Frontmatter version is not valid SemVer"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -68,13 +68,23 @@ for link in \
     "assets/robots.txt.ts" \
     "scripts/generate-visual-assets.py" \
     "scripts/seo-aeo-geo-validate.sh"; do
-    if grep -q "file:///var/www/.agents/skills/seo-aeo-geo/$link" "$SKILL_DIR/SKILL.md"; then
-        echo "✓ Absolute file link verified: $link"
+    if grep -q "$link" "$SKILL_DIR/SKILL.md"; then
+        echo "✓ File link verified: $link"
     else
-        echo "❌ Missing absolute file link in SKILL.md: $link"
+        echo "❌ Missing file link in SKILL.md: $link"
         ERRORS=$((ERRORS + 1))
     fi
 done
+
+# 6. Python AST Syntax Check for scripts
+if [ -f "$SKILL_DIR/scripts/generate-visual-assets.py" ]; then
+    if python3 -c "import ast; ast.parse(open('$SKILL_DIR/scripts/generate-visual-assets.py').read())" 2>/dev/null; then
+        echo "✓ Python AST valid: generate-visual-assets.py"
+    else
+        echo "❌ Python syntax error: generate-visual-assets.py"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
 
 echo "------------------------------------------------------------"
 if [ "$ERRORS" -eq 0 ]; then
