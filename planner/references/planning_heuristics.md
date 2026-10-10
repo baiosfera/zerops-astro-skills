@@ -20,14 +20,14 @@
   1. Each revision increments the version suffix: `_v1.md` $\to$ `_v2.md` $\to$ `_v3.md`.
   2. Prior versioned plan files remain immutable historical records during drafting, archived to `archive/<name>_vN.superseded.md`.
   3. Every new version MUST inherit, consolidate, and synthesize all prior state, forensic findings, and requirements, integrating new decisions into a unified single source of truth.
-  4. **F4 Feedback Loop Mandate & Invariante Anti-Cháchara:** Al recibir cualquier corrección, objeción o feedback en F4, el agente tiene terminantemente prohibido responder únicamente con prosa explicativa en el chat ("tenés razón el..."). Está obligado a materializar en disco `_v(N+1).md` como superset estricto antes de emitir su respuesta.
+  4. **F4 Feedback Loop & Claridad:** Al recibir correcciones o feedback sobre un plan en F4, materializá los ajustes en la especificación o issue correspondiente antes de avanzar a ejecución, evitando respuestas vacías o performativas.
   5. **Linear Direct API Synergy:** Linear opera de forma determinista mediante `/var/www/.bin/linear-cli` consumiendo `https://api.linear.app/graphql` (<300ms). Cada nodo del plan en F5 actualiza su estado en Linear (In Progress $\to$ sensor exit 0 $\to$ Done).
-  6. **Blindaje Anti-Freeze FUSE:** Vetado cualquier `find`, `grep -r` o barrido ciego sobre `/var/www/baiosfera/`. Limpiezas de `__pycache__` se acotan localmente al directorio del script.
+  6. **Blindaje Anti-Freeze FUSE:** Para búsquedas en `/var/www/baiosfera`, podá (`-prune`) las carpetas remotas o buscá en subdirectorios locales específicos. Limpiezas de `__pycache__` se acotan localmente al directorio del script.
 - **Mandatory 6-Vector Cumulative Audit Gate (Anti-Amnesia Pre-Flight)**: Before emitting `_v(N+1).md`, the agent must execute a strict comparative audit against `_v1` through `_vN` ensuring zero loss across 6 critical vectors:
   1. **Forensic Diagnoses & Root Causes**: All problem analyses and pathologies identified in earlier versions must be preserved and expanded, never silently dropped.
   2. **Inventory of Target Files**: Every file identified in prior versions remains explicitly in scope.
   3. **Universal Pre-Mutation Backups**: All backup commands for scripts, rules, and skills accumulated across prior versions must be retained in Paso 1.
-  4. **Non-Negotiable Invariants**: No rule or invariant from prior versions may be removed or softened.
+  4. **Architectural Coherence**: Preserve functional domain contracts and proven invariants, pruning obsolete bureaucratic friction or redundant rules when authorized.
   5. **Executable Step Granularity**: Execution steps must be cumulatively merged; adding new layers must not displace existing execution actions.
   6. **Physical Attestation Matrix**: All rows and sensors from prior control matrices must be present in the new version.
 

@@ -17,7 +17,7 @@ Activar para diseñar, vectorizar y validar el sistema de Isologos, Monogramas y
 - **Modo Standalone / Manual:** Acepta requerimientos directos del usuario o `brand_input.json`.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Monocromía Estricta (Regla B/N):** Vectores en **estricto blanco y negro puro**. Prohibido incrustar colores (ni verdes, dorados ni hex fijos). Emplear exclusivamente `currentColor`, `var(--vector-stroke, #ffffff)` y `var(--vector-fill, none)` o fondos neutros. El teñido corresponde a `chroma`.
+- **1. Monocromía Estricta (Regla B/N):** Vectores en **estricto blanco y negro puro**, empleando exclusivamente `currentColor`, `var(--vector-stroke, #ffffff)` y `var(--vector-fill, none)` o fondos neutros. La aplicación de paletas de color se delega a `chroma`.
 - **2. Generación Triple por Categoría (3 Opciones):**
   - **3 Isologos:** Isologo A (Geometría Áurea / Elipses), Isologo B (Monograma Esculpido), Isologo C (Geometría Simétrica / Octagrama / Flor de la Vida).
   - **3 Monogramas:** Iniciales de marca estilizadas (Entrelazado, Minimalista, Geométrico).

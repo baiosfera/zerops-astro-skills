@@ -28,4 +28,4 @@ Esta skill **nunca** hace llamadas REST al exterior. Opera bajo arquitectura de 
 
 ## 4. Workflow Transversal y Dependencias
 - **Ejecución Asíncrona:** Invocado por el coach humano exclusivamente **después** del Oráculo base (Fases 1-11).
-- **Independencia de Archivo:** Se graba en su propio archivo aislado `diag_c_mkt_report.md` en el root del cliente (`DIAG/<CLIENTE_ID>/`). JAMÁS sobreescribe los reportes canónicos.
+- **Independencia de Archivo:** Se graba de forma aislada en `diag_c_mkt_report.md` en el directorio del cliente (`DIAG/<CLIENTE_ID>/`), preservando intactos los reportes canónicos.

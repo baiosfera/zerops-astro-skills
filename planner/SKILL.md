@@ -4,21 +4,20 @@ description: "Trigger: planner, plan, master-plan, planificar, crear plan, dise�
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "9.4"
+  version: "9.5"
 ---
 
-# Planner — Universal Master Planning & SSoT Governance Orchestrator (v9.4)
+# Planner — Universal Master Planning & SSoT Governance Orchestrator (v9.5)
 
 ## Activation Contract
-Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Bounded tasks execute inline without ceremonial plans. Eradicates checklist theater.
+Activate for multi-step refactors, architectural evolutions, and governance under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Bounded tasks execute inline without ceremonial plans. Eradicates checklist theater.
 
 ## Hard Rules (Positive Guidance)
 - **Rule 1 (CoHaLo Positive Guidance & Continuous Present Inflow)**: Anchors decisions to live runtime state (`date -u`). Grounding follows [`research`](file:///var/www/.agents/skills/research/SKILL.md) inline or via subagent. Details in [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md).
 - **Rule 2 (Dual-Track SSoT Governance & Lifecycle Bifurcation)**: Quad-Track lifecycle: Track A (Skills, Python platform scripts, setup-*) executes via [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) through the 8-node harness with atomic snapshots in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<current_version>.bak/` and `git push origin main` to `zerops-astro-skills`. Track B governs core chassis `zerops-astrobranding` with native Git rollback and push to its own repo. Track C governs derived workloads and apps under Plantilla Universal v4 with client repositories and GitOps pipelines. Track D governs direct SSoT data and content ops in Google Drive.
-- **Rule 3.1 (1-to-1 Atomicity & Project Isolation)**: EVERY new Master Plan MUST instantiate a NEW dedicated Linear Project (Epic). Inside that project, EVERY task/node must map to a single isolated `[BAI-X]` Issue. NEVER group multiple tasks or sub-steps into a single monolithic BAI ticket.
-- **Rule 3 (Linear State Machine, Anti-Amnesia Consolidation & Token Economy)**: El planner erradica el bloat de tokens migrando 100% la burocracia de planes al sistema de tickets Linear. Todo plan, paso a paso, descubrimiento o ajuste de feedback se consolida de forma acumulativa en la descripción de los Issues y Sub-issues en Linear (vía `linear-cli issue create` y `linear-cli issue update`). Se vincula el Issue ID raíz en `/var/www/artifacts/linear_active.json` para destrabar los arneses de mutación. F4 Feedback Loop Mandate: Todo ajuste de diseño o feedback exige registrar y consolidar las adiciones o sustracciones en el Issue/Sub-issue correspondiente antes de pedir Go. F5 Parity: Linear opera mediante `/usr/local/bin/linear-cli` conectando a `https://api.linear.app/graphql`, indexando cada nodo a un ID (`BAI-*`). Tras la atestación de compiladores/tests, se avanza el estado del Issue a "Done" (`linear-cli update-status "Done"`).
-- **Rule 4 (SSoT Indivisibility & Universal Clean-Room Virgin ZCP Law)**: Tooling assets reside in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/` and provision via `unisetup.sh`. Clean-room benchmark requires 0 drift (`ssot-parity-check` exit 0). Blindaje Anti-Freeze FUSE: Prohibido ejecutar comandos recursivos ciegos (`find`, `grep -r`) sobre montajes remotos de Google Drive sin podar (`-prune`); los sensores y herramientas residen fijos en `/usr/local/bin/`.
-- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: All bootstrap changes (like `iniciar.sh`) MUST trigger an immediate backup to SSoT Drive and explicit `git push` to ALL involved repos (`zerops-astrobranding`, etc.). Tracks execute closed milestones with zero omission.
+- **Rule 3 (Linear State Machine, Anti-Amnesia Consolidation & Token Economy)**: El planner consolida de forma acumulativa el estado, decisiones y pasos en la descripción de los Issues de Linear (vía `linear-cli issue create` y `linear-cli issue update`), manteniendo el chat ágil y sin bloat de tokens. Para épicas de proyecto, indexa cada hito a un ID (`BAI-*`). Tras la atestación física de compiladores o tests, avanza el estado del Issue a "Done" (`linear-cli update-status "Done"`).
+- **Rule 4 (SSoT Indivisibility & Universal Clean-Room Virgin ZCP Law)**: Tooling assets reside in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/` and provision via `unisetup.sh`. Clean-room benchmark requires 0 drift (`ssot-parity-check` exit 0). Blindaje Anti-Freeze FUSE: Para búsquedas sobre `/var/www/baiosfera`, podá (`-prune`) las carpetas remotas o buscá directamente en directorios locales específicos; los sensores residen en `/usr/local/bin/`.
+- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: All bootstrap changes (like `iniciar.sh`) trigger an immediate backup to SSoT Drive and explicit `git push` to ALL involved repos (`zerops-astrobranding`, etc.). Tracks execute closed milestones with zero omission.
 
 ## Decision Gates
 
@@ -35,17 +34,16 @@ Activate for multi-step refactors and governance under [`00-SUPREME-DIRECTIVE.md
 ## Critical Workflows / Execution Steps
 1. **F0 (Inflow)**: Recall local LTM (`mem_search`); execute grounding via [`research`](file:///var/www/.agents/skills/research/SKILL.md).
 2. **F1 (Clarification Gate)**: Ask 1 concise question for ambiguities, stopping immediately.
-3. **F2 (Dual-RAG Pre-Plan)**: Verify [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) and map closed 8-node sequence.
+3. **F2 (Dual-RAG Pre-Plan)**: Verify [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) and map closed sequence.
 4. **F3 (Validation Feedforward)**: Validate topology with static linters (`zcp-validate`).
-5. **F4 (Plan Offload & Halt)**: **Organización Linear**: Enforce the creation of a NEW Linear Project for EVERY plan, without exception. Strictly isolate each domain in a separate BAI Issue. Create the Project and Issues via Linear CLI detailing the requirements, reference the active Issue ID in `/var/www/artifacts/linear_active.json`, and HALT (freno de mano) en chat solicitando exclusivamente el Go del usuario.
-6. **F5 (Execution & Parity)**: Execute Track steps (8 nodes $N_1$ to $N_8$ for Track A; agile deployment/verification milestones for Track B/C). Bounded execution (`timeout 10s`). Al completar cada sub-tarea y validar con tests, actualizar el estado en Linear a "Done", y realizar `ssot-parity-check` y `git push` respectivos.
+5. **F4 (Plan Definition & Approval Gate)**: Define scope and acceptance criteria in chat or create a Linear Issue/Project for large initiatives via `linear-cli issue create`. Solicit user "Go" before mutating production code.
+6. **F5 (Execution & Parity)**: Execute Track steps (8 nodes $N_1$ to $N_8$ for Track A; deployment milestones for Track B/C). Bounded execution (`timeout 10s`). Al completar cada sub-tarea y validar con tests, actualizar el estado en Linear a "Done", y realizar `ssot-parity-check` y `git push` respectivos.
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
 - [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) · [`references/control_matrix_standard.md`](file:///var/www/.agents/skills/planner/references/control_matrix_standard.md)
 
-
-## Cierre Obligatorio del Plan (Engram y Skill-Registry)
-Todo plan maestro generado en Linear DEBE incluir, como hitos finales explícitos, los siguientes tickets de gobernanza:
-1. **Actualización de Registro (Si aplica):** Si el plan involucra crear o modificar habilidades, incluir un issue para ejecutar `skill-registry` (para mapear la nueva firma de la skill).
-2. **Cierre de Memoria (Mandatorio):** Un issue final innegociable dedicado exclusivamente a registrar la bitácora arquitectónica ejecutando `mem_session_summary` en Engram.
+## Cierre del Plan (Engram y Skill-Registry)
+Todo plan ejecutado concluye verificando:
+1. **Actualización de Registro (Si aplica):** Si involucra crear o modificar habilidades, ejecutar `skill-registry` para actualizar firmas.
+2. **Cierre de Memoria:** Registrar la bitácora arquitectónica ejecutando `mem_session_summary` en Engram.

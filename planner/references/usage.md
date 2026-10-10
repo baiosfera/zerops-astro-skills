@@ -44,12 +44,12 @@ La meta-skill `planner` no es un documento estático ni un receptor pasivo de te
 - **Modalidades de Ejecución:**
   - **Modality A (JIT Inline):** 1 hecho atómico o versión. Cascada rápida: `mem_search` $\to$ Exa / Tavily / DDG $\to$ Jina Reader (`r.jina.ai/<url>`).
   - **Modality B (Subagente Obligatorio):** Análisis multifuente, bugs complejos o cambios de arquitectura. Inyecta [`subagent_prompt_contract.md`](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md), escribe reporte exhaustivo en `/var/www/artifacts/<target>_research_report.md` (>10KB) y emite recibo `<epistemic_attestation>`.
-- **Invariante:** Prohibido emitir texto o diseñar planes sin haber ejecutado las herramientas de grounding.
+- **Invariante:** Toda afirmación técnica o diseño se contrasta con herramientas de grounding en vivo antes de formular planes.
 
 ### 1.2 `cohalo` — Context, Harness & Loop Architecture
 - **Context (Co):** KV-cache stability mediante Positive Guidance. Router ejecutivo acotado ($\le 450$ palabras para skills regulares, $\le 2500$ tokens para orquestadores de dominio). Desacoplamiento modular en `references/`.
 - **Harness (Ha):** Ejecución acotada (`timeout 10s`), espera asíncrona segura (`WaitMsBeforeAsync: 10000`), limpieza proactiva de tareas huérfanas (`manage_task action="kill"`), atestación física determinista (`exit code 0` o `HTTP 200`), y cero residuos de compilación (cero `__pycache__` vía AST en memoria).
-- **Loop (Lo):** Máquina de estados finita F0–F5 regida por [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Transición a F5 bloqueada hasta recibir el `"go"` explícito del usuario humano en `USER_INPUT`.
+- **Loop (Lo):** Máquina de estados finita F0–F5 regida por [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Transición a F5 guiada por la confirmación explícita del usuario humano en `USER_INPUT`.
 
 ### 1.3 `docu` — Dual-RAG Architecture & Certification Gate (Fase F2)
 - **Estructuración Dual-RAG:** Toda habilidad se desacopla en tres niveles:
@@ -60,7 +60,7 @@ La meta-skill `planner` no es un documento estático ni un receptor pasivo de te
 
 ### 1.4 `skill-improver` — Universal Zero Deletion Invariant (Fase F5 - $N_4$)
 - **Activación:** Refactorización, saneamiento y optimización de skills existentes.
-- **Invariante C3 (Zero Deletion):** Preserva el 100% de reglas, métodos, directivas, compuertas de decisión y contratos de error. Está terminantemente prohibido amputar o resumir conocimientos; la reducción del router se logra modularizando hacia `references/usage.md`.
+- **Invariante C3 (Preservación Esencial & CoHaLo):** Preserva la funcionalidad crítica, métodos y contratos de error. La reducción del router se logra modularizando hacia `references/usage.md` y podando el ruido burocrático redundante.
 
 ### 1.5 `skill-creator` — Canonical Skill Scaffolding (Fase F5)
 - **Activación:** Creación de nuevas habilidades sin precedentes.
@@ -86,7 +86,7 @@ Ejecuta de forma rigurosa la **Topología Cerrada de 8 Nodos**:
 
 ### 2.2 Track B: Chasis Central Zerops Astrobranding
 Aplica al chasis central `/var/www/zerops-astrobranding` (plantilla Astro 5 SSR compartida, tokens base y herramientas).
-- Versionado y rollback NATIVO en Git/GitHub (ramas, tags y commits). Prohibido `.bak` monolíticos de repositorios.
+- Versionado y rollback nativo en Git/GitHub (ramas, tags y commits), reservando `.bak` para archivos individuales antes de mutaciones.
 - Despliegue y validación de componentes del chasis.
 - Cierre con commit y `git push origin main` al repositorio de `zerops-astrobranding`.
 

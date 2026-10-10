@@ -37,7 +37,7 @@ Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, 
 
 ## Hard Invariants
 
-1. **Zero-Local Isolation & Mandatory Web Grounding:** Technical evaluations must benchmark local files against live external sources in the Continuous Present (`date -u`). Prohibido autoaislarse en el contenedor ZCP.
+1. **Zero-Local Isolation & Mandatory Web Grounding:** Technical evaluations benchmark local files against live external sources in the Continuous Present (`date -u`), continuously triangulating findings with live primary documentation.
 2. **Epistemic Honesty & Absolute Anti-AMN Mandate:** Pretrained memory (AMN) is unverified hypothesis. Grounding requires live primary sources verbatim (Context7, docs, AST, source code).
 3. **Primary Sources (Matt Pocock Standard):** Search snippets serve strictly as discovery pointers. Read canonical raw files via Jina Reader (`r.jina.ai`) or Context7 before establishing claims.
 4. **Credit Conservation & Token Hygiene:** Query Engram first. Set `maxCharacters: 3000` on Exa. Enforce >= 1.1s pauses on Brave. Catch DDG anomalies. Reserve Firecrawl for anti-bot sites.

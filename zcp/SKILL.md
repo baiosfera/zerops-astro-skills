@@ -26,8 +26,8 @@ Activate when provisioning or managing runtimes (Astro, Directus, FastAPI), data
   - *Circuit Breaker Financiero*: `maxRam` (ej. 4 u 8 GB) opcional contra memory leaks desatendidos.
 - **Custom Domain**: Enforce Cloudflare Full (Strict) SSL/TLS.
 - **MCP vs SSH Demarcation**: Platform lifecycle, envs, logs y dev-servers vía `zerops_*`. SSH solo para build/test en `/var/www`.
-- **Local Storage**: `type: local-storage:single@1` en `import.yaml`. Montar en `zerops.yaml` vía `run.volume: {hostname: <storageHostname>, mountPath: /path, readOnly: false}`. Prohibido `mount:` en `import.yaml`.
-- **Anti Self-Shadow**: Jamás autorreferenciar variables (`API_URL: ${API_URL}`); usar nombres distintos (`DB_HOST: ${db_hostname}`).
+- **Local Storage**: `type: local-storage:single@1` en `import.yaml`. Montar en `zerops.yaml` vía `run.volume: {hostname: <storageHostname>, mountPath: /path, readOnly: false}`.
+- **Anti Self-Shadow**: Evitá autorreferenciar variables (`API_URL: ${API_URL}`); empleá nombres diferenciados (`DB_HOST: ${db_hostname}`).
 - **Fractal CoHaLo**: `timeout 10s`, `WaitMsBeforeAsync: 10000`, matar procesos huérfanos (`manage_task action="kill"`), sensor `zerops_discover`.
 - **Zero Deletion**: Ver [`references/usage.md`](file:///var/www/.agents/skills/zcp/references/usage.md) e [`references/infra.md`](file:///var/www/.agents/skills/zcp/references/infra.md).
 
