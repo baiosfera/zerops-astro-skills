@@ -9,7 +9,7 @@ metadata:
 
 # `research` — Compound Epistemic Grounding Engine (v8.5)
 
-Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, search, and headless scraping. Benchmarks code against SOTA in the Continuous Present (`date -u`), enforcing Epistemic Honesty and Anti-AMN Mandates under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Prohibits local isolation ("black box") by mandating real-time web verification.
+Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, search, and headless scraping. Benchmarks code against SOTA in the Continuous Present (`date -u`), enforcing Epistemic Honesty and Anti-AMN Mandates under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Mandates continuous epistemic inflow and real-time web verification, ensuring decisions are continuously benchmarked against primary sources.
 
 ## Architecture & Dual-RAG SSoT
 
@@ -41,7 +41,7 @@ Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, 
 2. **Epistemic Honesty & Absolute Anti-AMN Mandate:** Pretrained memory (AMN) is unverified hypothesis. Grounding requires live primary sources verbatim (Context7, docs, AST, source code).
 3. **Primary Sources (Matt Pocock Standard):** Search snippets serve strictly as discovery pointers. Read canonical raw files via Jina Reader (`r.jina.ai`) or Context7 before establishing claims.
 4. **Credit Conservation & Token Hygiene:** Query Engram first. Set `maxCharacters: 3000` on Exa. Enforce >= 1.1s pauses on Brave. Catch DDG anomalies. Reserve Firecrawl for anti-bot sites.
-5. **Uncontaminated Query Formulation (Zero Internal Jargon Leakage):** Search queries must strictly use neutral, universal industry terminology. Never leak local rule names, internal project acronyms, or prompt jargon into search queries. Avoid confirmation bias by comparing multiple independent perspectives.
+5. **Uncontaminated Query Formulation (Zero Internal Jargon Leakage):** Formulate search queries exclusively using neutral, universal industry terminology. Confine internal project acronyms and local governance identifiers strictly to local execution. Triangulate findings across multiple independent perspectives to maintain objective grounding.
 
 ## Resources & Sensors
 
