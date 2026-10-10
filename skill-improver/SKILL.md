@@ -55,3 +55,4 @@ Return:
 
 - `docs/skill-style-guide.md` — normative LLM-first skill style guide for this repo.
 - `references/skill-style-guide.md` — bundled local copy for installed global skills when the repo doc is unavailable.
+- `references/cohalo_guidelines.md` — CoHaLo pure positive guidance and Dual-RAG token optimization specifications.
