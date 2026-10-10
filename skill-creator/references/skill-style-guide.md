@@ -30,23 +30,16 @@ Every `SKILL.md` MUST use this order unless a section is truly irrelevant:
 - Recommended maximum: **700 tokens**.
 - Hard maximum: **1000 tokens**. Move examples, schemas, and background into `assets/` or `references/`.
 
-## Writing Rules
+## Writing Rules (CoHaLo Affirmative Bounds)
 
-### DO
-
-- Write imperative runtime instructions: “Load X”, “Check Y”, “Return Z”.
-- Lead with the activation trigger and hard constraints.
-- Use compact tables for decision gates.
-- Keep examples minimal and executable.
-- Link to local supporting files for details.
-
-### DON'T
-
-- Explain history, motivation, or tutorial background.
-- Duplicate long docs inside the skill.
-- Add generic advice the LLM cannot execute.
-- Use external URLs as primary references.
-- Hide critical rules below examples.
+- Write imperative runtime instructions: "Load X", "Check Y", "Return Z".
+- Lead directly with activation triggers and deterministic hard rules.
+- Structure decision gates as compact tables rather than narrative prose.
+- Provide minimal, executable examples focused strictly on input/output contracts.
+- Anchor supporting detail in local files (`references/`, `assets/`) to enable Dual-RAG progressive disclosure.
+- Focus exclusively on actionable runtime logic, omitting tutorial background and historical rationale.
+- Maintain single-source documentation by referencing existing files instead of duplicating text.
+- Prioritize critical constraints at the top of sections preceding code blocks.
 
 ## Supporting Files
 
