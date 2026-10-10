@@ -16,20 +16,23 @@ Use this skill when asked to audit, refactor, normalize, or improve existing `SK
 - Treat `docs/skill-style-guide.md` as the normative style contract when it exists.
 - For installed global skills, use `references/skill-style-guide.md` as the bundled local copy when `docs/skill-style-guide.md` is unavailable.
 - Treat `SKILL.md` as the source of truth; preserve author intent, critical rules, activation semantics, and output requirements.
-- Use `.atl/skill-registry.md` as an index of skill names, triggers, scopes, and exact paths; do not expect generated summaries.
-- Default to audit-only. Modify files only when the user explicitly asks to apply improvements.
-- Never delete meaningful content silently; move long explanation, examples, templates, or schemas into local `references/` or `assets/`.
-- Do not invent triggers, policies, or domain rules. Mark ambiguous cases for human review.
+- Use `.atl/skill-registry.md` as an index of skill names, triggers, scopes, and exact paths.
+- Default to audit-only. Modify files exclusively upon explicit user request.
+- Preserve all meaningful content unconditionally; relocate extensive explanations, schemas, and templates into local `references/` or `assets/` to enable Dual-RAG progressive disclosure.
+- Derive triggers, policies, and domain rules strictly from validated codebase evidence, flagging ambiguous cases for human review.
+- Enforce Pure Positive Guidance: formulate directives as affirmative closed-domain instructions, eliminating negative shouting and pink elephants.
+- Enforce Dual-RAG Token Optimization without Mutilation: keep router bodies lean (180–450 tokens) while preserving 100% of technical contracts in modular references.
 
 ## Decision Gates
 
 | Situation | Action |
 | --- | --- |
-| Missing or invalid frontmatter | Fix `name`, quoted one-line `description`, `license`, and `metadata` |
-| Skill reads like tutorial docs | Convert to runtime instructions and move background to `references/` |
-| Body exceeds budget | Preserve rules, move examples/background to supporting files |
+| Missing or invalid frontmatter | Standardize `name`, quoted one-line `description`, `license`, and `metadata` |
+| Negative prohibitions or shouting | Transmute into affirmative closed-domain bounds per `references/cohalo_guidelines.md` |
+| Tutorial prose or extensive schemas | Relocate to `references/` preserving complete technical contracts (Dual-RAG) |
+| Body exceeds budget | Retain rules in router; move examples and background to supporting references |
 | Branching logic hidden in prose | Convert to a compact decision table |
-| Rules conflict or intent is unclear | Report the issue; do not rewrite that rule automatically |
+| Conflicting rules or unclear intent | Escalate for human review, keeping the existing rule unchanged |
 
 ## Execution Steps
 
