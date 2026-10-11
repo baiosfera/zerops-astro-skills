@@ -27,17 +27,40 @@ export function loadBrandSystemPrompt(
   return "You are a professional customer assistant. Respond with helpfulness, elegance, and precision following brand guidelines.";
 }
 
+export function classifyMessageIntent(text: string): "production" | "free" {
+  const normalized = text.toLowerCase();
+  const salesTriggers = [
+    "precio", "cuanto", "comprar", "ticket", "entrada", "reserva", "pago",
+    "cuenta", "link", "transferencia", "evento", "boleta", "afiliado",
+    "embajador", "reclamo", "humano", "asesor"
+  ];
+  return salesTriggers.some(trigger => normalized.includes(trigger)) ? "production" : "free";
+}
+
+export function calculateTypingPacing(replyLength: number): number {
+  // Pacing: 1500ms floor, ~20ms per character, capped at 3000ms
+  return Math.min(3000, Math.max(1500, 1500 + replyLength * 15));
+}
+
 export async function generateChatResponse(
   conversationHistory: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-  bifrostUrl: string = process.env.BIFROST_URL || "http://bifrost:8080/v1"
+  options?: {
+    bifrostUrl?: string;
+    tier?: "production" | "free";
+    headers?: Record<string, string>;
+  }
 ): Promise<string> {
-  const isPro = headers?.["x-tier"] === "production";
+  const bifrostUrl = options?.bifrostUrl || process.env.BIFROST_URL || "http://bifrost:8080/v1";
+  const tier = options?.tier || "production";
+  const isPro = tier === "production";
+
   const res = await fetch(`${bifrostUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${process.env.BIFROST_VIRTUAL_KEY || "vk-evolution-wa"}`,
-      ...headers
+      "x-tier": tier,
+      ...(options?.headers || {})
     },
     body: JSON.stringify({
       model: isPro ? "deepseek-chat" : (process.env.BIFROST_MODEL || "auto"),
