@@ -14,10 +14,10 @@ Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup
 
 ## Hard Rules & Positive Guidance
 - **Brand SSoT & Persona**: Ingest personas via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` (UTC-5). Use warm informal "tú", avoiding cold support lists. Ground catalog links strictly in verified Astro routes.
-- **Bifrost LLM & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` with deterministic Tool Calling (PostgreSQL 18). Route voice notes to Groq Whisper Large-v3-Turbo (<350ms). Use hybrid memory (Valkey hot buffer + Postgres profiles, zero ltrim amnesia).
-- **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`, never LID) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted message context (`contextInfo.quotedMessage`).
-- **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 2.5s–7s typing delays.
-- **Decoupling & Hygiene**: Run dedicated worker in Bun LXC (`whatsappbot`), NEVER in Astro SSR (prevents deploy downtimes and retry storms). Acknowledge webhooks <15ms via NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id` deduplication. Bound CLI commands (`timeout 10s`).
+- **Bifrost Dual-Tier & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` using Dual-Tier Predictive Routing (`x-tier: production` for transactional/sales/tools direct to Pro Tier; FreeLLMAPI with 2.5s timeout for FAQs). Route audio to Groq Whisper (<350ms). Use hybrid memory (Valkey hot buffer + Postgres profiles, zero ltrim amnesia).
+- **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted context (`contextInfo.quotedMessage`).
+- **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 1.5s–3s typing delays.
+- **Decoupling & Early ACK**: Run dedicated worker in Bun LXC (`whatsappbot`), never in Astro SSR. Acknowledge webhooks <15ms before LLM inference to eliminate Evolution API retry storms. Stream through NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id` deduplication. Bound CLI commands (`timeout 10s`).
 
 ## Decision Gates
 
