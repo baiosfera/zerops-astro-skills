@@ -31,14 +31,19 @@ export async function generateChatResponse(
   conversationHistory: Array<{ role: "system" | "user" | "assistant"; content: string }>,
   bifrostUrl: string = process.env.BIFROST_URL || "http://bifrost:8080/v1"
 ): Promise<string> {
+  const isPro = headers?.["x-tier"] === "production";
   const res = await fetch(`${bifrostUrl}/chat/completions`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.BIFROST_VIRTUAL_KEY || "vk-evolution-wa"}`,
+      ...headers
+    },
     body: JSON.stringify({
-      model: process.env.BIFROST_MODEL || "gpt-4o-mini",
+      model: isPro ? "deepseek-chat" : (process.env.BIFROST_MODEL || "auto"),
       messages: conversationHistory,
-      temperature: 0.7,
-      max_tokens: 400,
+      temperature: 0.1,
+      max_tokens: 600,
     }),
   });
 
