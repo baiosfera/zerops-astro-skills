@@ -22,7 +22,7 @@
    - **Flujo de Proyecto:**
      ```bash
      # 1. Fijar o crear el Proyecto / Plan maestro
-     linear-cli set-project "ElPlacerDC — Suite Webdev, Corset & Automatización 360"
+     linear-cli set-project "<Nombre o UUID del Proyecto>"
      # O crear un proyecto nuevo para una iniciativa mayor:
      linear-cli create-project "Nombre del Plan" "Descripción y objetivos"
 
