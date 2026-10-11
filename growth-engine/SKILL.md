@@ -14,7 +14,7 @@ Activate when designing conversion funnels, generating high-converting sales cop
 
 ## Hard Rules & Positive Guidance
 - **Decoupled Brand SSoT Ingestion**: Ingest voice parameters dynamically from `$BRAND_SSOT_PATH`, `src/config/brand.json`, or direct runtime arguments. Extract archetypes, tone constraints, and forbidden jargon.
-- **Bifrost AI Gateway Single Front Door**: Route all copy generation and recovery messages through `http://bifrost:8080/v1/chat/completions` using structured JSON output schemas.
+- **Bifrost AI Gateway Single Front Door & Pro Invariant**: Route all copy generation and recovery messages through `http://bifrost:8080/v1/chat/completions` using structured JSON output schemas. Send `x-tier: production` for revenue-critical copy generation and abandoned cart recovery to route directly to Pro models, avoiding 429 timeouts or degraded sales copy.
 - **Cart Fencing & Monotonic Versioning**: Capture leads on input blur via Astro Actions, staging records in Valkey (`cart:abandoned:${id}`) with 24h TTL. Schedule BullMQ delayed jobs containing `{ cartId, version }`. Workers self-discard when `job.version !== current.version` or when status is `CONVERTED`.
 - **Dynamic Capped Discounting**: Enforce mathematical margin protection across all recovery offers:
   $$\text{Discount Ceil} = \min(\text{Product Margin} - 0.05, \, \text{LTV Tier Cap}, \, \text{Attempt Ceiling})$$
