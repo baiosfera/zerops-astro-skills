@@ -45,7 +45,8 @@ Generate the complete omnichannel package matching the Zod schema.`;
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
+      "Authorization": `Bearer ${apiKey}`,
+      "x-tier": tier
     },
     body: JSON.stringify({
       model,
