@@ -50,6 +50,7 @@ All connection strings and secrets must be injected via Zerops environment varia
 # LLM Gateway
 BIFROST_URL="http://bifrost:8080/v1"
 BIFROST_API_KEY="${BIFROST_API_KEY:-}"
+BIFROST_TIER="production" # Passes x-tier: production to guarantee Pro inference on sales copy
 
 # Cache & Queues (Mapped automatically by Zerops)
 VALKEY_URL="${valkey_connectionString}"
