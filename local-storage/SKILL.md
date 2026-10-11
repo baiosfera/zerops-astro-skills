@@ -24,6 +24,7 @@ Activate when architecting, configuring, mounting, optimizing, or operating Zero
 8. **ZCP Control-Plane Mount Law**: When mounting to `/var/www/{hostname}` in ZCP, bind `/data` to `/var/www` on storage (`mount --bind /data /var/www` in `/etc/fstab`). Automate via `scripts/localstorage-mount-zcp.sh`.
 9. **Subdirectory Permission Bootstrap**: While the mount root is owned natively by the platform, new application subdirectories on the persistent volume (e.g. `/mnt/localstorage/<service>`) must be provisioned in `prepareCommands` via `sudo mkdir -p <dir> && sudo chown -R zerops:zerops <dir>` to prevent unprivileged runtime crashes during initial database creation.
 10. **Storage Tiering (POSIX vs S3)**: Use Local Storage for low-latency POSIX single-node filesystem needs (SQLite WAL, IPC sockets, temporary cache); use `object-storage` for large binary media, customer-facing downloads, multi-container static assets, and durable backups.
+11. **Multi-Brand SSoT Standard**: For multi-brand architectures, persistent brand assets and narrative configurations reside under `/mnt/localstorage/${PROJECT_NAME}/dev` (and `prod`). Connected services (e.g. `whatsappbot`, `webdev`) mount the volume and dynamically read `system_prompt.md`, `brandbook.json`, and `catalog_links.json`. If empty on a new ZCP, the seed script copies the baseline from `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}`.
 
 ## Decision Matrix
 
