@@ -18,13 +18,31 @@ The WhatsApp bot acts as an empathetic, high-converting customer sales assistant
 import fs from "node:fs";
 import path from "node:path";
 
-export function loadBrandSystemPrompt(
-  brandPromptPath: string = process.env.SYSTEM_PROMPT_PATH || process.env.BRAND_SSOT_PATH || "/var/www/brand/system_prompt.md"
-): string {
-  if (fs.existsSync(brandPromptPath)) {
-    return fs.readFileSync(brandPromptPath, "utf-8");
+export function resolveBrandSSoT(): { systemPrompt: string; projectName: string } {
+  const projectName = process.env.PROJECT_NAME || process.env.zerops_projectName || "ELPLACERDC";
+  const customPath = process.env.BRAND_SSOT_PATH;
+  
+  // 1. Primary path in mounted localstorage
+  const primaryDir = customPath || path.join("/mnt/localstorage", projectName, "dev");
+  const primaryPrompt = path.join(primaryDir, "system_prompt.md");
+  if (fs.existsSync(primaryPrompt)) {
+    return { systemPrompt: fs.readFileSync(primaryPrompt, "utf-8"), projectName };
   }
-  return "You are a professional customer assistant. Respond with helpfulness, elegance, and precision following brand guidelines.";
+
+  // 2. Fallback / Seed from baiosfera PROYECTOS
+  const seedDir = path.join("/var/www/baiosfera/PROYECTOS", projectName);
+  const seedPrompt = path.join(seedDir, "system_prompt.md");
+  if (fs.existsSync(seedPrompt)) {
+    fs.mkdirSync(primaryDir, { recursive: true });
+    fs.copyFileSync(seedPrompt, primaryPrompt);
+    return { systemPrompt: fs.readFileSync(primaryPrompt, "utf-8"), projectName };
+  }
+
+  // 3. Fallback safe default
+  return {
+    systemPrompt: `Eres el asistente oficial de atención y ventas de ${projectName}. Responde en tono cálido, empático y profesional, guiando al cliente con información precisa y verificada.`,
+    projectName
+  };
 }
 
 export function classifyMessageIntent(text: string): "production" | "free" {
