@@ -14,10 +14,10 @@ Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup
 
 ## Hard Rules & Positive Guidance
 - **Brand SSoT & Persona**: Ingest personas via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` (UTC-5). Use warm informal "tú", avoiding cold support lists. Ground catalog links strictly in verified Astro routes.
-- **Bifrost LLM & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` and voice notes to `http://bifrost:8080/v1/audio/transcriptions` with Bearer key.
+- **Bifrost LLM & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` with deterministic Tool Calling (PostgreSQL 18). Route voice notes to Groq Whisper Large-v3-Turbo (<350ms). Use hybrid memory (Valkey hot buffer + Postgres profiles, zero ltrim amnesia).
 - **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`, never LID) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted message context (`contextInfo.quotedMessage`).
 - **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 2.5s–7s typing delays.
-- **Decoupling & Hygiene**: Acknowledge webhooks <10ms via NATS JetStream `events.whatsapp.incoming`. Deduplicate in Valkey 7.2 (`SET lock:wa:msg:${id} 1 NX EX 3600`). Run Evolution Go on `alpine/go@1.22` with PostgreSQL schemas (`evogo_auth`, `evogo_users`). Bound CLI commands (`timeout 10s`).
+- **Decoupling & Hygiene**: Run dedicated worker in Bun LXC (`whatsappbot`), NEVER in Astro SSR (prevents deploy downtimes and retry storms). Acknowledge webhooks <15ms via NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id` deduplication. Bound CLI commands (`timeout 10s`).
 
 ## Decision Gates
 
