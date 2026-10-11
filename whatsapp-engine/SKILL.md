@@ -13,7 +13,7 @@ metadata:
 Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup, Bifrost LLM Gateway (`http://bifrost:8080/v1`), dynamic SSoT identity (`$SYSTEM_PROMPT_PATH`), or NATS JetStream in Zerops.
 
 ## Hard Rules & Positive Guidance
-- **Brand SSoT & Persona**: Ingest personas via `$SYSTEM_PROMPT_PATH` or `$BRAND_SSOT_PATH` (UTC-5). Use warm informal "tú", avoiding cold support lists. Ground catalog links strictly in verified Astro routes.
+- **Brand SSoT & Persona**: Ingest personas via `$BRAND_SSOT_PATH` (default: `/mnt/localstorage/${PROJECT_NAME}/dev/system_prompt.md`, fallback seed from `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}`). Worker holds exclusive identity control; Bifrost remains agnostic transport. Ground catalog links strictly in verified Astro routes.
 - **Bifrost Dual-Tier & Whisper**: Route completions to `http://bifrost:8080/v1/chat/completions` using Dual-Tier Predictive Routing (`x-tier: production` for transactional/sales/tools direct to Pro Tier; FreeLLMAPI with 2.5s timeout for FAQs). Route audio to Groq Whisper (<350ms). Use hybrid memory (Valkey hot buffer + Postgres profiles, zero ltrim amnesia).
 - **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted context (`contextInfo.quotedMessage`).
 - **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 1.5s–3s typing delays.
