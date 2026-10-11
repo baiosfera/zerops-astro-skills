@@ -27,10 +27,9 @@ Activar para compilar la identidad visual consolidada, generando el manifiesto *
   - Ramas limpias: `brand`, `typography`, `color`, `motion`, `sound`, `vectors`, `accessibility`, `extensions`.
   - Extensiones `$extensions.tailwind_v4` y `$extensions.css_variables` para generación frontend downstream.
 - **3. Motor de Exportación Fidedigno & Showcase:** Generar `index.html` interactivo descargable y paquetes de exportación (SVG, PNG Retina, JPG, PDF) con renderizado exacto del Isologotipo y paletas reales sin placeholders.
-- **4. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`:
-  - `brandbook.json`
-  - `brandbook_manifest.md`
-  - `index.html`
+- **4. Salida Determinista SSoT & Espejo Runtime Local Storage:** Escribir y sincronizar en:
+  - **Drive SSoT:** `/var/www/baiosfera/PROYECTOS/[MARCA]/` y `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` (`brandbook.json`, `system_prompt.md`, `brandbook_manifest.md`, `index.html`).
+  - **Runtime Zerops (Local Storage):** `/var/www/localstorage/[MARCA]/dev/` (montado en runtimes como `/mnt/localstorage/[MARCA]/dev/`) para ingesta inmediata por workers y bots.
 
 ## Output Contract
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/brandbook.json`
