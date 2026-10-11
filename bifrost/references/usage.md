@@ -234,6 +234,27 @@ export ANTHROPIC_BASE_URL="http://localhost:8080/anthropic"
 export ANTHROPIC_API_KEY="sk-bf-prod-main-key"
 ```
 
+### Pattern 6: Dual-Tier Predictive Intent Routing & Circuit Breaker with Cooldown
+Avoid 12-22s reactive failovers by classifying intents upfront:
+```typescript
+// Client-side predictive dispatch for WhatsApp Bots or Autonomous Workers
+const isTransactional = /comprar|precio|pago|ticket|reserva|orden|reclam/i.test(userText) || hasActiveTools;
+
+const response = await fetch("http://bifrost:8080/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${BIFROST_VIRTUAL_KEY}`,
+    ...(isTransactional ? { "x-tier": "production" } : {})
+  },
+  body: JSON.stringify({
+    model: isTransactional ? "deepseek-chat" : "auto",
+    messages: conversationMessages,
+    temperature: 0.1
+  })
+});
+```
+
 ---
 
 ## 7. Error Handling & Wire Catalog
@@ -256,3 +277,4 @@ export ANTHROPIC_API_KEY="sk-bf-prod-main-key"
 - **Anti-Pattern 1: Empty Array in Key Configuration**: Setting `{"models": []}`. In v2.0 semantics, this blocks all models. Use `["*"]`.
 - **Anti-Pattern 2: Client Direct Upstream Key Bypass**: Sending raw provider keys directly to Bifrost. All requests require Virtual Keys.
 - **Anti-Pattern 3: Unbounded Semantic Cache Threshold**: Setting cosine threshold to `<0.75` causes false positive cache hits. Keep between `0.85` and `0.90`.
+- **Anti-Pattern 4: Reactive 429 Cascade Failover**: Routing all traffic to FreeLLMAPI and waiting for 429 errors before falling back to Pro Tier. This causes 12-22s cumulative latency, webhook timeouts in WhatsApp (Evolution API retry storms), and model hallucination on sales links. Always use Dual-Tier Predictive Intent Routing with a 120s Circuit Breaker Cooldown.
