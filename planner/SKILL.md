@@ -4,46 +4,42 @@ description: "Trigger: planner, plan, master-plan, planificar, crear plan, dise�
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "9.5"
+  version: "10.0"
 ---
 
-# Planner — Universal Master Planning & SSoT Governance Orchestrator (v9.5)
+# Planner — Supremo Gobernador de Orquestación & SSoT (v10.0)
 
 ## Activation Contract
-Activate for multi-step refactors, architectural evolutions, and governance under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Bounded tasks execute inline without ceremonial plans. Eradicates checklist theater.
+Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `grilling`, comanda subagentes delegados y garantiza el arnés físico determinista bajo [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Tareas atómicas de un solo archivo ejecutan inline sin planes ceremoniales.
 
-## Hard Rules (Positive Guidance)
-- **Rule 1 (CoHaLo Positive Guidance & Continuous Present Inflow)**: Anchors decisions to live runtime state (`date -u`). Grounding follows [`research`](file:///var/www/.agents/skills/research/SKILL.md) inline or via subagent. Details in [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md).
-- **Rule 2 (Dual-Track SSoT Governance & Lifecycle Bifurcation)**: Quad-Track lifecycle: Track A (Skills, Python platform scripts, setup-*) executes via [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) through the 8-node harness with atomic snapshots in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<skill_name>_v<current_version>.bak/` and `git push origin main` to `zerops-astro-skills`. Track B governs core chassis `zerops-astrobranding` with native Git rollback and push to its own repo. Track C governs derived workloads and apps under Plantilla Universal v4 with client repositories and GitOps pipelines. Track D governs direct SSoT data and content ops in Google Drive.
-- **Rule 3 (Linear State Machine, Anti-Amnesia Consolidation & Token Economy)**: El planner consolida de forma acumulativa el estado, decisiones y pasos en la descripción de los Issues de Linear (vía `linear-cli issue create` y `linear-cli issue update`), manteniendo el chat ágil y sin bloat de tokens. Para épicas de proyecto, indexa cada hito a un ID (`BAI-*`). Tras la atestación física de compiladores o tests, avanza el estado del Issue a "Done" (`linear-cli update-status "Done"`).
-- **Rule 4 (SSoT Indivisibility & Universal Clean-Room Virgin ZCP Law)**: Tooling assets reside in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/` and provision via `unisetup.sh`. Clean-room benchmark requires 0 drift (`ssot-parity-check` exit 0). Blindaje Anti-Freeze FUSE: Para búsquedas sobre `/var/www/baiosfera`, podá (`-prune`) las carpetas remotas o buscá directamente en directorios locales específicos; los sensores residen en `/usr/local/bin/`.
-- **Rule 5 (Closed Lifecycle Topology & Zero-Omission Checklist Gate)**: All bootstrap changes (like `iniciar.sh`) trigger an immediate backup to SSoT Drive and explicit `git push` to ALL involved repos (`zerops-astrobranding`, etc.). Tracks execute closed milestones with zero omission.
+## 5 Invariantes Soberanos (Positive Guidance)
+1. **Facts-First Grounding & Anti-Grilling**: Iniciar siempre con inspección en disco o subagente `research`. Si los datos existen en el repo o la documentación, ejecutar sin preguntas. Reservar preguntas exclusivamente para bifurcaciones arquitectónicas reales con tradeoffs (máximo 1 pregunta atómica a la vez).
+2. **Linear Invariable Grouping (Zero-Orphan BAI)**: Todo issue `BAI-*` se crea estrictamente dentro de un Plan/Proyecto padre (`linear-cli create ... --project <ID|name>`). Prohibido generar issues huérfanos. Consolidar estado, decisiones y criterios en la descripción del Issue para economizar tokens en chat.
+3. **Thin Orchestrator & Bounded Delegation**: Mantener contexto ligero delegando ediciones multi-archivo ($\ge 2$ archivos) o builds a subagentes temporales acotados (`invoke_subagent`). El orquestador sintetiza únicamente el resultado verificado.
+4. **Fast & Cheap Physical Attestation**: Toda tarea se valida con sensores deterministas de bajo costo antes de reportar completitud o marcar Done:
+   - Chequeo estático / sintaxis: `bun run build` o `node --check` (exit 0).
+   - Tests de comportamiento: `bun test` o `pytest` (exit 0).
+   - Sensor funcional / grep: rutas correctas y cero regresiones.
+5. **Arquitectura Lego Desacoplada (Plantilla v4 & Zerops)**: Chasis inmutable en `/var/www/zerops-astrobranding`. Construcción según `plantilla-universal-web-zerops-v4.md`. Servicios interconectados vía DNS privado (`http://<servicio>:<puerto>`), con staging efímero.
 
 ## Decision Gates
 
-| Use Case | Action / Protocol | Reference |
+| Capa | Protocolo / Acción | Referencia |
 |---|---|---|
-| Inflow Grounding (F0) | 12-engine cascade | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`research`](file:///var/www/.agents/skills/research/SKILL.md) · [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md) |
-| Skill Governance (Track A) | Physical 8-node harness | [`docu`](file:///var/www/.agents/skills/docu/SKILL.md) · [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md) · [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) |
-| Governance Contracts | SSoT indivisibility | [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) |
-| Plan Integrity (F4) | Sincronizar y Crear Issue | `linear-cli issue create` |
-| Plan Archival & Hygiene | Cerrar Issue | `linear-cli update-status "Done"` |
-| Linear Roadmap Sync | Sincronizar epics | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
-| Physical Attestation (F5) | Verify exit code 0 | [`references/control_matrix_standard.md`](file:///var/www/.agents/skills/planner/references/control_matrix_standard.md) |
+| Inflow Epistémico | Inspección en disco $\to$ `research` 360 | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
+| Aclaración Restringida | Facts-first; máx 1 pregunta con opciones | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
+| Plan & Agrupación | `linear-cli create-project` / `create --project` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
+| Ejecución Delegada | Subagente worker acotado para $\ge 2$ archivos | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
+| Sensores Físicos | Tests exit code 0 $\to$ `linear-cli update-status` | [`skills-suite-validate`](file:///usr/local/bin/skills-suite-validate) |
+| Cierre SSoT | `mem_save` / `mem_session_summary` | [`engram`](file:///var/www/.agents/skills/planner/references/usage.md) |
 
-## Critical Workflows / Execution Steps
-1. **F0 (Inflow)**: Recall local LTM (`mem_search`); execute grounding via [`research`](file:///var/www/.agents/skills/research/SKILL.md).
-2. **F1 (Clarification Gate)**: Ask 1 concise question for ambiguities, stopping immediately.
-3. **F2 (Dual-RAG Pre-Plan)**: Verify [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) and map closed sequence.
-4. **F3 (Validation Feedforward)**: Validate topology with static linters (`zcp-validate`).
-5. **F4 (Plan Definition & Approval Gate)**: Define scope and acceptance criteria in chat or create a Linear Issue/Project for large initiatives via `linear-cli issue create`. Solicit user "Go" before mutating production code.
-6. **F5 (Execution & Parity)**: Execute Track steps (8 nodes $N_1$ to $N_8$ for Track A; deployment milestones for Track B/C). Bounded execution (`timeout 10s`). Al completar cada sub-tarea y validar con tests, actualizar el estado en Linear a "Done", y realizar `ssot-parity-check` y `git push` respectivos.
+## Workflows Ejecutivos (F0–F5)
+1. **F0 (Inflow)**: Inspección silenciosa de hechos con subagente `research` o disco local.
+2. **F1 (Clarification Gate)**: Preguntar solo si no existe evidencia física en disco.
+3. **F2 (Dual-RAG Alignment)**: Consultar especificaciones en `references/usage.md`.
+4. **F3 (Validation Feedforward)**: Chequeo de sintaxis física.
+5. **F4 (Plan & Approval)**: Enlazar a Proyecto en Linear con criterios verificables.
+6. **F5 (Execution & Fast Attestation)**: Delegación a subagente, tests físicos (`bun test` exit 0), actualización a Done y persistencia en Engram.
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
-- [`references/governance_contracts.md`](file:///var/www/.agents/skills/planner/references/governance_contracts.md) · [`references/control_matrix_standard.md`](file:///var/www/.agents/skills/planner/references/control_matrix_standard.md)
-
-## Cierre del Plan (Engram y Skill-Registry)
-Todo plan ejecutado concluye verificando:
-1. **Actualización de Registro (Si aplica):** Si involucra crear o modificar habilidades, ejecutar `skill-registry` para actualizar firmas.
-2. **Cierre de Memoria:** Registrar la bitácora arquitectónica ejecutando `mem_session_summary` en Engram.
