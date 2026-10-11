@@ -4,11 +4,12 @@
 Evolution Go delivers webhooks for incoming WhatsApp messages (`messages.upsert`). Executing LLM generation, pgvector retrieval, or CRM updates synchronously inside the webhook callback causes request timeouts, worker pool exhaustion, and dropped messages.
 
 ### Decoupled Pipeline:
-1. **Webhook Ingress**: Evolution Go posts to `/api/webhooks/whatsapp`.
-2. **NATS JetStream Publish**: The endpoint publishes the raw message to subject `events.whatsapp.incoming` and immediately returns HTTP `200 OK` (<20ms).
-3. **Queue Group Worker**: Multiple instances of the conversational agent consume from `events.whatsapp.incoming` using a shared queue group (`qgroup:whatsapp-bot`).
-4. **Valkey Deduplication**: Lock key `lock:wa:msg:${messageId}` prevents duplicate processing on webhook retries.
-5. **Response Dispatch**: After LLM reasoning and CRM lookups, the worker calls Evolution Go's `POST /message/sendText` or publishes to `events.whatsapp.outgoing`.
+1. **Webhook Ingress**: Evolution Go posts to `/api/webhooks/whatsapp` (ultralight endpoint).
+2. **NATS JetStream Publish**: The endpoint publishes the raw message to subject `events.whatsapp.incoming` with header `Nats-Msg-Id: evt_${messageId}` for native stream deduplication (120s window) and immediately returns HTTP `200 OK` (<15ms).
+3. **Queue Group Worker**: A dedicated Zerops service (`whatsappbot` on `ubuntu/bun@1.3`, isolated from the web SSR container) consumes from `events.whatsapp.incoming` using durable pull consumer queue group (`qgroup:whatsapp-bot`).
+4. **Valkey Deduplication & Human Takeover**: Atomic lock `SET lock:wa:msg:${messageId} 1 NX EX 3600` and check `wa:human_takeover:${phone}` (2h operator silence window).
+5. **Deterministic Tool Calling & Grounding**: Executes relational SQL (`WHERE fecha >= CURRENT_DATE`) against PostgreSQL 18 via Bifrost function calling, avoiding hallucinated dates or unnecessary pgvector latency.
+6. **Response Dispatch**: Calls Evolution Go's `POST /message/sendText` with paced typing delay (2.5s–7s) and acknowledges message in NATS (`msg.ack()`).
 
 ---
 
