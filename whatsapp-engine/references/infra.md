@@ -139,10 +139,18 @@ zerops:
         WADEBUG: "INFO"
         LOGTYPE: "console"
 
-        # Webhook fallback URL
-        WEBHOOK_URL: "http://aiworker:3000/webhook"
+        # Webhook fallback URL (Decoupled Bun Worker)
+        WEBHOOK_URL: "http://whatsappbot:3000/webhook"
         WEBHOOK_BY_EVENTS: "true"
-```
+
+---
+
+## 3.1 Decoupled Bun Worker & Early Webhook ACK Invariant
+
+To eliminate webhook retry storms and catastrophic cascade failovers:
+1. **Physical Decoupling**: The WhatsApp bot runs in a dedicated Ubuntu Bun LXC container (`whatsappbot`), isolated from the frontend website (`astro`) and platform control plane (`zcp`).
+2. **Sub-15ms Webhook ACK**: Upon receiving webhook payloads from Evolution API, the worker MUST immediately return HTTP `200 OK` (`{ status: "received" }`) within <15ms, offloading message processing to an internal async queue or NATS JetStream.
+3. **Dual-Tier Ingress to Bifrost**: Asynchronous processing classifies intent. Transactional, sales, booking, and tool requests pass `x-tier: production` to `http://bifrost:8080/v1` (routing directly to DeepSeek Pro). Non-critical inquiries query FreeLLMAPI with a 2.5s strict timeout and 120s Circuit Breaker Cooldown.
 
 ---
 
