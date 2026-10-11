@@ -182,3 +182,24 @@ When orchestrating or interacting with Bifrost in this ZCP environment:
     curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health
     # MUST return 200
     ```
+
+---
+
+## 6. Ephemeral ZCP Control Plane Boundary vs Dedicated 24/7 Runtime Mesh
+
+Zerops enforces a strict architectural boundary between the Control Plane (`zcp`) and Production Runtime Services:
+
+1. **ZCP Lifecycle (Ephemeral & Demand-Driven)**:
+   - The `zcp` container is active ONLY during interactive editing, auditing, SSoT synchronization, and deployment cycles. It is suspended/stopped during normal operations.
+   - **Zero Production Dependents**: Never route WhatsApp webhooks, background workers, or public APIs through `zcp`.
+
+2. **Dedicated Runtime Mesh (24/7 Invariant)**:
+   - The production Bifrost gateway runs continuously in its dedicated `bifrost` container (`alpine/go@1.22` on internal port `8080`).
+   - Configuration is persisted in managed PostgreSQL 18 (`config_store` & `logs_store`).
+   - All runtime services (`whatsappbot`, `webprod`, `evolution`) connect directly to `http://bifrost:8080` over the Zerops private VXLAN mesh.
+
+3. **Role of `bifrost-cli` in ZCP**:
+   - `bifrost-cli` operates strictly as a development-time utility:
+     - Synthetic smoke testing of `config.json` before applying changes.
+     - TUI bridge for Coding Agents (Claude Code, OpenCode) running inside `zcp`.
+     - Validating virtual key permissions and latency benchmarking.
