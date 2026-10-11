@@ -26,7 +26,7 @@ This manual provides the production-grade infrastructure blueprints, multi-servi
 │                  ▼                              ┌──────────────────────────────────────────────────┐   │
 │   ┌──────────────────────────────┐              │ Intelligent AI / LLM Agent Worker (aiworker)     │   │
 │   │ Shared Storage (localstorage) │              │ (python@3.12 / nodejs@20)                        │   │
-│   │ /mnt/localstorage/evolutiongo │              │ - Consumes NATS events & executes OpenAI/Whisper │   │
+│   │ /mnt/localstorage/${PROJECT_NAME}/dev (Brandbook SSoT) & /mnt/localstorage/evolutiongo │              │ - Consumes NATS events & executes OpenAI/Whisper │   │
 │   └──────────────────────────────┘              └────────────────────────┬─────────────────────────┘   │
 │                                                                          │                             │
 │                  ┌───────────────────────────────────────────────────────┴─────────┐                   │
