@@ -6,11 +6,12 @@ import {
 
 export async function atomizePillarContent(
   pillar: PillarContentInput,
-  options?: { bifrostUrl?: string; model?: string; apiKey?: string }
+  options?: { bifrostUrl?: string; model?: string; apiKey?: string; tier?: "production" | "free" }
 ): Promise<OmnichannelAtomizationBundle> {
   const endpoint = options?.bifrostUrl || process.env.BIFROST_URL || "http://bifrost:8080/v1";
   const model = options?.model || process.env.DEFAULT_COPY_MODEL || "claude-3-7-sonnet";
   const apiKey = options?.apiKey || process.env.BIFROST_API_KEY || "dummy-key";
+  const tier = options?.tier || "production";
 
   const systemPrompt = `You are an elite conversion copywriter and growth architect.
 Your mission is to transform the provided Pillar Content into a high-converting, omnichannel copy bundle.
