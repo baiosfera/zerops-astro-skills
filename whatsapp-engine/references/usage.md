@@ -415,16 +415,30 @@ In WhatsApp Multi-Device (WhatsApp Web / Desktop), messages from operators (`isF
 3. **Dual-Key Symmetric Locks**: When taking over a chat (`#stop`, `#mute`, or manual operator intervention), resolve all related identifiers (both Phone and LID) and set `wa:human_takeover:${id}` for both. When checking `isHumanTakeover`, evaluate both keys.
 4. **Unified Session History**: Always store and load chat turns under the resolved canonical phone number (`chat:sessions:${canonicalPhone}`) so operator interventions and customer replies share the identical conversation thread.
 
+### Pattern 9: Stale Webhook Replay Guard on Container Reconnects
+When a decoupled messaging container restarts or Evolution API reconnects, Evolution API buffers or replays webhook queues containing events that occurred minutes or hours prior. If ingested unconditionally, the bot treats stale messages as live triggers, dispatching automated responses to closed conversations ("greeting replay storm").
+1. **Timestamp Extraction (`extractMessageEpochMs`)**: Inspect incoming payload across Baileys and Evolution Go / whatsmeow formats (`info.Timestamp`, `info.timestamp`, `eventData.messageTimestamp`, `key.timestamp`).
+2. **Threshold Rejection (>120s)**: Calculate `ageSeconds = (Date.now() - messageEpochMs) / 1000`. If `ageSeconds > 120`, drop immediately returning `{ status: "ignored_stale_message" }` without invoking LLM inference or sending messages.
+3. **24-Hour Atomic Deduplication (`acquireLock`)**: WhatsApp message IDs are globally unique. Set distributed locks in Valkey (`SET lock:wa:${messageId} 1 NX EX 86400`) with a 24-hour TTL, completely preventing reprocessing on webhook retries or container restarts.
+
+### Pattern 10: Sovereign #stop Monotonicity & PostgreSQL SSoT Persistence
+1. **Sovereign Monotonicity**: Commands `#stop`, `#off`, `#silencio`, `#desactivar` establish permanent 10-year takeover (`EX 315360000`). When operators subsequently send manual messages in that chat, the bot must check current takeover status and strictly preserve the `#stop` state, never overwriting with the default 2-hour temporary pause. Only an explicit `#bot` command can lift a permanent stop.
+2. **PostgreSQL SSoT Persistence**: Persist `bot_status` (`stopped` | `muted` | `active`), `bot_stopped_at`, and `bot_mute_until` into PostgreSQL `leads.metadata` (JSONB) on every takeover mutation.
+3. **Valkey Re-hydration on Cache Miss**: When `isHumanTakeover` encounters a cache miss in Valkey (due to container redeploy, restart, or cache flush), it falls back to querying `leads.metadata` in PostgreSQL. If the lead is stopped or currently muted, Valkey keys are automatically re-seeded and silence is enforced.
+
 ---
 
 ## 6. Anti-Patterns & Gotchas
 
 1. **Synchronous LLM Calls in Webhooks**: Never perform 10-second LLM inference inside synchronous HTTP webhook handlers. Always decouple via NATS JetStream queues with ACK/NAK.
-2. **Missing Idempotency Locks**: WhatsApp webhooks re-send events if acknowledgments take longer than 5 seconds. Always lock message IDs in Valkey (`SET lock:msg:<id> 1 NX EX 3600`).
+2. **Missing Idempotency Locks**: WhatsApp webhooks re-send events if acknowledgments take longer than 5 seconds. Always lock message IDs in Valkey (`SET lock:wa:<id> 1 NX EX 86400`).
 3. **Sharing PostgreSQL Database without Schema Separation**: Keep `evogo_auth` and `evogo_users` in separate databases or schemas to avoid lock contention during high-volume message logging.
 4. **Ignoring Passkey WebAuthn Support**: New WhatsApp accounts require Passkey ceremonies. Use Evolution Go v0.7.2+ to prevent broken session disconnections.
 5. **Raw 10-Digit Mobile Numbers without Country Prefix**: Supplying raw 10-digit mobile numbers (e.g. `3101234567`) to `wa.me/` or EvolutionGo defaults to Netherlands (+31), causing 404 number-not-found errors. Always use `normalizePhone` to ensure E.164 compliance (+57 for Colombian numbers starting with 3).
 6. **Carbon-Copy Duplicate Notifications**: Sending identical text verbatim across both WhatsApp and transactional email degrades user experience and trust. Keep WhatsApp conversational and agile (concierge), and email formal and archival (dossier).
 7. **LID-Isolated Human Takeover Locks**: Setting `wa:human_takeover:${lid}` when an operator sends `#stop` from WhatsApp Web while the customer replies with `${phone}@s.whatsapp.net` bypasses the lock. The bot fails to stop and continues messaging over the operator. Always resolve the canonical phone and lock symmetrically across both identifiers.
 8. **Unconfirmed `#stop` Commands & Rigid String Checks**: Operators typing `#stop ` (with spaces), uppercase `#STOP`, or synonyms (`#off`, `#silencio`, `#desactivar`) must be matched case-insensitively with trim. Immediate visual confirmation (`[Atención automática pausada por operador]`) must be dispatched via Evolution API so operators receive physical proof that the bot is disengaged. Customers requesting human assistance must also trigger an automatic pause (48h) and polite acknowledgement.
+9. **Overwriting Sovereign `#stop` on Subsequent Operator Messages**: Unconditionally executing `setHumanTakeover(phone, 7200)` on every operator message resets a 10-year `#stop` to 2 hours. After 2 hours, the bot awakens unprompted. Always check if the chat is already permanently stopped and preserve the status.
+10. **Volatile Memory-Only Takeover Without PostgreSQL SSoT**: Storing bot takeover purely in volatile Valkey keys loses silence states on container redeploy or cache eviction. Always persist status in PostgreSQL `leads.metadata` and re-hydrate Valkey on cache miss.
+11. **Short Deduplication Locks (45s) Under Queue Replays**: Using short locks permits duplicate processing when Evolution retries 60s later or replays queues upon reconnect. Always set 24h locks (`EX 86400`).
 
