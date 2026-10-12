@@ -1,4 +1,4 @@
-# Evolution Go Driver Specification (v1.0)
+# Evolution Go Driver Specification (v2.1)
 
 ## 1. Engine Capabilities & Zero-Overhead Footprint
 Evolution Go is written in Go (`whatsmeow` library) compiling to a single static binary running on Alpine Linux in Zerops Incus LXC.
@@ -16,6 +16,31 @@ A connection watchdog runs periodically against `GET /instance/status` to monito
 
 ---
 
-## 3. Deep Reference Documentation
-- [`references/drivers/evolutiongo_full_usage.md`](file:///var/www/.agents/skills/whatsapp-engine/references/drivers/evolutiongo_full_usage.md) — 4D matrix, instance lifecycle endpoints, pairing codes, WebAuthn Passkey, media endpoints, and cURLs.
-- [`references/drivers/evolutiongo_infra.md`](file:///var/www/.agents/skills/whatsapp-engine/references/drivers/evolutiongo_infra.md) — Alpine LXC setup, systemd, Zerops topology, and PostgreSQL session stores.
+## 3. Media Extraction & Audio Ingestion Invariant
+When Evolution Go receives voice notes or media through webhooks (`messages.upsert`):
+- **Base64 Payload Location**: The raw base64 string is located at `data.Message.base64` (`msgObj.base64`), NOT nested within `msgObj.audioMessage.base64`.
+- **Download Media Fallback**: If the incoming webhook omits inline base64 data, the worker MUST query the Evolution Go endpoint:
+  `POST http://evolution:8085/message/downloadmedia` with payload `{ "message": msgObj }` and header `apikey: $EVOLUTION_API_KEY`.
+- **Media Type Variations**: Ingestion logic must check `audioMessage`, `AudioMessage`, `mediaType: "audio"`, or `mimetype: audio/...`.
+- **Streaming Transcription**: Decode base64 to audio buffer and stream to Groq Whisper Large v3 Turbo (`whisper-large-v3-turbo`) in <350ms.
+
+---
+
+## 4. WhatsApp Multi-Device Identity & `@lid` Filtering
+Multi-device WhatsApp accounts emit Linked Device Identifiers (`15-digit-number@lid`) in `chatJid` or `senderJid`:
+- **Silent Drop Invariant**: Dispatching messages directly to `@lid` via Evolution Go `POST /send/text` fails or drops silently.
+- **Resolution Priority**: The worker must prioritize real phone numbers by checking `SenderAlt` or JIDs ending in `@s.whatsapp.net`.
+- **Normalization**: Clean non-numeric characters to E.164 digits before passing to database queries or message dispatch.
+
+---
+
+## 5. Early Webhook ACK Invariant (<15ms)
+To prevent webhook retry cascades from Evolution Go:
+- Ingress proxies or workers MUST return `HTTP 200 {"status": "acknowledged"}` within 15ms.
+- Asynchronous processing (Whisper audio transcription, Valkey session retrieval, PostgreSQL profile lookup, Bifrost LLM inference) executes in background promises or via NATS JetStream consumers.
+
+---
+
+## 6. Deep Reference Documentation
+- [`references/usage.md`](file:///var/www/.agents/skills/whatsapp-engine/references/usage.md) — 4D matrix, instance lifecycle endpoints, pairing codes, WebAuthn Passkey, media endpoints, and cURLs.
+- [`references/infra.md`](file:///var/www/.agents/skills/whatsapp-engine/references/infra.md) — Alpine LXC setup, systemd, Zerops topology, and PostgreSQL session stores.
