@@ -22,19 +22,25 @@ Activar para compilar la identidad visual consolidada, generando el manifiesto *
   - *Vectores:* Isologo, Monograma o Favicon en SVG puro (`symbol_manifest.json` o SSoT).
   - *Color:* Ecosistema cromático Dark & Light en OKLCH (`chroma_manifest.json` o SSoT).
   - *Motion & Audio:* Preset de animación 60fps y micro-audio ADSR (`kinetic_manifest.json` o SSoT).
-- **2. Interoperabilidad W3C DTCG (`brandbook.json`):**
-  - Todo token incluye `$type` (`color`, `fontFamily`, `duration`, `cubicBezier`, `string`), `$value` y `$description`.
-  - Ramas limpias: `brand`, `typography`, `color`, `motion`, `sound`, `vectors`, `accessibility`, `extensions`.
+- **2. Interoperabilidad W3C DTCG (`brandbook_superfull_[MARCA].json`):**
+  - Todo token incluye `$type` (`color`, `fontFamily`, `duration`, `cubicBezier`, `dimension`), `$value` y `$description`.
+  - Ramas limpias: `brand_architecture`, `ethical_pillars_and_anti_bias`, `design_system`, `voice_tone_and_messaging`, `target_audience`, `llm_system_prompt_engine`.
   - Extensiones `$extensions.tailwind_v4` y `$extensions.css_variables` para generación frontend downstream.
-- **3. Motor de Exportación Fidedigno & Showcase:** Generar `index.html` interactivo descargable y paquetes de exportación (SVG, PNG Retina, JPG, PDF) con renderizado exacto del Isologotipo y paletas reales sin placeholders.
+- **3. Ejecutor Autónomo Dual-Track (`brandbook_pipeline_runner.py`):**
+  - Ingesta shards Silver (~22 KB) y feeds Gold sin recorrer caché cruda (budget < 8k tokens).
+  - Invoca Bifrost Gateway (`http://bifrost:8080/v1/chat/completions`) con `x-tier: production`, `temperature: 0.2` y `json_object`.
+  - Deriva en paralelo `brandbook-theme.css` (`@theme` block para Tailwind CSS v4) y `system_prompt.md`.
 - **4. Salida Determinista SSoT & Espejo Runtime Local Storage:** Escribir y sincronizar en:
-  - **Drive SSoT:** `/var/www/baiosfera/PROYECTOS/[MARCA]/` y `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` (`brandbook.json`, `system_prompt.md`, `brandbook_manifest.md`, `index.html`).
-  - **Runtime Zerops (Local Storage):** `/var/www/localstorage/[MARCA]/dev/` (montado en runtimes como `/mnt/localstorage/[MARCA]/dev/`) para ingesta inmediata por workers y bots.
+  - **Runtime Zerops (Local Storage):** `/var/www/localstorage/[MARCA]/dev/` (`brandbook_superfull_[MARCA].json`, `brandbook-theme.css`, `system_prompt.md`).
+  - **Drive SSoT:** `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` y `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
 
 ## Output Contract
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/brandbook.json`
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/brandbook_manifest.md`
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/index.html`
+- `/var/www/localstorage/[MARCA]/dev/brandbook_superfull_[MARCA].json` (W3C DTCG 2025.10)
+- `/var/www/localstorage/[MARCA]/dev/brandbook-theme.css` (Tailwind CSS v4 `@theme`)
+- `/var/www/localstorage/[MARCA]/dev/system_prompt.md` (Conversational projection)
+- `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/brandbook_superfull_[MARCA].json` (Drive SSoT mirror)
+- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/brandbook.json` (Paridad retrocompatible)
 
 ## References
 - `references/usage.md` — Especificación W3C DTCG, desacople SSoT, consumo downstream y pipeline de exportación gráfica.
+- `scripts/brandbook_pipeline_runner.py` — Ejecutor Fast-Track CLI con Bifrost Gateway.
