@@ -202,8 +202,6 @@ Zerops enforces a strict architectural boundary between the Control Plane (`zcp`
    - `bifrost-cli` operates strictly as a development-time utility:
      - Synthetic smoke testing of `config.json` before applying changes.
      - TUI bridge for Coding Agents (Claude Code, OpenCode) running inside `zcp`.
-205:      - Validating virtual key permissions and latency benchmarking.
-206: 
 ---
 
 ## 7. Zerops Vault Self-Shadowing Prevention Invariant
