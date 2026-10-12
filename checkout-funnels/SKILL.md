@@ -20,6 +20,7 @@ Architecting checkout funnels, payment gateways (**Wompi**, **ePayco**, **dLocal
 - **1-Click Upsell Protocol**: Process post-purchase upsells off-session using tokenized instruments with 3DS step-up handling.
 - **Hardened COD OTP**: Verify secure 6-digit WhatsApp OTPs (`crypto.randomInt`, Valkey rate limits, timing-safe equality).
 - **Dual-Tagging & CAPI**: Emit browser and server `Purchase` events to Meta CAPI v21.0 with shared `event_id` deduplication.
+- **Pluggable Discount Strategy & Session Autofill**: Model referral discounts via Strategy Pattern (SingleUsePerDomain, ContinuousDiscount, StandardRate). Checkouts automatically hydrate fields from authenticated user sessions.
 - **Process Hygiene**: Bound CLI commands (`timeout 10s`) and verify state with deterministic physical sensors.
 
 ## Decision Gates
