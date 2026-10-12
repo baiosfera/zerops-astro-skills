@@ -34,6 +34,29 @@ SIGN_RULERS = {
     "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Uranus / Saturn", "Pisces": "Neptune / Jupiter"
 }
 
+SIGN_MAP = {
+    "ari": "Aries", "aries": "Aries",
+    "tau": "Taurus", "taurus": "Taurus",
+    "gem": "Gemini", "gemini": "Gemini",
+    "can": "Cancer", "cancer": "Cancer", "cnc": "Cancer",
+    "leo": "Leo",
+    "vir": "Virgo", "virgo": "Virgo",
+    "lib": "Libra", "libra": "Libra",
+    "sco": "Scorpio", "scorpio": "Scorpio",
+    "sag": "Sagittarius", "sagittarius": "Sagittarius", "sgr": "Sagittarius",
+    "cap": "Capricorn", "capricorn": "Capricorn",
+    "aqu": "Aquarius", "aquarius": "Aquarius", "aqr": "Aquarius",
+    "pis": "Pisces", "pisces": "Pisces", "psc": "Pisces",
+}
+
+
+def normalize_sign(raw_sign: Any) -> str:
+    """Normalizes any sign abbreviation or casing to canonical English sign name."""
+    if not raw_sign or not isinstance(raw_sign, (str, int, float)):
+        return "Unknown"
+    cleaned = str(raw_sign).strip().lower()
+    return SIGN_MAP.get(cleaned, str(raw_sign).strip().title())
+
 
 class WesternDomain:
     """Processes Western Tropical natal data from AstroWay, FreeAstro, and AstrologyAPI."""
@@ -60,10 +83,42 @@ class WesternDomain:
             idx = int(l // 30) % 12
             return zodiac_names[idx], round(l % 30.0, 2)
 
-        # Extract planets, houses, and aspects from available cache files
-        for key, content in self.raw_data_map.items():
+        # Sort keys to prioritize tropical/western over sidereal/vedic
+        def _key_priority(k: str) -> int:
+            k_low = k.lower()
+            if "sidereal" in k_low or "fagan" in k_low or "lahiri" in k_low:
+                return 2
+            if "tropical" in k_low or "placidus" in k_low or "western" in k_low:
+                return 0
+            return 1
+
+        sorted_keys = sorted(self.raw_data_map.keys(), key=_key_priority)
+
+        # Extract planets, houses, angles, and aspects from available cache files
+        for key in sorted_keys:
+            content = self.raw_data_map[key]
             if not isinstance(content, dict):
                 continue
+
+            # Angles extraction (e.g. FreeAstro: angles.asc, angles.mc, angles.ic, angles.dc)
+            angles_data = content.get("angles") or content.get("chart_data", {}).get("angles")
+            if isinstance(angles_data, dict):
+                if 1 not in houses and "asc" in angles_data and isinstance(angles_data["asc"], (int, float)):
+                    asc_f = float(angles_data["asc"])
+                    s_name, s_deg = _lon_to_sign_deg(asc_f)
+                    houses[1] = {"house": 1, "sign": s_name, "degree": s_deg, "longitude": asc_f}
+                if 10 not in houses and "mc" in angles_data and isinstance(angles_data["mc"], (int, float)):
+                    mc_f = float(angles_data["mc"])
+                    s_name, s_deg = _lon_to_sign_deg(mc_f)
+                    houses[10] = {"house": 10, "sign": s_name, "degree": s_deg, "longitude": mc_f}
+                if 4 not in houses and "ic" in angles_data and isinstance(angles_data["ic"], (int, float)):
+                    ic_f = float(angles_data["ic"])
+                    s_name, s_deg = _lon_to_sign_deg(ic_f)
+                    houses[4] = {"house": 4, "sign": s_name, "degree": s_deg, "longitude": ic_f}
+                if 7 not in houses and "dc" in angles_data and isinstance(angles_data["dc"], (int, float)):
+                    dc_f = float(angles_data["dc"])
+                    s_name, s_deg = _lon_to_sign_deg(dc_f)
+                    houses[7] = {"house": 7, "sign": s_name, "degree": s_deg, "longitude": dc_f}
 
             # Check for houses in content first so planet house placement can be computed
             h_data = content.get("houses") or content.get("house_cusps") or content.get("chart_data", {}).get("houses")
@@ -87,15 +142,16 @@ class WesternDomain:
                     try:
                         num = int(h_num)
                         if num not in houses and isinstance(h_val, dict):
-                            if "longitude" in h_val:
-                                s_name, s_deg = _lon_to_sign_deg(h_val["longitude"])
-                                lon_f = float(h_val["longitude"])
+                            lon_val = h_val.get("abs_pos") or h_val.get("longitude")
+                            if lon_val is not None:
+                                s_name, s_deg = _lon_to_sign_deg(lon_val)
+                                lon_f = float(lon_val)
                             elif "cusp" in h_val and isinstance(h_val["cusp"], (int, float)) and h_val["cusp"] > 30.0:
                                 s_name, s_deg = _lon_to_sign_deg(h_val["cusp"])
                                 lon_f = float(h_val["cusp"])
                             else:
-                                s_name = h_val.get("sign") or h_val.get("sign_name", "Unknown")
-                                s_deg = float(h_val.get("degree") or h_val.get("cusp") or 0.0)
+                                s_name = normalize_sign(h_val.get("sign_id") or h_val.get("sign") or h_val.get("sign_name"))
+                                s_deg = float(h_val.get("pos") or h_val.get("degree") or h_val.get("cusp") or 0.0)
                                 lon_f = 0.0
                             houses[num] = {
                                 "house": num,
@@ -123,53 +179,63 @@ class WesternDomain:
                 # Standard list of dicts: [{"house": 1, ...}]
                 else:
                     for idx, h_item in enumerate(h_data, 1):
-                        if isinstance(h_item, dict) and idx not in houses:
-                            if "longitude" in h_item:
-                                s_name, s_deg = _lon_to_sign_deg(h_item["longitude"])
-                                lon_f = float(h_item["longitude"])
-                            else:
-                                s_name = h_item.get("sign") or h_item.get("sign_name", "Unknown")
-                                s_deg = float(h_item.get("degree") or h_item.get("cusp") or 0.0)
-                                lon_f = 0.0
-                            houses[idx] = {
-                                "house": int(h_item.get("house") or idx),
-                                "sign": s_name,
-                                "degree": s_deg,
-                                "longitude": lon_f
-                            }
+                        if isinstance(h_item, dict):
+                            h_idx = int(h_item.get("house") or h_item.get("name") or idx)
+                            if h_idx not in houses:
+                                lon_val = h_item.get("abs_pos") or h_item.get("longitude")
+                                if lon_val is not None:
+                                    s_name, s_deg = _lon_to_sign_deg(lon_val)
+                                    lon_f = float(lon_val)
+                                else:
+                                    s_name = normalize_sign(h_item.get("sign_id") or h_item.get("sign") or h_item.get("sign_name"))
+                                    s_deg = float(h_item.get("pos") or h_item.get("degree") or h_item.get("cusp") or 0.0)
+                                    lon_f = 0.0
+                                houses[h_idx] = {
+                                    "house": h_idx,
+                                    "sign": s_name,
+                                    "degree": s_deg,
+                                    "longitude": lon_f
+                                }
 
             # Check for planets in content
             p_data = content.get("planets") or content.get("bodies") or content.get("chart_data", {}).get("planets")
             if isinstance(p_data, dict):
-                for p_name, p_val in p_data.items():
-                    if isinstance(p_val, dict) and p_name not in planets:
-                        if "longitude" in p_val:
-                            s_name, s_deg = _lon_to_sign_deg(p_val["longitude"])
-                            lon_f = float(p_val["longitude"])
-                        else:
-                            s_name = p_val.get("sign") or p_val.get("sign_name", "Unknown")
-                            s_deg = float(p_val.get("degree") or p_val.get("norm_degree") or 0.0)
-                            lon_f = 0.0
-                        planets[p_name] = {
-                            "name": p_name,
-                            "sign": s_name,
-                            "degree": s_deg,
-                            "longitude": lon_f,
-                            "house": int(p_val.get("house") or 1),
-                            "retrograde": bool(p_val.get("is_retro") or p_val.get("isRetrograde") or p_val.get("retrograde", False)),
-                            "speed": float(p_val.get("speed") or p_val.get("speedLong") or 1.0),
-                        }
+                for p_raw_name, p_val in p_data.items():
+                    if isinstance(p_val, dict):
+                        p_name = str(p_val.get("name") or p_val.get("id") or p_raw_name).replace("_", " ").title()
+                        if p_name not in planets:
+                            lon_val = p_val.get("abs_pos") or p_val.get("longitude")
+                            if lon_val is not None and float(lon_val) > 0.0:
+                                s_name, s_deg = _lon_to_sign_deg(lon_val)
+                                lon_f = float(lon_val)
+                            else:
+                                s_name = normalize_sign(p_val.get("sign_id") or p_val.get("sign") or p_val.get("sign_name"))
+                                s_deg = float(p_val.get("pos") or p_val.get("degree") or p_val.get("norm_degree") or 0.0)
+                                lon_f = 0.0
+                            planets[p_name] = {
+                                "name": p_name,
+                                "sign": s_name,
+                                "degree": s_deg,
+                                "longitude": lon_f,
+                                "house": int(p_val.get("house") or 1),
+                                "retrograde": bool(p_val.get("is_retro") or p_val.get("isRetrograde") or p_val.get("retrograde", False)),
+                                "speed": float(p_val.get("speed") or p_val.get("speedLong") or 1.0),
+                            }
             elif isinstance(p_data, list):
                 for p_item in p_data:
                     if isinstance(p_item, dict):
-                        p_name = p_item.get("name") or p_item.get("planet")
-                        if p_name and p_name not in planets:
-                            if "longitude" in p_item:
-                                s_name, s_deg = _lon_to_sign_deg(p_item["longitude"])
-                                lon_f = float(p_item["longitude"])
+                        raw_id = p_item.get("name") or p_item.get("id") or p_item.get("planet")
+                        if not raw_id:
+                            continue
+                        p_name = str(raw_id).replace("_", " ").title()
+                        if p_name not in planets:
+                            lon_val = p_item.get("abs_pos") or p_item.get("longitude")
+                            if lon_val is not None and float(lon_val) > 0.0:
+                                s_name, s_deg = _lon_to_sign_deg(lon_val)
+                                lon_f = float(lon_val)
                             else:
-                                s_name = p_item.get("sign") or p_item.get("sign_name", "Unknown")
-                                s_deg = float(p_item.get("degree") or p_item.get("norm_degree") or 0.0)
+                                s_name = normalize_sign(p_item.get("sign_id") or p_item.get("sign") or p_item.get("sign_name"))
+                                s_deg = float(p_item.get("pos") or p_item.get("degree") or p_item.get("norm_degree") or 0.0)
                                 lon_f = 0.0
                             planets[p_name] = {
                                 "name": p_name,
@@ -186,17 +252,17 @@ class WesternDomain:
             if isinstance(asp_data, list) and not aspects:
                 for a in asp_data:
                     if isinstance(a, dict):
-                        b1 = a.get("body1") or a.get("planet1")
-                        b2 = a.get("body2") or a.get("planet2")
+                        b1 = a.get("body1") or a.get("planet1") or a.get("p1")
+                        b2 = a.get("body2") or a.get("planet2") or a.get("p2")
                         asp_type = a.get("aspect") or a.get("type")
                         if isinstance(asp_type, dict):
                             asp_type = asp_type.get("name") or str(asp_type)
                         orb_val = float(a.get("orb") or a.get("exactAngle") or 0.0)
                         if b1 and b2 and asp_type:
                             aspects.append({
-                                "body1": str(b1),
-                                "body2": str(b2),
-                                "aspect": str(asp_type),
+                                "body1": str(b1).replace("_", " ").title(),
+                                "body2": str(b2).replace("_", " ").title(),
+                                "aspect": str(asp_type).replace("_", " ").title(),
                                 "orb": orb_val,
                             })
 
@@ -221,33 +287,33 @@ class WesternDomain:
         # Calculate Arroyo's 4 Elements balance
         element_counts = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
         for p in planets.values():
-            s = p.get("sign", "")
+            s = normalize_sign(p.get("sign", ""))
             for elem, signs in ELEMENT_SIGNS.items():
                 if s in signs:
                     element_counts[elem] += 1
 
         total_pts = sum(element_counts.values()) or 1
         element_percentages = {k: round((v / total_pts) * 100, 1) for k, v in element_counts.items()}
-        dominant_element = max(element_counts, key=element_counts.get) if element_counts else "Unknown"
+        dominant_element = max(element_counts, key=element_counts.get) if any(v > 0 for v in element_counts.values()) else "Unknown"
 
         # Water Houses (Casas de Agua 4, 8, 12 - Stephen Arroyo)
         water_houses = {
-            4: houses.get(4, {"sign": "Unknown"}),
-            8: houses.get(8, {"sign": "Unknown"}),
-            12: houses.get(12, {"sign": "Unknown"}),
+            4: {"sign": normalize_sign(houses.get(4, {}).get("sign", "Unknown")), "degree": houses.get(4, {}).get("degree", 0.0)},
+            8: {"sign": normalize_sign(houses.get(8, {}).get("sign", "Unknown")), "degree": houses.get(8, {}).get("degree", 0.0)},
+            12: {"sign": normalize_sign(houses.get(12, {}).get("sign", "Unknown")), "degree": houses.get(12, {}).get("degree", 0.0)},
         }
 
         # Trípode de Hierro: Sol, MC, Casa 2
-        mc_sign = houses.get(10, {}).get("sign", "Unknown")
+        mc_sign = normalize_sign(houses.get(10, {}).get("sign", "Unknown"))
         mc_ruler = SIGN_RULERS.get(mc_sign, "Unknown")
-        sun_planet = planets.get("Sun", {"sign": "Unknown", "house": 1})
-        h2_sign = houses.get(2, {}).get("sign", "Unknown")
+        sun_planet = planets.get("Sun", {"name": "Sun", "sign": "Unknown", "house": 1, "degree": 0.0})
+        h2_sign = normalize_sign(houses.get(2, {}).get("sign", "Unknown"))
 
         # Tríada del Cliente: Casa 7, 8, 11 + Venus
-        h7_sign = houses.get(7, {}).get("sign", "Unknown")
-        h8_sign = houses.get(8, {}).get("sign", "Unknown")
-        h11_sign = houses.get(11, {}).get("sign", "Unknown")
-        venus_planet = planets.get("Venus", {"sign": "Unknown", "house": 1})
+        h7_sign = normalize_sign(houses.get(7, {}).get("sign", "Unknown"))
+        h8_sign = normalize_sign(houses.get(8, {}).get("sign", "Unknown"))
+        h11_sign = normalize_sign(houses.get(11, {}).get("sign", "Unknown"))
+        venus_planet = planets.get("Venus", {"name": "Venus", "sign": "Unknown", "house": 1, "degree": 0.0})
 
         return {
             "domain": "western",
