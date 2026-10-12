@@ -20,6 +20,7 @@ Activate for Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actio
 - **Decoupled Staging (Ghcicd Option B)**: Base recipe `06-astro-web.yaml` provisions production exclusively. Staging is strictly opt-in via decoupled `06b-astro-web-staging.yaml`.
 - **Tailwind CSS 4**: Integrate via `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` design tokens.
 - **Pre-flight Craft Gate**: Calibrate 3 Dials: *Variance* (asymmetric layout), *Motion* (smooth reveals), *Density* (brand-calibrated). Prohibit untinted gray and dark purple gradients.
+- **Dynamic PostgreSQL SSR & Session Autofill**: Render events and catalog directly from PostgreSQL filtering in continuous present (`date >= NOW()` in local timezone). User profiles authenticated via OTP persist in localStorage/session to hydrate forms globally without friction.
 - **Hygiene & Sensors**: Strict timeouts (`timeout 10s`), wait (`WaitMsBeforeAsync: 10000`), zero orphans, sensor HTTP 200 on `/`. Consult [`references/usage.md`](file:///var/www/.agents/skills/astro-web/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/astro-web/references/infra.md).
 
 ## Decision Gates
