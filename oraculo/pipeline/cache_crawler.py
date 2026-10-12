@@ -53,9 +53,9 @@ ALIAS_CANONICAL_MAP = {
 
 
 def unwrap_payload(content: Any) -> Any:
-    """Recursively unwraps response envelopes (_provider, data, ok, xml_parsed) without losing data."""
+    """Recursively unwraps response envelopes (_provider, provider, data, ok, xml_parsed) without losing data."""
     if isinstance(content, dict):
-        if "_provider" in content and "data" in content and isinstance(content["data"], (dict, list)):
+        if ("_provider" in content or "provider" in content) and "data" in content and isinstance(content["data"], (dict, list)):
             return unwrap_payload(content["data"])
         if "ok" in content and "data" in content and isinstance(content["data"], (dict, list)):
             return unwrap_payload(content["data"])
