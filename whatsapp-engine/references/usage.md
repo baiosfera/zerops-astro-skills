@@ -408,6 +408,13 @@ Ensures phone numbers entered in frontend contact or lead capture forms are auto
 ### Pattern 7: Decoupled Multi-Channel Narrative (WhatsApp Concierge vs Email Dossier)
 Decouples conversational messaging from transactional emails. WhatsApp delivers immediate, warm executive concierge assistance (2-3 short paragraphs), while email delivers the institutional dossier and manifesto without repeating identical text verbatim.
 
+### Pattern 8: Multi-Device Linked Identity (`@lid`) SSoT Resolution & Dual-Key Valkey Takeover
+In WhatsApp Multi-Device (WhatsApp Web / Desktop), messages from operators (`isFromMe: true`) often address the customer using a Linked Identity Device (`@lid`), while inbound customer messages deliver the real phone number (`@s.whatsapp.net`).
+1. **Bidirectional Cache**: On any incoming webhook mentioning both a phone and an LID, store bidirectional aliases in Valkey: `wa:map:lid:${lid} -> ${phone}` and `wa:map:phone:${phone} -> ${lid}` (TTL 30 days).
+2. **Whatsmeow PostgreSQL SSoT Fallback**: In Evolution Go (`whatsmeow`), every active session persists all known LID mappings in PostgreSQL database `evogo_auth` table `whatsmeow_lid_map (lid, pn)`. The decoupled bot synchronizes this table on startup and queries it as a fallback on cache miss.
+3. **Dual-Key Symmetric Locks**: When taking over a chat (`#stop`, `#mute`, or manual operator intervention), resolve all related identifiers (both Phone and LID) and set `wa:human_takeover:${id}` for both. When checking `isHumanTakeover`, evaluate both keys.
+4. **Unified Session History**: Always store and load chat turns under the resolved canonical phone number (`chat:sessions:${canonicalPhone}`) so operator interventions and customer replies share the identical conversation thread.
+
 ---
 
 ## 6. Anti-Patterns & Gotchas
@@ -418,3 +425,6 @@ Decouples conversational messaging from transactional emails. WhatsApp delivers 
 4. **Ignoring Passkey WebAuthn Support**: New WhatsApp accounts require Passkey ceremonies. Use Evolution Go v0.7.2+ to prevent broken session disconnections.
 5. **Raw 10-Digit Mobile Numbers without Country Prefix**: Supplying raw 10-digit mobile numbers (e.g. `3101234567`) to `wa.me/` or EvolutionGo defaults to Netherlands (+31), causing 404 number-not-found errors. Always use `normalizePhone` to ensure E.164 compliance (+57 for Colombian numbers starting with 3).
 6. **Carbon-Copy Duplicate Notifications**: Sending identical text verbatim across both WhatsApp and transactional email degrades user experience and trust. Keep WhatsApp conversational and agile (concierge), and email formal and archival (dossier).
+7. **LID-Isolated Human Takeover Locks**: Setting `wa:human_takeover:${lid}` when an operator sends `#stop` from WhatsApp Web while the customer replies with `${phone}@s.whatsapp.net` bypasses the lock. The bot fails to stop and continues messaging over the operator. Always resolve the canonical phone and lock symmetrically across both identifiers.
+8. **Unconfirmed `#stop` Commands & Rigid String Checks**: Operators typing `#stop ` (with spaces), uppercase `#STOP`, or synonyms (`#off`, `#silencio`, `#desactivar`) must be matched case-insensitively with trim. Immediate visual confirmation (`[Atención automática pausada por operador]`) must be dispatched via Evolution API so operators receive physical proof that the bot is disengaged. Customers requesting human assistance must also trigger an automatic pause (48h) and polite acknowledgement.
+
