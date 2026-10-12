@@ -150,26 +150,22 @@ class SynthesisEngine:
         tech_sheet = self._render_technical_sheet(client_payload, west, sid, ved, bazi, kab, hd, acg, num, tim)
         author_psych = self._render_author_psychology(client_payload, west, bazi, ved, hd)
         astrobranding = self._render_astrobranding(primary_brand, client_payload, west, bazi, ved, hd, num)
-        brandbook = self._render_brandbook_json(primary_brand, west, bazi, ved, hd, num)
 
         # Write files strictly to raw/llm/
         f_sheet = self.llm_dir / "coach_technical_sheet.md"
         f_psych = self.llm_dir / "fase0_author_psychology.md"
         f_brand_md = self.llm_dir / f"astrobranding_{brand_slug}.md"
-        f_brand_json = self.llm_dir / f"brandbook_{brand_slug}.json"
 
         f_sheet.write_text(tech_sheet, encoding="utf-8")
         f_psych.write_text(author_psych, encoding="utf-8")
         f_brand_md.write_text(astrobranding, encoding="utf-8")
-        f_brand_json.write_text(json.dumps(brandbook, indent=2, ensure_ascii=False), encoding="utf-8")
 
-        logger.info(f"Platinum Tier synthesized successfully: {f_sheet.name}, {f_psych.name}, {f_brand_md.name}, {f_brand_json.name}")
+        logger.info(f"Platinum Tier synthesized successfully: {f_sheet.name}, {f_psych.name}, {f_brand_md.name}")
 
         return {
             "coach_technical_sheet": str(f_sheet),
             "author_psychology": str(f_psych),
             "astrobranding_brief": str(f_brand_md),
-            "brandbook_json": str(f_brand_json),
         }
 
     def _render_technical_sheet(self, cp: Dict[str, Any], west: Dict[str, Any], sid: Dict[str, Any],
