@@ -18,6 +18,10 @@ Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup
 - **Takeover & Context**: Operator messages (`fromMe: true`) lock customer chat ID (`key.remoteJid`/`info.Chat`) for 2h in Valkey (`wa:human_takeover:${id}`). Commands: `#bot` clears; `#mute` silences 24h. Prepend quoted context (`contextInfo.quotedMessage`).
 - **Ambassador Loop & Pacing**: Offer 3-referral reward loop at delight peaks with 7-day Valkey cooldown (`wa:affiliate_pitched:${phone}`). Pace with 1.5s–3s typing delays.
 - **Decoupling & Early ACK**: Run dedicated worker in Bun LXC (`whatsappbot`), never in Astro SSR. Acknowledge webhooks <15ms before LLM inference to eliminate Evolution API retry storms. Stream through NATS JetStream `events.whatsapp.incoming` with `Nats-Msg-Id` deduplication. Bound CLI commands (`timeout 10s`).
+- **Real-Time SSoT & Role Adaptation**: Ingest live user profile attributes (`alias`, `email`, `role`, `city`, `affiliateAlias`). Adapt tone dynamically: `hombre_solo` (masculine singular), `mujer_sola` (feminine singular), `pareja` (couple plural: "ustedes", "chicos", "pareja", "ambos", "como pareja"), `otro` (neutral).
+- **SSoT Override Rule & Deduplication**: PostgreSQL is ground truth in the current millisecond. Ignore outdated historical chat turns from Valkey when user updates profile. Lookup by phone variants and 10-digit suffix (`ORDER BY completeness DESC, updated_at DESC`) to prevent blank orphan leads.
+- **Media Ingestion & @lid Invariant**: Extract audio from `data.Message.base64` (`msgObj.base64`) with fallback to `POST /message/downloadmedia`. Discard multi-device `@lid` for dispatch, resolving to real E.164 phone numbers (`SenderAlt` / `@s.whatsapp.net`).
+- **Vault Self-Shadowing Invariant**: In `zerops.yaml`, never map `KEY: ${KEY}` for vault secrets. Use distinct names: `GROQ_API_KEY: ${WHISPER_GROQ_API_KEY}`.
 
 ## Decision Gates
 
