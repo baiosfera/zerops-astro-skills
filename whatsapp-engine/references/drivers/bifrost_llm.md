@@ -18,31 +18,13 @@ The WhatsApp bot acts as an empathetic, high-converting customer sales assistant
 import fs from "node:fs";
 import path from "node:path";
 
-export function resolveBrandSSoT(): { systemPrompt: string; projectName: string } {
-  const projectName = process.env.PROJECT_NAME || process.env.zerops_projectName || "ELPLACERDC";
-  const customPath = process.env.BRAND_SSOT_PATH;
-  
-  // 1. Primary path in mounted localstorage
-  const primaryDir = customPath || path.join("/mnt/localstorage", projectName, "dev");
-  const primaryPrompt = path.join(primaryDir, "system_prompt.md");
-  if (fs.existsSync(primaryPrompt)) {
-    return { systemPrompt: fs.readFileSync(primaryPrompt, "utf-8"), projectName };
+export function loadBrandSystemPrompt(
+  brandPromptPath: string = process.env.SYSTEM_PROMPT_PATH || process.env.BRAND_SSOT_PATH || "/var/www/brand/system_prompt.md"
+): string {
+  if (fs.existsSync(brandPromptPath)) {
+    return fs.readFileSync(brandPromptPath, "utf-8");
   }
-
-  // 2. Fallback / Seed from baiosfera PROYECTOS
-  const seedDir = path.join("/var/www/baiosfera/PROYECTOS", projectName);
-  const seedPrompt = path.join(seedDir, "system_prompt.md");
-  if (fs.existsSync(seedPrompt)) {
-    fs.mkdirSync(primaryDir, { recursive: true });
-    fs.copyFileSync(seedPrompt, primaryPrompt);
-    return { systemPrompt: fs.readFileSync(primaryPrompt, "utf-8"), projectName };
-  }
-
-  // 3. Fallback safe default
-  return {
-    systemPrompt: `Eres el asistente oficial de atención y ventas de ${projectName}. Responde en tono cálido, empático y profesional, guiando al cliente con información precisa y verificada.`,
-    projectName
-  };
+  return "You are a professional customer assistant. Respond with helpfulness, elegance, and precision following brand guidelines.";
 }
 
 export function classifyMessageIntent(text: string): "production" | "free" {
@@ -223,4 +205,19 @@ const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
 const { text } = await res.json();
 ```
 Prepends `[Nota de voz transcrita]: "${text}"` to user messages for conversational empathy.
+
+---
+
+## 9. Real-Time SSoT Ingestion, Dynamic Role/Gender Adaptation & SSoT Override Rule
+To guarantee that the conversational AI reflects database changes instantaneously without being anchored to stale conversation turns:
+1. **Dynamic Demographic Attributes**: The worker extracts `alias`, `email`, `role`, `city`, and `affiliateAlias` from PostgreSQL in real-time.
+2. **Explicit Role/Gender Instructions**:
+   - `hombre_solo`: Single male profile. Addressed in masculine singular ("Embajador", "bienvenido", "tú").
+   - `mujer_sola`: Single female profile. Addressed in feminine singular ("Embajadora", "bienvenida", "tú").
+   - `pareja`: Couple account. Addressed strictly as a couple in plural ("ustedes", "pareja", "chicos", "ambos", "como pareja", "Embajadores"). Never address as a single woman or man.
+   - `otro` / null: Neutral community profile.
+3. **Real-Time SSoT Override Rule (SSoT > History)**:
+   - System prompt instructs the LLM that the customer ficha is the ground truth in the current millisecond.
+   - Older chat turns in Valkey that used outdated names or roles must be explicitly ignored.
+   - If the customer asks if their updated name or role is recognized, the bot immediately confirms and validates the new name/role without claiming sync delays.
 
