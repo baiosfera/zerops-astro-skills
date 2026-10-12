@@ -202,4 +202,18 @@ Zerops enforces a strict architectural boundary between the Control Plane (`zcp`
    - `bifrost-cli` operates strictly as a development-time utility:
      - Synthetic smoke testing of `config.json` before applying changes.
      - TUI bridge for Coding Agents (Claude Code, OpenCode) running inside `zcp`.
-     - Validating virtual key permissions and latency benchmarking.
+205:      - Validating virtual key permissions and latency benchmarking.
+206: 
+---
+
+## 7. Zerops Vault Self-Shadowing Prevention Invariant
+When referencing environment variables or secrets stored in the Zerops Project Vault inside `zerops.yaml`:
+- **The Self-Shadowing Trap**: Referencing a vault variable using the identical key name (e.g., `GROQ_API_KEY: ${GROQ_API_KEY}` or `OPENAI_API_KEY: ${OPENAI_API_KEY}`) triggers the Zerops preflight error:
+  `service_env_self_shadow: Variable ... cannot reference itself`.
+- **Enforced Naming Convention**: Secrets in the project vault must use explicit, distinct prefixes (e.g., `WHISPER_GROQ_API_KEY`, `VAULT_OPENAI_API_KEY`, `PROD_ANTHROPIC_KEY`).
+- **Mapping in zerops.yaml**: Map the distinct vault secret to the standard runtime environment variable expected by the application:
+  ```yaml
+  envVariables:
+    GROQ_API_KEY: ${WHISPER_GROQ_API_KEY}
+    OPENAI_API_KEY: ${VAULT_OPENAI_API_KEY}
+  ```
