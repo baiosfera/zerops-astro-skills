@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
 synthesis.py — Clean-Room Platinum Tier Synthesis Orchestrator for Oráculo (v6.3).
-Capa Platino (-s / --synthesis) | SSoT LLM Deliverables | W3C DTCG Tokens | CoHaLo Positive Guidance.
+Capa Platino (-s / --synthesis) | SSoT LLM Deliverables | CoHaLo Positive Guidance.
 
 Synthesizes:
 1. coach_technical_sheet.md — SSoT Mathematical Table (Pure data, zero placeholder prose).
 2. fase0_author_psychology.md — SSoT System Prompt (CoHaLo Positive Guidance voice and tone).
 3. astrobranding_[marca].md — Semiotic Master Brief (Triada del Cliente, Tripode de Hierro, Paleta Bipolar).
-4. brandbook_[marca].json — W3C DTCG Tokens + Tailwind v4 @theme & CSS Variables for astro-web.
 """
 
 from __future__ import annotations
