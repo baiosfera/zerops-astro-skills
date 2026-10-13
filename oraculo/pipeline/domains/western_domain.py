@@ -83,25 +83,41 @@ class WesternDomain:
             idx = int(l // 30) % 12
             return zodiac_names[idx], round(l % 30.0, 2)
 
-        # Sort keys to prioritize tropical/western over sidereal/vedic
+        NON_NATAL_KEYWORDS = {
+            "returns", "solar_return", "lunar_return", "solar_calculate",
+            "progressions", "secondary_progressions", "tertiary", "quaternary", "quotidian",
+            "directions", "primary_directions", "transits", "transit",
+            "synastry", "composite", "calendar"
+        }
+
+        # Sort keys to prioritize tropical/western natal endpoints over predictive or sidereal/vedic
         def _key_priority(k: str) -> int:
             k_low = k.lower()
-            if "sidereal" in k_low or "fagan" in k_low or "lahiri" in k_low:
-                return 2
-            if "tropical" in k_low or "placidus" in k_low or "western" in k_low:
+            if any(kw in k_low for kw in NON_NATAL_KEYWORDS):
+                return 99
+            if "natal_calculate" in k_low or "00_freeastro_full_extract" in k_low or "birth_chart" in k_low:
                 return 0
-            return 1
+            if "signs_" in k_low or "angles" in k_low or "houses_placidus" in k_low:
+                return 1
+            if "tropical" in k_low or "placidus" in k_low or "western" in k_low:
+                return 2
+            if "sidereal" in k_low or "fagan" in k_low or "lahiri" in k_low:
+                return 10
+            return 5
 
         sorted_keys = sorted(self.raw_data_map.keys(), key=_key_priority)
 
         # Extract planets, houses, angles, and aspects from available cache files
         for key in sorted_keys:
+            # Skip non-natal predictive files from polluting natal chart
+            if any(kw in key.lower() for kw in NON_NATAL_KEYWORDS):
+                continue
             content = self.raw_data_map[key]
             if not isinstance(content, dict):
                 continue
 
             # Angles extraction (e.g. FreeAstro: angles.asc, angles.mc, angles.ic, angles.dc)
-            angles_data = content.get("angles") or content.get("chart_data", {}).get("angles")
+            angles_data = content.get("angles") or content.get("chart_data", {}).get("angles") or content.get("data", {}).get("angles")
             if isinstance(angles_data, dict):
                 if 1 not in houses and "asc" in angles_data and isinstance(angles_data["asc"], (int, float)):
                     asc_f = float(angles_data["asc"])
