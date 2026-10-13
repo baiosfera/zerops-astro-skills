@@ -213,12 +213,21 @@ class WesternDomain:
                                     "longitude": lon_f
                                 }
 
+            # Planet names to filter out of Western Tropical planets
+            INVALID_PLANET_NAMES = {
+                "data", "meta", "settings", "status", "subject", "confidence",
+                "aspects", "aspects_summary", "houses", "angles", "angles_details",
+                "rahu", "ketu", "unknown", "summary", "elements"
+            }
+
             # Check for planets in content
-            p_data = content.get("planets") or content.get("bodies") or content.get("chart_data", {}).get("planets")
+            p_data = content.get("planets") or content.get("bodies") or content.get("chart_data", {}).get("planets") or content.get("data", {}).get("planets")
             if isinstance(p_data, dict):
                 for p_raw_name, p_val in p_data.items():
                     if isinstance(p_val, dict):
                         p_name = str(p_val.get("name") or p_val.get("id") or p_raw_name).replace("_", " ").title()
+                        if p_name.lower() in INVALID_PLANET_NAMES:
+                            continue
                         if p_name not in planets:
                             lon_val = p_val.get("abs_pos") or p_val.get("longitude")
                             if lon_val is not None and float(lon_val) > 0.0:
@@ -244,6 +253,8 @@ class WesternDomain:
                         if not raw_id:
                             continue
                         p_name = str(raw_id).replace("_", " ").title()
+                        if p_name.lower() in INVALID_PLANET_NAMES:
+                            continue
                         if p_name not in planets:
                             lon_val = p_item.get("abs_pos") or p_item.get("longitude")
                             if lon_val is not None and float(lon_val) > 0.0:
