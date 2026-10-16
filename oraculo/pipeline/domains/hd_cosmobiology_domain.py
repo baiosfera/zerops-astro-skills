@@ -44,7 +44,15 @@ class HDCosmobiologyDomain:
                 continue
 
             # Look for Human Design properties: nested or directly at root (AstroWay unwrapped)
-            hd = content.get("human_design") or content.get("bodygraph")
+            data_body = content
+            if isinstance(data_body, dict) and "data" in data_body and isinstance(data_body["data"], dict):
+                data_body = data_body["data"]
+                if "data" in data_body and isinstance(data_body["data"], dict):
+                    data_body = data_body["data"]
+
+            hd = data_body.get("human_design") or data_body.get("bodygraph") or content.get("human_design") or content.get("bodygraph")
+            if not hd and ("type" in data_body and ("strategy" in data_body or "authority" in data_body or "centers" in data_body)):
+                hd = data_body
             if not hd and ("type" in content and ("strategy" in content or "authority" in content or "centers" in content)):
                 hd = content
 
