@@ -65,13 +65,7 @@ class SharderEngine:
         5. Generating 9 Encyclopedic Gold Feeds in feeds/.
         6. Purging deprecated duplicate files.
         """
-        client_payload = extraction_output.get("client_payload") or extraction_output.get("client_data", {})
-        if not client_payload and (self.raw_dir / "client_profile.json").exists():
-            try:
-                with open(self.raw_dir / "client_profile.json", "r", encoding="utf-8") as f:
-                    client_payload = json.load(f)
-            except Exception:
-                pass
+        client_payload = self._discover_client_profile(extraction_output)
 
         logger.info(f"Starting SharderEngine for client in {self.output_root}")
 
@@ -86,7 +80,12 @@ class SharderEngine:
         west_data = west_engine.synthesize()
 
         sid_files = crawler.get_domain_files("sidereal") or crawler.get_domain_files("vedic")
-        sid_engine = SiderealDomain(sid_files, client_payload, tropical_planets=west_data.get("planets"))
+        sid_engine = SiderealDomain(
+            sid_files,
+            client_payload,
+            tropical_planets=west_data.get("planets"),
+            tropical_houses=west_data.get("houses")
+        )
         sid_data = sid_engine.synthesize()
 
         ved_engine = VedicDomain(crawler.get_domain_files("vedic"), client_payload)
