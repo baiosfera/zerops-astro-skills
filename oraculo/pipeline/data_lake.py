@@ -111,7 +111,7 @@ class VirtualDataLake:
 
     def export_master_dump(self, out_path: Optional[Path] = None) -> Path:
         """
-        Compiles all 10 shards into a single unified JSON on-demand,
+        Compiles all 15 shards into a single unified JSON on-demand,
         fulfilling the requirement of delivering an uncompromised master dump
         without redundant duplicate storage during ordinary execution.
         """
@@ -121,17 +121,23 @@ class VirtualDataLake:
         manifest = self.load_manifest()
         master = {
             "contract": "gentle-ai.datalake.master/v1",
-            "consultant": manifest.get("consultant", "Unknown"),
+            "consultant": manifest.get("client") or manifest.get("consultant", "Unknown"),
             "generated_at": datetime.utcnow().isoformat() + "Z",
             "shards": {}
         }
 
-        # Load each shard
-        for shard_key, shard_filename in manifest.get("shards", {}).items():
-            shard_file = self.dumps_dir / shard_filename
-            if shard_file.exists():
-                with open(shard_file, "r", encoding="utf-8") as f:
-                    master["shards"][shard_key] = json.load(f)
+        # Prefer loading consolidated 15 shards if available
+        silver_dumps = self.dumps_dir / "client_dumps_15_shards.json"
+        if silver_dumps.exists():
+            with open(silver_dumps, "r", encoding="utf-8") as f:
+                master["shards"] = json.load(f)
+        else:
+            # Load each individual shard from manifest mapping
+            for shard_key, shard_filename in manifest.get("shards", {}).items():
+                shard_file = self.dumps_dir / shard_filename
+                if shard_file.exists():
+                    with open(shard_file, "r", encoding="utf-8") as f:
+                        master["shards"][shard_key] = json.load(f)
 
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(master, f, indent=2, ensure_ascii=False)
