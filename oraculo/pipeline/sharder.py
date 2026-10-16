@@ -192,3 +192,125 @@ class SharderEngine:
                     logger.info(f"Purged deprecated feeds file: {f}")
                 except Exception:
                     pass
+
+    def _discover_client_profile(self, extraction_output: Dict[str, Any]) -> Dict[str, Any]:
+        """Discovers and parses client profile from extraction output, client_profile.json, or root markdown files."""
+        client_payload = extraction_output.get("client_payload") or extraction_output.get("client_data", {})
+        if client_payload:
+            return client_payload
+
+        # Check raw/client_profile.json
+        prof_json = self.raw_dir / "client_profile.json"
+        if prof_json.exists():
+            try:
+                with open(prof_json, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if data and isinstance(data, dict):
+                    return data
+            except Exception:
+                pass
+
+        # Discover client markdown/text files in output_root (e.g. Damarén.md, Catalina.md)
+        MONTHS_ES = {
+            "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+            "julio": 7, "agosto": 8, "septiembre": 9, "setiembre": 9, "octubre": 10,
+            "noviembre": 11, "diciembre": 12
+        }
+        CITY_GEO = {
+            "bogota": (4.5882, -74.0854, "America/Bogota", "Bogota"),
+            "bogotá": (4.5882, -74.0854, "America/Bogota", "Bogota"),
+            "medellin": (6.2340, -75.5731, "America/Bogota", "Medellin"),
+            "medellín": (6.2340, -75.5731, "America/Bogota", "Medellin"),
+        }
+
+        md_candidates = [
+            f for f in self.output_root.glob("*.md")
+            if not f.name.startswith(("feed_", "LAKEHOUSE", "extraction", "coach", "fase0", "astrobranding", "system"))
+        ]
+        if not md_candidates:
+            md_candidates = list(self.output_root.glob("*.txt"))
+
+        if md_candidates:
+            target_md = md_candidates[0]
+            try:
+                lines = target_md.read_text(encoding="utf-8").splitlines()
+                raw: Dict[str, str] = {}
+                brands: List[str] = []
+                in_brands = False
+                for line in lines:
+                    line_s = line.strip()
+                    if not line_s:
+                        continue
+                    if re.match(r"^(marcas?|brands?)\s*:", line_s, re.I):
+                        in_brands = True
+                        v = line_s.split(":", 1)[1].strip()
+                        if v:
+                            brands.extend([b.strip() for b in v.split(",") if b.strip()])
+                        continue
+                    if in_brands:
+                        m_b = re.match(r"^[-*•]\s*(.*)$", line_s)
+                        if m_b:
+                            brands.append(m_b.group(1).strip())
+                            continue
+                        elif ":" not in line_s:
+                            brands.append(line_s)
+                            continue
+                        else:
+                            in_brands = False
+                    if ":" in line_s:
+                        k, v = line_s.split(":", 1)
+                        raw[k.strip().lower()] = v.strip()
+
+                birth_name = raw.get("nombre de nacimiento") or raw.get("nombre") or "Consultant"
+                current_name = raw.get("nombre actual (cambio)") or raw.get("nombre actual") or birth_name
+
+                dob_raw = raw.get("fecha de nacimiento") or raw.get("fecha") or ""
+                m_d = re.search(r"(\d{1,2})\s+(?:de\s+)?([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)(?:\s+de)?\s+(\d{4})", dob_raw, re.I)
+                y, m, d = 1990, 1, 1
+                if m_d and m_d.group(2).lower() in MONTHS_ES:
+                    y = int(m_d.group(3))
+                    m = MONTHS_ES[m_d.group(2).lower()]
+                    d = int(m_d.group(1))
+                else:
+                    m_iso = re.search(r"(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})", dob_raw)
+                    if m_iso:
+                        y, m, d = int(m_iso.group(1)), int(m_iso.group(2)), int(m_iso.group(3))
+
+                tob_raw = raw.get("hora") or raw.get("hora de nacimiento") or ""
+                m_t = re.search(r"(\d{1,2}):(\d{2})\s*(am|pm)?", tob_raw, re.I)
+                h, mn = 12, 0
+                if m_t:
+                    h = int(m_t.group(1))
+                    mn = int(m_t.group(2))
+                    ampm = m_t.group(3)
+                    if ampm:
+                        if ampm.lower() == "pm" and h < 12: h += 12
+                        elif ampm.lower() == "am" and h == 12: h = 0
+
+                ciudad_raw = raw.get("ciudad") or ""
+                lat, lon, tz, city = 6.2442, -75.5812, "America/Bogota", "Medellin"
+                for ck, cv in CITY_GEO.items():
+                    if ck in ciudad_raw.lower():
+                        lat, lon, tz, city = cv
+                        break
+
+                parsed_payload = {
+                    "birth_name": birth_name,
+                    "current_name": current_name,
+                    "name": birth_name,
+                    "preferred_name": current_name,
+                    "year": y, "month": m, "day": d,
+                    "hour": h, "minute": mn,
+                    "lat": lat, "lng": lon,
+                    "tz_str": tz, "tz_offset": -5.0,
+                    "city": city,
+                    "brand_names": brands if brands else [self.output_root.name]
+                }
+                # Persist client_profile.json
+                with open(self.raw_dir / "client_profile.json", "w", encoding="utf-8") as f:
+                    json.dump(parsed_payload, f, indent=2, ensure_ascii=False)
+                return parsed_payload
+            except Exception as e:
+                logger.warning(f"Failed to parse client markdown {target_md}: {e}")
+
+        return {}
