@@ -76,14 +76,14 @@ class NumerologyDomain:
 
     def synthesize(self) -> Dict[str, Any]:
         """Builds a comprehensive multi-system numerology matrix."""
-        raw_b = str(self.client.get("name") or "Consultant").strip()
+        raw_b = str(self.client.get("birth_name") or self.client.get("name") or "Consultant").strip()
         birth_name = raw_b if raw_b not in ("---", "--", "-", "N/A", "None") else "Consultant"
 
-        raw_p = str(self.client.get("preferred_name") or "").strip()
-        if not raw_p or raw_p in ("---", "--", "-", "N/A", "None"):
+        raw_c = str(self.client.get("current_name") or self.client.get("preferred_name") or "").strip()
+        if not raw_c or raw_c in ("---", "--", "-", "N/A", "None"):
             current_name = birth_name
         else:
-            current_name = raw_p
+            current_name = raw_c
 
         raw_brands = self.client.get("brand_names", [])
         if isinstance(raw_brands, str):
@@ -98,14 +98,16 @@ class NumerologyDomain:
         dob_m = int(self.client.get("month", 1))
         dob_d = int(self.client.get("day", 1))
 
-        # Life Path (Camino de Vida)
-        lp_raw = sum(int(d) for d in f"{dob_y:04d}{dob_m:02d}{dob_d:02d}")
-        life_path = reduce_number(lp_raw, preserve_master=True)
+        # Life Path (Camino de Vida) - Classical Reduction (Year + Month + Day)
+        y_red = reduce_number(sum(int(d) for d in str(dob_y)), preserve_master=True)
+        m_red = reduce_number(sum(int(d) for d in str(dob_m)), preserve_master=True)
+        d_red = reduce_number(sum(int(d) for d in str(dob_d)), preserve_master=True)
+        life_path = reduce_number(y_red + m_red + d_red, preserve_master=True)
 
         # Birthday Number (Día de Nacimiento)
         birthday_number = reduce_number(dob_d, preserve_master=True)
 
-        # Founder Name Vibrations
+        # Founder Name Vibrations (Both Birth Name and Current Operating Name)
         founder_birth_pyth = calculate_pythagorean(birth_name)
         founder_birth_chald = calculate_chaldean(birth_name)
         founder_current_pyth = calculate_pythagorean(current_name)
@@ -116,8 +118,8 @@ class NumerologyDomain:
         for b in brands:
             pyth = calculate_pythagorean(b)
             chald = calculate_chaldean(b)
-            # Harmony with Founder
-            is_harmonious = (pyth["expression"] in [life_path, birthday_number, founder_birth_pyth["expression"]])
+            # Harmony with Founder (Current Name Expression, Birth Expression, Life Path, or Birthday)
+            is_harmonious = (pyth["expression"] in [life_path, birthday_number, founder_current_pyth["expression"], founder_birth_pyth["expression"]])
             brands_analysis.append({
                 "brand_name": b,
                 "pythagorean_expression": pyth["expression"],
