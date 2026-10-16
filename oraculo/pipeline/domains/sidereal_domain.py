@@ -157,7 +157,7 @@ class SiderealDomain:
         fagan_asc = {}
         lahiri_asc = {}
         if self.tropical_houses:
-            h1 = self.tropical_houses.get("1", {})
+            h1 = self.tropical_houses.get(1) or self.tropical_houses.get("1", {})
             t_asc_long = h1.get("longitude")
             if t_asc_long is None and "degree" in h1 and "sign" in h1:
                 s_str = str(h1.get("sign"))
