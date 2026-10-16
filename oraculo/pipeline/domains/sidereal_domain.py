@@ -18,10 +18,11 @@ logger = logging.getLogger("oraculo.sidereal_domain")
 class SiderealDomain:
     """Processes Sidereal astrology metrics from AstroWay, FreeAstro, and AstrologyAPI."""
 
-    def __init__(self, crawler_entries: List[Dict[str, Any]], client_payload: Dict[str, Any], tropical_planets: Optional[Dict[str, Any]] = None):
+    def __init__(self, crawler_entries: List[Dict[str, Any]], client_payload: Dict[str, Any], tropical_planets: Optional[Dict[str, Any]] = None, tropical_houses: Optional[Dict[str, Any]] = None):
         self.entries = crawler_entries
         self.client = client_payload
         self.tropical_planets = tropical_planets or {}
+        self.tropical_houses = tropical_houses or {}
         self.raw_data_map: Dict[str, Any] = {}
         for entry in self.entries:
             key = f"{entry['provider']}::{entry['file_name']}"
