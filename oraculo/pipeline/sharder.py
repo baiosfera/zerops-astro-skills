@@ -80,11 +80,15 @@ class SharderEngine:
         stats = crawler.get_stats()
         logger.info(f"Cache discovery stats: {stats}")
 
-        # 2. Instantiate 9 Domain Engines
+        # 2. Instantiate and synthesize Domain Engines
         num_engine = NumerologyDomain(crawler.get_domain_files("numerology"), client_payload)
         west_engine = WesternDomain(crawler.get_domain_files("western"), client_payload)
+        west_data = west_engine.synthesize()
+
         sid_files = crawler.get_domain_files("sidereal") or crawler.get_domain_files("vedic")
-        sid_engine = SiderealDomain(sid_files, client_payload)
+        sid_engine = SiderealDomain(sid_files, client_payload, tropical_planets=west_data.get("planets"))
+        sid_data = sid_engine.synthesize()
+
         ved_engine = VedicDomain(crawler.get_domain_files("vedic"), client_payload)
         bazi_engine = BaZiDomain(crawler.get_domain_files("bazi"), client_payload)
         kab_engine = KabbalahDomain(crawler.get_domain_files("kabbalah"), client_payload)
@@ -92,10 +96,8 @@ class SharderEngine:
         acg_engine = ACGDomain(crawler.get_domain_files("acg"), client_payload)
         tim_engine = TimingDomain(crawler.get_domain_files("timing"), client_payload)
 
-        # 3. Synthesize domain models
+        # 3. Synthesize remaining domain models
         num_data = num_engine.synthesize()
-        west_data = west_engine.synthesize()
-        sid_data = sid_engine.synthesize()
         ved_data = ved_engine.synthesize()
         bazi_data = bazi_engine.synthesize()
         kab_data = kab_engine.synthesize()
@@ -137,8 +139,10 @@ class SharderEngine:
             "version": "6.3",
             "schema": "urn:oraculo:canon-12-15-9-4",
             "client": client_payload.get("name", "Consultant"),
+            "consultant": client_payload.get("name", "Consultant"),
             "total_shards": 15,
             "physical_shards_dir": str(self.dumps_dir),
+            "shards": {f"shard_{i:02d}": f"shard_{i:02d}.json" for i in range(1, 13)},
             "manifest_pointers": {k: f"/raw/json/dumps/client_dumps_15_shards.json#/{k}" for k in silver_shards.keys()}
         }
         with open(self.dumps_dir / "manifest.json", "w", encoding="utf-8") as f:
