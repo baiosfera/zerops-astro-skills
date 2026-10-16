@@ -37,38 +37,86 @@ class ACGDomain:
         }
         geojson_features_count = 0
 
+        seen_line_keys = set()
+
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
                 continue
 
-            # Look for lines
-            lines_data = content.get("lines") or content.get("planetary_lines")
-            if isinstance(lines_data, list) and not power_lines:
-                for item in lines_data[:8]:
-                    if isinstance(item, dict):
-                        power_lines.append({
-                            "planet": item.get("planet", "Jupiter"),
-                            "line_type": item.get("line_type", "MC"),
-                            "description": item.get("description", "Expansión comercial y máxima proyección pública.")
-                        })
+            # Unwrap response envelopes (AstroWay / FreeAstro)
+            data_body = content
+            if isinstance(data_body, dict) and "data" in data_body and isinstance(data_body["data"], dict):
+                data_body = data_body["data"]
+                if "data" in data_body and isinstance(data_body["data"], dict):
+                    data_body = data_body["data"]
 
-            # Look for best places / cities
-            bp = content.get("best_places") or content.get("top_cities") or content.get("cities")
+            # Look for lines (FreeAstro: body, angle; AstroWay: planet, line_type)
+            lines_data = data_body.get("lines") or data_body.get("planetary_lines") or content.get("lines") or content.get("planetary_lines")
+            if isinstance(lines_data, list) and len(power_lines) < 8:
+                for item in lines_data:
+                    if isinstance(item, dict):
+                        planet_raw = item.get("planet") or item.get("body")
+                        angle_raw = item.get("line_type") or item.get("angle")
+                        if planet_raw and angle_raw:
+                            p_cap = str(planet_raw).capitalize()
+                            a_up = str(angle_raw).upper()
+                            line_sig = f"{p_cap}_{a_up}"
+                            if line_sig not in seen_line_keys:
+                                seen_line_keys.add(line_sig)
+                                desc = item.get("description") or (
+                                    "Expansión comercial, reputación y máxima proyección pública." if a_up == "MC"
+                                    else "Identidad visual de marca y magnetismo personal." if a_up == "ASC"
+                                    else "Alianzas estratégicas y atracción de clientes ideales." if a_up == "DSC"
+                                    else "Fundaciones sólidas de marca y raíces operativas." if a_up == "IC"
+                                    else f"Línea de influencia geográfica de {p_cap} en {a_up}."
+                                )
+                                power_lines.append({
+                                    "planet": p_cap,
+                                    "line_type": a_up,
+                                    "description": desc
+                                })
+                                if len(power_lines) >= 8:
+                                    break
+
+            # Look for best places / cities (AstroWay places, FreeAstro recommendations)
+            bp = data_body.get("best_places") or data_body.get("top_cities") or data_body.get("cities") or content.get("best_places")
             if isinstance(bp, dict):
                 for cat, city_list in bp.items():
                     if isinstance(city_list, list) and cat in best_places and not best_places[cat]:
                         best_places[cat] = [str(c) for c in city_list[:5]]
 
-            # GeoJSON count
-            if content.get("type") == "FeatureCollection" or "features" in content:
-                feats = content.get("features", [])
-                geojson_features_count = len(feats)
+            # AstroWay best_places format: {"category": {"id": "career"}, "places": [{"name": "Ishim", "country": "Russia"}]}
+            if "category" in data_body and "places" in data_body and isinstance(data_body["places"], list):
+                cat_info = data_body.get("category", {})
+                cat_id = cat_info.get("id", "").lower() if isinstance(cat_info, dict) else str(cat_info).lower()
+                target_cat = (
+                    "career_wealth" if "career" in cat_id or "wealth" in cat_id
+                    else "love_partnerships" if "love" in cat_id or "partner" in cat_id
+                    else "creativity_fame" if "creativ" in cat_id or "fame" in cat_id
+                    else "spiritual_retreat" if "spirit" in cat_id or "retreat" in cat_id
+                    else "career_wealth"
+                )
+                if not best_places[target_cat]:
+                    c_list = []
+                    for p_item in data_body["places"][:5]:
+                        if isinstance(p_item, dict):
+                            p_name = p_item.get("name") or "Desconocido"
+                            p_country = p_item.get("country") or ""
+                            c_list.append(f"{p_name}, {p_country}".strip(", "))
+                        elif isinstance(p_item, str):
+                            c_list.append(p_item)
+                    if c_list:
+                        best_places[target_cat] = c_list
 
-        # Zero mock fallbacks: represent missing data honestly as empty collections
+            # GeoJSON count
+            if content.get("type") == "FeatureCollection" or "features" in content or "features" in data_body:
+                feats = content.get("features") or data_body.get("features", [])
+                if isinstance(feats, list):
+                    geojson_features_count = max(geojson_features_count, len(feats))
+
         if not power_lines:
             power_lines = []
 
-        # Leave empty if no data in dumps - zero mock fallbacks
         if not best_places["career_wealth"]:
             best_places["career_wealth"] = []
         if not best_places["love_partnerships"]:
