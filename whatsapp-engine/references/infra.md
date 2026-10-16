@@ -112,9 +112,13 @@ zerops:
         - sudo chmod -R 777 /mnt/localstorage/evolutiongo/media 2>/dev/null || true
 
       initCommands:
-        # Ensure database schemas exist before starting service
-        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'CREATE DATABASE evogo_auth;' 2>/dev/null || true
-        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'CREATE DATABASE evogo_users;' 2>/dev/null || true
+        # Ensure database schemas exist and apply anti-starvation connection shielding
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'CREATE DATABASE evogo_auth WITH CONNECTION LIMIT 15;' 2>/dev/null || true
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'CREATE DATABASE evogo_users WITH CONNECTION LIMIT 15;' 2>/dev/null || true
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'ALTER DATABASE evogo_auth SET idle_session_timeout = '\''5min'\'';' 2>/dev/null || true
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'ALTER DATABASE evogo_users SET idle_session_timeout = '\''5min'\'';' 2>/dev/null || true
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'ALTER DATABASE evogo_auth SET idle_in_transaction_session_timeout = '\''30s'\'';' 2>/dev/null || true
+        - zsc execOnce ${appVersionId} -- psql "$db_connectionString" -c 'ALTER DATABASE evogo_users SET idle_in_transaction_session_timeout = '\''30s'\'';' 2>/dev/null || true
 
       start: ./evolution-go
 
