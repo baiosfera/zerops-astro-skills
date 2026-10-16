@@ -18,9 +18,10 @@ logger = logging.getLogger("oraculo.sidereal_domain")
 class SiderealDomain:
     """Processes Sidereal astrology metrics from AstroWay, FreeAstro, and AstrologyAPI."""
 
-    def __init__(self, crawler_entries: List[Dict[str, Any]], client_payload: Dict[str, Any]):
+    def __init__(self, crawler_entries: List[Dict[str, Any]], client_payload: Dict[str, Any], tropical_planets: Optional[Dict[str, Any]] = None):
         self.entries = crawler_entries
         self.client = client_payload
+        self.tropical_planets = tropical_planets or {}
         self.raw_data_map: Dict[str, Any] = {}
         for entry in self.entries:
             key = f"{entry['provider']}::{entry['file_name']}"
@@ -76,8 +77,8 @@ class SiderealDomain:
                         if isinstance(v, (int, float)):
                             ayanamsas[f"{key}_{k}"] = float(v)
 
-            # Check for sidereal planets (dict or list format)
-            s_planets = content.get("sidereal_planets") or content.get("fagan_bradley_planets") or (content.get("planets") if "sidereal" in key.lower() or "varga" in key.lower() else None)
+            # Check for sidereal planets (dict or list format) - avoid harmonic vargas (D9/D10)
+            s_planets = content.get("sidereal_planets") or content.get("fagan_bradley_planets") or (content.get("planets") if "sidereal" in key.lower() and "varga" not in key.lower() else None)
             target = fagan_planets if "fagan" in key.lower() else lahiri_planets
             if isinstance(s_planets, dict):
                 for p_name, p_data in s_planets.items():
@@ -108,6 +109,49 @@ class SiderealDomain:
 
         fagan_val = ayanamsas.get("fagan_bradley")
         lahiri_val = ayanamsas.get("lahiri")
+
+        # Mathematical astronomical derivation: lambda_sidereal = (lambda_tropical - ayanamsa) % 360
+        if self.tropical_planets:
+            for p_name, p_data in self.tropical_planets.items():
+                if not isinstance(p_data, dict):
+                    continue
+                t_long = p_data.get("longitude")
+                if t_long is None and "degree" in p_data and "sign" in p_data:
+                    sign_str = str(p_data.get("sign"))
+                    if sign_str in zodiac_names:
+                        s_idx = zodiac_names.index(sign_str)
+                        t_long = (s_idx * 30.0) + float(p_data.get("degree", 0.0))
+
+                if t_long is not None:
+                    # 1. Fagan-Bradley sidereal position
+                    if fagan_val is not None:
+                        existing = fagan_planets.get(p_name)
+                        if not existing or existing.get("degree") == 0.0 or existing.get("sign") == "Unknown":
+                            fb_long = (float(t_long) - fagan_val) % 360.0
+                            fb_sign_idx = int(fb_long // 30)
+                            fb_deg = round(fb_long % 30, 2)
+                            fagan_planets[p_name] = {
+                                "name": p_name,
+                                "sign": zodiac_names[fb_sign_idx],
+                                "degree": fb_deg,
+                                "longitude": round(fb_long, 3),
+                                "house": int(p_data.get("house") or 1),
+                            }
+                    # 2. Lahiri sidereal position
+                    if lahiri_val is not None:
+                        existing = lahiri_planets.get(p_name)
+                        if not existing or existing.get("degree") == 0.0 or existing.get("sign") == "Unknown":
+                            lah_long = (float(t_long) - lahiri_val) % 360.0
+                            lah_sign_idx = int(lah_long // 30)
+                            lah_deg = round(lah_long % 30, 2)
+                            lahiri_planets[p_name] = {
+                                "name": p_name,
+                                "sign": zodiac_names[lah_sign_idx],
+                                "degree": lah_deg,
+                                "longitude": round(lah_long, 3),
+                                "house": int(p_data.get("house") or 1),
+                            }
+
         delta_arcmin = round(abs(fagan_val - lahiri_val) * 60, 1) if (fagan_val is not None and lahiri_val is not None) else None
 
         # Cross of Malta / Mundoscope Angles (Casas Angulares en Primer Vertical)
