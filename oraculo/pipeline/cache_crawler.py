@@ -176,6 +176,8 @@ class CacheCrawler:
         if isinstance(content, dict):
             content_keys = {str(k).lower() for k in content.keys()}
 
+        matched_domains = set()
+
         # Full extracts (00_*_full_extract_*.json) contain composite multi-tradition payloads
         is_composite_extract = "full_extract" in fname or fname.startswith("00_")
         if is_composite_extract:
