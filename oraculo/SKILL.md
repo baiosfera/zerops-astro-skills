@@ -25,8 +25,8 @@ Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards Post
 - **Regla 3 (Virtual Data Lakehouse Decoupled Canon 12-15-9-4):**
   - **Bronze**: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
   - **Silver**: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json` con punteros RFC 6901.
-  - **Gold (`-c` / `--compile`)**: Universal dynamic cache crawler ingesta 100% de `raw/json/cache/` (498+ archivos) sin hardcoding, deduplica payloads y alimenta 9 feeds enciclopédicos multi-fuente en `raw/feeds/`.
-  - **Platinum (`-s` / `--synthesis`)**: Síntesis de 4 artefactos en `raw/llm/`: `coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md` y `brandbook_[marca].json` (W3C DTCG tokens con `$extensions.tailwind_v4` `@theme` y variables CSS para `astro-web`).
+  - **Gold (`-c` / `--compile`)**: Universal dynamic cache crawler ingesta 100% de `raw/json/cache/` sin hardcoding, reconcilia multi-motor (Tropical Placidus vs Tropical Campanus vs Sideral Fagan-Bradley vs Védico Lahiri D1-D60 + BaZi True Solar Time), genera matriz de discrepancias y 9 feeds enciclopédicos con 100% de textos verbatim.
+  - **Runner Desacoplado (`brandbook_pipeline_runner.py`)**: Síntesis de artefactos canónicos directamente en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (espejado a localstorage para `zcp-sync`): `coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md` y `brandbook_[marca].json`.
   - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
 - **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
 - **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
