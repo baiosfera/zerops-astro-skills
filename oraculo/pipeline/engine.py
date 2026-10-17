@@ -1127,10 +1127,10 @@ class ExtractionEngine:
                     else:
                         heb_endpoints = [
                             ("converter", f"https://www.hebcal.com/converter?cfg=json&gy={year}&gm={month}&gd={day}&g2h=1"),
-                            ("zmanim", f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}&tzid={tz_str}&sec=1&im=1"),
+                            ("zmanim", f"https://www.hebcal.com/zmanim?cfg=json&latitude={lat}&longitude={lng}&date={date_str}&tzid={tz_str}&sec=1"),
                             ("shabbat", f"https://www.hebcal.com/shabbat?cfg=json&latitude={lat}&longitude={lng}&gy={year}&gm={month}&gd={day}&tzid={tz_str}&M=on&s=on"),
                             ("hebcal", f"https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year={year}&month={month}&ss=on&mf=on&c=on&geo=pos&latitude={lat}&longitude={lng}&tzid={tz_str}"),
-                            ("leyning", f"https://www.hebcal.com/leyning?cfg=json&gy={year}&gm={month}&gd={day}")
+                            ("leyning", f"https://www.hebcal.com/leyning?cfg=json&date={date_str}")
                         ]
                         for heb_k, heb_url in heb_endpoints:
                             try:
