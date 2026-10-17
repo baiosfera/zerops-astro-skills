@@ -44,6 +44,16 @@ NAKSHATRA_DEITIES = {
     "Revati": "Pushan (Guía de Almas, Prosperidad Protectora, Cierre de Ciclos)"
 }
 
+NAKSHATRA_LORDS = {
+    "Ashwini": "Ketu", "Bharani": "Venus", "Krittika": "Sun", "Rohini": "Moon",
+    "Mrigashira": "Mars", "Ardra": "Rahu", "Punarvasu": "Jupiter", "Pushya": "Saturn",
+    "Ashlesha": "Mercury", "Magha": "Ketu", "Purva Phalguni": "Venus", "Uttara Phalguni": "Sun",
+    "Hasta": "Moon", "Chitra": "Mars", "Swati": "Rahu", "Vishakha": "Jupiter",
+    "Anuradha": "Saturn", "Jyeshtha": "Mercury", "Jyestha": "Mercury", "Mula": "Ketu",
+    "Purva Ashadha": "Venus", "Uttara Ashadha": "Sun", "Shravana": "Moon", "Dhanishta": "Mars",
+    "Shatabhisha": "Rahu", "Purva Bhadrapada": "Jupiter", "Uttara Bhadrapada": "Saturn", "Revati": "Mercury"
+}
+
 
 class VedicDomain:
     """Processes Vedic Jyotish data from Kundali MCP, VedAstro, FreeAstro, and AstroWay."""
