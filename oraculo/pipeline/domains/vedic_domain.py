@@ -144,14 +144,14 @@ class VedicDomain:
                     nakshatra_info = {
                         "name": nak_name,
                         "pada": int(nak.get("pada") or 1),
-                        "lord": nak.get("lord") or "Desconocido",
+                        "lord": nak.get("lord") or NAKSHATRA_LORDS.get(nak_name, "Ketu"),
                         "deity": NAKSHATRA_DEITIES.get(nak_name, "Deidad Clásica"),
                     }
                 elif isinstance(nak, str):
                     nakshatra_info = {
                         "name": nak,
                         "pada": 1,
-                        "lord": "Desconocido",
+                        "lord": NAKSHATRA_LORDS.get(nak, "Ketu"),
                         "deity": NAKSHATRA_DEITIES.get(nak, "Deidad Clásica"),
                     }
 
