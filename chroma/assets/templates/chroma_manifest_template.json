@@ -1,6 +1,390 @@
 {
   "brand": "[MARCA]",
   "color_space": "oklch",
+  "selected_ecosystem_id": "eco_quiet_luxury",
+  "ecosystems": [
+    {
+      "id": "eco_quiet_luxury",
+      "name": "Quiet Luxury",
+      "concept": "Sutileza, elegancia atemporal y autoridad sin estridencias",
+      "themes": {
+        "dark": {
+          "primary": {
+            "$value": "oklch(0.60 0.20 150)",
+            "$type": "color",
+            "$description": "Verde esmeralda satinado",
+            "components": { "lightness": 0.60, "chroma": 0.20, "hue": 150 },
+            "hex": "#00A86B",
+            "p3": "color(display-p3 0.18 0.65 0.43)"
+          },
+          "secondary": {
+            "$value": "oklch(0.80 0.10 200)",
+            "$type": "color",
+            "$description": "Cian luminoso atenuado",
+            "components": { "lightness": 0.80, "chroma": 0.10, "hue": 200 },
+            "hex": "#48CAE4",
+            "p3": "color(display-p3 0.32 0.78 0.88)"
+          },
+          "accent": {
+            "$value": "oklch(0.70 0.22 45)",
+            "$type": "color",
+            "$description": "Cobre metálico cálido",
+            "components": { "lightness": 0.70, "chroma": 0.22, "hue": 45 },
+            "hex": "#E07A5F",
+            "p3": "color(display-p3 0.84 0.47 0.38)"
+          },
+          "background": {
+            "$value": "oklch(0.14 0.02 260)",
+            "$type": "color",
+            "$description": "Lienzo profundo Dark Mode",
+            "components": { "lightness": 0.14, "chroma": 0.02, "hue": 260 },
+            "hex": "#12131A",
+            "p3": "color(display-p3 0.07 0.07 0.10)"
+          },
+          "surface": {
+            "$value": "oklch(0.20 0.03 260)",
+            "$type": "color",
+            "$description": "Superficie de tarjetas",
+            "components": { "lightness": 0.20, "chroma": 0.03, "hue": 260 },
+            "hex": "#1E202B",
+            "p3": "color(display-p3 0.11 0.12 0.17)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.96 0.01 260)",
+            "$type": "color",
+            "$description": "Texto principal de alto contraste",
+            "components": { "lightness": 0.96, "chroma": 0.01, "hue": 260 },
+            "hex": "#F4F5F8",
+            "p3": "color(display-p3 0.95 0.96 0.97)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.65 0.02 260)",
+            "$type": "color",
+            "$description": "Texto secundario y metadatos",
+            "components": { "lightness": 0.65, "chroma": 0.02, "hue": 260 },
+            "hex": "#9A9DA8",
+            "p3": "color(display-p3 0.59 0.61 0.66)"
+          }
+        },
+        "light": {
+          "primary": {
+            "$value": "oklch(0.50 0.20 150)",
+            "$type": "color",
+            "$description": "Verde esmeralda profundo",
+            "components": { "lightness": 0.50, "chroma": 0.20, "hue": 150 },
+            "hex": "#007A4D",
+            "p3": "color(display-p3 0.12 0.48 0.31)"
+          },
+          "secondary": {
+            "$value": "oklch(0.60 0.12 200)",
+            "$type": "color",
+            "$description": "Azul zafiro sereno",
+            "components": { "lightness": 0.60, "chroma": 0.12, "hue": 200 },
+            "hex": "#0085A8",
+            "p3": "color(display-p3 0.15 0.52 0.65)"
+          },
+          "accent": {
+            "$value": "oklch(0.60 0.22 45)",
+            "$type": "color",
+            "$description": "Terracota cálido",
+            "components": { "lightness": 0.60, "chroma": 0.22, "hue": 45 },
+            "hex": "#B8553B",
+            "p3": "color(display-p3 0.70 0.33 0.24)"
+          },
+          "background": {
+            "$value": "oklch(0.98 0.005 260)",
+            "$type": "color",
+            "$description": "Lienzo Light Mode suave",
+            "components": { "lightness": 0.98, "chroma": 0.005, "hue": 260 },
+            "hex": "#FAFAFC",
+            "p3": "color(display-p3 0.98 0.98 0.99)"
+          },
+          "surface": {
+            "$value": "oklch(0.94 0.01 260)",
+            "$type": "color",
+            "$description": "Superficie de tarjetas Light",
+            "components": { "lightness": 0.94, "chroma": 0.01, "hue": 260 },
+            "hex": "#EFF0F4",
+            "p3": "color(display-p3 0.93 0.94 0.96)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.18 0.03 260)",
+            "$type": "color",
+            "$description": "Texto principal oscuro de alta legibilidad",
+            "components": { "lightness": 0.18, "chroma": 0.03, "hue": 260 },
+            "hex": "#161720",
+            "p3": "color(display-p3 0.09 0.09 0.13)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.45 0.02 260)",
+            "$type": "color",
+            "$description": "Texto secundario Light Mode",
+            "components": { "lightness": 0.45, "chroma": 0.02, "hue": 260 },
+            "hex": "#5A5D6B",
+            "p3": "color(display-p3 0.35 0.36 0.42)"
+          }
+        }
+      },
+      "audit": {
+        "wcag_aaa_ratio": 7.4,
+        "apca_lc": 86.5
+      }
+    },
+    {
+      "id": "eco_high_performance",
+      "name": "High Performance",
+      "concept": "Contraste extremo, dinamismo y alta conversión",
+      "themes": {
+        "dark": {
+          "primary": {
+            "$value": "oklch(0.65 0.24 140)",
+            "$type": "color",
+            "$description": "Verde eléctrico de alto impacto",
+            "components": { "lightness": 0.65, "chroma": 0.24, "hue": 140 },
+            "hex": "#00C853",
+            "p3": "color(display-p3 0.20 0.75 0.38)"
+          },
+          "secondary": {
+            "$value": "oklch(0.85 0.12 195)",
+            "$type": "color",
+            "$description": "Cian de alta visibilidad",
+            "components": { "lightness": 0.85, "chroma": 0.12, "hue": 195 },
+            "hex": "#00E5FF",
+            "p3": "color(display-p3 0.30 0.85 0.95)"
+          },
+          "accent": {
+            "$value": "oklch(0.72 0.25 40)",
+            "$type": "color",
+            "$description": "Naranja brillante para CTA",
+            "components": { "lightness": 0.72, "chroma": 0.25, "hue": 40 },
+            "hex": "#FF6D00",
+            "p3": "color(display-p3 0.92 0.45 0.15)"
+          },
+          "background": {
+            "$value": "oklch(0.12 0.01 260)",
+            "$type": "color",
+            "$description": "Negro absoluto para máximo contraste",
+            "components": { "lightness": 0.12, "chroma": 0.01, "hue": 260 },
+            "hex": "#0A0A0E",
+            "p3": "color(display-p3 0.04 0.04 0.06)"
+          },
+          "surface": {
+            "$value": "oklch(0.18 0.02 260)",
+            "$type": "color",
+            "$description": "Superficie contrastada",
+            "components": { "lightness": 0.18, "chroma": 0.02, "hue": 260 },
+            "hex": "#14151D",
+            "p3": "color(display-p3 0.08 0.09 0.12)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.98 0.005 260)",
+            "$type": "color",
+            "$description": "Blanco puro",
+            "components": { "lightness": 0.98, "chroma": 0.005, "hue": 260 },
+            "hex": "#FFFFFF",
+            "p3": "color(display-p3 0.99 0.99 1.00)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.70 0.02 260)",
+            "$type": "color",
+            "$description": "Gris claro",
+            "components": { "lightness": 0.70, "chroma": 0.02, "hue": 260 },
+            "hex": "#B0B3C0",
+            "p3": "color(display-p3 0.68 0.70 0.75)"
+          }
+        },
+        "light": {
+          "primary": {
+            "$value": "oklch(0.48 0.22 140)",
+            "$type": "color",
+            "$description": "Verde esmeralda puro",
+            "components": { "lightness": 0.48, "chroma": 0.22, "hue": 140 },
+            "hex": "#00702A",
+            "p3": "color(display-p3 0.10 0.45 0.20)"
+          },
+          "secondary": {
+            "$value": "oklch(0.55 0.15 195)",
+            "$type": "color",
+            "$description": "Azul cobalto intenso",
+            "components": { "lightness": 0.55, "chroma": 0.15, "hue": 195 },
+            "hex": "#006F94",
+            "p3": "color(display-p3 0.12 0.44 0.58)"
+          },
+          "accent": {
+            "$value": "oklch(0.58 0.24 40)",
+            "$type": "color",
+            "$description": "Naranja quemado",
+            "components": { "lightness": 0.58, "chroma": 0.24, "hue": 40 },
+            "hex": "#C44800",
+            "p3": "color(display-p3 0.72 0.30 0.10)"
+          },
+          "background": {
+            "$value": "oklch(0.99 0.002 260)",
+            "$type": "color",
+            "$description": "Blanco óptico",
+            "components": { "lightness": 0.99, "chroma": 0.002, "hue": 260 },
+            "hex": "#FFFFFF",
+            "p3": "color(display-p3 1.00 1.00 1.00)"
+          },
+          "surface": {
+            "$value": "oklch(0.95 0.008 260)",
+            "$type": "color",
+            "$description": "Gris neutro suave",
+            "components": { "lightness": 0.95, "chroma": 0.008, "hue": 260 },
+            "hex": "#F0F1F5",
+            "p3": "color(display-p3 0.94 0.95 0.96)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.12 0.02 260)",
+            "$type": "color",
+            "$description": "Negro absoluto para lectura nítida",
+            "components": { "lightness": 0.12, "chroma": 0.02, "hue": 260 },
+            "hex": "#08090C",
+            "p3": "color(display-p3 0.05 0.06 0.08)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.42 0.02 260)",
+            "$type": "color",
+            "$description": "Gris medio de soporte",
+            "components": { "lightness": 0.42, "chroma": 0.02, "hue": 260 },
+            "hex": "#4D505C",
+            "p3": "color(display-p3 0.30 0.31 0.36)"
+          }
+        }
+      },
+      "audit": {
+        "wcag_aaa_ratio": 8.5,
+        "apca_lc": 94.2
+      }
+    },
+    {
+      "id": "eco_bio_sensual",
+      "name": "Bio-Sensual",
+      "concept": "Armonía orgánica, calidez biológica y textura humana",
+      "themes": {
+        "dark": {
+          "primary": {
+            "$value": "oklch(0.62 0.18 135)",
+            "$type": "color",
+            "$description": "Verde botánico orgánico",
+            "components": { "lightness": 0.62, "chroma": 0.18, "hue": 135 },
+            "hex": "#2E9E55",
+            "p3": "color(display-p3 0.25 0.61 0.36)"
+          },
+          "secondary": {
+            "$value": "oklch(0.78 0.08 180)",
+            "$type": "color",
+            "$description": "Verde agua mineral",
+            "components": { "lightness": 0.78, "chroma": 0.08, "hue": 180 },
+            "hex": "#62B8A8",
+            "p3": "color(display-p3 0.42 0.71 0.65)"
+          },
+          "accent": {
+            "$value": "oklch(0.68 0.18 55)",
+            "$type": "color",
+            "$description": "Ámbar dorado cálido",
+            "components": { "lightness": 0.68, "chroma": 0.18, "hue": 55 },
+            "hex": "#D47C38",
+            "p3": "color(display-p3 0.79 0.49 0.26)"
+          },
+          "background": {
+            "$value": "oklch(0.16 0.025 80)",
+            "$type": "color",
+            "$description": "Lienzo oscuro con matiz tierra",
+            "components": { "lightness": 0.16, "chroma": 0.025, "hue": 80 },
+            "hex": "#191712",
+            "p3": "color(display-p3 0.10 0.09 0.07)"
+          },
+          "surface": {
+            "$value": "oklch(0.22 0.03 80)",
+            "$type": "color",
+            "$description": "Superficie cálida",
+            "components": { "lightness": 0.22, "chroma": 0.03, "hue": 80 },
+            "hex": "#26231C",
+            "p3": "color(display-p3 0.15 0.14 0.11)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.95 0.015 80)",
+            "$type": "color",
+            "$description": "Blanco marfil cálido",
+            "components": { "lightness": 0.95, "chroma": 0.015, "hue": 80 },
+            "hex": "#F7F5EE",
+            "p3": "color(display-p3 0.96 0.95 0.92)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.66 0.025 80)",
+            "$type": "color",
+            "$description": "Arena suave",
+            "components": { "lightness": 0.66, "chroma": 0.025, "hue": 80 },
+            "hex": "#9E998B",
+            "p3": "color(display-p3 0.62 0.59 0.54)"
+          }
+        },
+        "light": {
+          "primary": {
+            "$value": "oklch(0.48 0.16 135)",
+            "$type": "color",
+            "$description": "Verde bosque profundo",
+            "components": { "lightness": 0.48, "chroma": 0.16, "hue": 135 },
+            "hex": "#1B6837",
+            "p3": "color(display-p3 0.18 0.40 0.24)"
+          },
+          "secondary": {
+            "$value": "oklch(0.56 0.09 180)",
+            "$type": "color",
+            "$description": "Jade sereno",
+            "components": { "lightness": 0.56, "chroma": 0.09, "hue": 180 },
+            "hex": "#3D7A6F",
+            "p3": "color(display-p3 0.28 0.48 0.44)"
+          },
+          "accent": {
+            "$value": "oklch(0.56 0.18 55)",
+            "$type": "color",
+            "$description": "Terracota orgánica",
+            "components": { "lightness": 0.56, "chroma": 0.18, "hue": 55 },
+            "hex": "#A8531E",
+            "p3": "color(display-p3 0.63 0.33 0.16)"
+          },
+          "background": {
+            "$value": "oklch(0.97 0.01 80)",
+            "$type": "color",
+            "$description": "Lino crudo suave",
+            "components": { "lightness": 0.97, "chroma": 0.01, "hue": 80 },
+            "hex": "#FAF8F2",
+            "p3": "color(display-p3 0.98 0.97 0.94)"
+          },
+          "surface": {
+            "$value": "oklch(0.93 0.015 80)",
+            "$type": "color",
+            "$description": "Papiro suave para contenedores",
+            "components": { "lightness": 0.93, "chroma": 0.015, "hue": 80 },
+            "hex": "#ECE8DD",
+            "p3": "color(display-p3 0.92 0.90 0.86)"
+          },
+          "text_primary": {
+            "$value": "oklch(0.20 0.03 80)",
+            "$type": "color",
+            "$description": "Espresso profundo de lectura",
+            "components": { "lightness": 0.20, "chroma": 0.03, "hue": 80 },
+            "hex": "#1F1C16",
+            "p3": "color(display-p3 0.12 0.11 0.09)"
+          },
+          "text_muted": {
+            "$value": "oklch(0.48 0.03 80)",
+            "$type": "color",
+            "$description": "Corteza de árbol suave",
+            "components": { "lightness": 0.48, "chroma": 0.03, "hue": 80 },
+            "hex": "#635D50",
+            "p3": "color(display-p3 0.39 0.36 0.31)"
+          }
+        }
+      },
+      "audit": {
+        "wcag_aaa_ratio": 7.8,
+        "apca_lc": 89.1
+      }
+    }
+  ],
   "themes": {
     "dark": {
       "primary": {
