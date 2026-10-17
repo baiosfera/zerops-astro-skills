@@ -27,7 +27,7 @@ Activar para compilar la identidad visual consolidada, generando el manifiesto *
   - Ramas limpias: `brand_architecture`, `ethical_pillars_and_anti_bias`, `design_system`, `voice_tone_and_messaging`, `target_audience`, `llm_system_prompt_engine`.
   - Extensiones `$extensions.tailwind_v4` y `$extensions.css_variables` para generación frontend downstream.
 - **3. Ejecutor Autónomo Dual-Track (`brandbook_pipeline_runner.py`):**
-  - Ingesta shards Silver (~22 KB) y feeds Gold sin recorrer caché cruda (budget < 8k tokens).
+  - Ingesta los 15 shards completos y el corpus interpretativo verbatim sin límites artificiales de contexto.
   - Invoca Bifrost Gateway (`http://bifrost:8080/v1/chat/completions`) con `x-tier: production`, `temperature: 0.2` y `json_object`.
   - Deriva en paralelo `brandbook-theme.css` (`@theme` block para Tailwind CSS v4) y `system_prompt.md`.
 - **4. Salida Determinista SSoT & Espejo Runtime Local Storage:** Escribir y sincronizar en:
