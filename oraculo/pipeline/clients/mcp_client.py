@@ -142,8 +142,19 @@ class UnifiedMcpClient:
                         if not payload:
                             payload = {"result": str(result)}
 
-                        # Cache output in dedicated provider folder
-                        self.cache.set(server_name, tool_name, arguments, payload, http_status=200)
+                        # Detect tool error or validation error
+                        is_error = getattr(result, 'isError', False)
+                        if not is_error:
+                            if isinstance(payload, dict):
+                                if "error" in payload or "errors" in payload or payload.get("ok") is False:
+                                    is_error = True
+                                elif "text" in payload and any(err_word in str(payload["text"]) for err_word in ["Unknown tool", "ValidationError", "Invalid arguments", "Traceback"]):
+                                    is_error = True
+                            elif isinstance(payload, str) and ("Error" in payload or "ValidationError" in payload):
+                                is_error = True
+
+                        http_status = 500 if is_error else 200
+                        self.cache.set(server_name, tool_name, arguments, payload, http_status=http_status)
                         return payload
 
             except Exception as e:
