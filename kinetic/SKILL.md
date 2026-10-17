@@ -13,7 +13,7 @@ metadata:
 Activar para diseñar el sistema de movimiento a 60fps, formulando **3 Opciones de Animación Diferenciadas** aplicadas sobre IDs semánticos vectoriales, banco de micro-audio procedural ADSR y código dev CSS/GSAP. Opera desacoplado con ingestión directa desde `astrobranding_[MARCA].md` o en modo interactivo.
 
 ## Input Rule (Desacople SSoT)
-- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0, Shards 08 y 10) sin requerir que fases previas se hayan ejecutado o bloqueen el pipeline. Si `symbol_manifest.json` o `chroma_manifest.json` existen, hereda sus nodos y paletas; de lo contrario aplica sobre los IDs semánticos canónicos.
+- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0, Shards 03 y 10) sin requerir que fases previas se hayan ejecutado o bloqueen el pipeline. Si `symbol_manifest.json` o `chroma_manifest.json` existen, hereda sus nodos y paletas; de lo contrario aplica sobre los IDs semánticos canónicos.
 - **Modo Standalone / Manual:** Acepta especificaciones directas del usuario o `brand_input.json`.
 
 ## Hard Rules (Directivas Obligatorias)
