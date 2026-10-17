@@ -193,9 +193,9 @@ async def extract_freeastroapi(
         "include_crossings": False
     }
 
-    raw_city = client_data.get("city") or "Medellin"
+    raw_city = client_data.get("city") or "Unknown"
     clean_city = unicodedata.normalize("NFKD", str(raw_city)).encode("ASCII", "ignore").decode("utf-8")
-    clean_city = re.sub(r"[,\(\)].*$", "", clean_city).strip().split()[0] if clean_city.strip() else "Medellin"
+    clean_city = re.sub(r"[,\(\)].*$", "", clean_city).strip() or "Unknown"
 
     date_str = f"{year:04d}-{month:02d}-{day:02d}"
     datetime_iso = f"{date_str}T{hour:02d}:{minute:02d}:00"
