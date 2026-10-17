@@ -1230,8 +1230,9 @@ class ExtractionEngine:
                         ("get_lucky_hours", lunar_lh_args, cached_lh),
                         ("get_daily_fortune", {"date": date_str}, self.cache.get("lunar", "get_daily_fortune", {"date": date_str})),
                         ("check_auspicious_date", {"date": date_str, "activity": "general"}, self.cache.get("lunar", "check_auspicious_date", {"date": date_str, "activity": "general"})),
-                        ("get_solar_terms", {"year": int(year)}, self.cache.get("lunar", "get_solar_terms", {"year": int(year)})),
-                        ("calculate_bazi_compatibility", {"person1": {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}}, self.cache.get("lunar", "calculate_bazi_compatibility", {"person1": {"birth_datetime": bazi_datetime_str, "timezone_offset": int(tz_offset)}}))
+                        ("get_moon_phase", {"date": date_str}, self.cache.get("lunar", "get_moon_phase", {"date": date_str})),
+                        ("get_moon_influence", {"date": date_str}, self.cache.get("lunar", "get_moon_influence", {"date": date_str})),
+                        ("calculate_bazi_compatibility", {"birth_datetime1": bazi_datetime_str, "birth_datetime2": bazi_datetime_str, "timezone_offset": int(tz_offset)}, self.cache.get("lunar", "calculate_bazi_compatibility", {"birth_datetime1": bazi_datetime_str, "birth_datetime2": bazi_datetime_str, "timezone_offset": int(tz_offset)}))
                     ]
 
                     lunar_all_cached = all(c is not None for _, _, c in lunar_tools[:3]) and not self.refresh_pro
