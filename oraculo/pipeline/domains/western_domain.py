@@ -417,7 +417,7 @@ class WesternDomain:
             "## 5. Aspectario Mayor y Geometría Psicológica",
             f"- Aspectos calculados en caché: {d['aspects_count']}",
         ])
-        for a in d["aspects_sample"]:
+        for a in d.get("aspects", []):
             lines.append(f"- {a.get('body1')} {a.get('aspect')} {a.get('body2')} (Orbe: {a.get('orb', 0.0):.2f}°)")
 
         lines.extend([
