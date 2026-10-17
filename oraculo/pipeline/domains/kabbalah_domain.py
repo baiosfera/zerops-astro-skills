@@ -52,18 +52,30 @@ class KabbalahDomain:
             if not isinstance(content, dict):
                 continue
 
-            # Look for Hebrew date from HebCal
-            h_date = content.get("hebrew_date") or content.get("hebrew") or content.get("date_hebrew")
-            if h_date:
+            # Look for Hebrew date from HebCal (root or nested under converter)
+            conv = content.get("converter") if isinstance(content.get("converter"), dict) else {}
+            h_date = content.get("hebrew_date") or content.get("hebrew") or content.get("date_hebrew") or conv.get("hebrew")
+            if not h_date and conv.get("hm") and conv.get("hy"):
+                h_date = f"{conv.get('hd', '')} {conv.get('hm', '')} {conv.get('hy', '')}".strip()
+            if h_date and not hebrew_date:
                 hebrew_date = str(h_date)
 
             # Look for parasha from HebCal
             parasha = content.get("parasha") or content.get("torah_portion") or content.get("parashat_hashavua")
+            if not parasha and "events" in conv and isinstance(conv["events"], list):
+                for ev in conv["events"]:
+                    ev_str = str(ev)
+                    if "parashat" in ev_str.lower() or "parasha" in ev_str.lower():
+                        parasha = ev_str
+                        break
             if parasha and not parashat_hashavua:
                 parashat_hashavua = str(parasha)
 
             # Look for Zmanim solar times
-            times = content.get("times") or content.get("zmanim") or content.get("halachic_times")
+            zm = content.get("zmanim") if isinstance(content.get("zmanim"), dict) else {}
+            times = content.get("times") or zm.get("times") or content.get("halachic_times")
+            if not times and isinstance(content.get("data"), dict) and "times" in content["data"]:
+                times = content["data"]["times"]
             if isinstance(times, dict) and not halachic_times:
                 for k, v in times.items():
                     halachic_times[k] = str(v)
