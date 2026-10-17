@@ -70,7 +70,7 @@ class TimingDomain:
                             pass
                 return "", ""
 
-            # Check AstroWay keys
+            # Check AstroWay keys in multi-endpoint composites
             if "vedic_dashas_vimshottari_maha" in content:
                 m_name, m_dates = _extract_active_dasha(content["vedic_dashas_vimshottari_maha"])
                 if m_name:
@@ -80,6 +80,21 @@ class TimingDomain:
 
             if "vedic_dashas_vimshottari_antar" in content:
                 a_name, a_dates = _extract_active_dasha(content["vedic_dashas_vimshottari_antar"])
+                if a_name:
+                    current_antardasha = a_name
+                    if a_dates:
+                        dasha_dates = a_dates
+
+            # Check direct unwrapped AstroWay dasha files
+            if "vimshottari_maha" in key.lower() or (content.get("system") == "Vimshottari" and content.get("level") == "maha"):
+                m_name, m_dates = _extract_active_dasha(content)
+                if m_name:
+                    current_mahadasha = m_name
+                    if not dasha_dates:
+                        dasha_dates = m_dates
+
+            if "vimshottari_antar" in key.lower() or (content.get("system") == "Vimshottari" and content.get("level") == "antar"):
+                a_name, a_dates = _extract_active_dasha(content)
                 if a_name:
                     current_antardasha = a_name
                     if a_dates:
