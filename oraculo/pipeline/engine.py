@@ -597,9 +597,9 @@ class ExtractionEngine:
         minute = int(client_data.get("minute", 0))
         lat = float(client_data.get("lat", 0.0))
         lng = float(client_data.get("lng", 0.0))
-        tz_offset = float(client_data.get("tz_offset", -5.0))
+        tz_offset = float(client_data.get("tz_offset", 0.0))
         tz_str = client_data.get("tz_str", "UTC")
-        city = client_data.get("city") or "Bogota"
+        city = client_data.get("city") or "Unknown"
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
 
         fe_data = self.cache.get("freeastro", "full_extract", client_hash)
