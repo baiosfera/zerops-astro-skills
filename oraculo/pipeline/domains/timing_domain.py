@@ -49,7 +49,42 @@ class TimingDomain:
             if not isinstance(content, dict):
                 continue
 
-            # Look for Dashas from VedAstro or Kundali
+            # Look for Dashas from VedAstro, Kundali, or AstroWay
+            now_dt = datetime.now()
+            def _extract_active_dasha(d_obj: Any) -> Tuple[str, str]:
+                if not isinstance(d_obj, dict):
+                    return "", ""
+                payload = d_obj.get("data", d_obj)
+                periods = payload.get("periods", []) if isinstance(payload, dict) else []
+                for p in periods:
+                    s_str = str(p.get("startDate", ""))
+                    e_str = str(p.get("endDate", ""))
+                    if s_str and e_str:
+                        try:
+                            s_dt = datetime.strptime(s_str[:10], "%Y-%m-%d")
+                            e_dt = datetime.strptime(e_str[:10], "%Y-%m-%d")
+                            if s_dt <= now_dt <= e_dt:
+                                p_name = str(p.get("planetName") or p.get("planet") or "")
+                                return p_name, f"{s_str[:10]} - {e_str[:10]}"
+                        except Exception:
+                            pass
+                return "", ""
+
+            # Check AstroWay keys
+            if "vedic_dashas_vimshottari_maha" in content:
+                m_name, m_dates = _extract_active_dasha(content["vedic_dashas_vimshottari_maha"])
+                if m_name:
+                    current_mahadasha = m_name
+                    if not dasha_dates:
+                        dasha_dates = m_dates
+
+            if "vedic_dashas_vimshottari_antar" in content:
+                a_name, a_dates = _extract_active_dasha(content["vedic_dashas_vimshottari_antar"])
+                if a_name:
+                    current_antardasha = a_name
+                    if a_dates:
+                        dasha_dates = a_dates
+
             d_info = content.get("dasha") or content.get("dashas") or content.get("current_dasha")
             if isinstance(d_info, dict):
                 current_mahadasha = d_info.get("mahadasha") or d_info.get("major") or current_mahadasha
