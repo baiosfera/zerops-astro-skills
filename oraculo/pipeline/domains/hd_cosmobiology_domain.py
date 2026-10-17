@@ -111,7 +111,7 @@ class HDCosmobiologyDomain:
             # Look for Cosmobiology midpoints or 90 dial from AstroWay/FreeAstro
             if "cosmobiology_midpoint_pictures" in content and isinstance(content["cosmobiology_midpoint_pictures"], dict):
                 mp_data = content["cosmobiology_midpoint_pictures"].get("data", content["cosmobiology_midpoint_pictures"])
-                pics = mp_data.get("pictures", []) if isinstance(mp_data, dict) else []
+                if isinstance(pics, list) and not cosmo_midpoints:
                     for pic in pics[:12]:
                         if isinstance(pic, dict):
                             formula = pic.get("formula") or pic.get("notation") or (f"{pic.get('pointA', '')} = {pic.get('pointB', '')}/{pic.get('pointC', '')}" if pic.get("pointA") else "")
