@@ -1,26 +1,70 @@
 {
   "brand": "[MARCA]",
-  "archetype": "[ARQUETIPO_PRINCIPAL]",
-  "geometry_rationale": "Geometría sagrada construida sobre la proporción áurea (Phi = 1.618) y retícula euclidiana para proyectar orden, autoridad y pregnancia visual.",
+  "color_mode": "monochrome_bw",
+  "selected_vector_id": "iso_golden_ratio",
+  "selected_vector_type": "isologo",
+  "geometry_rationale": "Geometría sagrada construida sobre la proporción áurea (Phi = 1.618) y retícula euclidiana para proyectar orden, autoridad y pregnancia visual en blanco y negro puro.",
+  "isologos": [
+    {
+      "id": "iso_golden_ratio",
+      "name": "Isologo Áureo Soberano",
+      "geometry_style": "Proporción Áurea 1:1.618 con círculos tangentes y triángulo de fuego",
+      "svg_raw": "<svg viewBox=\"0 0 512 512\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"256\" cy=\"256\" r=\"240\" stroke=\"currentColor\" stroke-width=\"12\" vector-effect=\"non-scaling-stroke\" id=\"symbol-core\" /><polygon points=\"256,96 394,384 118,384\" fill=\"currentColor\" opacity=\"0.9\" id=\"symbol-geometry-star\" /></svg>",
+      "viewBox": "0 0 512 512",
+      "aspect_ratio": "1:1",
+      "semantic_ids": ["#symbol-core", "#symbol-geometry-star"]
+    }
+  ],
+  "monograms": [
+    {
+      "id": "mono_sovereign_initials",
+      "name": "Monograma de Precisión",
+      "geometry_style": "Retícula tipográfica con esquinas suavizadas y trazo uniforme",
+      "svg_raw": "<svg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><rect x=\"16\" y=\"16\" width=\"224\" height=\"224\" rx=\"48\" stroke=\"currentColor\" stroke-width=\"8\" vector-effect=\"non-scaling-stroke\" id=\"symbol-orbit-1\" /><path d=\"M80 192 L128 64 L176 192 M96 152 L160 152\" stroke=\"currentColor\" stroke-width=\"12\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" id=\"symbol-monogram\" /></svg>",
+      "viewBox": "0 0 256 256",
+      "aspect_ratio": "1:1",
+      "semantic_ids": ["#symbol-orbit-1", "#symbol-monogram"]
+    }
+  ],
+  "favicons": [
+    {
+      "id": "fav_minimal_dot",
+      "name": "Favicon Concéntrico Alto Contraste",
+      "geometry_style": "Reducción mínima legible a 16x16 y 32x32 px",
+      "svg_raw": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"32\" cy=\"32\" r=\"30\" fill=\"currentColor\" id=\"symbol-orbit-2\" /><circle cx=\"32\" cy=\"32\" r=\"12\" fill=\"#000000\" /></svg>",
+      "viewBox": "0 0 64 64",
+      "aspect_ratio": "1:1",
+      "semantic_ids": ["#symbol-orbit-2"]
+    }
+  ],
   "vectors": {
     "logo_primary": {
-      "svg_raw": "<svg viewBox=\"0 0 512 512\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"256\" cy=\"256\" r=\"240\" stroke=\"var(--color-brand-primary, #00A86B)\" stroke-width=\"12\" vector-effect=\"non-scaling-stroke\" /><polygon points=\"256,96 394,384 118,384\" fill=\"var(--color-brand-accent, #E07A5F)\" opacity=\"0.9\" /></svg>",
+      "svg_raw": "<svg viewBox=\"0 0 512 512\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"256\" cy=\"256\" r=\"240\" stroke=\"currentColor\" stroke-width=\"12\" vector-effect=\"non-scaling-stroke\" /><polygon points=\"256,96 394,384 118,384\" fill=\"currentColor\" opacity=\"0.9\" /></svg>",
       "viewBox": "0 0 512 512",
-      "css_variables": ["--color-brand-primary", "--color-brand-accent"],
       "aspect_ratio": "1:1"
     },
     "monogram": {
-      "svg_raw": "<svg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><rect x=\"16\" y=\"16\" width=\"224\" height=\"224\" rx=\"48\" stroke=\"var(--color-brand-primary, #00A86B)\" stroke-width=\"8\" vector-effect=\"non-scaling-stroke\" /><path d=\"M80 192 L128 64 L176 192 M96 152 L160 152\" stroke=\"var(--color-brand-text, #F4F5F8)\" stroke-width=\"12\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" /></svg>",
+      "svg_raw": "<svg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><rect x=\"16\" y=\"16\" width=\"224\" height=\"224\" rx=\"48\" stroke=\"currentColor\" stroke-width=\"8\" vector-effect=\"non-scaling-stroke\" /><path d=\"M80 192 L128 64 L176 192 M96 152 L160 152\" stroke=\"currentColor\" stroke-width=\"12\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" /></svg>",
       "viewBox": "0 0 256 256",
-      "css_variables": ["--color-brand-primary", "--color-brand-text"],
       "aspect_ratio": "1:1"
     },
     "favicon": {
-      "svg_raw": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"32\" cy=\"32\" r=\"30\" fill=\"var(--color-brand-primary, #00A86B)\" /><circle cx=\"32\" cy=\"32\" r=\"12\" fill=\"var(--color-brand-bg, #12131A)\" /></svg>",
+      "svg_raw": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><circle cx=\"32\" cy=\"32\" r=\"30\" fill=\"currentColor\" /><circle cx=\"32\" cy=\"32\" r=\"12\" fill=\"#000000\" /></svg>",
       "viewBox": "0 0 64 64",
-      "css_variables": ["--color-brand-primary", "--color-brand-bg"],
       "aspect_ratio": "1:1"
     }
+  },
+  "lockup": {
+    "symbolScale": 1.0,
+    "symbolStroke": 2.0,
+    "symbolX": 0,
+    "symbolY": 0,
+    "initialsX": 0,
+    "initialsY": 0,
+    "brandX": 0,
+    "brandY": 120,
+    "sloganX": 0,
+    "sloganY": 160
   },
   "export_config": {
     "retina_factors": [1, 2, 3],
