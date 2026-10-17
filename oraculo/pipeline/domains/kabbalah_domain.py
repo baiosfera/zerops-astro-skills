@@ -47,6 +47,7 @@ class KabbalahDomain:
         parashat_hashavua = ""
         halachic_times: Dict[str, str] = {}
         tikkun_summary = ""
+        commercial_app = ""
 
         for key, content in self.raw_data_map.items():
             if not isinstance(content, dict):
