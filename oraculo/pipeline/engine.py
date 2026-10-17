@@ -1284,7 +1284,7 @@ class ExtractionEngine:
                         ("muhurat", {"date": date_str, "latitude": float(lat), "longitude": float(lng), "activity": "general"}),
                         ("lifemap", {"birth_datetime": kd_birth, "latitude": float(lat), "longitude": float(lng)}),
                         ("panchang", {"date": date_str, "latitude": float(lat), "longitude": float(lng)}),
-                        ("festivals", {"year": int(year), "latitude": float(lat), "longitude": float(lng)}),
+                        ("tithi", {"date": date_str, "latitude": float(lat), "longitude": float(lng)}),
                         ("pramaan", {"query": "yogas", "topic": "raja_yoga"})
                     ]
                     cached_kd = self.cache.get("kundali", "kundali", kd_tools[0][1]) or self.cache.get("mcp", "kundali_kundali", kd_tools[0][1])
