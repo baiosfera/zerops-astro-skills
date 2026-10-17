@@ -75,9 +75,18 @@ class CacheManager:
         try:
             with open(p, "r", encoding="utf-8") as f:
                 payload = json.load(f)
-                # Verify that it was a successful response
-                if payload.get("_http_status", 200) == 200 or "data" in payload or "result" in payload:
-                    return payload.get("data", payload)
+                status = payload.get("_http_status", 200)
+                if status not in (200, 201):
+                    return None
+                data = payload.get("data", payload)
+                if isinstance(data, dict):
+                    if data.get("ok") is False or "error" in data or "errors" in data or data.get("Status") == "Fail":
+                        return None
+                    if "detail" in data and isinstance(data["detail"], list):
+                        return None
+                elif isinstance(data, str) and ("Error" in data or "ValidationError" in data):
+                    return None
+                return data
         except Exception:
             return None
         return None
@@ -105,8 +114,12 @@ class CacheManager:
         if data is None:
             return False
         if isinstance(data, dict):
-            if data.get("ok") is False or "error" in data:
+            if data.get("ok") is False or "error" in data or "errors" in data or data.get("Status") == "Fail":
                 return False
+            if "detail" in data and isinstance(data["detail"], list):
+                return False
+        elif isinstance(data, str) and ("Error" in data or "ValidationError" in data):
+            return False
         return True
 
     def get_endpoint(self, provider: str, endpoint: str, key_data: Any) -> Optional[Any]:
