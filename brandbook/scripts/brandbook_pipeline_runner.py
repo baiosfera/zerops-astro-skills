@@ -112,8 +112,8 @@ class IngestionEngine:
 class BifrostGatewayClient:
     """Communicates with Bifrost AI Gateway enforcing production headers and structured JSON."""
 
-    def __init__(self, base_url: str = "http://bifrost:8080", primary_model: str = "deepseek/deepseek-chat",
-                 fallback_model: str = "freellmapi/deepseek-v4-flash", timeout_sec: int = 180):
+    def __init__(self, base_url: str = "http://bifrost:8080", primary_model: str = "deepseek/deepseek-flash",
+                 fallback_model: str = "deepseek/deepseek-chat", timeout_sec: int = 120):
         self.base_url = base_url.rstrip("/")
         self.primary_model = primary_model
         self.fallback_model = fallback_model
@@ -174,46 +174,14 @@ class BifrostGatewayClient:
             cleaned_json = re.sub(r"^```[a-zA-Z]*\n?", "", cleaned_json)
             cleaned_json = re.sub(r"\n?```$", "", cleaned_json).strip()
 
-        try:
-            return json.loads(cleaned_json)
-        except json.JSONDecodeError as err:
-            logger.warning(f"Initial JSON decode failed ({err}). Attempting truncation repair...")
-            repaired = self._repair_json_truncation(cleaned_json)
-            if repaired is not None:
-                logger.info("Successfully repaired truncated JSON!")
-                return repaired
-            raise
-
-    @staticmethod
-    def _repair_json_truncation(raw_str: str) -> Optional[Dict[str, Any]]:
-        """Repairs incomplete JSON strings caused by token limit cutoffs."""
-        s = raw_str.strip()
-        for _ in range(50):
-            quotes = re.findall(r'(?<!\\)"', s)
-            test_s = s
-            if len(quotes) % 2 != 0:
-                test_s = s + '"'
-
-            open_braces = test_s.count("{") - test_s.count("}")
-            open_brackets = test_s.count("[") - test_s.count("]")
-
-            closed_s = test_s + ("]" * max(0, open_brackets)) + ("}" * max(0, open_braces))
-            try:
-                return json.loads(closed_s)
-            except Exception:
-                last_comma = max(s.rfind(","), s.rfind("\n"))
-                if last_comma > 0:
-                    s = s[:last_comma].rstrip(", \t\n")
-                else:
-                    break
-        return None
+        return json.loads(cleaned_json)
 
 
 class BrandbookPipelineRunner:
     """Coordinates digestion, synthesis, CSS extraction, and SSoT disk distribution."""
 
     def __init__(self, brand_raw: str, mode: str = "fast-track", enhance: bool = False,
-                 bifrost_url: str = "http://bifrost:8080", model: str = "deepseek/deepseek-chat",
+                 bifrost_url: str = "http://bifrost:8080", model: str = "deepseek/deepseek-flash",
                  output_dir: Optional[str] = None):
         self.brand_upper, self.brand_lower = sanitize_brand(brand_raw)
         self.mode = mode
@@ -335,13 +303,13 @@ class BrandbookPipelineRunner:
             "W3C Design Tokens Community Group (DTCG) specification (2025.10).\n"
             "CRITICAL INVARIANTS:\n"
             "1. Output MUST be valid, parseable JSON only. Do not include markdown preamble or conversational prose.\n"
-            "2. Be concise, punchy, and architectural. Use high-density statements and clear bullet items. Do NOT write verbose essays or rambling filler.\n"
-            "3. Design Tokens MUST use strictly formatted W3C DTCG nodes: every token must have '$type', '$value', "
+            "2. Design Tokens MUST use strictly formatted W3C DTCG nodes: every token must have '$type', '$value', "
             "and optional '$description'. Extra metadata like HEX must reside in '$extensions.hex', NEVER at token root.\n"
-            "4. Colors MUST be specified primarily in OKLCH (e.g. 'oklch(0.62 0.22 35)'), with hex values in '$extensions.hex'.\n"
-            "5. Include complete Brand Architecture, Ethical Pillars, Design System (color, typography, motion), "
+            "3. Colors MUST be specified primarily in OKLCH (e.g. 'oklch(0.62 0.22 35)'), with hex values in '$extensions.hex'.\n"
+            "4. Include complete Brand Architecture, Ethical Pillars, Design System (color, typography, motion), "
             "Voice & Tone, Target Audience, and LLM System Prompt Engine.\n"
-            "6. Ground the colors, fonts, voice, and positioning directly in the astrological shards (Air dominant, Gemini Sun/MC, Libra Moon, Yang Wood, etc.)."
+            "5. If input includes astrological shards or semiotic briefs (Tripod of Iron, Client Triad, Stephen Arroyo Elements, "
+            "Yong Shen balancing element), ground the colors, fonts, voice, and positioning directly in these archetypes."
         )
 
         # Build compact user payload from silver shards & briefs
@@ -587,7 +555,7 @@ def main() -> int:
     parser.add_argument("--mode", choices=["fast-track", "studio"], default="fast-track", help="Execution mode")
     parser.add_argument("--enhance", action="store_true", help="Enhance/enrich existing brandbook baseline")
     parser.add_argument("--bifrost-url", default="http://bifrost:8080", help="Bifrost AI Gateway URL")
-    parser.add_argument("--model", default="deepseek/deepseek-chat", help="Primary LLM model via Bifrost")
+    parser.add_argument("--model", default="deepseek/deepseek-flash", help="Primary LLM model via Bifrost")
     parser.add_argument("--output-dir", help="Custom output directory")
     parser.add_argument("--dry-run", action="store_true", help="Inspect context without calling LLM")
 

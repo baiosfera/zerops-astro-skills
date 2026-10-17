@@ -188,6 +188,42 @@ class SiderealDomain:
                         "description": f"Ascendente Sideral Lahiri (Lagna Védico) en {zodiac_names[lah_asc_idx]} a {lah_asc_deg:.2f}°."
                     }
 
+            h10 = self.tropical_houses.get(10) or self.tropical_houses.get("10", {})
+            t_mc_long = h10.get("longitude")
+            if t_mc_long is None and "degree" in h10 and "sign" in h10:
+                s_str = str(h10.get("sign"))
+                if s_str in zodiac_names:
+                    t_mc_long = (zodiac_names.index(s_str) * 30.0) + float(h10.get("degree", 0.0))
+
+            fagan_mc = {}
+            lahiri_mc = {}
+            if t_mc_long is not None:
+                if fagan_val is not None:
+                    fb_mc_long = (float(t_mc_long) - fagan_val) % 360.0
+                    fb_mc_idx = int(fb_mc_long // 30)
+                    fb_mc_deg = round(fb_mc_long % 30, 2)
+                    fagan_mc = {
+                        "sign": zodiac_names[fb_mc_idx],
+                        "degree": fb_mc_deg,
+                        "longitude": round(fb_mc_long, 3),
+                        "cusp": 10,
+                        "description": f"Medio Cielo Sideral Fagan-Bradley en {zodiac_names[fb_mc_idx]} a {fb_mc_deg:.2f}°."
+                    }
+                if lahiri_val is not None:
+                    lah_mc_long = (float(t_mc_long) - lahiri_val) % 360.0
+                    lah_mc_idx = int(lah_mc_long // 30)
+                    lah_mc_deg = round(lah_mc_long % 30, 2)
+                    lahiri_mc = {
+                        "sign": zodiac_names[lah_mc_idx],
+                        "degree": lah_mc_deg,
+                        "longitude": round(lah_mc_long, 3),
+                        "cusp": 10,
+                        "description": f"Medio Cielo Sideral Lahiri en {zodiac_names[lah_mc_idx]} a {lah_mc_deg:.2f}°."
+                    }
+        else:
+            fagan_mc = {}
+            lahiri_mc = {}
+
         delta_arcmin = round(abs(fagan_val - lahiri_val) * 60, 1) if (fagan_val is not None and lahiri_val is not None) else None
 
         # Cross of Malta / Mundoscope Angles (Casas Angulares en Primer Vertical)
@@ -203,11 +239,13 @@ class SiderealDomain:
             "fagan_bradley": {
                 "ayanamsa_degrees": fagan_val,
                 "ascendant": fagan_asc,
+                "midheaven": fagan_mc,
                 "planets": fagan_planets,
             },
             "lahiri": {
                 "ayanamsa_degrees": lahiri_val,
                 "ascendant": lahiri_asc,
+                "midheaven": lahiri_mc,
                 "planets": lahiri_planets,
             },
             "comparative_delta": {
