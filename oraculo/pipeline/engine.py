@@ -1257,11 +1257,11 @@ class ExtractionEngine:
                     }
                     zm_tools = [
                         ("zmanim_get_daily_times", {**zm_base, "response_format": "json"}),
-                        ("zmanim_get_shema_times", zm_base),
-                        ("zmanim_get_tefila_times", zm_base),
-                        ("zmanim_get_mincha_times", zm_base),
-                        ("zmanim_get_shabbat_times", zm_base),
-                        ("zmanim_get_sunrise_sunset", zm_base)
+                        ("zmanim_get_shema_times", {**zm_base, "response_format": "json"}),
+                        ("zmanim_get_tefila_times", {**zm_base, "response_format": "json"}),
+                        ("zmanim_get_mincha_times", {**zm_base, "response_format": "json"}),
+                        ("zmanim_get_shabbat_times", {**zm_base, "response_format": "json"}),
+                        ("zmanim_get_sunrise_sunset", {**zm_base, "response_format": "json"})
                     ]
                     cached_zm = self.cache.get("zmanim", "zmanim_get_daily_times", {**zm_base, "response_format": "json"}) or self.cache.get("mcp", "zmanim_zmanim_get_daily_times", {**zm_base, "response_format": "json"})
                     zmanim_cached = bool(cached_zm) and not self.refresh_pro
