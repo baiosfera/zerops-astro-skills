@@ -144,6 +144,10 @@ async def extract_vedastro(
             "StdTime": std_time,
             "Location": loc_obj
         },
+        "TimebirthTime": {
+            "StdTime": std_time,
+            "Location": loc_obj
+        },
         "startTime": {
             "StdTime": std_time,
             "Location": loc_obj
@@ -152,7 +156,7 @@ async def extract_vedastro(
             "StdTime": end_std_time,
             "Location": loc_obj
         },
-        "levels": 3,
+        "levels": 5,
         "precision_hours": 100,
         "ayanamsa": "LAHIRI"
     }
@@ -178,6 +182,7 @@ async def extract_vedastro(
         ("predictions", f"{VEDASTRO_URL}/Calculate/HoroscopePredictions", payload_predictions),
         ("planet_data", f"{VEDASTRO_URL}/Calculate/AllPlanetData", payload_planet),
         ("house_data", f"{VEDASTRO_URL}/Calculate/AllHouseData", payload_house),
+        ("ashtakvarga", f"{VEDASTRO_URL}/Calculate/Ashtakvarga", payload_house),
         ("dasa_range", f"{VEDASTRO_URL}/Calculate/DasaAtRange", payload_dasa),
         ("jhora_yogas", f"{VEDASTRO_URL}/Calculate/JHoraYogaList", payload_jhora),
         ("kalasarpa_yoga", f"{VEDASTRO_URL}/Calculate/KalaSarpaYoga", payload_atomic_base),
