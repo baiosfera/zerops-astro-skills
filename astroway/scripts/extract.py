@@ -63,7 +63,7 @@ def transliterate_to_hebrew(text: str) -> str:
             i += 1
 
     res_str = "".join(result)
-    return res_str if res_str.strip() else "קטלינה"
+    return res_str if res_str.strip() else "א"
 
 
 def resolve_astroway_payload(
