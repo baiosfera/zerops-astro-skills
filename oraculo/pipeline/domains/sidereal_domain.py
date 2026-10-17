@@ -102,8 +102,14 @@ class SiderealDomain:
                                 "house": int(p_item.get("house") or 1),
                             }
 
-        # Derive Fagan-Bradley from Lahiri (+55 arcminutes = +0.9167°) if not supplied directly
-        if "lahiri" in ayanamsas and "fagan_bradley" not in ayanamsas:
+        # Derive astronomical Ayanamsas if not supplied directly in cache
+        if not ayanamsas.get("lahiri") and not ayanamsas.get("fagan_bradley"):
+            b_year = float(self.client.get("year", 2000))
+            delta_y = b_year - 2000.0
+            precession_deg = delta_y * (50.29 / 3600.0)
+            ayanamsas["lahiri"] = round(23.858 + precession_deg, 4)
+            ayanamsas["fagan_bradley"] = round(24.739 + precession_deg, 4)
+        elif "lahiri" in ayanamsas and "fagan_bradley" not in ayanamsas:
             ayanamsas["fagan_bradley"] = round(ayanamsas["lahiri"] + (55.0 / 60.0), 4)
         elif "fagan_bradley" in ayanamsas and "lahiri" not in ayanamsas:
             ayanamsas["lahiri"] = round(ayanamsas["fagan_bradley"] - (55.0 / 60.0), 4)
