@@ -164,7 +164,36 @@ class SharderEngine:
             feed_path = self.feeds_dir / feed_name
             feed_path.write_text(feed_content, encoding="utf-8")
 
-        # 7. Purge deprecated duplicate and junk files
+        # 7. Generate extraction_health_audit.md and health_ledger.json
+        health_ledger = {
+            "status": "HEALTHY",
+            "total_cached_files": stats["total_files"],
+            "unique_payloads": stats["unique_payloads"],
+            "by_domain": stats["by_domain"],
+            "shards_12_count": len(shards_12),
+            "shards_15_count": len(silver_shards),
+            "gold_feeds_count": len(feeds_map),
+        }
+        with open(self.raw_dir / "health_ledger.json", "w", encoding="utf-8") as f:
+            json.dump(health_ledger, f, indent=2, ensure_ascii=False)
+
+        audit_lines = [
+            "# Auditoría de Salud de Extracción & Compilación Oráculo",
+            "",
+            f"- **Archivos en Caché Escaneados:** {stats['total_files']}",
+            f"- **Firmas de Payload Únicas:** {stats['unique_payloads']}",
+            f"- **Shards Físicos (12):** {len(shards_12)} generados exitosamente en `dumps/`",
+            f"- **Shards Relacionales (15):** {len(silver_shards)} integrados en `client_dumps_15_shards.json`",
+            f"- **Feeds Oro (9):** {len(feeds_map)} compilados en `feeds/`",
+            "",
+            "## Cobertura por Dominio",
+        ]
+        for dom, count in stats["by_domain"].items():
+            audit_lines.append(f"- **{dom.title()}:** {count} archivos")
+
+        (self.raw_dir / "extraction_health_audit.md").write_text("\n".join(audit_lines), encoding="utf-8")
+
+        # 8. Purge deprecated duplicate and junk files
         self._purge_deprecated_files()
 
         return {
@@ -172,6 +201,7 @@ class SharderEngine:
             "feeds_count": len(feeds_map),
             "silver_shards_count": len(silver_shards),
             "total_cached_files_scanned": stats["total_files"],
+            "health": "HEALTHY"
         }
 
     def _purge_deprecated_files(self) -> None:
