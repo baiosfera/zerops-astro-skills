@@ -176,24 +176,28 @@ class CacheCrawler:
         if isinstance(content, dict):
             content_keys = {str(k).lower() for k in content.keys()}
 
-        matched_domains = set()
+        # Full extracts (00_*_full_extract_*.json) contain composite multi-tradition payloads
+        is_composite_extract = "full_extract" in fname or fname.startswith("00_")
+        if is_composite_extract:
+            for all_d in ["western", "sidereal", "vedic", "bazi", "kabbalah", "hd_cosmobiology", "acg", "timing", "numerology"]:
+                matched_domains.add(all_d)
 
         # 1. Numerology
         if any(k in fname or k in rel_path for k in ["numerolog", "pythagor", "chaldean", "kabalistic_numerology", "name_number", "life_path", "expression_number"]):
             matched_domains.add("numerology")
-        if "numerology" in content_keys or "life_path_number" in content_keys or "expression_number" in content_keys:
+        if any(k in content_keys for k in ["numerology", "life_path_number", "expression_number", "chaldean", "pythagorean"]):
             matched_domains.add("numerology")
 
         # 2. Western (Tropical & Psychological)
         if any(k in fname or k in rel_path for k in ["tropical", "placidus", "western", "psychological", "arroyo", "elements", "houses_placidus", "aspects_major", "ephemeris"]):
             matched_domains.add("western")
-        if provider in ["astroway", "freeastroapi", "astrologyapi"] and any(k in content_keys for k in ["planets", "houses", "aspects", "elements_distribution"]):
+        if provider in ["astroway", "freeastroapi", "astrologyapi"] and any(k in content_keys for k in ["planets", "houses", "aspects", "elements_distribution", "tripod_of_iron"]):
             matched_domains.add("western")
 
         # 3. Sidereal (Fagan-Bradley, Campanus, Mundoscope, Ayanamsas)
         if any(k in fname or k in rel_path for k in ["sidereal", "fagan", "bradley", "campanus", "mundoscope", "malta", "ayanamsa", "varga_d1_", "vedic_calculate", "nakshatra"]):
             matched_domains.add("sidereal")
-        if "ayanamsa" in content_keys or "ayanamsha" in content_keys or "sidereal_planets" in content_keys or "fagan_bradley_planets" in content_keys:
+        if any(k in content_keys for k in ["ayanamsa", "ayanamsha", "sidereal_planets", "fagan_bradley_planets"]):
             matched_domains.add("sidereal")
 
         # 4. Vedic (Jyotish, KP, Kundali, VedAstro, Shadbala, D1-D60)
@@ -205,23 +209,31 @@ class CacheCrawler:
         # 5. BaZi (Four Pillars, 10 Gods, Yong Shen, TCM)
         if provider == "bazi_mcp" or any(k in fname or k in rel_path for k in ["bazi", "four_pillars", "ten_gods", "shi_shen", "yong_shen", "huangli", "lunar_calendar", "tcm_health"]):
             matched_domains.add("bazi")
-        if any(k in content_keys for k in ["four_pillars", "day_master", "ten_gods", "lucky_element"]):
+        if any(k in content_keys for k in ["four_pillars", "day_master", "ten_gods", "lucky_element", "tcm_health", "chinese_bazi"]):
             matched_domains.add("bazi")
 
         # 6. Kabbalah & Zmanim (HebCal, Tikkun, Gematria, Halachic times)
         if provider in ["zmanim_mcp", "hebcal"] or any(k in fname or k in rel_path for k in ["kabbalah", "tikkun", "gematria", "zmanim", "shabbat", "hebrew_date", "72_names", "sephirot"]):
             matched_domains.add("kabbalah")
+        if any(k in content_keys for k in ["converter", "zmanim", "hebrew_date", "tikkun", "parasha"]):
+            matched_domains.add("kabbalah")
 
         # 7. Human Design & Cosmobiology
         if any(k in fname or k in rel_path for k in ["human_design", "bodygraph", "gates", "channels", "centers", "cosmobiology", "dial_90", "uranian", "midpoints", "tnps"]):
+            matched_domains.add("hd_cosmobiology")
+        if any(k in content_keys for k in ["human_design", "bodygraph", "cosmobiology_dial_90", "cosmobiology_midpoint_pictures", "centers", "channels"]):
             matched_domains.add("hd_cosmobiology")
 
         # 8. Astrocartography (ACG, Best Places, Local Space, GeoJSON)
         if any(k in fname or k in rel_path for k in ["acg", "astrocarto", "relocation", "best_places", "local_space", "planetary_lines", "world_lines", "cities"]):
             matched_domains.add("acg")
+        if any(k in content_keys for k in ["acg", "astrocartography", "best_places", "planetary_lines"]):
+            matched_domains.add("acg")
 
         # 9. Timing (Dashas, Firdaria, Profections, Transits, Timeline)
         if any(k in fname or k in rel_path for k in ["timing", "timeline", "dasha", "vimshottari", "firdaria", "profection", "zodiacal_releasing", "transits"]):
+            matched_domains.add("timing")
+        if any(k in content_keys for k in ["vedic_dashas_vimshottari_maha", "vedic_dashas_vimshottari_antar", "dashas", "timing", "profection", "firdaria", "periods"]):
             matched_domains.add("timing")
 
         if not matched_domains:
