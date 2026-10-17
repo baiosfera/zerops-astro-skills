@@ -37,10 +37,10 @@ $$\text{brand\_input.json / SSoT} \xrightarrow{} \text{Fase Seleccionada a Deman
 
 ### 1.1 Especificación del Modo Desacoplado Hermético (Oráculo F0 -> Suite de Diseño)
 - **Compilación en Fase 0:** Oráculo procesa los 12 Shards del VirtualDataLake (`shard_01` a `shard_12`) y genera `astrobranding_[MARCA].md` conteniendo:
-  - **MTC & Ritmos Biológicos (Shard 11):** Integración de biotipos, meridianos horarios y curva Neijing para tono, pausas cognitivas y tiempos de interacción.
-  - **Dinámica Cinética & Audio (Shard 08 + Shard 10):** Especificaciones de aceleración física a 60fps (GSAP) y envolventes ADSR (Web Audio API) para microinteracciones de marca.
+  - **MTC & Ritmos Biológicos (Shard 12):** Integración de biotipos, meridianos horarios y curva Neijing para tono, pausas cognitivas y tiempos de interacción.
+  - **Dinámica Cinética & Audio (Shard 03 + Shard 10):** Especificaciones de aceleración física a 60fps (GSAP) y envolventes ADSR (Web Audio API) para microinteracciones de marca.
   - **Tokens de Color W3C DTCG (Shard 01 + Shard 02):** Valores OKLCH, ratios APCA / WCAG 2.2 AAA y paletas tri-ecosistémicas.
-  - **Ciudades de Poder ACG (Shard 09):** Coordenadas geográficas angulares de máxima influencia para activación y eventos de marca.
+  - **Ciudades de Poder ACG (Shard 08):** Coordenadas geográficas angulares de máxima influencia para activación y eventos de marca.
 - **Desacoplamiento Estricto:** La suite de diseño NUNCA analiza JSONs crudos (`omni_dump_mega.json`), no realiza consultas REST astronómicas ni espera la ejecución de los sub-diagnósticos (`diag-a-psy`, `diag-b-voc`, `diag-c-mkt`, `diag-d-leg`, `diag-e-geo`).
 - **Cascada Opcional y No Bloqueante:** Cada skill puede ejecutarse de forma aislada consumiendo directamente `astrobranding_[MARCA].md`. Si existen manifiestos previos en disco, se integran armónicamente; de lo contrario, la skill genera su artefacto autónomamente.
 - **Máxima Densidad Informativa:** Todos los insumos visuales, tipográficos, simbólicos, cinéticos y arquitectónicos requeridos por F1–F5 están pre-digeridos en `astrobranding_[MARCA].md`.
