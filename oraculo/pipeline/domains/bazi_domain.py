@@ -61,7 +61,17 @@ class BaZiDomain:
         ten_gods: Dict[str, str] = {}
         tcm_balance: Dict[str, Any] = {}
 
-        for key, content in self.raw_data_map.items():
+        # Prioritize True Solar Time engines (FreeAstro and AstroWay) over civil time
+        def _source_priority(item_tuple):
+            k = item_tuple[0].lower()
+            if "freeastro" in k or "chinese_bazi" in k:
+                return 0
+            if "astroway" in k:
+                return 1
+            return 2
+
+        sorted_sources = sorted(self.raw_data_map.items(), key=_source_priority)
+        for key, content in sorted_sources:
             if not isinstance(content, dict):
                 continue
 
