@@ -293,6 +293,14 @@ class WesternDomain:
                                 "orb": orb_val,
                             })
 
+            # Check for fixed stars, arabic parts, almuten
+            if "fixed_stars" in content and isinstance(content["fixed_stars"], (list, dict)):
+                fixed_stars_data = content["fixed_stars"]
+            if "arabic_parts" in content and isinstance(content["arabic_parts"], (list, dict)):
+                arabic_parts_data = content["arabic_parts"]
+            if "almuten" in content and isinstance(content["almuten"], (dict, str)):
+                almuten_data = content["almuten"]
+
         # Re-compute planet house placements if houses cusps are available with valid longitudes
         if len(houses) == 12 and any(h.get("longitude", 0.0) > 0 for h in houses.values()):
             cusp_lons = {h_idx: houses[h_idx].get("longitude", 0.0) for h_idx in range(1, 13)}
@@ -347,7 +355,7 @@ class WesternDomain:
             "planets": planets,
             "houses": houses,
             "aspects_count": len(aspects),
-            "aspects_sample": aspects[:15],
+            "aspects": aspects,
             "arroyo_elements": {
                 "counts": element_counts,
                 "percentages": element_percentages,
