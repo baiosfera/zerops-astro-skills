@@ -52,23 +52,44 @@ class TimingDomain:
             # Look for Dashas from VedAstro, Kundali, or AstroWay
             now_dt = datetime.now()
             def _extract_active_dasha(d_obj: Any) -> Tuple[str, str]:
-                if not isinstance(d_obj, dict):
+                if not isinstance(d_obj, (dict, list)):
                     return "", ""
-                payload = d_obj.get("data", d_obj)
-                periods = payload.get("periods", []) if isinstance(payload, dict) else []
+                if isinstance(d_obj, list):
+                    periods = d_obj
+                else:
+                    payload = d_obj.get("data", d_obj.get("Payload", d_obj))
+                    if isinstance(payload, list):
+                        periods = payload
+                    elif isinstance(payload, dict):
+                        periods = payload.get("periods", payload.get("Periods", []))
+                    else:
+                        periods = []
                 for p in periods:
-                    s_str = str(p.get("startDate", ""))
-                    e_str = str(p.get("endDate", ""))
+                    if not isinstance(p, dict):
+                        continue
+                    s_str = str(p.get("startDate") or p.get("StartDate") or p.get("start") or "")
+                    e_str = str(p.get("endDate") or p.get("EndDate") or p.get("end") or "")
                     if s_str and e_str:
                         try:
-                            s_dt = datetime.strptime(s_str[:10], "%Y-%m-%d")
-                            e_dt = datetime.strptime(e_str[:10], "%Y-%m-%d")
+                            s_clean = s_str[:10].replace("/", "-")
+                            e_clean = e_str[:10].replace("/", "-")
+                            s_dt = datetime.strptime(s_clean, "%Y-%m-%d")
+                            e_dt = datetime.strptime(e_clean, "%Y-%m-%d")
                             if s_dt <= now_dt <= e_dt:
-                                p_name = str(p.get("planetName") or p.get("planet") or "")
-                                return p_name, f"{s_str[:10]} - {e_str[:10]}"
+                                p_name = str(p.get("planetName") or p.get("PlanetName") or p.get("planet") or p.get("Planet") or "")
+                                return p_name, f"{s_clean} - {e_clean}"
                         except Exception:
                             pass
                 return "", ""
+
+            # Check direct DasaAtRange from VedAstro
+            if "dasa" in key.lower() or "dasha" in key.lower():
+                v_name, v_dates = _extract_active_dasha(content)
+                if v_name:
+                    if not current_mahadasha:
+                        current_mahadasha = v_name
+                    if not dasha_dates:
+                        dasha_dates = v_dates
 
             # Check AstroWay keys in multi-endpoint composites
             if "vedic_dashas_vimshottari_maha" in content:
