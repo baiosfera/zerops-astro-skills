@@ -318,11 +318,26 @@ class SharderEngine:
                         elif ampm.lower() == "am" and h == 12: h = 0
 
                 ciudad_raw = raw.get("ciudad") or ""
-                lat, lon, tz, city = 6.2442, -75.5812, "America/Bogota", "Medellin"
+                lat, lon, tz, city = None, None, "UTC", ciudad_raw or "Desconocido"
                 for ck, cv in CITY_GEO.items():
                     if ck in ciudad_raw.lower():
                         lat, lon, tz, city = cv
                         break
+                if lat is None or lon is None:
+                    # Look for coordinates in raw
+                    m_coords = re.search(r"(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)", str(raw.get("coordenadas") or raw.get("coords") or ""))
+                    if m_coords:
+                        lat, lon = float(m_coords.group(1)), float(m_coords.group(2))
+                    else:
+                        lat, lon = 0.0, 0.0
+
+                try:
+                    from datetime import datetime
+                    from zoneinfo import ZoneInfo
+                    dt = datetime(y, m, d, h, mn, tzinfo=ZoneInfo(tz))
+                    tz_offset = dt.utcoffset().total_seconds() / 3600.0
+                except Exception:
+                    tz_offset = round(lon / 15.0)
 
                 parsed_payload = {
                     "birth_name": birth_name,
@@ -332,7 +347,7 @@ class SharderEngine:
                     "year": y, "month": m, "day": d,
                     "hour": h, "minute": mn,
                     "lat": lat, "lng": lon,
-                    "tz_str": tz, "tz_offset": -5.0,
+                    "tz_str": tz, "tz_offset": tz_offset,
                     "city": city,
                     "brand_names": brands if brands else [self.output_root.name]
                 }
