@@ -108,13 +108,34 @@ class HDCosmobiologyDomain:
                         else:
                             active_channels.append(str(ch))
 
-            # Look for Cosmobiology midpoints or 90 dial
+            # Look for Cosmobiology midpoints or 90 dial from AstroWay/FreeAstro
+            if "cosmobiology_midpoint_pictures" in content and isinstance(content["cosmobiology_midpoint_pictures"], dict):
+                mp_data = content["cosmobiology_midpoint_pictures"].get("data", content["cosmobiology_midpoint_pictures"])
+                pics = mp_data.get("pictures", []) if isinstance(mp_data, dict) else []
+                if isinstance(pics, list) and not cosmo_midpoints:
+                    for pic in pics[:8]:
+                        if isinstance(pic, dict):
+                            p_str = pic.get("notation") or f"{pic.get('planet1', '')}/{pic.get('planet2', '')} = {pic.get('focal', '')}"
+                            cosmo_midpoints.append(str(p_str))
+                        else:
+                            cosmo_midpoints.append(str(pic))
+
+            if "cosmobiology_dial_90" in content and not cosmo_midpoints:
+                dial_data = content["cosmobiology_dial_90"].get("data", content["cosmobiology_dial_90"])
+                pts = dial_data.get("points", []) if isinstance(dial_data, dict) else []
+                if isinstance(pts, list):
+                    for pt in pts[:8]:
+                        if isinstance(pt, dict):
+                            cosmo_midpoints.append(f"{pt.get('point', '')}: {pt.get('dialPosition', pt.get('position', ''))}°")
+                        else:
+                            cosmo_midpoints.append(str(pt))
+
             cb = content.get("cosmobiology") or content.get("dial_90") or content.get("midpoints")
             if not cb and ("dial90" in content or "midpoints" in content):
                 cb = content
-            if isinstance(cb, dict):
+            if isinstance(cb, dict) and not cosmo_midpoints:
                 mp_list = cb.get("midpoints") or cb.get("aspects_90") or cb.get("points")
-                if isinstance(mp_list, list) and not cosmo_midpoints:
+                if isinstance(mp_list, list):
                     for mp in mp_list[:6]:
                         if isinstance(mp, dict):
                             cosmo_midpoints.append(f"{mp.get('planet1', '')}/{mp.get('planet2', '')} = {mp.get('focal', '')}")
