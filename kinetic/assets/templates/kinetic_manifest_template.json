@@ -1,6 +1,39 @@
 {
   "brand": "[MARCA]",
   "fps_target": 60,
+  "selected_animation_id": "anim_sovereign_reveal",
+  "animation_options": [
+    {
+      "id": "anim_sovereign_reveal",
+      "name": "Sovereign Reveal",
+      "concept": "Despliegue gradual de opacidad y elevación en Y a 60fps con deceleración cúbica suave",
+      "css_keyframes": "@keyframes sovereignReveal {\n  from { opacity: 0; transform: translateY(24px); }\n  to { opacity: 1; transform: translateY(0); }\n}",
+      "target_selectors": {
+        "hero_title": ".hero-title",
+        "symbol_mark": ".brand-symbol"
+      }
+    },
+    {
+      "id": "anim_kinetic_precision",
+      "name": "Kinetic Precision",
+      "concept": "Entrada ágil y rápida con amortiguación elástica sutil para elementos interactivos",
+      "css_keyframes": "@keyframes kineticPrecision {\n  from { opacity: 0; transform: scale(0.96); }\n  to { opacity: 1; transform: scale(1.0); }\n}",
+      "target_selectors": {
+        "cta_button": ".btn-primary",
+        "card_container": ".feature-card"
+      }
+    },
+    {
+      "id": "anim_bio_fluid",
+      "name": "Bio-Fluid Motion",
+      "concept": "Transición orgánica de fase líquida inspirada en la respiración y ritmo biológico",
+      "css_keyframes": "@keyframes bioFluid {\n  0% { transform: scale(1.0); }\n  50% { transform: scale(1.03); }\n  100% { transform: scale(1.0); }\n}",
+      "target_selectors": {
+        "ambient_glow": ".ambient-glow",
+        "status_badge": ".badge-pulse"
+      }
+    }
+  ],
   "motion_tokens": {
     "durations": {
       "fast": {
@@ -34,50 +67,52 @@
       }
     }
   },
+  "sound_bank": {
+    "hover": {
+      "oscillator_type": "sine",
+      "frequency_hz": 440,
+      "attack_sec": 0.01,
+      "decay_sec": 0.05,
+      "sustain_level": 0.1,
+      "release_sec": 0.05,
+      "peak_gain": 0.05,
+      "filter_cutoff_hz": 1200
+    },
+    "click": {
+      "oscillator_type": "triangle",
+      "frequency_hz": 880,
+      "attack_sec": 0.005,
+      "decay_sec": 0.03,
+      "sustain_level": 0.0,
+      "release_sec": 0.02,
+      "peak_gain": 0.08,
+      "filter_cutoff_hz": 2400
+    },
+    "modal_open": {
+      "oscillator_type": "sine",
+      "frequency_hz": 330,
+      "attack_sec": 0.02,
+      "decay_sec": 0.15,
+      "sustain_level": 0.2,
+      "release_sec": 0.2,
+      "peak_gain": 0.06,
+      "filter_cutoff_hz": 800
+    },
+    "success_confirm": {
+      "oscillator_type": "triangle",
+      "frequency_hz": 587.33,
+      "attack_sec": 0.01,
+      "decay_sec": 0.2,
+      "sustain_level": 0.3,
+      "release_sec": 0.25,
+      "peak_gain": 0.1,
+      "filter_cutoff_hz": 3200
+    }
+  },
   "view_transitions": {
     "enabled": true,
     "gsap_context_scoped": true
   },
-  "sound_bank": {
-    "hover": {
-      "oscillator_type": "sine",
-      "frequency_hz": 520,
-      "attack_sec": 0.015,
-      "decay_sec": 0.04,
-      "sustain_level": 0.2,
-      "release_sec": 0.06,
-      "peak_gain": 0.03,
-      "filter_cutoff_hz": 3200
-    },
-    "click": {
-      "oscillator_type": "triangle",
-      "frequency_hz": 740,
-      "attack_sec": 0.008,
-      "decay_sec": 0.06,
-      "sustain_level": 0.1,
-      "release_sec": 0.08,
-      "peak_gain": 0.05,
-      "filter_cutoff_hz": 4000
-    },
-    "modal_open": {
-      "oscillator_type": "sine",
-      "frequency_hz": 440,
-      "attack_sec": 0.02,
-      "decay_sec": 0.1,
-      "sustain_level": 0.3,
-      "release_sec": 0.15,
-      "peak_gain": 0.04,
-      "filter_cutoff_hz": 2800
-    },
-    "success_confirm": {
-      "oscillator_type": "triangle",
-      "frequency_hz": 880,
-      "attack_sec": 0.01,
-      "decay_sec": 0.08,
-      "sustain_level": 0.25,
-      "release_sec": 0.2,
-      "peak_gain": 0.06,
-      "filter_cutoff_hz": 4800
-    }
-  }
+  "svg_animations": {},
+  "css_keyframes": "@keyframes sovereignReveal {\n  from { opacity: 0; transform: translateY(24px); }\n  to { opacity: 1; transform: translateY(0); }\n}"
 }
