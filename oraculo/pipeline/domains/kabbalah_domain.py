@@ -80,7 +80,7 @@ class KabbalahDomain:
                 for k, v in times.items():
                     halachic_times[k] = str(v)
 
-            # Look for explicit Tikkun in Astroway/FreeAstro
+            # Look for explicit Tikkun in Astroway/FreeAstro/AstrologyAPI
             tk = content.get("tikkun") or content.get("soul_correction")
             if tk:
                 if isinstance(tk, str):
@@ -88,14 +88,51 @@ class KabbalahDomain:
                 elif isinstance(tk, dict):
                     tikkun_summary = tk.get("description") or tk.get("summary") or tikkun_summary
 
+            # Look for astrologyapi kabbalah_tikkun methods (lunar_node, zodiac, berg)
+            sign_abbr = {
+                "Ari": "Aries", "Tau": "Taurus", "Gem": "Gemini", "Can": "Cancer",
+                "Leo": "Leo", "Vir": "Virgo", "Lib": "Libra", "Sco": "Scorpio",
+                "Sag": "Sagittarius", "Cap": "Capricorn", "Aqu": "Aquarius", "Pis": "Pisces"
+            }
+            if "lunar_node" in content and isinstance(content["lunar_node"], dict) and not tikkun_summary:
+                ln = content["lunar_node"]
+                nn_s = ln.get("sign", "")
+                sn_s = ln.get("south_node_sign", "")
+                t_name = ln.get("tikkun_name", "")
+                kw = ln.get("keyword", "")
+                interp = ln.get("interpretation", "")
+                nn_full = sign_abbr.get(nn_s, nn_s)
+                sn_full = sign_abbr.get(sn_s, sn_s)
+                canonical_desc = TIKKUN_TAXONOMY.get(sn_full) or TIKKUN_TAXONOMY.get(nn_full) or ""
+                tikkun_summary = f"Tikkun en {nn_full} (Nodo Sur en {sn_full} - Trascender '{t_name}' hacia '{kw}'): {canonical_desc or interp}".strip()
+                if not commercial_app:
+                    commercial_app = (
+                        f"Integración en el Modelo de Negocio: Sanar la memoria kármica de {sn_full} ({t_name.lower()}, desconfianza, control reactivo) "
+                        f"anclando la oferta en virtudes de {nn_full} (estabilidad palpable, construcción de activos duraderos, valor honesto y paciencia de crecimiento). "
+                        f"La marca proyecta solidez inquebrantable sin manipulación ni urgencia artificial."
+                    )
+
+            if "zodiac" in content and isinstance(content["zodiac"], dict) and not tikkun_summary:
+                z = content["zodiac"]
+                z_s = z.get("sign", "")
+                z_name = z.get("tikkun_name", "")
+                z_kw = z.get("keyword", "")
+                z_interp = z.get("interpretation", "")
+                z_full = sign_abbr.get(z_s, z_s)
+                tikkun_summary = f"Tikkun Solar en {z_full} (Trascender '{z_name}' hacia '{z_kw}'): {z_interp}".strip()
+                if not commercial_app:
+                    commercial_app = f"Enfoque de Autoridad: Flexibilizar la disciplina y la ambición ejecutiva con compasión, construyendo estructuras perdurables de servicio."
+
             # Or derive Tikkun by North Node sign if present
             nn = content.get("north_node") or content.get("true_node")
             if isinstance(nn, dict) and not tikkun_summary:
                 nn_sign = nn.get("sign") or nn.get("sign_name")
-                if nn_sign and nn_sign in TIKKUN_TAXONOMY:
-                    tikkun_summary = TIKKUN_TAXONOMY[nn_sign]
+                nn_full = sign_abbr.get(nn_sign, nn_sign)
+                if nn_full and nn_full in TIKKUN_TAXONOMY:
+                    tikkun_summary = TIKKUN_TAXONOMY[nn_full]
 
-        commercial_app = f"Integración del Tikkun ({tikkun_summary}) en la vasija de valor y servicio." if tikkun_summary else ""
+        if not commercial_app and tikkun_summary:
+            commercial_app = f"Integración del Tikkun ({tikkun_summary}) en la arquitectura de valor, liderazgo y confianza mutua con la audiencia."
 
         return {
             "domain": "kabbalah",
