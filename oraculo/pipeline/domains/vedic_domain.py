@@ -83,36 +83,40 @@ class VedicDomain:
             if not isinstance(content, dict):
                 continue
 
-            # 1. Shadbala from AstroWay, Kundali MCP, or VedAstro
-            sb = content.get("shadbala") or content.get("shad_bala")
+            # Unwrap xml_parsed if present
+            if "xml_parsed" in content and isinstance(content["xml_parsed"], dict):
+                content = content["xml_parsed"]
+
+            # 1. Shadbala from AstroWay, Kundali MCP, or VedAstro (PascalCase & lowercase support)
+            sb = content.get("shadbala") or content.get("shad_bala") or content.get("Shadbala") or content.get("ShadBala")
             if isinstance(sb, dict):
                 for p_name, p_sb in sb.items():
                     if isinstance(p_sb, dict):
-                        rupas = float(p_sb.get("total_rupas") or p_sb.get("rupas") or 0.0)
-                        if rupas == 0.0 and any(k.endswith("_bala") for k in p_sb.keys()):
-                            tot_v = sum(float(v) for k, v in p_sb.items() if k.endswith("_bala") and isinstance(v, (int, float)))
+                        rupas = float(p_sb.get("total_rupas") or p_sb.get("rupas") or p_sb.get("Rupas") or p_sb.get("TotalRupas") or 0.0)
+                        if rupas == 0.0 and any(k.lower().endswith("_bala") or k.lower().endswith("bala") for k in p_sb.keys()):
+                            tot_v = sum(float(v) for k, v in p_sb.items() if (k.lower().endswith("_bala") or k.lower().endswith("bala")) and isinstance(v, (int, float)))
                             rupas = round(tot_v / 60.0, 2)
-                        virupas = float(p_sb.get("virupas") or (rupas * 60.0))
-                        chesta = float(p_sb.get("chesta_bala") or p_sb.get("chesta") or p_sb.get("cheshta_bala") or 0.0)
+                        virupas = float(p_sb.get("virupas") or p_sb.get("Virupas") or (rupas * 60.0))
+                        chesta = float(p_sb.get("chesta_bala") or p_sb.get("chesta") or p_sb.get("cheshta_bala") or p_sb.get("ChestaBala") or 0.0)
                         if p_name not in shadbala_data or rupas > shadbala_data[p_name].get("rupas", 0.0):
                             shadbala_data[p_name] = {
                                 "rupas": rupas,
                                 "virupas": virupas,
                                 "chesta_bala": chesta,
-                                "rank": int(p_sb.get("rank") or 1),
+                                "rank": int(p_sb.get("rank") or p_sb.get("Rank") or 1),
                             }
                             if rupas > max_shadbala:
                                 max_shadbala = rupas
                                 dominant_planet = p_name
-            elif "shadbala" in key.lower() and isinstance(content.get("items"), list):
+            elif ("shadbala" in key.lower() or "shad_bala" in key.lower()) and isinstance(content.get("items"), list):
                 # AstroWay shadbala items pattern: planetName, totalRupa, totalVirupa
                 for item in content["items"]:
                     if isinstance(item, dict):
-                        p_name = item.get("planetName") or item.get("name") or (str(item.get("planet")) if "planet" in item else "")
-                        rupas = float(item.get("totalRupa") or item.get("rupas") or item.get("total_rupas") or 0.0)
-                        virupas = float(item.get("totalVirupa") or (rupas * 60.0))
-                        ratio = float(item.get("ratio") or 1.0)
-                        rank_v = int(item.get("rank") or 1)
+                        p_name = item.get("planetName") or item.get("PlanetName") or item.get("name") or (str(item.get("planet")) if "planet" in item else "")
+                        rupas = float(item.get("totalRupa") or item.get("TotalRupa") or item.get("rupas") or item.get("total_rupas") or 0.0)
+                        virupas = float(item.get("totalVirupa") or item.get("TotalVirupa") or (rupas * 60.0))
+                        ratio = float(item.get("ratio") or item.get("Ratio") or 1.0)
+                        rank_v = int(item.get("rank") or item.get("Rank") or 1)
                         if p_name and (p_name not in shadbala_data or rupas > shadbala_data[p_name].get("rupas", 0.0)):
                             shadbala_data[p_name] = {
                                 "rupas": rupas,
@@ -124,27 +128,46 @@ class VedicDomain:
                                 max_shadbala = rupas
                                 dominant_planet = p_name
 
-            # 2. KP System (Sub-Lords, Star Lords)
-            if "kp" in key.lower() or "sub_lord" in content:
+            # 2. KP System (Sub-Lords, Star Lords) - flat keys + nested cusps and planets
+            if "kp" in key.lower() or "sub_lord" in content or "cusps" in content:
                 for k, v in content.items():
                     if "sub_lord" in k or "star_lord" in k or "lord" in k:
                         kp_sub_lords[k] = v
+                if isinstance(content.get("cusps"), list):
+                    for cusp in content["cusps"]:
+                        if isinstance(cusp, dict):
+                            h_num = cusp.get("house") or cusp.get("house_number")
+                            kp_sub_lords[f"cusp_{h_num}_sign_lord"] = cusp.get("sign_lord")
+                            kp_sub_lords[f"cusp_{h_num}_star_lord"] = cusp.get("star_lord")
+                            kp_sub_lords[f"cusp_{h_num}_sub_lord"] = cusp.get("sub_lord")
+                            if cusp.get("sub_sub_lord"):
+                                kp_sub_lords[f"cusp_{h_num}_sub_sub_lord"] = cusp.get("sub_sub_lord")
+                if isinstance(content.get("planets"), list):
+                    for pl in content["planets"]:
+                        if isinstance(pl, dict):
+                            p_name = pl.get("planet") or pl.get("name")
+                            if p_name:
+                                kp_sub_lords[f"planet_{p_name}_sign_lord"] = pl.get("sign_lord")
+                                kp_sub_lords[f"planet_{p_name}_star_lord"] = pl.get("star_lord")
+                                kp_sub_lords[f"planet_{p_name}_sub_lord"] = pl.get("sub_lord")
+                                if pl.get("sub_sub_lord"):
+                                    kp_sub_lords[f"planet_{p_name}_sub_sub_lord"] = pl.get("sub_sub_lord")
 
             # 3. Nakshatra info from root or Moon planet
-            nak = content.get("nakshatra") or content.get("janma_nakshatra") or content.get("moon_nakshatra")
+            nak = content.get("nakshatra") or content.get("janma_nakshatra") or content.get("moon_nakshatra") or content.get("Nakshatra")
             if not nak and "planets" in content and isinstance(content["planets"], list):
                 for p in content["planets"]:
-                    if isinstance(p, dict) and p.get("name") in ("Moon", "Chandra") and p.get("nakshatra"):
-                        nak = p.get("nakshatra")
+                    if isinstance(p, dict) and p.get("name") in ("Moon", "Chandra") and (p.get("nakshatra") or p.get("Nakshatra")):
+                        nak = p.get("nakshatra") or p.get("Nakshatra")
                         break
 
             if nak and not nakshatra_info:
                 if isinstance(nak, dict):
-                    nak_name = nak.get("name") or nak.get("nakshatra") or "Desconocida"
+                    nak_name = nak.get("name") or nak.get("nakshatra") or nak.get("Nakshatra") or "Desconocida"
                     nakshatra_info = {
                         "name": nak_name,
-                        "pada": int(nak.get("pada") or 1),
-                        "lord": nak.get("lord") or NAKSHATRA_LORDS.get(nak_name, "Ketu"),
+                        "pada": int(nak.get("pada") or nak.get("Pada") or 1),
+                        "lord": nak.get("lord") or nak.get("Lord") or NAKSHATRA_LORDS.get(nak_name, "Ketu"),
                         "deity": NAKSHATRA_DEITIES.get(nak_name, "Deidad Clásica"),
                     }
                 elif isinstance(nak, str):
@@ -155,20 +178,27 @@ class VedicDomain:
                         "deity": NAKSHATRA_DEITIES.get(nak, "Deidad Clásica"),
                     }
 
-            # 4. Yogas from VedAstro
-            y_list = content.get("yogas") or content.get("yogas_present")
+            # 4. Yogas from VedAstro (Lossless, no slicing)
+            y_list = content.get("yogas") or content.get("yogas_present") or content.get("jhora_yogas") or content.get("HoroscopePredictions")
             if isinstance(y_list, list) and not yogas:
-                for y in y_list[:10]:
+                for y in y_list:
                     if isinstance(y, dict):
-                        yogas.append(y.get("name") or y.get("yoga", "Yoga Clásico"))
+                        y_name = y.get("name") or y.get("yoga") or y.get("Name") or y.get("Prediction")
+                        if y_name:
+                            yogas.append(y_name)
                     elif isinstance(y, str):
                         yogas.append(y)
 
-            # 5. Vargas / Divisionals (D-9 Navamsha, D-10 Dasamsa)
-            v_data = content.get("vargas") or content.get("shodashavarga")
-            if isinstance(v_data, dict) and not vargas_summary:
-                vargas_summary["d9_navamsha"] = v_data.get("d9") or v_data.get("navamsha")
-                vargas_summary["d10_dasamsa"] = v_data.get("d10") or v_data.get("dasamsa")
+            # 5. Vargas / Divisionals (Complete D1 to D60 preservation)
+            v_data = content.get("vargas") or content.get("shodashavarga") or content.get("divisions")
+            if isinstance(v_data, dict):
+                for v_key, v_val in v_data.items():
+                    if v_key not in vargas_summary:
+                        vargas_summary[str(v_key).lower()] = v_val
+            elif isinstance(content.get("varga_charts"), dict):
+                for v_key, v_val in content["varga_charts"].items():
+                    if v_key not in vargas_summary:
+                        vargas_summary[str(v_key).lower()] = v_val
 
             # 6. Jaimini Chara Karakas from Astroway or VedAstro
             jck = content.get("jaimini_chara_karakas") or content.get("jaimini_karakas") or content.get("karakas")
