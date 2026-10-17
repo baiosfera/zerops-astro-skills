@@ -230,7 +230,7 @@ def parse_client_file(file_path: Path) -> dict:
 
 def resolve_geo(city_name: str, raw_lat=None, raw_lon=None):
     if raw_lat is not None and raw_lon is not None:
-        tz = "America/Bogota"
+        tz = "UTC"
         c_low = city_name.lower().strip() if city_name else ""
         resolved_city = city_name or "Desconocido"
         for k, v in CITY_GEO_LOOKUP.items():
@@ -238,6 +238,9 @@ def resolve_geo(city_name: str, raw_lat=None, raw_lon=None):
                 tz = v["tz"]
                 resolved_city = v["city"]
                 break
+        if tz == "UTC":
+            approx_offset = round(float(raw_lon) / 15.0)
+            tz = f"Etc/GMT{'+' if approx_offset <= 0 else '-'}{abs(approx_offset)}"
         return float(raw_lat), float(raw_lon), tz, resolved_city
 
     c_norm = city_name.lower().strip() if city_name else ""
@@ -245,8 +248,7 @@ def resolve_geo(city_name: str, raw_lat=None, raw_lon=None):
         if k in c_norm or c_norm in k:
             return v["lat"], v["lon"], v["tz"], v["city"]
 
-    # Fallback por defecto a Medellín
-    return 6.2442, -75.5812, "America/Bogota", "Medellin"
+    raise ValueError(f"No se pudieron resolver las coordenadas para la ciudad '{city_name}'. Especifique latitud y longitud explícitamente.")
 
 
 def main():
