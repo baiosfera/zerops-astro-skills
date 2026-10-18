@@ -24,7 +24,7 @@
       "type": "object",
       "properties": {
         "astrobranding": { "type": "string" },
-        "brand_input": { "type": "string" },
+        "brandview_state": { "type": "string", "description": "Unified 3-variant state for Brandview" },
         "font_manifest": { "type": "string" },
         "symbol_manifest": { "type": "string" },
         "chroma_manifest": { "type": "string" },
