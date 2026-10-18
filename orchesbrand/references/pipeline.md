@@ -52,11 +52,23 @@ $$\text{brand\_input.json / SSoT} \xrightarrow{} \text{Fase Seleccionada a Deman
 | Fase | Skill | Contrato de Entrada Requerido | Contrato de Salida Emitido | Ubicación SSoT |
 |---|---|---|---|---|
 | **0** | **Pre-Flight (Oráculo F0)** | 12 Shards astronómicos compilados en `astrobranding_[MARCA].md` | Directorio inicializado y SSoT hermético | `.../DIAG/[MARCA]/` |
-| **1** | `fontgen` | Directrices desde `astrobranding_[MARCA].md` | `fontgen_[MARCA].md` + `font_manifest.json` | `.../DIAG/[MARCA]/` |
-| **2** | `symbol` | `astrobranding_[MARCA].md` (opcional: `font_manifest.json`) | `symbol_manifest.json` (B/N puro) | `.../DIAG/[MARCA]/` |
-| **3** | `chroma` | `astrobranding_[MARCA].md` (opcional: `symbol_manifest.json`) | `chroma_manifest.json` (3 ecosistemas) | `.../DIAG/[MARCA]/` |
-| **4** | `kinetic` | `astrobranding_[MARCA].md` (opcional: manifiestos F2/F3) | `kinetic_manifest.json` (3 presets 60fps) | `.../DIAG/[MARCA]/` |
-| **5** | `brandbook` | `astrobranding_[MARCA].md` o consolidación de manifiestos disponibles | `brandbook_manifest.md` + `brandbook.json` + `index.html` | `.../DIAG/[MARCA]/` |
+| **1** | `fontgen` | Directrices desde `astrobranding_[MARCA].md` | `fontgen_[MARCA].md` + 3 Ecosistemas Tipográficos | `.../DIAG/[MARCA]/` |
+| **2** | `symbol` | `astrobranding_[MARCA].md` (opcional: tipografía activa) | 3 Isologos / Monogramas B/N SVG puro | `.../DIAG/[MARCA]/` |
+| **3** | `chroma` | `astrobranding_[MARCA].md` (opcional: vectores activos) | 3 Paletas OKLCH (WCAG AAA & APCA) | `.../DIAG/[MARCA]/` |
+| **4** | `kinetic` | `astrobranding_[MARCA].md` (opcional: tokens F2/F3) | 3 Presets 60fps & Web Audio ADSR | `.../DIAG/[MARCA]/` |
+| **Unified** | **Orchesbrand** | Consolidación de F1–F4 sin fragmentación | **`brandview_state.json`** | `/var/www/localstorage/[MARCA]/dev/` |
+| **5** | `brandbook` | Ingestión de `brandview_state.json` | `brandbook.json` + `brandbook-theme.css` + `index.html` | `.../PROYECTOS/[MARCA]/dev/` |
+
+---
+
+### 2.1 Contrato Unificado de Estado: `brandview_state.json` (Track 2)
+Para erradicar la fragmentación de 5 archivos satélites (`font_manifest.json`, `symbol_manifest.json`, `chroma_manifest.json`, `kinetic_manifest.json`), Orchesbrand consolida las 3 variantes de cada dimensión en un único artefacto inmutable gobernado por `assets/schemas/brandview_state.schema.json`:
+- **`typography`**: 3 combinaciones tipográficas de 6 capas (`logo`, `slogan`, `h1`, `h2`, `body`, `ui`) con tokens W3C DTCG y calibración anti-CLS (`ascent`, `descent`, `size-adjust`).
+- **`color`**: 3 paletas completas OKLCH (Quiet Luxury, High Performance, Bio-Sensual) con modos dark/light y auditoría de accesibilidad WCAG 2.2 AAA y APCA.
+- **`symbol`**: 3 vectores monocromáticos B/N en SVG puro (`vector-effect="non-scaling-stroke"` y sin estilos inline).
+- **`motion`**: 3 presets cinéticos a 60fps con especificación de timeline GSAP y envolventes procedurales ADSR (Web Audio API).
+- **`active_selection`**: Punteros canónicos a las opciones activas (`selected_typography_id`, `selected_color_id`, etc.).
+- **`compiled_dtcg_tokens`**: Tokens pre-compilados bajo el estándar W3C DTCG 2025.10.
 
 
 ---
