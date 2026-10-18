@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrandviewUnifiedStateSOTA",
+  "description": "Unified immutable state contract for Brandview (Track 2) consolidating typography, color, symbol, and motion into a single multi-variant schema.",
+  "type": "object",
+  "required": [
+    "brand",
+    "version",
+    "generated_at",
+    "active_selection",
+    "typography",
+    "color",
+    "symbol",
+    "motion"
+  ],
+  "properties": {
+    "brand": {
+      "type": "string",
+      "description": "Canonical uppercase brand identifier (e.g. CATALINAGLAMUR)"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator": {
+      "type": "string",
+      "default": "orchesbrand_unified_v2"
+    },
+    "astrological_grounding": {
+      "type": "object",
+      "description": "Astronomical and astrological grounding parameters extracted from SSoT",
+      "properties": {
+        "sun_sign": { "type": "string" },
+        "solar_longitude_deg": { "type": "number" },
+        "midheaven_sign": { "type": "string" },
+        "dominant_element": { "type": "string" },
+        "day_master": { "type": "string" },
+        "nakshatra": { "type": "string" },
+        "scale_ratio": { "type": "number" }
+      }
+    },
+    "active_selection": {
+      "type": "object",
+      "description": "Pointers to the currently active ecosystem or proposal across all dimensions",
+      "required": [
+        "selected_typography_id",
+        "selected_color_id",
+        "selected_symbol_id",
+        "selected_motion_id"
+      ],
+      "properties": {
+        "selected_typography_id": { "type": "string" },
+        "selected_color_id": { "type": "string" },
+        "selected_symbol_id": { "type": "string" },
+        "selected_motion_id": { "type": "string" }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "description": "Typography domain (fontgen): 3 candidate ecosystems with 6 functional layers and anti-CLS calibration",
+      "required": ["candidate_ecosystems"],
+      "properties": {
+        "candidate_ecosystems": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "archetype", "rationale", "tokens", "layers", "cls_metric_overrides"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "archetype": { "type": "string" },
+              "rationale": { "type": "string" },
+              "tokens": {
+                "type": "object",
+                "required": ["display_primary", "ui_secondary", "accent_brand"],
+                "properties": {
+                  "display_primary": { "$ref": "#/$defs/FontToken" },
+                  "ui_secondary": { "$ref": "#/$defs/FontToken" },
+                  "accent_brand": { "$ref": "#/$defs/FontToken" }
+                }
+              },
+              "layers": {
+                "type": "object",
+                "required": ["logo", "slogan", "h1", "h2", "body", "ui"],
+                "properties": {
+                  "logo": { "type": "string" },
+                  "slogan": { "type": "string" },
+                  "h1": { "type": "string" },
+                  "h2": { "type": "string" },
+                  "body": { "type": "string" },
+                  "ui": { "type": "string" }
+                }
+              },
+              "cls_metric_overrides": {
+                "type": "object",
+                "required": ["fallback_font", "size_adjust", "ascent_override", "descent_override", "line_gap_override"],
+                "properties": {
+                  "fallback_font": { "type": "string" },
+                  "size_adjust": { "type": "string" },
+                  "ascent_override": { "type": "string" },
+                  "descent_override": { "type": "string" },
+                  "line_gap_override": { "type": "string" }
+                }
+              },
+              "workbench_presets": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "color": {
+      "type": "object",
+      "description": "Color domain (chroma): 3 complete OKLCH ecosystems with WCAG AAA & APCA compliance",
+      "required": ["color_space", "candidate_ecosystems", "accessibility_audit"],
+      "properties": {
+        "color_space": { "type": "string", "const": "oklch" },
+        "candidate_ecosystems": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "description", "dark", "light"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "dark": { "$ref": "#/$defs/ColorPalette" },
+              "light": { "$ref": "#/$defs/ColorPalette" }
+            }
+          }
+        },
+        "accessibility_audit": {
+          "type": "object",
+          "required": ["wcag_2_2_compliance", "apca_compliance"],
+          "properties": {
+            "wcag_2_2_compliance": {
+              "type": "object",
+              "properties": {
+                "body_to_bg_ratio": { "type": "number" },
+                "headings_to_bg_ratio": { "type": "number" },
+                "status_aaa": { "type": "boolean" }
+              }
+            },
+            "apca_compliance": {
+              "type": "object",
+              "properties": {
+                "body_lc": { "type": "number" },
+                "headings_lc": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "symbol": {
+      "type": "object",
+      "description": "Symbol domain (symbol): 3 monochrome B/N vector proposals in pure SVG",
+      "required": ["color_mode", "candidate_vectors"],
+      "properties": {
+        "color_mode": { "type": "string", "enum": ["monochrome_bw", "monochrome"] },
+        "candidate_vectors": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "category", "geometry_style", "viewBox", "svg_raw", "lockup"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "category": { "type": "string", "enum": ["isologo", "monogram", "seal"] },
+              "geometry_style": { "type": "string" },
+              "viewBox": { "type": "string" },
+              "svg_raw": { "type": "string" },
+              "aspect_ratio": { "type": "string" },
+              "lockup": {
+                "type": "object",
+                "required": ["symbolScale", "symbolX", "symbolY", "brandY", "sloganY"],
+                "properties": {
+                  "symbolScale": { "type": "number" },
+                  "symbolStroke": { "type": "number" },
+                  "symbolX": { "type": "number" },
+                  "symbolY": { "type": "number" },
+                  "brandY": { "type": "number" },
+                  "sloganY": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "description": "Motion domain (kinetic): 3 animation options at 60fps/120fps with procedural ADSR audio",
+      "required": ["fps_target", "candidate_presets", "motion_tokens", "sound_bank"],
+      "properties": {
+        "fps_target": { "type": "integer", "enum": [60, 120] },
+        "candidate_presets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "concept", "css_keyframes", "target_selectors"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "concept": { "type": "string" },
+              "css_keyframes": { "type": "string" },
+              "target_selectors": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "gsap_timeline_spec": { "type": "string" }
+            }
+          }
+        },
+        "motion_tokens": {
+          "type": "object",
+          "required": ["durations", "easings"],
+          "properties": {
+            "durations": {
+              "type": "object",
+              "required": ["fast", "normal", "slow"],
+              "properties": {
+                "fast": { "type": "string" },
+                "normal": { "type": "string" },
+                "slow": { "type": "string" }
+              }
+            },
+            "easings": {
+              "type": "object",
+              "required": ["standard", "hero_reveal", "interaction"],
+              "properties": {
+                "standard": { "type": "string" },
+                "hero_reveal": { "type": "string" },
+                "interaction": { "type": "string" }
+              }
+            }
+          }
+        },
+        "sound_bank": {
+          "type": "object",
+          "required": ["hover", "click", "modal_open", "success_confirm"],
+          "properties": {
+            "hover": { "$ref": "#/$defs/AdsrSound" },
+            "click": { "$ref": "#/$defs/AdsrSound" },
+            "modal_open": { "$ref": "#/$defs/AdsrSound" },
+            "success_confirm": { "$ref": "#/$defs/AdsrSound" }
+          }
+        }
+      }
+    },
+    "compiled_dtcg_tokens": {
+      "type": "object",
+      "description": "Pre-compiled W3C DTCG 2025.10 design tokens for direct consumption in Tailwind 4 / Brandview"
+    }
+  },
+  "$defs": {
+    "FontToken": {
+      "type": "object",
+      "required": ["$value", "$type", "source", "url"],
+      "properties": {
+        "$value": { "type": "string" },
+        "$type": { "type": "string", "const": "fontFamily" },
+        "$description": { "type": "string" },
+        "source": { "type": "string", "enum": ["envato", "google_fonts", "local"] },
+        "url": { "type": "string", "format": "uri" },
+        "search_url": { "type": "string", "format": "uri" },
+        "google_fonts_v2_url": { "type": "string", "format": "uri" },
+        "variable_axes": { "type": "string" },
+        "weights": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ColorToken": {
+      "type": "object",
+      "required": ["oklch", "hex", "name"],
+      "properties": {
+        "oklch": { "type": "string" },
+        "hex": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "ColorPalette": {
+      "type": "object",
+      "required": ["primary", "accent", "balance", "background", "surface", "text_primary", "text_muted"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/ColorToken" },
+        "accent": { "$ref": "#/$defs/ColorToken" },
+        "balance": { "$ref": "#/$defs/ColorToken" },
+        "background": { "$ref": "#/$defs/ColorToken" },
+        "surface": { "$ref": "#/$defs/ColorToken" },
+        "text_primary": { "$ref": "#/$defs/ColorToken" },
+        "text_muted": { "$ref": "#/$defs/ColorToken" }
+      }
+    },
+    "AdsrSound": {
+      "type": "object",
+      "required": ["waveform", "frequency_hz", "attack_s", "decay_s", "sustain_gain", "release_s"],
+      "properties": {
+        "waveform": { "type": "string", "enum": ["sine", "triangle", "square", "sawtooth"] },
+        "frequency_hz": { "type": "number" },
+        "attack_s": { "type": "number" },
+        "decay_s": { "type": "number" },
+        "sustain_gain": { "type": "number" },
+        "release_s": { "type": "number" }
+      }
+    }
+  }
+}
