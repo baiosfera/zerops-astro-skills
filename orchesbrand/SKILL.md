@@ -33,3 +33,4 @@ Activar para ejecutar el pipeline completo de branding o coordinar la generació
 - `references/pipeline.md` — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.
 - `references/usage.md` — Manual de invocación Antigravity, modo interactivo y control de estado.
 - `assets/schemas/pipeline_state.schema.json` — Esquema del estado de orquestación.
+- `assets/schemas/brandview_state.schema.json` — Esquema unificado inmutable de Brandview (3 variantes F1-F4).
