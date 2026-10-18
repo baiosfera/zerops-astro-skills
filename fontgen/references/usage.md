@@ -31,22 +31,16 @@ El sistema tipográfico se organiza estrictamente en 3 capas de diseño compleme
 
 ---
 
-## 2. Protocolo de Búsqueda SOTA en Exa (Anti-Alucinación)
+## 2. Protocolo de Búsqueda SOTA en Exa & Verificación en Vivo (Anti-Alucinación)
 
 Para garantizar que todas las URLs de Envato Elements sean válidas y contengan un ID alfanumérico existente:
-
-```bash
-# Búsqueda de fuentes Display en Envato Elements según el arquetipo
-exa "site:elements.envato.com luxury modern serif font"
-exa "site:elements.envato.com brutalist contemporary display font"
-
-# Búsqueda de fuentes Workhorse en Google Fonts
-exa "site:fonts.google.com modern grotesque variable sans"
-```
+- **Modo Dinámico en Vivo (Headless & Agent):** `fontgen_engine.py` utiliza directamente la API de Exa (`$EXA_API_KEY`) para descubrir fuentes recién publicadas en `elements.envato.com` a partir del perfil astrológico del cliente.
+- **Sensor Físico HTTP 200:** Toda URL descubierta es validada en tiempo real mediante una petición HTTP `HEAD` / `GET`. Si no retorna código 200, se descarta inmediatamente.
+- **Catálogo Físico Verificado & Fallback Offline:** Si no hay conexión o no existe API key, el motor recurre al catálogo curado (`ENVATO_VERIFIED_CATALOG`), donde el 100% de los ítems retornan HTTP 200 OK, e incluye la URL de categoría canónica (`https://elements.envato.com/all-items/fonts/tagged-...`) para descarga manual con suscripción Pro.
 
 ### Reglas de Validación de Enlaces:
-- **Envato Elements:** Formato canónico `https://elements.envato.com/[slug]-[ALFANUMERICO-7]`
-- **Google Fonts:** Formato canónico `https://fonts.google.com/specimen/[Nombre+De+Fuente]`
+- **Envato Elements:** Formato canónico `https://elements.envato.com/[slug]-[ALFANUMERICO-7]` (HTTP 200 OK obligatorio)
+- **Google Fonts:** Formato canónico `https://fonts.google.com/specimen/[Nombre+De+Fuente]` (API v2 Variable)
 
 ---
 
