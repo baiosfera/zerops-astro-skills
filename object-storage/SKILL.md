@@ -18,8 +18,8 @@ Activate when architecting, configuring, provisioning, integrating, or operating
 2. **Canonical HTTPS Scheme**: Cross-service access MUST use `${storage_apiUrl}` as endpoint URL (`https://...`). Never use bare HTTP or `${storage_apiHost}` without HTTPS scheme; the gateway rejects plaintext HTTP with a 301 redirect that S3 SDKs do not follow.
 3. **Zero Plaintext Credentials**: S3 access keys, secret keys, and bucket names MUST be injected via platform template variables (`${storage_accessKeyId}`, `${storage_secretAccessKey}`, `${storage_bucketName}`). Never hardcode credentials.
 4. **Policy Segmentation**: Assign `objectStoragePolicy: private` for confidential client documents, database backups, and raw exports; assign `public-read` strictly for public CDN assets, avatars, and public marketing media.
-5. **Epistemic Separation (POSIX vs S3)**: Use `local-storage` (`run.volume`) for embedded databases (SQLite WAL), live process sockets, and local caches; use `object-storage` for durable files that must survive deploys and container recreation.
-6. **No Binary Blobs in Databases**: Files larger than 500 KB (PDFs, high-res images, archives) MUST reside in Object Storage; store only the S3 object key or canonical URL in PostgreSQL.
+5. **Storage Tiering & Opt-In Principle**: `object-storage` is **strictly optional**. In starter and lean e-commerce projects, persistent assets (product photos, Brandbook files, local uploads) reside directly on `local-storage` (`run.volume`) under `/mnt/localstorage/${PROJECT_NAME}/media/` with zero extra infrastructure cost and NVMe <0.1ms latency. Both `local-storage` and `object-storage` survive deploys and container recreation. Only provision `object-storage` when horizontal multi-host scaling, public Cloudflare Edge offload, or high-volume ERPNext/Frappe digital archives are actively required.
+6. **No Binary Blobs in Databases**: Store binary files (PDFs, images, archives) on filesystem disk paths (`local-storage`) or S3 keys (`object-storage`); never serialize raw binary buffers into PostgreSQL rows.
 
 ## Decision Matrix
 
