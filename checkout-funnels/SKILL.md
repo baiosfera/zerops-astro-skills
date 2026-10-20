@@ -21,6 +21,7 @@ Architecting checkout funnels, payment gateways (**Wompi**, **ePayco**, **dLocal
 - **Hardened COD OTP**: Verify secure 6-digit WhatsApp OTPs (`crypto.randomInt`, Valkey rate limits, timing-safe equality).
 - **Dual-Tagging & CAPI**: Emit browser and server `Purchase` events to Meta CAPI v21.0 with shared `event_id` deduplication.
 - **Pluggable Discount Strategy & Session Autofill**: Model referral discounts via Strategy Pattern (SingleUsePerDomain, ContinuousDiscount, StandardRate). Checkouts automatically hydrate fields from authenticated user sessions.
+- **Zero Dedicated Sockets & 53300 Masking**: Checkout and webhook endpoints MUST use stateless `pool.query()` exclusively for reads and single queries; never hold dedicated `pool.connect()` clients across payment gateway HTTP fetches. Database connection exhaustion errors (SQLSTATE `53300`, `remaining connection slots`) MUST be intercepted and returned as user-friendly HTTP 503 retryable responses, never surfacing raw database errors.
 - **Process Hygiene**: Bound CLI commands (`timeout 10s`) and verify state with deterministic physical sensors.
 
 ## Decision Gates

@@ -18,6 +18,7 @@ Activate when implementing or auditing payment gateways (**Stripe**, **Mercado P
 - **Valkey 7.2 Distributed Locking**: Webhook handlers MUST acquire locks with unique owner UUIDs (`SET lock:payment:${txId} ${token} NX EX 60`) and release exclusively via atomic Lua scripts.
 - **Pluggable Provider SPI**: Implement drivers under `IPaymentGatewayProvider` supporting session creation, webhook verification, and status queries.
 - **ISO-4217 Minor Units**: Calculate and pass monetary values in integer minor units (cents) per ISO-4217 exponents.
+- **Zero Socket Leak Invariant**: Order settlement and webhook processing MUST use stateless `pool.query()` or wrap transactions with strict `try/finally` client release. Never hold dedicated database connections while awaiting external gateway HTTP responses.
 - **Zero Secret Exposure**: Gateway secrets MUST reside in Zerops environment variables and never reach client bundles.
 
 ## Decision Gates

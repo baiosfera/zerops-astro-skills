@@ -16,12 +16,16 @@ Activate whenever architecting, querying, provisioning, tuning, or connecting to
 - **Rule 1 (Immutable Variant Gate)**: Explicitly choose between `postgresql:single@18` (dev/staging/lean) and `postgresql:ha@18` (3-node HA cluster with automatic failover) before provisioning. Variants are immutable after creation.
 - **Rule 2 (Scaling Profile Invariant)**: Always assign an explicit `profile:` (`oltp-hobby` for dev :single, `oltp-staging` for production lean, `oltp-production` for dedicated mission-critical). Do NOT author manual `verticalAutoscaling` min/max blocks.
 - **Rule 3 (Port Routing Architecture)**:
-  - Port `5432`: Primary Read/Write transactional connection.
+  - Port `5432`: Primary Read/Write transactional connection (Internal mesh, direct, no SSL required).
   - Port `5433`: Balanced Read Replicas (available exclusively in `:ha`).
-  - Port `6432`: External secure access via pgBouncer with TLS (`${db_portTls}`).
+  - Port `6432`: External secure access via pgBouncer with TLS (`${db_portTls}`). Node/Bun clients connecting to 6432 MUST supply `ssl: { rejectUnauthorized: false }` or TLS configuration; connecting without SSL throws `FATAL: SSL required`.
 - **Rule 4 (Superuser Extension Flow)**: Install extensions (`vector`, `pg_stat_statements`, `pg_trgm`, `postgis`) using `${db_superUser}` (`postgres`) on `${db_dbName}` and MUST restart the service via `zerops_manage action="restart" serviceHostname="db"` to activate `shared_preload_libraries`.
 - **Rule 5 (Disk Growth Law)**: Allocated NVMe storage expands dynamically and **never shrinks**.
 - **Rule 6 (Fractal CoHaLo Bounded Execution)**: All synchronous commands MUST enforce timeouts (`timeout 10s`), synchronous wait (`WaitMsBeforeAsync: 10000`), and terminate orphan background processes with `manage_task action="kill"`.
+- **Rule 7 (Anti-Starvation Quota & Connection Isolation Law)**:
+  - Physical database connection limits: Apply `ALTER DATABASE <db> WITH CONNECTION LIMIT 60;` on primary application DB and `WITH CONNECTION LIMIT 15;` on satellite DBs (e.g. `evogo_auth`, `evogo_users`) to guarantee reserved superuser/admin slots.
+  - Zombie connection termination: Enforce `ALTER DATABASE <db> SET idle_session_timeout = '2min';` and `ALTER DATABASE <db> SET idle_in_transaction_session_timeout = '30s';`.
+  - Zero Dedicated Socket Checkouts: Web request/checkout endpoints MUST use stateless `pool.query()` over dedicated `await pool.connect()`. Never hold dedicated sockets during payment gateway HTTP roundtrips. Sanitize SQLSTATE `53300` / `remaining connection slots` errors into HTTP 503 retryable responses.
 
 ## Decision Gates
 

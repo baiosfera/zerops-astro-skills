@@ -185,4 +185,8 @@ pub async fn establish_connection() -> Result<PgPool, sqlx::Error> {
 | Modifying the internal `zps` user | Breaks Zerops platform healthchecks and telemetry | Never modify, alter, or drop the `zps` user. |
 | Hardcoding `verticalAutoscaling` | Overrides native dynamic autoscaling tier defined by `profile:` | Use `profile:` (`oltp-hobby`, `oltp-staging`, `oltp-production`) and let Zerops auto-scale. |
 | Using internal SSL for port 5432 | Port 5432 is internal plaintext over VXLAN; SSL handshake fails | Set `ssl: false` on internal connections; use port 6432 (`${db_portTls}`) for external TLS. |
+| Connecting to 6432 without TLS | Port 6432 is pgBouncer with TLS; server requires SSL handshake | Pass `ssl: { rejectUnauthorized: false }` or TLS configuration in Node/Bun clients; unencrypted throws `FATAL: SSL required`. |
+| Holding `await pool.connect()` across HTTP APIs | Leaks/exhausts sockets during third-party gateway latency | Use stateless `pool.query()` for standalone queries; release dedicated clients immediately in `finally` blocks. |
+| Satellite services (e.g. whatsmeow) exhausting pool | Shared cluster max_connections (100) hits exhaustion (`remaining connection slots reserved for SUPERUSER`) | Set physical database caps: `ALTER DATABASE db WITH CONNECTION LIMIT 60;` and satellite DBs `WITH CONNECTION LIMIT 15;`. |
+| Zombie connections hanging indefinitely | Network drops or unclosed clients leave connections in `idle` or `idle in transaction` | Set `ALTER DATABASE <db> SET idle_session_timeout = '2min';` and `idle_in_transaction_session_timeout = '30s';`. |
 | Expecting immediate sync on port 5433 | Read replicas replicate asynchronously with minimal lag | Route writes strictly to 5432; use 5433 only for read-tolerant queries. |
