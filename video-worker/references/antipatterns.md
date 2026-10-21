@@ -40,3 +40,11 @@ Este documento registra los errores críticos detectados durante la sesión de i
 
 - **Falla:** Mantener un servicio de renderizado pesado activo las 24 horas del día consumiendo memoria y presupuesto cuando solo se producen videos de forma esporádica.
 - **Regla Invariable:** Adoptar el modelo **Lego Efímero (Hito 8)**: se aprovisiona bajo demanda, procesa el lote de videos, exporta los archivos finales a almacenamiento persistente y se destruye inmediatamente para mantener **costo cero**.
+
+---
+
+### Anti-Patrón 6: Superposición de SVG Estático vía librsvg (Falso Motion Graphics)
+
+- **Falla:** Usar FFmpeg con `librsvg` para quemar un archivo SVG plano a PNG y estamparlo como un overlay estático (`overlay=0:0`) sobre los clips de fondo.
+- **Consecuencia:** `librsvg` es un parser elemental en C que no ejecuta JavaScript, no corre animaciones CSS, carece de soporte completo para el layout OpenType avanzado (swashes `ss01`, ligaduras contextuales de fuentes como Kalieb Luxury) y congela el texto inmóvil durante todo el video.
+- **Regla Invariable:** La capa de motion graphics debe renderizarse mediante un motor de navegador completo (Chromium headless vía Playwright) que soporte tipografía OpenType nativa (`font-feature-settings: 'ss01' 1`) y animaciones procedurales deterministas (GSAP) controladas fotograma por fotograma con `timeline.seek(t)`, transmitidas en streaming directo a FFmpeg por memoria `stdin` (`image2pipe`).
