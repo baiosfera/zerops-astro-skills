@@ -259,3 +259,37 @@ Validates container status, port responsiveness, and log streams before closing 
 2. **Legacy Mount Directives**: Persistent storage volumes (`local-storage:single@1`) must be declared under `services:` in `import.yaml` and mounted in `zerops.yaml` via `run.volume`. Never declare legacy `mount:` in `import.yaml` or obsolete `run.mount` in `zerops.yaml`.
 3. **Backgrounding Dev Servers with `ssh "cmd &"`**: SSH background commands terminate when the channel closes. Always use `zerops_dev_server`.
 4. **Self-Shadowing Environment Variables**: Never define `VAR: ${VAR}`; always use distinctive source variables like `DB_HOST: ${db_hostname}`.
+
+---
+
+## 8. Root-Cause Architecture Investigation: The 2-Node Incident & Local Storage Semantics in ZCP (Physical Post-Mortem 2026-10-23)
+
+### A. The Incident & The "Disappearing / Reappearing" Data Paradox
+During operational refactoring on 2026-10-22, the control-plane container `zcp` was scaled horizontally to 2 containers (`minContainers: 2, maxContainers: 2`). Immediately upon connection, users observed an empty `/var/www` directory tree, missing active repositories, and broken tool symlinks. When the service was scaled back down to a single container (`minContainers: 1, maxContainers: 1`), the entire directory tree, active sessions, and repositories instantly reappeared with zero data loss.
+
+### B. Primary-Source Chronology (`zerops_events` for `zcp`)
+Audit of the platform event stream confirms the exact state transitions:
+1. `2026-10-22 14:44:50`: User scales `zcp` to horizontal mode (`minContainers: 2, maxContainers: 2`).
+2. `2026-10-22 14:47:19`: Service container restart triggered.
+3. `2026-10-22 22:15:27`: Container cold start completed.
+4. `2026-10-22 22:19 & 22:21`: `updateUserData` operations.
+5. `2026-10-22 22:34 to 23:36`: Repeated scaling adjustments (`zcp-Glamur` automation vs user manual scale).
+6. `2026-10-23 00:05 to 00:18`: Final scaling convergence locking ZCP back to single-node mode (`minContainers: 1, maxContainers: 1`).
+
+### C. Physical Mechanism: L7 Ingress Balancing & Ephemeral Replica Split-Brain
+The phenomenon was not data deletion or filesystem corruption, but an **L7 ingress split-brain**:
+1. **ZCP is Stateful**: ZCP functions as a stateful agentic workstation and control plane hosting interactive TTYs, SSH keys, local git working trees, and running background daemon processes. It is NOT a stateless web tier.
+2. **Horizontal Scale Replication in Zerops**: When `minContainers` is increased from 1 to 2, Zerops Incus provisions a second, fresh LXC container (`container-2`) instantiated from the base image or build artifact. It does NOT clone or share the live local rootfs of `container-1`.
+3. **Ingress Routing Alternation**: Incoming SSH and terminal sessions are balanced across active containers. Sessions routed to `container-2` landed on a pristine, unpopulated `/var/www` filesystem, creating the appearance of catastrophic data loss.
+4. **Resolution via Scale-Down**: Scaling back to `minContainers: 1, maxContainers: 1` caused Zerops to terminate the ephemeral replica (`container-2`) and restore 100% of traffic to the persistent `container-1`, immediately revealing all files and state intact.
+
+### D. Storage Engine Demarcation: Rootfs vs Local Storage vs SSoT
+* **Container Rootfs (`/var/www`)**: Ephemeral to the container instance. Persists across restarts of the same container, but is NOT shared across horizontal replicas.
+* **Local Storage (`local-storage:single@1`)**: Single-kernel POSIX block storage mounted directly via Incus LXC. Provides single-node POSIX coherence (`flock`, `mmap`, SQLite WAL), but cannot serve as a distributed multi-node filesystem across distinct host nodes.
+* **Google Drive SSoT (`/var/www/baiosfera`)**: Persistent remote object mount via rclone FUSE. Acts as the universal source of truth across container rebuilds and cold starts.
+
+### E. Architectural Invariant: Enforced Single-Node Lock
+* **Mandatory Policy**: `zcp` must remain strictly configured to **1 container** (`minContainers: 1, maxContainers: 1`).
+* **Deterministic Guard**: Guardrail Rule 39 in `tool-guard.py` intercepts and denies any attempt to mutate `minContainers > 1` or `maxContainers > 1` on `zcp`, preventing split-brain incidents permanently.
+* **Scaling Strategy**: All ZCP resource growth must be strictly **vertical** (`cpuMode: SHARED`, `maxRam: 6-8 GB`).
+
