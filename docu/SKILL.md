@@ -10,7 +10,7 @@ metadata:
 # `docu` — Autonomous Dual-RAG Skill & Reference Architect (v8.5)
 
 ## Activation Contract
-Activate when authoring, updating, certifying, or auditing Dual-RAG skills across 4 functional archetypes (Framework, Infra, Domain, Cognitive) or executing Phase F2 under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Operates in: Scaffold, Refactor, and Certification modes. Adheres to Anthropic [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) and Matt Pocock [`writing-for-agents`](file:///var/www/.claude/skills/writing-for-agents/SKILL.md).
+Activate when authoring, updating, certifying, or auditing Dual-RAG skills across 4 functional archetypes (Framework, Infra, Domain, Cognitive) or executing Phase F2 under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Operates in: Scaffold, Refactor, and Certification modes. Adheres to Anthropic [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) and Matt Pocock [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md).
 
 ## Hard Rules (Positive Guidance & Closed Domains)
 - **Rule 1 (Epistemic Inflow & Archetype Mapping)**: Ingests research dossiers and maps tools to 1 of 4 archetypes per [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md). Unbundles 100% of discoveries into target references.

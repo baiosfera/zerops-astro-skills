@@ -20,7 +20,7 @@ Activate when architecting, authoring, auditing, or executing agent workflows, a
 - **Rule 5 (Process-Level Safety & Obsessive Harness)**: Process safety and deduplication are enforced by `tool-guard.py` at PreToolUse/PreInvocation. Harnesses enforce bounded limits (`timeout 10s`, `WaitMsBeforeAsync: 10000`), F4 Halt Gate before app writes, and process cleanup via `manage_task`.
 - **Rule 6 (Epistemic Honesty & Absolute Anti-AMN Mandate)**: Anchors code and claims in live primary sources via [`mem_search`](file:///var/www/.agents/skills/cohalo/references/context.md), Context7, and verbatim official documentation in continuous present.
 - **Rule 7 (Continuous Present & Runtime Hygiene)**: Anchors all reasoning to live runtime state (`date -u`). Ensures clean execution hygiene with zero bytecode residue (`sys.dont_write_bytecode=True`). Delegates token optimization and router word budgets strictly to [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md).
-- **Rule 8 (Pure Positive Guidance Mandate)**: Formulate all instructions as deterministic, affirmative, and closed-domain bounds ("Emit strictly", "Compose using"). Guide behavior by explicitly detailing the exact expected action, maintaining a purely positive focus. Ingests evaluation standards from [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) and cognitive clarity from [`writing-for-agents`](file:///var/www/.claude/skills/writing-for-agents/SKILL.md).
+- **Rule 8 (Pure Positive Guidance Mandate)**: Formulate all instructions as deterministic, affirmative, and closed-domain bounds ("Emit strictly", "Compose using"). Guide behavior by explicitly detailing the exact expected action, maintaining a purely positive focus. Ingests evaluation standards from [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) and cognitive clarity from [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md).
 
 ## Decision Gates
 
@@ -43,5 +43,5 @@ skills-suite-validate
 - [`references/context.md`](file:///var/www/.agents/skills/cohalo/references/context.md) · [`references/context_engineering_caching.md`](file:///var/www/.agents/skills/cohalo/references/context_engineering_caching.md)
 - [`references/prompt_engineering_foundations.md`](file:///var/www/.agents/skills/cohalo/references/prompt_engineering_foundations.md) · [`references/sota_reasoning_prompting.md`](file:///var/www/.agents/skills/cohalo/references/sota_reasoning_prompting.md)
 - [`references/antipatterns_deprecations.md`](file:///var/www/.agents/skills/cohalo/references/antipatterns_deprecations.md) · [`references/harness.md`](file:///var/www/.agents/skills/cohalo/references/harness.md) · [`references/loops.md`](file:///var/www/.agents/skills/cohalo/references/loops.md)
-- [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) — Anthropic benchmark, evaluation & test harness standards.
-- [`writing-for-agents`](file:///var/www/.claude/skills/writing-for-agents/SKILL.md) — Cognitive clarity and interface seams for AI agents.
+- [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) — Anthropic benchmark, evaluation & test harness standards.
+- [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md) — Cognitive clarity and interface seams for AI agents.
