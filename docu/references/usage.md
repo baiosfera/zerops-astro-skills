@@ -1,39 +1,43 @@
-# Docu — Dual-RAG Construction, Archetypes & Workflow Manual (v2.0)
+# `docu` Usage Guide: Canonical Technical Documentation & Verification
 
-Este manual documenta el flujo de trabajo de 8 pasos para la construcción, evolución y refactorización de skills Dual-RAG bajo Fractal CoHaLo v8.4.
+This manual details how `docu` transforms raw empirical findings from `research` into authoritative, production-grade technical specifications.
 
 ---
 
-## 1. La Tríada Epistémica y Desacople Arquitectónico
+## 1. Research Ingestion Protocol
 
-```text
-[cohalo / 00-SUPREME-DIRECTIVE] ──(Fase F2)──> [research (12 Motores)] ──(Dossier Verbatim)──> [docu / meta-skill]
-                                                                                                      │
-                                                                           ┌──────────────────────────┴──────────────────────────┐
-                                                                           ▼                                                     ▼
-                                                                  [SKILL.md (<= 480 palabras)]                          [references/ (Usage & Infra)]
+When `research` completes its investigation (via subagents or compound tool execution):
+1. **Source Inspection**: Read the research dossier (`/var/www/artifacts/*_research_report.md`) or tool findings verbatim.
+2. **Fact Triangulation**:
+   - Verify official package versions (e.g. Bun 1.3+, PostgreSQL 18, NATS 2.12).
+   - Identify breaking changes compared to earlier major versions.
+   - Extract exact configuration keys, CLI arguments, and environment variables.
+3. **Contrast with Code**: Compare the extracted reality against local codebase implementations or existing skill instructions to flag discrepancies, deprecations, or broken syntax.
+
+---
+
+## 2. API & Contract Specifications Standard
+
+Every technical spec authored by `docu` must provide concrete, runnable contracts:
+1. **HTTP/RPC Endpoints**:
+   - Exact URI and HTTP method.
+   - Required headers (Authentication, Content-Type, idempotency keys).
+   - Minimal runnable `curl` command.
+2. **Payload Schemas**:
+   - Verbatim JSON request and response payloads.
+   - Accurate TypeScript interfaces or Pydantic models matching live library exports.
+3. **Error Matrix & Recovery**:
+   - Document every known status code (400, 401, 404, 429, 500).
+   - Explicit recovery actions for each failure mode (e.g., exponential backoff, key rotation).
+
+---
+
+## 3. Hand-off Lifecycle
+
+`docu` operates as the bridge between raw external research and structured skill deployment:
 ```
-
----
-
-## 2. Los 4 Arquetipos Funcionales
-
-| Arquetipo | Propósito Principal | Estructura Requerida |
-|---|---|---|
-| **Framework** | Frameworks frontend/backend (Astro, Next.js, FastAPI, Bun) | `SKILL.md` + `references/usage.md` + `infra.md` |
-| **Infra** | Plataformas, bases de datos, colas (Zerops, Postgres, Valkey, NATS) | `SKILL.md` + `references/usage.md` + `infra.md` |
-| **Domain** | Reglas de negocio y motores especializados (Oráculo, CRM, DIAN) | `SKILL.md` + `references/usage.md` + `infra.md` |
-| **Cognitive** | Razonamiento, revisión, planificación (Codecraft, Planner, Docu) | `SKILL.md` + `references/usage.md` + `infra.md` |
-
----
-
-## 3. Flujo de Trabajo de 8 Pasos (Ciclo de Vida)
-
-1. **Ingestión de Hechos (F0)**: Triangulación con `research` y extracción de especificaciones verbatim.
-2. **Clasificación de Arquetipo**: Selección del arquetipo normativo.
-3. **Presupuesto de Router**: `SKILL.md` estrictamente $\le 480$ palabras (~550 tokens) enfocado en Positive Guidance y compuertas de decisión.
-4. **Desacople Espacial (Dual-RAG)**: Reubicación de código, tablas de comandos y guías en `references/usage.md` y `references/infra.md`.
-5. **Invariante de Cero Mutilación**: Preservación del 100% de firmas AST, APIs y contratos.
-6. **Validación Física**: Verificación con sensores reales (`skills-suite-validate` exit code 0).
-7. **Sincronización SSoT**: Paridad indivisible con Google Drive y GitHub.
-8. **Reindexación**: Actualización del registro con `gentle-ai skill-registry refresh --force`.
+[research] ──(Dossiers)──> [docu] ──(Exact Specs)──> [cohalo] ──(Positive Guidance)──> [skill-improver]
+```
+1. `docu` outputs verified technical truth to `references/usage.md` and `references/infra.md`.
+2. `cohalo` refines tone and prompt framing into positive affirmative guidance.
+3. `skill-improver` ensures the router (`SKILL.md`) stays under 480 words and preserves AST code.

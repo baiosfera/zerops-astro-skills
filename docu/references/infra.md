@@ -1,32 +1,35 @@
-# Docu — Certification, SSoT Harness & Physical Validation Specification (v2.0)
+# `docu` Infrastructure Standards & Verification Harness
 
-Este documento define los criterios normativos de certificación, el arnés físico de validación y la infraestructura de sincronización SSoT para skills.
-
----
-
-## 1. Criterios Normativos de Certificación (5 Compuertas)
-
-Toda skill producida o refactorizada por `docu` o `meta-skill` debe superar 5 compuertas físicas:
-
-1. **Frontmatter Canónico**: `name`, `description` con triggers ortogonales sin colisiones, `license`, y `metadata.author`.
-2. **Presupuesto de Router**: Conteo estricto $\le 480$ palabras en `SKILL.md` (verificado con `wc -w`).
-3. **Completitud Dual-RAG**: Existencia verificada de `references/usage.md` e `references/infra.md`.
-4. **Integridad de Enlaces**: Cero enlaces rotos; rutas canónicas absolutas con esquema `file:///var/www/...`.
-5. **Cero Mutilación de Código**: Preservación invariable de AST y scripts auxiliares.
+This document specifies the standards for infrastructure documentation, environment variable specification, and physical truth verification.
 
 ---
 
-## 2. Topología de Persistencia y SSoT Indivisible
+## 1. Infrastructure Specifications Standard
 
-- **Workspace de Desarrollo:** `/var/www/zerops-astro-skills/<skill>/`
-- **Google Drive SSoT:** `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/<skill>/`
-- **Control de Snapshots Preventivos:** `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/`
-- **Índice Global:** `/var/www/.atl/skill-registry.md`
+When documenting infrastructure components (e.g. databases, message queues, AI gateways, caches):
+1. **Topology & Sizing**:
+   - Explicit container counts (`minContainers`, `maxContainers`).
+   - CPU mode requirements (`cpuMode: SHARED` for frugal control plane; dedicated for compute).
+   - Network bindings, internal private hostnames, and ports.
+2. **Environment Variable Contracts**:
+   - Exact variable names (e.g. `DATABASE_URL`, `VALKEY_HOST`, `BIFROST_API_KEY`).
+   - Injection mechanisms: platform environment injection vs runtime secret.
+   - Default values and required overrides.
+3. **Storage & Mounts**:
+   - Volume types (local persistent storage vs S3 object storage).
+   - Absolute mount paths (e.g. `/var/www/localstorage`).
 
 ---
 
-## 3. Sensores Físicos de Calidad
+## 2. Physical Truth Verification Harness
 
-- **Sensor Universal de Capacidades:** `skills-suite-validate` (127+ skills evaluadas en runtime).
-- **Sensor de Paridad Anti-Drift:** `ssot-parity-check` (verificación SHA256 y Git status en Zerops y Drive).
-- **Prohibición de Checklist Theater:** Quedan prohibidos scripts cosméticos basados en `grep` o `[ -f ]` superficiales sin verificación de AST o compilación real.
+Documentation is worthless if code examples fail to compile or execute:
+1. **Syntax Assertions**:
+   - Python code blocks must be verified via `python3 -m py_compile`.
+   - Bash scripts must be verified via `bash -n`.
+   - JSON payloads must parse cleanly via `json.loads()`.
+2. **Zero Checklist Theater**:
+   - Prohibit claiming a feature or tool works without observing a live exit code 0 or physical test output.
+   - Any failure during verification must be traced to root cause rather than masked.
+3. **Capability Sensor**:
+   - All documented skills and reference files are attested through `skills-suite-validate` and `ssot-parity-check`.

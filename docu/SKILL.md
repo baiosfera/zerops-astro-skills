@@ -1,44 +1,39 @@
 ---
 name: docu
-description: "Builds, evolves, certifies, and holistically audits deep Dual-RAG skills across 4 functional archetypes with Fractal CoHaLo under Supreme Directive v8.4. Trigger: docu, build skill, create skill, document tool, generate usage.md, generate infra.md, dual-rag, package skill, scaffold skill, reference builder, audit skill."
+description: "Trigger: docu, documentar, canonical specs, api documentation, truth documentalist, reference builder, technical specifications. Ingests research dossiers to author verified technical documentation and canonical specifications."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "8.5"
+  version: "9.0"
 ---
 
-# `docu` — Autonomous Dual-RAG Skill & Reference Architect (v8.5)
+# `docu` — Autonomous Technical Truth & Canonical Reference Documentalist (v9.0)
 
 ## Activation Contract
-Activate when authoring, updating, certifying, or auditing Dual-RAG skills across 4 functional archetypes (Framework, Infra, Domain, Cognitive) or executing Phase F2 under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Operates in: Scaffold, Refactor, and Certification modes. Adheres to Anthropic [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) and Matt Pocock [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md).
+Activate when ingesting research dossiers from `research` to author canonical technical specifications, reference manuals, or live API contracts. Contrasts local code against verified external reality. Focuses on factual technical truth; leaves Dual-RAG structural unbundling to `skill-improver` and prompt framing to `cohalo`.
 
-## Hard Rules (Positive Guidance & Closed Domains)
-- **Rule 1 (Epistemic Inflow & Archetype Mapping)**: Ingests research dossiers and maps tools to 1 of 4 archetypes per [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md). Unbundles 100% of discoveries into target references.
-- **Rule 2 (Normative Layout & Progressive Disclosure)**: Enforces 3 levels: Discovery (triggers), Activation (`SKILL.md` <= 480 words), and Execution JIT (`references/`, `assets/`, `scripts/`).
-- **Rule 3 (Lossless Invariant, Zero Deletion & skill-improver)**: Preserves 100% of technical signals via spatial offloading to `references/` without truncation, applying `skill-improver` standards.
-- **Rule 4 (Reality Over Checklist Theater & Physical Sensors)**: All sensors execute real physical assertions (compilers, AST, tests, exit code 0). Scripts based solely on `[ -f ]` or `grep` are checklist theater and eliminated.
-- **Rule 5 (Scaffolding & skill-creator Standard)**: Scaffolds new skills adhering to [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) standards and [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) via [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py).
-- **Rule 6 (8-Node Anti-Amnesia Physical Harness & SSoT Parity)**: Executes mutations through 8 checkpoints: (1) Backup in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/`, (2) `skill-improver` unbundling, (3) SemVer bump, (4) CoHaLo guidance, (5) Drive mirror, (6) Generator sync in `unisetup.sh`, (7) Sensor attestation (`exit code 0`), and (8) Registry refresh + Engram commit (`mem_save`).
+## Hard Rules & Positive Guidance
+- **Factual Grounding Supremacy**: Base all documented APIs, types, flags, and configurations strictly on verified external research dossiers from `research` (Context7, Exa, Jina, Tavily).
+- **Exact Specifications (Zero Hand-Waving)**: Document complete curl requests, JSON payload schemas, environment variables, error codes, and recovery procedures with verbatim fidelity.
+- **Role Boundary (Truth vs Structure)**: Author deep, exhaustive technical references in `references/usage.md` and `references/infra.md`. Leave router word budget trimming and AST unbundling strictly to `skill-improver`.
+- **Reality Over Checklist Theater**: Verify that every documented code snippet passes physical syntax checks (`python3 -m py_compile` or `bash -n`).
+- **Physical Attestation**: Validate documentation integrity via `skills-suite-validate` (exit code 0).
 
 ## Decision Gates
 
 | Task / Need | Action / Protocol | Reference |
 |---|---|---|
-| **Skill Certification & Invariance** | Audit skills against 5 normative criteria | [`references/infra.md`](file:///var/www/zerops-astro-skills/docu/references/infra.md) |
-| **Construction & Audit Lifecycle** | 8-step lifecycle across 4 archetypes | [`references/usage.md`](file:///var/www/zerops-astro-skills/docu/references/usage.md) |
-| **Meta-Skill Governance** | High-level authoring and systemic auditing | [`meta-skill`](file:///var/www/.agents/skills/meta-skill/SKILL.md) |
-| **Dual-RAG Skeletons & Harness** | Canonical Dual-RAG templates | [`references/templates.md`](file:///var/www/zerops-astro-skills/docu/references/templates.md) |
-| **Research Ingestion Protocol** | Decoupled archetype mapping | [`assets/research_ingestion_protocol.md`](file:///var/www/zerops-astro-skills/docu/assets/research_ingestion_protocol.md) |
-| **Research Subagent Delegation** | Canonical research contract (12 engines) | [`assets/subagent_meta_prompt_template.md`](file:///var/www/zerops-astro-skills/docu/assets/subagent_meta_prompt_template.md) |
-| **Automated Scaffolding** | Python generator with AST verification | [`assets/skill_scaffold.py`](file:///var/www/zerops-astro-skills/docu/assets/skill_scaffold.py) |
-| **Sensor** | Universal Capability Sensor (Standard v3.3) | `skills-suite-validate` |
+| **Research Ingestion** | Ingest raw research findings into structured facts | [`references/usage.md#1-ingestion`](file:///var/www/zerops-astro-skills/docu/references/usage.md) |
+| **API & Contract Specs** | Author exhaustive curl, JSON, and type contracts | [`references/usage.md#2-contracts`](file:///var/www/zerops-astro-skills/docu/references/usage.md) |
+| **Infra & Env Specs** | Document environment variables, quotas, and limits | [`references/infra.md#1-infra-specs`](file:///var/www/zerops-astro-skills/docu/references/infra.md) |
+| **Truth Verification** | Validate code examples and syntax physically | [`references/infra.md#2-verification`](file:///var/www/zerops-astro-skills/docu/references/infra.md) |
+| **Universal Sensor** | Execute universal capability sensor | `skills-suite-validate` |
 
 ## Commands
 ```bash
-# Execute universal physical validation sensor
+# Validate skill suite physical integrity
 skills-suite-validate
 ```
 
 ## Resources
-- [`references/usage.md`](file:///var/www/zerops-astro-skills/docu/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/docu/references/infra.md) · [`references/templates.md`](file:///var/www/zerops-astro-skills/docu/references/templates.md)
-- [`assets/research_ingestion_protocol.md`](file:///var/www/zerops-astro-skills/docu/assets/research_ingestion_protocol.md) · [`assets/subagent_meta_prompt_template.md`](file:///var/www/zerops-astro-skills/docu/assets/subagent_meta_prompt_template.md) · [`assets/skill_scaffold.py`](file:///var/www/zerops-astro-skills/docu/assets/skill_scaffold.py)
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/docu/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/docu/references/infra.md)
