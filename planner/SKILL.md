@@ -13,14 +13,11 @@ metadata:
 Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `grilling`, comanda subagentes delegados y garantiza el arnés físico determinista bajo [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Tareas atómicas de un solo archivo ejecutan inline sin planes ceremoniales.
 
 ## 5 Invariantes Soberanos (Positive Guidance)
-1. **Facts-First Grounding & Anti-Grilling**: Iniciar siempre con inspección en disco o subagente `research`. Si los datos existen en el repo o la documentación, ejecutar sin preguntas. Reservar preguntas exclusivamente para bifurcaciones arquitectónicas reales con tradeoffs (máximo 1 pregunta atómica a la vez).
-2. **Linear Invariable Grouping (Zero-Orphan BAI)**: Todo issue `BAI-*` se crea estrictamente dentro de un Plan/Proyecto padre (`linear-cli create ... --project <ID|name>`). Prohibido generar issues huérfanos. Consolidar estado, decisiones y criterios en la descripción del Issue para economizar tokens en chat.
-3. **Thin Orchestrator & Bounded Delegation**: Mantener contexto ligero delegando ediciones multi-archivo ($\ge 2$ archivos) o builds a subagentes temporales acotados (`invoke_subagent`). El orquestador sintetiza únicamente el resultado verificado.
-4. **Fast & Cheap Physical Attestation**: Toda tarea se valida con sensores deterministas de bajo costo antes de reportar completitud o marcar Done:
-   - Chequeo estático / sintaxis: `bun run build` o `node --check` (exit 0).
-   - Tests de comportamiento: `bun test` o `pytest` (exit 0).
-   - Sensor funcional / grep: rutas correctas y cero regresiones.
-5. **Arquitectura Lego Desacoplada (Plantilla v4 & Zerops)**: Chasis inmutable en `/var/www/zerops-astrobranding`. Construcción según `plantilla-universal-web-zerops-v4.md`. Servicios interconectados vía DNS privado (`http://<servicio>:<puerto>`), con staging efímero.
+1. **Facts-First Grounding & Anti-Grilling**: Iniciar siempre con inspección en disco o subagente `research` para verificar hechos de entorno o web antes de planificar. Cero preguntas si la evidencia existe en código o docs. Reservar preguntas exclusivamente para bifurcaciones arquitectónicas reales (máx 1 pregunta atómica a la vez).
+2. **Linear Invariable Grouping & Explicit Criteria**: Todo issue `BAI-*` nace estrictamente dentro de un Proyecto padre (`linear-cli create ... --project <ID>`) con criterios de aceptación verificables y alcance explícito. Hallazgos y decisiones se registran como comentario del issue (`linear-cli comment <ID> "..."`) antes de responder al usuario.
+3. **Thin Orchestrator & Bounded Delegation**: Mantener contexto ligero delegando tareas multi-archivo ($\ge 2$ archivos) a subagentes temporales (`invoke_subagent`). El orquestador sintetiza únicamente el resultado verificado.
+4. **Behavioral Physical Attestation (Zero-Slop Done)**: Prohibido marcar `Done` sin evidencia física de comportamiento que ejercite el cambio (`bun test`, `pytest`, o sensor específico del contrato modificado, no meros validadores genéricos).
+5. **Arquitectura Lego Desacoplada (Plantilla v4 & Zerops)**: Chasis inmutable en `/var/www/zerops-astrobranding`. Servicios interconectados vía DNS privado (`http://<servicio>:<puerto>`), con staging efímero.
 
 ## Decision Gates
 

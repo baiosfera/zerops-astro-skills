@@ -17,8 +17,13 @@
    - Si la respuesta existe en el repositorio, la especificación o el historial, **cero preguntas**. Se procede directamente con la ejecución o propuesta.
    - Si existe una bifurcación arquitectónica genuina con tradeoffs irreversibles (ej. elegir entre dos proveedores o modelos incompatibles), se formula **máximo 1 sola pregunta atómica a la vez** con opciones concretas y bien explicadas. Al preguntar, se detiene la ejecución inmediatamente y se espera respuesta.
 
-2. **Invariante de Agrupación en Linear (Zero BAI Huérfanos):**
+2. **Invariante de Agrupación en Linear & Criterios Explícitos (Zero BAI Huérfanos):**
    - **Regla Inquebrantable:** Ningún issue `BAI-*` puede existir suelto o huérfano. Todo ticket de Linear debe pertenecer a un Plan / Proyecto padre.
+   - **Contrato de Creación de Issues:** Cada issue nace obligatoriamente con:
+     1. **Alcance explícito:** qué archivos y componentes se modifican, y qué queda expresamente fuera de alcance.
+     2. **Criterios de aceptación verificables:** lista numerada de condiciones comprobables con comandos y resultados esperados.
+     3. **Grounding verificado:** afirmaciones sobre el entorno o APIs web deben verificarse primero con `research` antes de ingresar al plan.
+   - **Protocolo de Comentarios en Linear (Anti-Chat Amnesia):** Todo hallazgo técnico, tradeoff o decisión de arquitectura se registra inmediatamente como comentario en el issue (`linear-cli comment <ID> "..."`) antes de redactar la respuesta al usuario en chat. Esto garantiza la persistencia SSoT incluso tras compactions o muertes de sesión.
    - **Flujo de Proyecto:**
      ```bash
      # 1. Fijar o crear el Proyecto / Plan maestro
@@ -38,15 +43,16 @@
    - El worker recibe el alcance específico, realiza las modificaciones, corre las comprobaciones locales y devuelve únicamente un reporte sintético con el diff y el resultado exit code 0.
    - El orquestador recibe el recibo, realiza la comprobación final de alto nivel y continúa, ahorrando decenas de miles de tokens de la ventana de contexto.
 
-4. **Compuerta de Sensores Físicos Rápidos y Baratos (Anti-Checklist Theater):**
+4. **Compuerta de Sensores Físicos & Pruebas de Comportamiento (Anti-Checklist Theater):**
    - Quedan erradicados los scripts sintéticos y validadores ceremoniales artificiales que bloquean o fallan con falsos positivos.
+   - **Requisito de Comportamiento en Done:** Prohibido marcar `Done` basándose únicamente en validadores genéricos o meros lintings. El arnés requiere evidencia física de pruebas que ejerciten el comportamiento del cambio (`bun test`, `pytest`, o sensor que verifique el contrato modificado exit code 0).
    - La verdad reside en tres sensores físicos rápidos, baratos y deterministas:
-     1. **Sensor de Sintaxis / Compilación:** `bun run build`, `node --check` o `tsc --noEmit` (exit code 0).
-     2. **Sensor de Comportamiento:** `bun test` o `pytest` (exit code 0).
-     3. **Sensor Funcional / Grep de Dominio:** comprobación viva mediante curl (`HTTP 200 OK`) o escaneo grep para verificar que no existan regresiones (ej. anchors indebidos, rutas hardcodeadas o auto-scrolls erróneos).
+     1. **Sensor de Sintaxis / Compilación:** `bun run build`, `python3 -m py_compile`, `node --check` o `bash -n` (exit code 0).
+     2. **Sensor de Comportamiento:** `bun test`, `pytest` o tests unitarios dedicados del arnés (`tool-guard.py --test`) (exit code 0).
+     3. **Sensor Funcional / Grep de Dominio:** comprobación viva mediante curl (`HTTP 200 OK`) o escaneo grep para verificar que no existan regresiones.
    - Solo cuando los sensores devuelven exit code 0, se procede a marcar la tarea como resuelta en Linear:
      ```bash
-     linear-cli update-status <ID> "Done" --evidence "bun test exit 0 (75 tests passing)"
+     linear-cli update-status <ID> "Done" --evidence "45 tests unitarios pasan exit code 0 (tool-guard.py --test) y py_compile exit 0"
      ```
 
 5. **Arquitectura Lego Desacoplada & Upstream Inmutable:**
