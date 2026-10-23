@@ -4,39 +4,32 @@ description: "Trigger: freeastroapi, api.freeastroapi.com, calculate natal chart
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.5"
+  version: "2.6"
 ---
-# FreeAstroAPI Engine (v2.5)
 
-Unified multi-tradition REST API calculation engine supporting Western Natal, Chinese BaZi & TCM Health, Neijing Lifespan, Vedic KP V2 & Vargas D1–D60, 4-in-1 Numerology, Astrocartography GeoJSON, and Commercial Electional timing (`https://api.freeastroapi.com/api/`).
+# `freeastroapi` — Multi-Tradition Calculation Engine (v2.6)
 
-## Architecture & Dual-RAG SSoT
+## Activation Contract
+Unified multi-tradition REST API calculations: Western Natal, Chinese BaZi & TCM Health, Neijing Lifespan, Vedic KP V2 & Vargas D1–D60, 4-in-1 Numerology, Astrocartography GeoJSON, and Commercial Electional timing (`https://api.freeastroapi.com/api/`).
 
-FreeAstroAPI operates via authenticated JSON REST endpoints and SVG chart renderers authenticated with `x-api-key: $FREEASTRO_API_KEY`. The canonical OpenAPI 3.1 specification documents 197 unique routes (207 REST operations) across 15 functional domains:
+## Core Directives & Invariants
+- **Authentication & Headers**: Authenticate with `x-api-key: $FREEASTRO_API_KEY`. Pass `Idempotency-Key: $(uuidgen)` on billable report requests.
+- **True Solar Time**: Apply `"time_standard": "true_solar"` with exact longitude/latitude for BaZi and TCM health evaluations.
+- **Plan Boundaries**: Enforce `"include_crossings": false` on Astrocartography calls to comply with Entry plan limits. For transits on Entry plan, use snapshot `POST /api/v1/natal/transits/calculate`.
+- **Bounded Execution**: Enforce `timeout 10s` on all HTTP calls and apply `sleep 0.25` throttle (5 RPS limit) in batch loops.
+- **Two-Tier Storage**: Persist raw JSON responses to `raw/json/dumps/` and condense extracted features into typed XML (<2.5 KB) in `raw/feeds/`.
 
-- **Complete API Catalog & Payloads**: [`references/usage.md`](file:///var/www/.agents/skills/freeastroapi/references/usage.md) — Exhaustive payloads, schemas, parameters, and two-tier storage architecture.
-- **Infrastructure & Environment Guide**: [`references/infra.md`](file:///var/www/.agents/skills/freeastroapi/references/infra.md) — Plan tiers (Entry $8/mo, 50k req/mo, 5 RPS), rate limits, idempotency, and error recovery.
+## Decision Gates & References
 
-## Core Engines & Domains
-
-1. **Western Natal & Ephemeris**: Positions, 7 house systems, royal fixed stars, dominants, and untimed birth failsafe (`POST /api/v1/natal/calculate`).
-2. **Visual Vector Wheels**: SVG/PNG charts for natal, transits, composite, and synastry (`POST /api/v1/natal/chart/`).
-3. **Chinese BaZi & TCM Health**: Day Master, Ten Gods, Hidden Stems, Da Yun cycles, *Huangdi Neijing* 5 elements organ constitution, temperature/moisture indexes, and stochastic lifespan curve (`POST /api/v1/chinese/bazi`, `/bazi/health`, `/bazi/lifespan`). Requires `"time_standard": "true_solar"`.
-4. **4-in-1 Unified Numerology**: Pythagorean (compound master numbers 11/22/33, karmic debts), Chaldean, Kabbalah, and Ank Jyotish (`POST /api/v1/numerology/profile`).
-5. **Vedic Jyotish & KP V2**: Sidereal cusps, 4-level Sub-Lords, Vimshottari Dashas (5 levels), Shodashavargas D1–D60, and Muhurat search across 6 life purposes (`POST /api/v2/vedic/kp`, `/vargas`, `/muhurat/search`).
-6. **Astrocartography GeoJSON**: WGS84 lines for 4 angles (`asc`, `dsc`, `mc`, `ic`) with `include_crossings: false` on Entry plan (`POST /api/v1/western/astrocartography/lines`).
-7. **Commercial Electional Astrology**: Algorithmic window search across 10 business and life categories (`POST /api/v2/western/electional/<category>/search`).
-8. **Progressions & Annual Profections**: Secondary, converse, tertiary, and quotidian progressions with exact aspect search windows (`POST /api/v1/western/progressions/*`) and Hellenistic annual profections (`POST /api/v1/western/profections/annual`).
-
-## Operational Directives (CoHaLo)
-
-1. **Schema Integrity**: Verify exact JSON keys and payload schemas in [`usage.md`](file:///var/www/.agents/skills/freeastroapi/references/usage.md) before dispatching requests.
-2. **True Solar Correction**: Apply `"time_standard": "true_solar"` with exact geographic coordinates for all BaZi and TCM evaluations.
-3. **Plan Boundaries**: Enforce `"include_crossings": false` on Astrocartography calls to comply with Entry plan limits. Note that continuous transit timelines require High plan; use snapshot `POST /api/v1/transits/calculate` on Entry.
-4. **Bounded Execution**: Enforce `timeout 10s` on all HTTP calls and apply `sleep 0.25` throttle (5 RPS limit) in batch loops.
-5. **Idempotency**: Pass `Idempotency-Key: $(uuidgen)` header on all billable report requests and chat completions.
-6. **Two-Tier Storage**: Persist full JSON responses to `raw/json/dumps/` and condense extracted features into typed XML (<2.5 KB) in `raw/feeds/`.
+| Domain | Route Pattern | Key Requirements | Reference |
+|---|---|---|---|
+| Western Natal & Wheel | `POST /api/v1/natal/calculate` | 7 house systems, dominants, SVG wheel | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| BaZi & TCM Health | `POST /api/v1/chinese/bazi` | `"time_standard": "true_solar"`, Neijing organ health | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| 4-in-1 Numerology | `POST /api/v1/numerology/profile` | Pythagorean, Chaldean, Kabbalah, Ank Jyotish | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| Vedic KP & Vargas | `POST /api/v2/vedic/kp` | Sub-lords, Dashas 5 levels, D1–D60 | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| Astrocartography | `POST /api/v1/western/astrocartography/lines` | `"include_crossings": false` (Entry plan) | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| Commercial Electional | `POST /api/v2/western/electional/<cat>/search` | Algorithmic window search (10 categories) | [`usage.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/usage.md) |
+| Infrastructure | Rate limits, quotas, recovery | Entry plan ($8/mo, 50k req, 5 RPS) | [`infra.md`](file:///var/www/zerops-astro-skills/freeastroapi/references/infra.md) |
 
 ## Output Contract
-
-Inspect HTTP 200 status on all JSON responses and parse payloads directly with `jq` or standard JSON parsers before passing data downstream.
+Verify HTTP 200 on all JSON responses and parse payloads directly with `jq` before passing downstream.
