@@ -112,3 +112,41 @@ All operations with `zcp` must strictly comply with the Fractal CoHaLo standard:
   * Discover sensor: `zerops_discover` returns `ACTIVE` status for critical services.
   * Verify sensor: `zerops_verify` returns `pass` or `info` on all container endpoints.
 * **Circuit Breaker Policy**: If a build fails twice in `zerops_events`, halt execution, examine build logs via `zerops_logs`, and adjust `prepareCommands` or dependencies before retrying.
+
+---
+
+## 5. ZCP Memory Pressure Diagnosis & Multi-Session Resource Bounds (Physical Post-Mortem 2026-10-23)
+
+Physical instrumentation of the ZCP container during operational stress on 2026-10-23 identified the root cause of apparent system freezes and established deterministic concurrency thresholds for multi-agent workflows.
+
+### A. Physical Instrumentation & Cgroups v2 Telemetry
+* **Memory Limits**: Container provisioned with maximum 6.44 GB RAM (`memory.max`). The Linux kernel cgroups v2 proactive reclaim threshold is configured at `memory.high = 4.29 GB`.
+* **Observed Metrics at Saturation**:
+  * `cgroup memory.current`: 3.90 GB to 4.15 GB (~91-97% of `memory.high`).
+  * `memory.events`: `high=29056` (scaled to >790k under thrashing), `max=3794`, `oom=0`.
+  * Swap utilization: 470 MB; anonymous memory (`anon`): 3.55 GB.
+* **CPU & I/O Telemetry**:
+  * CPU state: 82.5% idle, `agy` runtime consuming 0-3% CPU, `nr_throttled=0`, PSI CPU `some avg60=6%`.
+  * PSI I/O: `full total=121s` accumulated since boot due to swap paging.
+
+### B. Root Cause: Kernel Page Reclaim vs "Zombie" Myth
+* **The Zombie Myth Debunked**: Process table inspection revealed **0 true zombie processes** (STAT `Z` or orphaned PPID 1 without terminal). Earlier scripts that killed processes indiscriminately were terminating live interactive `agy` sessions attached to pseudo-terminals (`pts/*`). While killing those sessions temporarily relieved memory pressure (freeing ~1 GB per session), it created the false belief that "runaway CPU zombies" were freezing the host.
+* **The Real Mechanism**: The perceived freezing is caused by **cgroups v2 proactive reclaim and swap thrashing**. When `memory.current` breaches `memory.high` (4.29 GB), the Linux kernel synchronously throttles processes executing memory allocations while it attempts to page out anonymous memory to swap. Because CPU utilization was over 80% idle with zero CPU throttling, CPU was never the bottleneck.
+
+### C. Process Footprint Breakdown per `agy` Session
+* Each interactive `agy` session spawns 12 to 14 eagerly loaded child MCP servers via `npm exec` and Python runners, consuming ~430-455 MB direct resident memory plus child Node workers, totaling **~1.0 GB RAM per active session**.
+* Concurrency footprint:
+  * 1 Session: ~1.0 GB session + ~600 MB baseline OS & daemons = ~1.6 GB (~37% of `memory.high`).
+  * 2 Concurrent Sessions: ~2.0 GB sessions + ~600 MB baseline = ~2.6 GB (~61% of `memory.high`, well within safe margins).
+  * 3 Concurrent Sessions: ~3.0 GB sessions + ~600 MB baseline + ~334 MB ZCP services = ~3.93 GB (>91% of `memory.high`), breaching the reclaim boundary and triggering synchronous latency stalls.
+
+### D. Architectural Rules & Concurrency Boundaries
+1. **Interactive Session Ceiling**: A single ZCP container safely supports a maximum of **2 concurrent interactive `agy` sessions**. Beyond 2 sessions, memory pressure inevitably enters the `memory.high` reclaim zone.
+2. **Acceptance Criteria Verification**:
+   * With $\le 2$ concurrent sessions, `memory.current` stays strictly $< 70\%$ of `memory.high` (< 3.0 GB).
+   * `memory.events` `high` counters remain static during sustained normal operation under this threshold.
+3. **Optimization Guidelines**:
+   * **Lazy-Load MCP Servers**: Configure tools to lazily initialize child processes on first invocation rather than spawning the full suite eagerly on startup.
+   * **Direct Executables**: Replace `npm exec <pkg>` shims with direct global binary invocations to eliminate wrapper overhead (~30-50 MB saved per MCP server).
+   * **Graceful Session Lifecycle**: Ensure finished sessions exit cleanly rather than maintaining open pseudo-terminals holding idle MCP subprocesses.
+
