@@ -23,20 +23,20 @@ Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `gril
 
 | Capa | Protocolo / Acción | Referencia |
 |---|---|---|
-| Inflow Epistémico | Inspección en disco $\to$ `research` 360 | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
-| Aclaración Restringida | Facts-first; máx 1 pregunta con opciones | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
-| Plan & Agrupación | `linear-cli create-project` / `create --project` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
-| Ejecución Delegada | Subagente worker acotado para $\ge 2$ archivos | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
+| Inflow Epistémico | Inspección en disco $\to$ `research` 360 | [`research`](file:///var/www/zerops-astro-skills/research/SKILL.md) |
+| Aclaración Restringida | Facts-first; máx 1 pregunta con opciones | [`references/usage.md`](file:///var/www/zerops-astro-skills/planner/references/usage.md) |
+| Plan & Agrupación | Delegar a `meta-plan` o `linear-cli` | [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) |
+| Infraestructura & SSoT | Ciclo de vida `/artifacts/plans/`, cerrojos Linear | [`references/infra.md`](file:///var/www/zerops-astro-skills/planner/references/infra.md) |
 | Sensores Físicos | Tests exit code 0 $\to$ `linear-cli update-status` | [`skills-suite-validate`](file:///usr/local/bin/skills-suite-validate) |
-| Cierre SSoT | `mem_save` / `mem_session_summary` | [`engram`](file:///var/www/.agents/skills/planner/references/usage.md) |
+| Cierre SSoT | `mem_save` / `mem_session_summary` | [`engram`](file:///var/www/zerops-astro-skills/planner/references/usage.md) |
 
 ## Workflows Ejecutivos (F0–F5)
 1. **F0 (Inflow)**: Inspección silenciosa de hechos con subagente `research` o disco local.
 2. **F1 (Clarification Gate)**: Preguntar solo si no existe evidencia física en disco.
 3. **F2 (Dual-RAG Alignment)**: Consultar especificaciones en `references/usage.md`.
 4. **F3 (Validation Feedforward)**: Chequeo de sintaxis física.
-5. **F4 (Plan & Approval)**: Enlazar a Proyecto en Linear con criterios verificables.
+5. **F4 (Plan & Approval)**: Enlazar a Proyecto en Linear con criterios verificables y plan en `/var/www/artifacts/plans/`.
 6. **F5 (Execution & Fast Attestation)**: Delegación a subagente, tests físicos (`bun test` exit 0), actualización a Done y persistencia en Engram.
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/planner/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/planner/references/infra.md) · [`references/planning_heuristics.md`](file:///var/www/zerops-astro-skills/planner/references/planning_heuristics.md)

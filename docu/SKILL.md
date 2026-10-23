@@ -24,12 +24,13 @@ Activate when authoring, updating, certifying, or auditing Dual-RAG skills acros
 
 | Task / Need | Action / Protocol | Reference |
 |---|---|---|
-| **Skill Certification & Invariance** | Audit skills against 5 normative criteria | [`references/certification.md`](file:///var/www/.agents/skills/docu/references/certification.md) |
-| **Construction & Audit Lifecycle** | 8-step lifecycle across 4 archetypes | [`references/workflow.md`](file:///var/www/.agents/skills/docu/references/workflow.md) |
-| **Dual-RAG Skeletons & Harness** | Canonical Dual-RAG templates | [`references/templates.md`](file:///var/www/.agents/skills/docu/references/templates.md) |
-| **Research Ingestion Protocol** | Decoupled archetype mapping | [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md) |
-| **Research Subagent Delegation** | Canonical research contract (12 engines) | [`assets/subagent_meta_prompt_template.md`](file:///var/www/.agents/skills/docu/assets/subagent_meta_prompt_template.md) |
-| **Automated Scaffolding** | Python generator with AST verification | [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py) |
+| **Skill Certification & Invariance** | Audit skills against 5 normative criteria | [`references/infra.md`](file:///var/www/zerops-astro-skills/docu/references/infra.md) |
+| **Construction & Audit Lifecycle** | 8-step lifecycle across 4 archetypes | [`references/usage.md`](file:///var/www/zerops-astro-skills/docu/references/usage.md) |
+| **Meta-Skill Governance** | High-level authoring and systemic auditing | [`meta-skill`](file:///var/www/.agents/skills/meta-skill/SKILL.md) |
+| **Dual-RAG Skeletons & Harness** | Canonical Dual-RAG templates | [`references/templates.md`](file:///var/www/zerops-astro-skills/docu/references/templates.md) |
+| **Research Ingestion Protocol** | Decoupled archetype mapping | [`assets/research_ingestion_protocol.md`](file:///var/www/zerops-astro-skills/docu/assets/research_ingestion_protocol.md) |
+| **Research Subagent Delegation** | Canonical research contract (12 engines) | [`assets/subagent_meta_prompt_template.md`](file:///var/www/zerops-astro-skills/docu/assets/subagent_meta_prompt_template.md) |
+| **Automated Scaffolding** | Python generator with AST verification | [`assets/skill_scaffold.py`](file:///var/www/zerops-astro-skills/docu/assets/skill_scaffold.py) |
 | **Sensor** | Universal Capability Sensor (Standard v3.3) | `skills-suite-validate` |
 
 ## Commands
@@ -39,5 +40,5 @@ skills-suite-validate
 ```
 
 ## Resources
-- [`references/certification.md`](file:///var/www/.agents/skills/docu/references/certification.md) · [`references/workflow.md`](file:///var/www/.agents/skills/docu/references/workflow.md) · [`references/templates.md`](file:///var/www/.agents/skills/docu/references/templates.md)
-- [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md) · [`assets/subagent_meta_prompt_template.md`](file:///var/www/.agents/skills/docu/assets/subagent_meta_prompt_template.md) · [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py)
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/docu/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/docu/references/infra.md) · [`references/templates.md`](file:///var/www/zerops-astro-skills/docu/references/templates.md)
+- [`assets/research_ingestion_protocol.md`](file:///var/www/zerops-astro-skills/docu/assets/research_ingestion_protocol.md) · [`assets/subagent_meta_prompt_template.md`](file:///var/www/zerops-astro-skills/docu/assets/subagent_meta_prompt_template.md) · [`assets/skill_scaffold.py`](file:///var/www/zerops-astro-skills/docu/assets/skill_scaffold.py)
