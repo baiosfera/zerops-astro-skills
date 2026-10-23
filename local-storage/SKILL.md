@@ -4,43 +4,41 @@ description: "Trigger: local-storage, storage, local disk, run.volume, persisten
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.5"
-  cohalo-standard: "6.7"
+  version: "1.6"
 ---
 
-# Local Storage — Persistent Disk Volume & Single-Kernel POSIX Engine (v1.5)
+# Local Storage — Persistent Disk Volume & POSIX Engine (v1.6)
 
 ## Activation Contract
-Activate when architecting, configuring, mounting, optimizing, or operating Zerops Local Storage (`local-storage:single@1`) persistent disk volumes across runtime services, embedded database workloads (SQLite, Prometheus TSDB), control-plane staging mounts, or migrating from legacy Shared Storage.
+Activate whenever provisioning, configuring, or mounting Zerops Local Storage (`type: local-storage:single@1`), shared disk mounts, persistent SQLite databases, upload directories, or application caches requiring true POSIX filesystem semantics.
 
-## Hard Rules & Critical Invariants
-1. **Exclusive `run.volume` Gate**: Local storage volumes MUST be mounted exclusively in `zerops.yaml` under `run.volume` (`{hostname, mountPath, readOnly}`). Declaring `mount:` in `import.yaml` or `run.mount` is invalid.
-2. **Single-Kernel POSIX Semantics**: Advisory locks (`flock`, `fcntl`), memory mapping (`mmap`), `inotify`, and atomic renames operate natively across containers via shared host kernel.
-3. **Embedded Database & SQLite Safe**: SQLite WAL mode is fully supported. Coordinate writes via a single writer container; mount `readOnly: true` on readers.
-4. **Co-Location Law**: All containers mounting the same volume are scheduled onto the same physical machine. Horizontal scale is bounded by host capacity.
-5. **Native Ownership**: Mount point is owned natively by `zerops:zerops` (UID/GID 1000). No `chmod` workarounds needed.
-6. **Atomic Database Backups**: Live `.tar.gz` captures require quiet I/O. For SQLite, run `sqlite3 <db> ".backup <dest>"` via `run.crontab` (`allContainers: false`).
-7. **Volume Deletion Blocker**: Local Storage cannot be deleted while connected runtimes declare `run.volume`. Remove `run.volume` and redeploy first.
-8. **ZCP Control-Plane Mount Law**: When mounting to `/var/www/{hostname}` in ZCP, bind `/data` to `/var/www` on storage (`mount --bind /data /var/www` in `/etc/fstab`). Automate via `scripts/localstorage-mount-zcp.sh`.
-9. **Subdirectory Permission Bootstrap**: While the mount root is owned natively by the platform, new application subdirectories on the persistent volume (e.g. `/mnt/localstorage/<service>`) must be provisioned in `prepareCommands` via `sudo mkdir -p <dir> && sudo chown -R zerops:zerops <dir>` to prevent unprivileged runtime crashes during initial database creation.
-10. **Storage Tiering (POSIX vs S3)**: Local Storage is the **primary persistent storage** for single-node workloads, starter e-commerce, product catalog media (`/mnt/localstorage/${PROJECT_NAME}/media/`), Brandbook SSoT, and SQLite WAL. It survives deploys and container reboots. Use `object-storage` only when crossing physical host boundaries for horizontal autoscaling, offloading massive media to public Cloudflare Edge CDN, or decoupling ERPNext/Frappe digital document archives.
-11. **Multi-Brand SSoT Standard**: For multi-brand architectures, persistent brand assets and narrative configurations reside under `/mnt/localstorage/${PROJECT_NAME}/dev` (and `prod`). Connected services (e.g. `whatsappbot`, `webdev`) mount the volume and dynamically read `system_prompt.md`, `brandbook.json`, and `catalog_links.json`. If empty on a new ZCP, the seed script copies the baseline from `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}`.
+## Hard Rules & Positive Guidance
+- **Native POSIX Single-Kernel Semantics**: Local Storage operates with single-kernel POSIX filesystem locks (`fcntl`, `flock`), making it safe for SQLite, embedded databases, and file caches within the container.
+- **Mount Syntax in zerops.yaml**: Mount volumes inside the application service using:
+  ```yaml
+  run:
+    volume:
+      hostname: <storageHostname>
+      mountPath: /mnt/<storageHostname>
+  ```
+- **Shared Storage Single-Node Rule**: To share a volume across multiple services, all mounting services must be pinned to `minContainers: 1, maxContainers: 1` to prevent split-brain filesystem corruption.
+- **Disk Expansion Law**: Allocated storage expands automatically with data growth and never shrinks.
+- **Ephemeral Container Boundary**: Data written outside the mounted volume path (`/mnt/...`) is ephemeral and wiped upon new deployments. All durable state must reside inside the mount path.
 
 ## Decision Matrix
 
-| Task / Domain | Technical Pattern | Reference / Asset |
+| Storage Objective | Recommended Pattern | Reference |
 |---|---|---|
-| Runtime Volume Mounting & MountPath | `run.volume: {hostname, mountPath, readOnly}` | [`references/usage.md`](references/usage.md) |
-| Architecture & Single-Kernel Semantics | POSIX locks, mmap coherence, co-location, vs S3 | [`references/infra.md`](references/infra.md) |
-| SQLite WAL & Consistent Backup Pattern | Single-writer + `readOnly` + `sqlite3 .backup` cron | [`references/usage.md#3-sqlite-wal-mode--consistent-database-backups`](references/usage.md) |
-| Control-Plane Mount in ZCP (`/var/www/{host}`) | Bind mount (`/data` $\leftrightarrow$ `/var/www`) + SSHFS | [`scripts/localstorage-mount-zcp.sh`](scripts/localstorage-mount-zcp.sh) |
-| Migration from Deprecated Shared Storage | Zero-downtime migration to `local-storage:single@1` | [`references/infra.md#4-migration-from-deprecated-shared-storage`](references/infra.md) |
-| Multi-Service Import Manifest Template | `local-storage:single@1` + Consumer Runtimes | [`assets/import_template.yaml`](assets/import_template.yaml) |
-| Runtime Lifecycle & Volume Configuration | `run.volume` declaration in `zerops.yaml` | [`assets/zerops_template.yaml`](assets/zerops_template.yaml) |
+| SQLite & Key-Value DBs | Local Storage mount with fcntl locks | [`references/usage.md#sqlite-storage`](file:///var/www/.agents/skills/local-storage/references/usage.md) |
+| App Uploads & Caches | Volume mount at /mnt/storage | [`references/usage.md#uploads-cache`](file:///var/www/.agents/skills/local-storage/references/usage.md) |
+| Shared Volume Topology | Single-node shared volume architecture | [`references/infra.md#shared-volume`](file:///var/www/.agents/skills/local-storage/references/infra.md) |
+| Backup & Snapshot Strategy | Automated volume backup workflows | [`references/infra.md#backups`](file:///var/www/.agents/skills/local-storage/references/infra.md) |
+
+## Critical Workflows
+1. Provision `local-storage:single@1` in `import.yaml`.
+2. Declare `run.volume` mount path in the consumer service's `zerops.yaml`.
+3. Verify mount availability inside container (`df -h /mnt/<storageHostname>`).
 
 ## References
-- [`references/usage.md`](references/usage.md) — Local storage mount flows, `run.volume` options, ZCP protocol, SQLite backup patterns, directory hierarchies, and diagnostic CLI tools.
-- [`references/infra.md`](references/infra.md) — Architecture, POSIX locking, mmap coherence, co-location, and comparisons.
-- [`scripts/localstorage-mount-zcp.sh`](scripts/localstorage-mount-zcp.sh) — Deterministic CLI utility to automate storage bind mounting and ZCP control-plane SSHFS mounts.
-- [`assets/import_template.yaml`](assets/import_template.yaml) — Production-ready `import.yaml` storage manifest.
-- [`assets/zerops_template.yaml`](assets/zerops_template.yaml) — Production runtime `zerops.yaml` with `run.volume` configuration.
+- [`references/usage.md`](file:///var/www/.agents/skills/local-storage/references/usage.md) — POSIX filesystem patterns, SQLite on Zerops, mount configurations, and performance tuning.
+- [`references/infra.md`](file:///var/www/.agents/skills/local-storage/references/infra.md) — Sizing profiles, multi-service shared storage topology, backup automation, and safety invariants.

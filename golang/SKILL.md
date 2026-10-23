@@ -4,45 +4,36 @@ description: "Trigger: golang, go, zerops go, go runtime, os alpine, os ubuntu, 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.0"
+  version: "1.1"
 ---
 
-# Golang — Zerops Native Go Runtime Engine (v1.0)
+# Golang — Zerops Native Go Runtime Engine (v1.1)
 
 ## Activation Contract
-Activate whenever authoring, building, deploying, or troubleshooting Go services on Zerops (`type: go@1.22`, `type: golang@latest`, or `build.base: go@...`), selecting between Alpine (`os: alpine`) and Ubuntu (`os: ubuntu`) bases, configuring `GOMODCACHE` snapshotting (`cache: true`), authoring atomic migrations (`zsc execOnce`), or connecting Go services to Zerops PostgreSQL (`pgx/v5`).
+Activate whenever architecting, building, compiling, caching, or deploying Go microservices (`runtime: alpine/go@1.22` or `ubuntu/go@1.22`) and high-performance compiled binaries on Zerops.
 
-## Hard Rules
-- **Rule 1 (Base OS Selection Invariant)**: Use `os: alpine` (default) with `CGO_ENABLED="0"` for 95% of standard web APIs and microservices. Switch to `os: ubuntu` ONLY when dynamic CGO bindings (`libvips`, `librdkafka`, `sqlite3` CGO) are strictly required.
-- **Rule 2 (Minimal Deploy Artifacts)**: Production services MUST deploy compiled binaries only (`deployFiles: [./app, ./migrate]`). Never deploy full source code to production runtimes.
-- **Rule 3 (Atomic Migrations)**: Always execute database migrations in `run.initCommands` using `zsc execOnce ${appVersionId} -- ./migrate` to prevent parallel execution race conditions across scaled containers.
-- **Rule 4 (Zero-Guessing Scaling)**: Do NOT specify manual `verticalAutoscaling` blocks in `import.yaml`. Zerops manages vertical autoscaling natively out-of-the-box.
-- **Rule 5 (Fractal CoHaLo Bounded Execution)**: All synchronous commands MUST enforce timeouts (`timeout 10s`), synchronous wait (`WaitMsBeforeAsync: 10000`), and terminate orphan background processes with `manage_task action="kill"`.
+## Hard Rules & Positive Guidance
+- **Runtime Base Selection**:
+  - `alpine/go@1.22`: Standard for Go web services; produces minimal, static musl binaries.
+  - `ubuntu/go@1.22`: Required when compiling with CGO or linking against glibc-dependent shared libraries.
+- **Build Pipeline & Caching**: Cache `go/pkg/mod` and `~/.cache/go-build` in `zerops.yaml` to reduce compile times from minutes to seconds.
+- **Static Binary Output**: In production runtimes, copy only the compiled binary and necessary configuration assets into the deploy artifact.
+- **Port Binding**: Bind HTTP/gRPC servers to `0.0.0.0` on port `8080` (or `${PORT}`).
+- **Container Execution**: Run Go tests inside the container via SSH (`ssh {hostname} "cd /var/www && go test ./..."`).
 
 ## Decision Gates
 
-| Task / Scenario | Recommended Strategy | Reference / Asset |
+| Objective | Strategy | Reference |
 |---|---|---|
-| Pure Go APIs (`pgx`, `chi`, `nats`, `redis`) | `os: alpine`, `CGO_ENABLED: "0"`, `deployFiles: ./app` | [`references/usage.md`](file:///var/www/.agents/skills/golang/references/usage.md) |
-| CGO Services (`libvips`, `librdkafka`) | `os: ubuntu`, `prepareCommands: apt-get install -y <pkg>` | [`references/usage.md`](file:///var/www/.agents/skills/golang/references/usage.md) |
-| Zerops Lifecycle (`zerops.yaml` & Cache) | `cache: true` for `GOMODCACHE`, `deploy.readinessCheck` | [`references/infra.md`](file:///var/www/.agents/skills/golang/references/infra.md) |
-| Development Workspaces | `deployFiles: ./`, `start: zsc noop --silent` | [`references/infra.md`](file:///var/www/.agents/skills/golang/references/infra.md) |
-| Verified `zerops.yaml` Recipes | Copy-paste production and development setups | [`assets/go_production_recipes.json`](file:///var/www/.agents/skills/golang/assets/go_production_recipes.json) |
+| Static Binary Compilation | CGO_ENABLED=0 go build -ldflags="-s -w" | [`references/usage.md#compilation`](file:///var/www/.agents/skills/golang/references/usage.md) |
+| Caching Optimization | go/pkg/mod and build cache in zerops.yaml | [`references/infra.md#caching`](file:///var/www/.agents/skills/golang/references/infra.md) |
+| Alpine vs Ubuntu Base | musl static vs glibc CGO compilation | [`references/infra.md#base-images`](file:///var/www/.agents/skills/golang/references/infra.md) |
 
-## Critical Workflows / Execution Steps
-1. Define service topology in `import.yaml` using `type: go@1.22` or `type: golang@latest`.
-2. Configure `zerops.yaml` with appropriate `os: alpine` or `os: ubuntu` and `cache: true`.
-3. Author `deployFiles` to transfer only `./app` and `./migrate` to the run container.
-4. **Process Hygiene & Bounded Execution (CoHaLo)**: Execute commands with `timeout 10s`, `WaitMsBeforeAsync: 10000`, and clean orphan tasks with `manage_task action="kill"`.
-5. **Circuit Breaker (CoHaLo)**: Limit retries to 2 attempts on failure (HTTP 500 / timeout) before escalating.
-6. **Sensor Attestation**: Verify physical sensor check (exit code 0 / HTTP 200) and format output deterministically.
-
-## Output Contract
-- Validated `zerops.yaml` and `import.yaml` targeting Zerops Managed Go Runtime.
-- Verified build and compilation artifacts with zero orphaned tasks.
+## Critical Workflows
+1. Declare Go runtime in `zerops.yaml` with build and run stages.
+2. Compile binary during `build` and output to artifact directory.
+3. Validate service with physical health sensor (`curl -s http://<service>:8080/health`).
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/golang/references/usage.md) — Developer manual, `os: alpine` vs `os: ubuntu`, connection pooling (`pgx/v5`), and 5 production patterns.
-- [`references/infra.md`](file:///var/www/.agents/skills/golang/references/infra.md) — Infrastructure manual, Incus LXC model, `GOMODCACHE` caching, atomic migrations, and CoHaLo process hygiene.
-- [`assets/go_production_recipes.json`](file:///var/www/.agents/skills/golang/assets/go_production_recipes.json) — Production-ready `zerops.yaml` recipe catalog.
-- [`scripts/golang-validate.sh`](file:///var/www/.agents/skills/golang/scripts/golang-validate.sh) — Physical integrity validator for the golang skill suite.
+- [`references/usage.md`](file:///var/www/.agents/skills/golang/references/usage.md) — Go compilation flags, web server patterns, CGO handling, and test suites.
+- [`references/infra.md`](file:///var/www/.agents/skills/golang/references/infra.md) — Multi-stage deployment manifests, GOMODCACHE caching, and base image trade-offs.
