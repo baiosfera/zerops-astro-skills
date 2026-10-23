@@ -16,8 +16,8 @@ Activate when structuring multi-step initiatives, architectural refactors, multi
 - **Proportional Activation Threshold**: Apply the strict dual-gate rule:
   1. *Direct Domain Execution (Zero-Friction)*: Single-runtime tasks or standalone CLI tools (`.bin`) bypass `meta-plan` and execute directly with domain skills (`astro-web`, `postgresql`, `bun`, `codecraft`).
   2. *Meta-Plan Activation (Mandatory)*: Multi-service initiatives ($\ge 2$ runtimes), foundational architectural changes, or complex tasks of $\ge 3$ steps require `meta-plan` and Linear issue tracking.
-- **Dual Planning & Clean Lifecycle**: Author Master Plan in `/var/www/artifacts/plans/<slug>_v1.md` (Drive SSoT). On epic completion (Done), archive to `archive/` or auto-purge; `/artifacts/plans/` strictly holds active plans.
-- **Epistemic Persistence Before Delivery**: Persist technical discoveries and decisions in Linear (`linear-cli comment`) and Engram (`mem_save`) before formulating chat replies. Never lose architecture findings in chat context.
+- **Dual Planning & Clean Lifecycle**: Author Master Plan in `/var/www/artifacts/plans/<slug>_v1.md` (Drive SSoT). On epic completion (Done), archive to `archive/`, purge residual `.json` state (`linear_active_project.json`) leaving `/artifacts/` clean; `/artifacts/plans/` strictly holds active plans.
+- **Epistemic Persistence Before Delivery**: Persist technical discoveries and decisions in Linear (`linear-cli comment`) and Engram (`mem_save`) before replying. Never lose architecture findings in chat context.
 - **Physical Attestation on Transition**: Update Linear issue status with verified exit-0 physical evidence (`linear-cli update-status <id> Done --evidence "<proof>"`).
 - **Subordinate Execution Without Drifts**: Execute plans sequentially through `writing-plans` and `executing-plans`. Validate each step with physical tests before proceeding.
 

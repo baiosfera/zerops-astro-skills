@@ -16,6 +16,7 @@ Los artefactos de planificación residen en una jerarquía física con enlace di
 - **Historial de Planes Ejecutados (Archivo Histórico):**
   `/var/www/artifacts/archive/<slug>.executed.md`
   - Al completar la fase de ejecución (F5) y marcar la épica como `Done` en Linear, el plan se mueve a este directorio para evitar contaminación de contexto.
+  - Se eliminan automáticamente todos los archivos `.json` de estado operativo residual (`linear_active_project.json`, `.linear_activity_state.json`), asegurando que `/var/www/artifacts/` quede 100% libre de residuos y solo preserve documentación Markdown limpia.
 
 - **Espejo SSoT Indivisible:**
   `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}/plans/`
