@@ -30,7 +30,7 @@ Activate when automating domains, DNS records (**A**, **AAAA**, **CNAME**, **TXT
 | Declarative DNS Runner | Ingests topology manifest or environment variables | [`scripts/sync-dns.ts`](file:///var/www/.agents/skills/cloudflare/scripts/sync-dns.ts) |
 | Implementation Manual | REST client usage, 4D matrix, and Action snippets | [`references/usage.md`](file:///var/www/.agents/skills/cloudflare/references/usage.md) |
 | Topology & Ingress | Zerops L7 Balancer, Full Strict SSL & tunnels | [`references/infra.md`](file:///var/www/.agents/skills/cloudflare/references/infra.md) |
-| Physical Validation | Deterministic integrity sensor | [`scripts/cloudflare-validate.sh`](file:///var/www/.agents/skills/cloudflare/scripts/cloudflare-validate.sh) |
+| Physical Validation | Deterministic integrity sensor | [`scripts/cloudflare-validate.sh``skills-suite-validate` |
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/cloudflare/references/usage.md) — REST API v4 usage, Turnstile in Astro Actions, Rulesets API, and RFC 9989.
@@ -40,4 +40,4 @@ Activate when automating domains, DNS records (**A**, **AAAA**, **CNAME**, **TXT
 - [`assets/turnstile_validator.ts`](file:///var/www/.agents/skills/cloudflare/assets/turnstile_validator.ts) — Server-side Turnstile validation module.
 - [`assets/cloudflare_production_recipes.json`](file:///var/www/.agents/skills/cloudflare/assets/cloudflare_production_recipes.json) — Production Ruleset templates.
 - [`scripts/sync-dns.ts`](file:///var/www/.agents/skills/cloudflare/scripts/sync-dns.ts) — Declarative DNS synchronization runner.
-- [`scripts/cloudflare-validate.sh`](file:///var/www/.agents/skills/cloudflare/scripts/cloudflare-validate.sh) — Deterministic physical validator.
+- [`scripts/cloudflare-validate.sh``skills-suite-validate` — Deterministic physical validator.

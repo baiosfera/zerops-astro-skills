@@ -41,4 +41,4 @@ Activate when orchestrating Gemini Notebook / Google NotebookLM via `nlm` CLI, 4
 ## References
 - [`references/usage.md`](references/usage.md) — 49 FastMCP tools, 43 file extensions, verified CLI syntax, Studio options, nlm-tutor v2.2.0.
 - [`references/infra.md`](references/infra.md) — Google One AI Premium contract, cookie lifecycle (`__Secure-1PSIDTS`), CDP transport, compute quotas, CoHaLo harness.
-- [`scripts/notebooklm-validate.sh`](scripts/notebooklm-validate.sh) — Deterministic physical sensor for skill integrity.
+- [`scripts/notebooklm-validate.sh``skills-suite-validate` — Deterministic physical sensor for skill integrity.

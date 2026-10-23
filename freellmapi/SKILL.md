@@ -24,7 +24,7 @@ Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), co
 - **Zerops Topology & Lifecycle**: [`infra.md`](file:///var/www/zerops-astro-skills/freellmapi/references/infra.md) — Node.js 22 runtime, persistent mounts, and health probes.
 - **Bifrost Upstream & MCP Bridge**: [`agy_bifrost_bridge.md`](file:///var/www/zerops-astro-skills/freellmapi/references/agy_bifrost_bridge.md) — Single Front Door topology and `/mcp` streaming.
 - **Production Config Template**: [`freellmapi_production_template.json`](file:///var/www/zerops-astro-skills/freellmapi/assets/freellmapi_production_template.json) — Declarative JSON template.
-- **Validation**: [`freellmapi-validate.sh`](file:///var/www/zerops-astro-skills/freellmapi/scripts/freellmapi-validate.sh) — Liveness sensor and token checker.
+- **Validation**: [`freellmapi-validate.sh``skills-suite-validate` — Liveness sensor and token checker.
 
 ## Output Contract
 Deterministic OpenAI-compatible responses from `/v1/chat/completions`, active health probe (HTTP 200 on `/api/ping`), and zero orphan daemon processes.

@@ -28,7 +28,7 @@ Activate when orchestrating sales pipelines, ingesting web leads, managing deals
 | **Topology & Environment Config** | Zero-latency bench topology, env dictionary, and CoHaLo harness | [`references/infra.md`](file:///var/www/.agents/skills/crmfrappe/references/infra.md) |
 | **Ready-to-Use Payloads** | Standard JSON recipes for Leads, Deals, and Quotations | [`assets/crmfrappe_production_recipes.json`](file:///var/www/.agents/skills/crmfrappe/assets/crmfrappe_production_recipes.json) |
 | **Live API Health Check** | CLI sensor testing Frappe Cloud connectivity and CRM DocTypes | [`scripts/crmfrappe-client.py`](file:///var/www/.agents/skills/crmfrappe/scripts/crmfrappe-client.py) |
-| **Physical Skill Attestation** | Deterministic validator verifying tokens (<700), links, and schemas | [`scripts/crmfrappe-validate.sh`](file:///var/www/.agents/skills/crmfrappe/scripts/crmfrappe-validate.sh) |
+| **Physical Skill Attestation** | Deterministic validator verifying tokens (<700), links, and schemas | [`scripts/crmfrappe-validate.sh``skills-suite-validate` |
 
 ## Commands
 
@@ -37,7 +37,7 @@ Activate when orchestrating sales pipelines, ingesting web leads, managing deals
 python3 /var/www/.agents/skills/crmfrappe/scripts/crmfrappe-onboard.py
 
 # Execute physical validation sensor
-bash /var/www/.agents/skills/crmfrappe/scripts/crmfrappe-validate.sh
+skills-suite-validate
 
 # Run live Frappe Cloud API health check
 python3 /var/www/.agents/skills/crmfrappe/scripts/crmfrappe-client.py

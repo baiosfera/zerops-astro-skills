@@ -28,4 +28,4 @@ Deploying Evolution Go (`whatsmeow`), Meta Cloud API, QR/Passkey pairing, warmup
 - **Evolution Go Driver**: [`evolutiongo.md`](file:///var/www/zerops-astro-skills/whatsapp-engine/references/drivers/evolutiongo.md) — Binary pairing and media endpoints.
 - **Meta Cloud Driver**: [`meta_cloud.md`](file:///var/www/zerops-astro-skills/whatsapp-engine/references/drivers/meta_cloud.md) — Meta Cloud API v21.0 integration.
 - **Warmup & Anti-Ban**: [`anti_ban_warmup_guide.md`](file:///var/www/zerops-astro-skills/whatsapp-engine/assets/anti_ban_warmup_guide.md) — Operational warmup guide.
-- **Validation**: [`whatsapp-engine-validate.sh`](file:///var/www/zerops-astro-skills/whatsapp-engine/scripts/whatsapp-engine-validate.sh) — Quality & token validation sensor.
+- **Validation**: [`whatsapp-engine-validate.sh``skills-suite-validate` — Quality & token validation sensor.

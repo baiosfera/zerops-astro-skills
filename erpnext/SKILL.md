@@ -23,12 +23,12 @@ Orchestrating integrations between ERPNext / Frappe Cloud, Colombian DIAN compli
 - **Autonomous Accounting**: [`agent_accounting.md`](file:///var/www/zerops-astro-skills/erpnext/references/agent_accounting.md) — UVT monitoring and gateway fee reconciliations.
 - **Declarative Profile & Recipes**: [`onboarding_profile.json`](file:///var/www/zerops-astro-skills/erpnext/assets/onboarding_profile.json) · [`erpnext_production_recipes.json`](file:///var/www/zerops-astro-skills/erpnext/assets/erpnext_production_recipes.json) — Agnostic templates and JSON recipes.
 - **Lifecycle Hooks**: [`directus_frappe_hook.ts`](file:///var/www/zerops-astro-skills/erpnext/assets/directus_frappe_hook.ts) · [`frappe_webhook_endpoint.ts`](file:///var/www/zerops-astro-skills/erpnext/assets/frappe_webhook_endpoint.ts) — BullMQ order queue and webhook verification.
-- **Tooling & Validation**: [`erpnext-onboard.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-onboard.py) · [`erpnext-rut-parser.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-rut-parser.py) · [`erpnext-client.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-client.py) · [`erpnext-validate.sh`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-validate.sh) — Client engine and deterministic validator.
+- **Tooling & Validation**: [`erpnext-onboard.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-onboard.py) · [`erpnext-rut-parser.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-rut-parser.py) · [`erpnext-client.py`](file:///var/www/zerops-astro-skills/erpnext/scripts/erpnext-client.py) · [`erpnext-validate.sh``skills-suite-validate` — Client engine and deterministic validator.
 
 ## Commands
 ```bash
 # Run universal physical validation sensor
-bash /var/www/zerops-astro-skills/erpnext/scripts/erpnext-validate.sh
+skills-suite-validate
 
 # Run internal unit tests of Frappe REST & RPC client
 python3 /var/www/zerops-astro-skills/erpnext/scripts/erpnext-client.py --test

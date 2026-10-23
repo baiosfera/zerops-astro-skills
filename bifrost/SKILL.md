@@ -25,7 +25,7 @@ Deploying, configuring, or calling Maxim AI Bifrost (`maximhq/bifrost`), running
 - **Zerops Topology & Lifecycle**: [`infra.md`](file:///var/www/zerops-astro-skills/bifrost/references/infra.md) — Alpine deployment specs, storage safeguards, and env mapping.
 - **Production Config Template**: [`config_production_template.json`](file:///var/www/zerops-astro-skills/bifrost/assets/config_production_template.json) — Declarative CEL routing and fallbacks.
 - **Zerops Import Recipe**: [`zerops_bifrost_recipe.yaml`](file:///var/www/zerops-astro-skills/bifrost/assets/zerops_bifrost_recipe.yaml) — Standalone Zerops import recipe.
-- **Validation**: [`bifrost-validate.sh`](file:///var/www/zerops-astro-skills/bifrost/scripts/bifrost-validate.sh) — Liveness probe and config sensor.
+- **Validation**: [`bifrost-validate.sh``skills-suite-validate` — Liveness probe and config sensor.
 
 ## Output Contract
 Deterministic response matching schema, verified health probe (HTTP 200 on port 8080), and clean process state.

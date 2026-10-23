@@ -47,4 +47,4 @@ Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, 
 
 - **Query Matrix:** [assets/research_query_matrix.json](file:///var/www/.agents/skills/research/assets/research_query_matrix.json)
 - **Subagent Contract:** [assets/subagent_prompt_contract.md](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md)
-- **Physical Sensor:** [scripts/research-validate.sh](file:///var/www/.agents/skills/research/scripts/research-validate.sh)
+- **Physical Sensor:** [scripts/research-validate.sh`skills-suite-validate`

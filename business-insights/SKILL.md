@@ -30,7 +30,7 @@ Activate when orchestrating executive sales performance, GMV, Average Order Valu
 | Multi-Service Topology | Connect Directus, Astro, NATS, ERPNext & PostgreSQL | [`references/infra.md#1-multi-service-analytics-topology-in-zerops`](file:///var/www/.agents/skills/business-insights/references/infra.md) |
 | Database Index Optimization | Composite B-Tree indexes on orders & funnel events | [`references/infra.md#2-postgresql-18-analytical-index-optimization`](file:///var/www/.agents/skills/business-insights/references/infra.md) |
 | Production Recipes JSON | Seeder code and SQL index definitions | [`assets/business_insights_production_recipes.json`](file:///var/www/.agents/skills/business-insights/assets/business_insights_production_recipes.json) |
-| Physical Validation Sensor | Attest skill structure, frontmatter, tokens & links | [`scripts/business-insights-validate.sh`](file:///var/www/.agents/skills/business-insights/scripts/business-insights-validate.sh) |
+| Physical Validation Sensor | Attest skill structure, frontmatter, tokens & links | [`scripts/business-insights-validate.sh``skills-suite-validate` |
 
 ## Execution Steps
 1. Verify `DIRECTUS_URL` and `FRAPPE_CLOUD_URL` in Zerops environment variables.
@@ -47,4 +47,4 @@ Activate when orchestrating executive sales performance, GMV, Average Order Valu
 - [`references/usage.md`](file:///var/www/.agents/skills/business-insights/references/usage.md) — 4D matrix, dashboard seeders, Frappe Cloud sync workers, SQL queries, and 5 production patterns.
 - [`references/infra.md`](file:///var/www/.agents/skills/business-insights/references/infra.md) — Multi-service topology, PostgreSQL analytical indexing, and CoHaLo harness.
 - [`assets/business_insights_production_recipes.json`](file:///var/www/.agents/skills/business-insights/assets/business_insights_production_recipes.json) — Production seeder code and SQL indexing recipes.
-- [`scripts/business-insights-validate.sh`](file:///var/www/.agents/skills/business-insights/scripts/business-insights-validate.sh) — Deterministic quality & token validation sensor.
+- [`scripts/business-insights-validate.sh``skills-suite-validate` — Deterministic quality & token validation sensor.

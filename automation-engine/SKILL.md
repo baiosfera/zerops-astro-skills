@@ -30,7 +30,7 @@ Activate when designing, building, or operating asynchronous pipelines, message 
 | Circuit Breaker | Standalone Tri-State Circuit Breaker with exponential backoff | [`assets/circuit_breaker.ts`](file:///var/www/.agents/skills/automation-engine/assets/circuit_breaker.ts) |
 | Cluster & Memory Config | NATS 2.12 clustering and Valkey memory tuning (`noeviction`) | [`references/infra.md#1-infra`](file:///var/www/.agents/skills/automation-engine/references/infra.md) |
 | Production Recipes | Declarative streams, consumers, and worker definitions | [`assets/automation_engine_recipes.json`](file:///var/www/.agents/skills/automation-engine/assets/automation_engine_recipes.json) |
-| Physical Sensor | Deterministic validator checking syntax, words, and schemas | [`scripts/automation-engine-validate.sh`](file:///var/www/.agents/skills/automation-engine/scripts/automation-engine-validate.sh) |
+| Physical Sensor | Deterministic validator checking syntax, words, and schemas | [`scripts/automation-engine-validate.sh``skills-suite-validate` |
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/automation-engine/references/usage.md) — SOTA NATS JetStream, Core RPC, and BullMQ worker implementation guide.
@@ -40,4 +40,4 @@ Activate when designing, building, or operating asynchronous pipelines, message 
 - [`assets/nats_jetstream_client.ts`](file:///var/www/.agents/skills/automation-engine/assets/nats_jetstream_client.ts) — Agnostic connection singleton and publisher.
 - [`assets/bullmq_worker.ts`](file:///var/www/.agents/skills/automation-engine/assets/bullmq_worker.ts) — Production BullMQ worker wrapper.
 - [`assets/automation_engine_recipes.json`](file:///var/www/.agents/skills/automation-engine/assets/automation_engine_recipes.json) — Production stream declarations and recipes.
-- [`scripts/automation-engine-validate.sh`](file:///var/www/.agents/skills/automation-engine/scripts/automation-engine-validate.sh) — Deterministic validation sensor.
+- [`scripts/automation-engine-validate.sh``skills-suite-validate` — Deterministic validation sensor.

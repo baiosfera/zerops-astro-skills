@@ -27,7 +27,7 @@ Provisioning or managing runtimes (Astro, Directus, FastAPI), data engines (Post
 | Manifest Blueprints | Production `import.yaml` and `zerops.yaml` recipes | [`usage.md`](file:///var/www/zerops-astro-skills/zcp/references/usage.md) |
 | Autoscaling & Storage | Dual-RAM buffers, DB profiles, POSIX volumes | [`infra.md`](file:///var/www/zerops-astro-skills/zcp/references/infra.md) |
 | Templates & Recipes | Multi-service templates and JSON index | [`import_template.yaml`](file:///var/www/zerops-astro-skills/zcp/assets/import_template.yaml) / [`zerops_template.yaml`](file:///var/www/zerops-astro-skills/zcp/assets/zerops_template.yaml) |
-| Validation Sensor | Attest skill structure, tokens and links | [`zcp-validate.sh`](file:///var/www/zerops-astro-skills/zcp/scripts/zcp-validate.sh) |
+| Validation Sensor | Attest skill structure, tokens and links | [`zcp-validate.sh``skills-suite-validate` |
 
 ## Output Contract
 Multi-service Incus LXC topology with frugal autoscaling, kernel-level POSIX storage, and green physical sensors.

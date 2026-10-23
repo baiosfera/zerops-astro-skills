@@ -33,8 +33,7 @@ Autonomous AI agent runtime powered by Nous Research Hermes models, featuring na
 ## Quick Reference Commands
 
 - **Validate Installation & Environment**:
-  ```bash
-  bash .agents/skills/hermes-agent/scripts/hermes-validate.sh
+  ```skills-suite-validate
   ```
 - **Start Gateway Daemon (Local / Container)**:
   ```bash
@@ -50,4 +49,4 @@ Autonomous AI agent runtime powered by Nous Research Hermes models, featuring na
 - Production Configuration Template: [`assets/config_production_template.yaml`](file:///var/www/.agents/skills/hermes-agent/assets/config_production_template.yaml)
 - Zerops Service Manifest Recipe: [`assets/zerops_hermes_recipe.yaml`](file:///var/www/.agents/skills/hermes-agent/assets/zerops_hermes_recipe.yaml)
 - Production Tool Handlers Bundle: [`assets/hermes_tools_bundle.py`](file:///var/www/.agents/skills/hermes-agent/assets/hermes_tools_bundle.py)
-- Verification & Health Sensor: [`scripts/hermes-validate.sh`](file:///var/www/.agents/skills/hermes-agent/scripts/hermes-validate.sh)
+- Verification & Health Sensor: [`scripts/hermes-validate.sh``skills-suite-validate`

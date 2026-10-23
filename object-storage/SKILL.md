@@ -31,12 +31,12 @@ Activate when architecting, configuring, provisioning, integrating, or operating
 | Python Integration | `boto3`, `botocore.client.Config(signature_version='s3v4')` | [`references/usage.md#2-python-boto3-integration`](references/usage.md) |
 | Pre-Signed URLs | Expiring GET/PUT signed URLs for secure client downloads | [`references/usage.md#3-pre-signed-urls-generation`](references/usage.md) |
 | Directus / S3 Drivers | Directus 11+ storage driver configuration | [`references/usage.md#4-directus-headless-cms-s3-driver`](references/usage.md) |
-| Physical Validation | Deterministic validator of skill structure and AST | [`scripts/object-storage-validate.sh`](scripts/object-storage-validate.sh) |
+| Physical Validation | Deterministic validator of skill structure and AST | [`scripts/object-storage-validate.sh``skills-suite-validate` |
 
 ## Commands
 ```bash
 # Execute deterministic physical validation sensor
-bash /var/www/.agents/skills/object-storage/scripts/object-storage-validate.sh
+skills-suite-validate
 ```
 
 ## References

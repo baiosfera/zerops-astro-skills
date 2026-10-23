@@ -51,4 +51,4 @@ Activate when architecting, querying, provisioning, or connecting to Qdrant 1.12
 - [`assets/qdrant_production_recipes.json`](file:///var/www/.agents/skills/qdrant/assets/qdrant_production_recipes.json) — Production-ready recipes for collection setup, RRF queries, and payload filters.
 - [`assets/import_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/import_template.yaml) — Clean `import.yaml` template with native elastic autoscaling.
 - [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/zerops_template.yaml) — Application lifecycle `zerops.yaml` template with Qdrant wiring.
-- [`scripts/qdrant-validate.sh`](file:///var/www/.agents/skills/qdrant/scripts/qdrant-validate.sh) — Physical integrity validator for the qdrant skill suite.
+- [`scripts/qdrant-validate.sh``skills-suite-validate` — Physical integrity validator for the qdrant skill suite.

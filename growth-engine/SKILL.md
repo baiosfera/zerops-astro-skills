@@ -32,7 +32,7 @@ Activate when designing conversion funnels, generating high-converting sales cop
 | AI Atomizer Engine | Structured inference via Bifrost | [`assets/copy_atomizer_engine.ts`](file:///var/www/.agents/skills/growth-engine/assets/copy_atomizer_engine.ts) |
 | Omnichannel Templates | Universal Hook-Story-Offer & SB7 | [`assets/omnichannel_copy_templates.md`](file:///var/www/.agents/skills/growth-engine/assets/omnichannel_copy_templates.md) |
 | Production Recipes | Gateway, staging & linter configuration | [`assets/growth_engine_recipes.json`](file:///var/www/.agents/skills/growth-engine/assets/growth_engine_recipes.json) |
-| Physical Sensor | Attest integrity, AST & algorithms | [`scripts/growth-engine-validate.sh`](file:///var/www/.agents/skills/growth-engine/scripts/growth-engine-validate.sh) |
+| Physical Sensor | Attest integrity, AST & algorithms | [`scripts/growth-engine-validate.sh``skills-suite-validate` |
 
 ## Output Contract
 - High-converting, brand-aligned omnichannel copy and mathematically bounded cart recovery.

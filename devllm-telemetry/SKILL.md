@@ -22,7 +22,7 @@ Tracking AI token spend and costs in USD (`llm_telemetry_logs`), monitoring NATS
 - **Matrix & Tracker Wrapper**: [`usage.md`](file:///var/www/zerops-astro-skills/devllm-telemetry/references/usage.md) — Directus Telemetry comparison, LLMOps token wrapper, and health daemon.
 - **Multi-Service Topology**: [`infra.md`](file:///var/www/zerops-astro-skills/devllm-telemetry/references/infra.md) — NATS port 8222 monitoring and storage configuration.
 - **Production Recipes**: [`devllm_telemetry_production_recipes.json`](file:///var/www/zerops-astro-skills/devllm-telemetry/assets/devllm_telemetry_production_recipes.json) — Tracker schemas and poller scripts.
-- **Validation**: [`devllm-telemetry-validate.sh`](file:///var/www/zerops-astro-skills/devllm-telemetry/scripts/devllm-telemetry-validate.sh) — Liveness and metric sensor.
+- **Validation**: [`devllm-telemetry-validate.sh``skills-suite-validate` — Liveness and metric sensor.
 
 ## Output Contract
 Zero-bloat DevOps & LLMOps control plane in Directus 11+ Insights with 60s health monitoring and passing validation sensors.

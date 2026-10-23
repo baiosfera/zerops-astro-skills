@@ -32,7 +32,7 @@ Activate when designing, sending, or automating email flows, transactional email
 | Production Recipes | Dispatcher and reactive NATS listener recipes | [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) |
 | Usage & 4D Matrix | Deliverability guide, Bun SSR streaming & RFC 8058 | [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) |
 | Topology & DNS | Zerops Listmonk setup, DKIM, SPF & SES runbooks | [`references/infra.md`](file:///var/www/.agents/skills/email-marketing/references/infra.md) |
-| Physical Validation | Deterministic integrity sensor | [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) |
+| Physical Validation | Deterministic integrity sensor | [`scripts/email-marketing-validate.sh``skills-suite-validate` |
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/email-marketing/references/usage.md) — Multi-provider matrix, Bun SSR streaming, and RFC 8058.
@@ -43,4 +43,4 @@ Activate when designing, sending, or automating email flows, transactional email
 - [`assets/email_bullmq_worker.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_bullmq_worker.ts) — Throttled BullMQ queue worker on Valkey.
 - [`assets/email_zod_schemas.ts`](file:///var/www/.agents/skills/email-marketing/assets/email_zod_schemas.ts) — Zod email validation schemas.
 - [`assets/email_marketing_production_recipes.json`](file:///var/www/.agents/skills/email-marketing/assets/email_marketing_production_recipes.json) — Production code recipes.
-- [`scripts/email-marketing-validate.sh`](file:///var/www/.agents/skills/email-marketing/scripts/email-marketing-validate.sh) — Deterministic physical validator.
+- [`scripts/email-marketing-validate.sh``skills-suite-validate` — Deterministic physical validator.

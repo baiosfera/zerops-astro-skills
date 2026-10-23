@@ -47,4 +47,4 @@ Activate when architecting, developing, or optimizing search visibility across t
 - [`assets/llms.txt.ts`](file:///var/www/.agents/skills/seo-aeo-geo/assets/llms.txt.ts) — AI crawler knowledge endpoint generator.
 - [`assets/robots.txt.ts`](file:///var/www/.agents/skills/seo-aeo-geo/assets/robots.txt.ts) — Dynamic robots.txt with crawler taxonomies.
 - [`scripts/generate-visual-assets.py`](file:///var/www/.agents/skills/seo-aeo-geo/scripts/generate-visual-assets.py) — Universal agnostic script for favicons, PWA, and OG generation.
-- [`scripts/seo-aeo-geo-validate.sh`](file:///var/www/.agents/skills/seo-aeo-geo/scripts/seo-aeo-geo-validate.sh) — Physical validation sensor.
+- [`scripts/seo-aeo-geo-validate.sh``skills-suite-validate` — Physical validation sensor.

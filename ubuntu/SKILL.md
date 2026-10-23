@@ -43,4 +43,4 @@ Activate whenever authoring, building, or troubleshooting workloads on Ubuntu 24
 - [`references/usage.md`](file:///var/www/.agents/skills/ubuntu/references/usage.md) — Native compilation, glibc 2.39 features, 5 production patterns, and anti-patterns.
 - [`references/infra.md`](file:///var/www/.agents/skills/ubuntu/references/infra.md) — Incus LXC model, Zerops build lifecycle, benchmarks vs Alpine LXC, and CoHaLo process hygiene.
 - [`assets/ubuntu_compilation_recipes.json`](file:///var/www/.agents/skills/ubuntu/assets/ubuntu_compilation_recipes.json) — Compilation flags and package matrices for Ubuntu 24.
-- [`scripts/ubuntu-validate.sh`](file:///var/www/.agents/skills/ubuntu/scripts/ubuntu-validate.sh) — Physical integrity validator for the ubuntu skill suite.
+- [`scripts/ubuntu-validate.sh``skills-suite-validate` — Physical integrity validator for the ubuntu skill suite.

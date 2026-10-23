@@ -30,7 +30,7 @@ Activate when designing, implementing, or operating automated sales pipelines, A
 | Dynamic Battlecards | Universal objection dataset & scripts | [`assets/battlecards_dataset.json`](file:///var/www/.agents/skills/sales-enablement/assets/battlecards_dataset.json) |
 | Implementation Guide | SOTA qualification & RRF query recipes | [`references/usage.md`](file:///var/www/.agents/skills/sales-enablement/references/usage.md) |
 | Topology & Infra | PostgreSQL pgvector DDL & Bifrost ports | [`references/infra.md`](file:///var/www/.agents/skills/sales-enablement/references/infra.md) |
-| Physical Validation | Deterministic integrity sensor | [`scripts/sales-enablement-validate.sh`](file:///var/www/.agents/skills/sales-enablement/scripts/sales-enablement-validate.sh) |
+| Physical Validation | Deterministic integrity sensor | [`scripts/sales-enablement-validate.sh``skills-suite-validate` |
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/sales-enablement/references/usage.md) — Qualification state machines, hybrid scoring math, and battlecard synthesis.
@@ -40,4 +40,4 @@ Activate when designing, implementing, or operating automated sales pipelines, A
 - [`assets/crm_adapter.ts`](file:///var/www/.agents/skills/sales-enablement/assets/crm_adapter.ts) — Decoupled CRM adapter implementation.
 - [`assets/handover_pack.ts`](file:///var/www/.agents/skills/sales-enablement/assets/handover_pack.ts) — Contextual human agent handover pack.
 - [`assets/battlecards_dataset.json`](file:///var/www/.agents/skills/sales-enablement/assets/battlecards_dataset.json) — Universal objection dataset.
-- [`scripts/sales-enablement-validate.sh`](file:///var/www/.agents/skills/sales-enablement/scripts/sales-enablement-validate.sh) — Deterministic physical validator.
+- [`scripts/sales-enablement-validate.sh``skills-suite-validate` — Deterministic physical validator.

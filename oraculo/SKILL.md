@@ -37,7 +37,7 @@ Compila atómicamente la totalidad de Fase 0 bajo el Canon 12-15-9-4 (12 shards 
 - **Especificación de Fases (F1 a F11)**: [`phases.md`](file:///var/www/zerops-astro-skills/oraculo/references/phases.md) — Tropical, Sideral, Védica, BaZi, Human Design y Tikkun.
 - **APIs & MCPs Usage**: [`usage.md`](file:///var/www/zerops-astro-skills/oraculo/references/usage.md) — Endpoints REST, rate limits y token-buckets.
 - **Infraestructura & Sharding**: [`infra.md`](file:///var/www/zerops-astro-skills/oraculo/references/infra.md) — Variables de entorno, storage topology y CoHaLo harness.
-- **Validación Física**: [`oraculo-validate.sh`](file:///var/www/zerops-astro-skills/oraculo/scripts/oraculo-validate.sh) — Verificador físico de integridad de shards (exit code 0).
+- **Validación Física**: [`oraculo-validate.sh``skills-suite-validate` — Verificador físico de integridad de shards (exit code 0).
 
 ## Output Contract
 Data Lakehouse estructurado en `raw/`, 4 artefactos Platinum en `raw/llm/` y sincronización con SSoT.

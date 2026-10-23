@@ -29,7 +29,7 @@ Activate when provisioning, deploying, or orchestrating Listmonk (v6.2.0+) in Ze
 | Zerops Topology & Infra | `import.yaml`, `zerops.yaml`, PG18 & `--passive` scaling | [`references/infra.md`](file:///var/www/.agents/skills/listmonk/references/infra.md) |
 | Typed TypeScript Client | Polymorphic API client with bot token authentication | [`assets/listmonk_client.ts`](file:///var/www/.agents/skills/listmonk/assets/listmonk_client.ts) |
 | Production Recipes | Zerops YAML blueprints and JSON transactional payloads | [`assets/listmonk_production_recipes.json`](file:///var/www/.agents/skills/listmonk/assets/listmonk_production_recipes.json) |
-| Physical Validation Sensor | Attest skill integrity, schema validation & algorithms | [`scripts/listmonk-validate.sh`](file:///var/www/.agents/skills/listmonk/scripts/listmonk-validate.sh) |
+| Physical Validation Sensor | Attest skill integrity, schema validation & algorithms | [`scripts/listmonk-validate.sh``skills-suite-validate` |
 
 ## Execution Steps
 1. Provision PostgreSQL 18 database and Listmonk service container via Zerops `import.yaml`.
