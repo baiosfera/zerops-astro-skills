@@ -38,6 +38,7 @@ Activar para diseñar la arquitectura cromática de una marca, formulando **3 Ec
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json`
 
 ## References
-- `references/usage.md` — Manual de 3 ecosistemas OKLCH, psicología del color, desacople SSoT y validación WCAG/APCA.
-- `assets/schemas/chroma_manifest.schema.json` — Esquema JSON Draft 2020-12.
-- `assets/templates/chroma_manifest_template.json` — Plantilla con 3 ecosistemas cromáticos.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/chroma/references/usage.md) — Manual de 3 ecosistemas OKLCH, psicología del color, desacople SSoT y validación WCAG/APCA.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/chroma/references/infra.md) — Motor matemático OKLCH, inyección Tailwind CSS v4 y persistencia SSoT.
+- [`assets/schemas/chroma_manifest.schema.json`](file:///var/www/zerops-astro-skills/chroma/assets/schemas/chroma_manifest.schema.json) — Esquema JSON Draft 2020-12.
+- [`assets/templates/chroma_manifest_template.json`](file:///var/www/zerops-astro-skills/chroma/assets/templates/chroma_manifest_template.json) — Plantilla con 3 ecosistemas cromáticos.

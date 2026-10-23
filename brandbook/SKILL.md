@@ -42,5 +42,6 @@ Activar para compilar la identidad visual consolidada, generando el manifiesto *
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/brandbook.json` (Paridad retrocompatible)
 
 ## References
-- `references/usage.md` — Especificación W3C DTCG, desacople SSoT, consumo downstream y pipeline de exportación gráfica.
-- `scripts/brandbook_pipeline_runner.py` — Ejecutor Fast-Track CLI con Bifrost Gateway.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/brandbook/references/usage.md) — Especificación W3C DTCG, desacople SSoT, consumo downstream y pipeline de exportación gráfica.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/brandbook/references/infra.md) — Topología de persistencia, integración Bifrost y motor headless de exportación.
+- [`scripts/brandbook_pipeline_runner.py`](file:///var/www/zerops-astro-skills/brandbook/scripts/brandbook_pipeline_runner.py) — Ejecutor Fast-Track CLI con Bifrost Gateway.

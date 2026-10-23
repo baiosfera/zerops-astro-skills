@@ -35,6 +35,7 @@ Activar para diseñar, vectorizar y validar el sistema de Isologos, Monogramas y
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/symbol_manifest.json`
 
 ## References
-- `references/usage.md` — Guía de geometría sagrada, monocromía estricta, desacople SSoT y exportación.
-- `assets/schemas/symbol_manifest.schema.json` — Esquema JSON Draft 2020-12.
-- `assets/templates/symbol_manifest_template.json` — Plantilla del manifiesto vectorial monocromático.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/symbol/references/usage.md) — Guía de geometría sagrada, monocromía estricta, desacople SSoT y exportación.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/symbol/references/infra.md) — Optimización SVG (svgo), seguridad vectorial y pipeline de Favicons.
+- [`assets/schemas/symbol_manifest.schema.json`](file:///var/www/zerops-astro-skills/symbol/assets/schemas/symbol_manifest.schema.json) — Esquema JSON Draft 2020-12.
+- [`assets/templates/symbol_manifest_template.json`](file:///var/www/zerops-astro-skills/symbol/assets/templates/symbol_manifest_template.json) — Plantilla del manifiesto vectorial monocromático.

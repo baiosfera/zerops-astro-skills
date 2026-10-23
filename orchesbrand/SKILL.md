@@ -30,7 +30,8 @@ Activar para ejecutar el pipeline completo de branding o coordinar la generació
 - **5. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/localstorage/DIAG/[MARCA]/`.
 
 ## References
-- `references/pipeline.md` — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.
-- `references/usage.md` — Manual de invocación Antigravity, modo interactivo y control de estado.
-- `assets/schemas/pipeline_state.schema.json` — Esquema del estado de orquestación.
-- `assets/schemas/brandview_state.schema.json` — Esquema unificado inmutable de Brandview (3 variantes F1-F4).
+- [`references/pipeline.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/pipeline.md) — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/usage.md) — Manual de invocación Antigravity, modo interactivo y control de estado.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/infra.md) — Infraestructura de coordinación, persistencia SSoT y conectividad Brandview.
+- [`assets/schemas/pipeline_state.schema.json`](file:///var/www/zerops-astro-skills/orchesbrand/assets/schemas/pipeline_state.schema.json) — Esquema del estado de orquestación.
+- [`assets/schemas/brandview_state.schema.json`](file:///var/www/zerops-astro-skills/orchesbrand/assets/schemas/brandview_state.schema.json) — Esquema unificado inmutable de Brandview.

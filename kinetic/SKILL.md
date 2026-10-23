@@ -31,6 +31,7 @@ Activar para diseñar el sistema de movimiento a 60fps, formulando **3 Opciones 
 - `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/kinetic_manifest.json`
 
 ## References
-- `references/usage.md` — Guía de 3 presets de animación, GSAP context, desacople SSoT y síntesis procedural Web Audio API.
-- `assets/schemas/kinetic_manifest.schema.json` — Esquema JSON Draft 2020-12.
-- `assets/templates/kinetic_manifest_template.json` — Plantilla del manifiesto cinético.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/kinetic/references/usage.md) — Guía de 3 presets de animación, GSAP context, desacople SSoT y síntesis procedural Web Audio API.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/kinetic/references/infra.md) — Infraestructura de motion 60fps, Web Audio API y accesibilidad.
+- [`assets/schemas/kinetic_manifest.schema.json`](file:///var/www/zerops-astro-skills/kinetic/assets/schemas/kinetic_manifest.schema.json) — Esquema JSON Draft 2020-12.
+- [`assets/templates/kinetic_manifest_template.json`](file:///var/www/zerops-astro-skills/kinetic/assets/templates/kinetic_manifest_template.json) — Plantilla del manifiesto cinético.
