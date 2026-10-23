@@ -30,15 +30,14 @@ Activate when authoring, updating, certifying, or auditing Dual-RAG skills acros
 | **Research Ingestion Protocol** | Decoupled archetype mapping | [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md) |
 | **Research Subagent Delegation** | Canonical research contract (12 engines) | [`assets/subagent_meta_prompt_template.md`](file:///var/www/.agents/skills/docu/assets/subagent_meta_prompt_template.md) |
 | **Automated Scaffolding** | Python generator with AST verification | [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py) |
-| **Physical Sensor** | Deterministic validator with live round-trip test | [`scripts/docu-validate.sh`](file:///var/www/.agents/skills/docu/scripts/docu-validate.sh) |
+| **Sensor** | Universal Capability Sensor (Standard v3.3) | `skills-suite-validate` |
 
 ## Commands
 ```bash
-# Execute deterministic physical validation sensor
-bash /var/www/.agents/skills/docu/scripts/docu-validate.sh
+# Execute universal physical validation sensor
+skills-suite-validate
 ```
 
 ## Resources
 - [`references/certification.md`](file:///var/www/.agents/skills/docu/references/certification.md) · [`references/workflow.md`](file:///var/www/.agents/skills/docu/references/workflow.md) · [`references/templates.md`](file:///var/www/.agents/skills/docu/references/templates.md)
 - [`assets/research_ingestion_protocol.md`](file:///var/www/.agents/skills/docu/assets/research_ingestion_protocol.md) · [`assets/subagent_meta_prompt_template.md`](file:///var/www/.agents/skills/docu/assets/subagent_meta_prompt_template.md) · [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py)
-- [`scripts/docu-validate.sh`](file:///var/www/.agents/skills/docu/scripts/docu-validate.sh)
