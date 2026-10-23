@@ -4,22 +4,23 @@ description: "Trigger: cohalo, context engineering, prompt engineering, harness 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "8.4"
+  version: "8.5"
 ---
 
-# `cohalo` — COntext, HArness & LOop Sovereign Architecture (v8.4)
+# `cohalo` — COntext, HArness & LOop Sovereign Architecture (v8.5)
 
 ## Activation Contract
 Activate when architecting, authoring, auditing, or executing agent workflows, affirmative prompt engineering (Positive Guidance), deterministic execution harnesses, or the 6-phase gated state machine under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Token optimization, progressive disclosure, and lossless AST refactoring reside in [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md).
 
 ## Sovereign Invariants & Hard Rules (Positive Guidance)
-- **Rule 1 (Reality Over Checklist Theater)**: All verification relies on physical software assertions (`bun test`, `tsc`, `bash -n`, AST, exit code 0). Replaces checklist theater with deterministic execution sensors.
-- **Rule 2 (Gated Remediation & Subordinated Execution Closure)**: Phase F4 delivers validated plans in `/var/www/artifacts/` and halts for user Go. Physical execution in F5 activates subordinately upon explicit Go, runs compilers and tests, reflects to SSoT, and pushes to git (`git push`).
-- **Rule 3 (ZCP-First & Indivisible SSoT)**: Active development resides in ZCP (`/var/www`). Tested changes reflect indivisibly to Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/`). Offloads roadmaps to `/var/www/artifacts/`.
-- **Rule 4 (Process-Level Safety & Obsessive Harness)**: Process safety and deduplication are enforced by `tool-guard.py` at PreToolUse/PreInvocation. Harnesses enforce bounded limits (`timeout 10s`, `WaitMsBeforeAsync: 10000`), F4 Halt Gate before app writes, and process cleanup via `manage_task`.
-- **Rule 5 (Epistemic Honesty & Absolute Anti-AMN Mandate)**: Anchors code and claims in live primary sources via [`mem_search`](file:///var/www/.agents/skills/cohalo/references/context.md), Context7, and verbatim official documentation in continuous present.
-- **Rule 6 (Continuous Present & Runtime Hygiene)**: Anchors all reasoning to live runtime state (`date -u`). Ensures clean execution hygiene with zero bytecode residue (`sys.dont_write_bytecode=True`). Delegates token optimization and router word budgets strictly to [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md).
-- **Rule 7 (Pure Positive Guidance Mandate)**: Formulate all instructions as deterministic, affirmative, and closed-domain bounds ("Emit strictly", "Compose using"). Guide behavior by explicitly detailing the exact expected action, maintaining a purely positive focus.
+- **Rule 1 (Dual-Domain Invariant — Software vs Prompts)**: Scripts and executable code are governed by CoHaLo Engineering (bounded contexts, physical AST validation `python3 -m py_compile`/`bash -n`, tests `exit code 0`, zero arbitrary token budgets). Prompts and skills are governed by CoHaLo Prompting (affirmative closed-domain bounds, Dual-RAG progressive disclosure, router body <= 480 words / ~550 tokens).
+- **Rule 2 (Reality Over Checklist Theater)**: All verification relies on physical software assertions (`bun test`, `tsc`, `bash -n`, AST, exit code 0). Replaces checklist theater with deterministic execution sensors.
+- **Rule 3 (Gated Remediation & Subordinated Execution Closure)**: Phase F4 delivers validated plans in `/var/www/artifacts/` and halts for user Go. Physical execution in F5 activates subordinately upon explicit Go, runs compilers and tests, reflects to SSoT, and pushes to git (`git push`).
+- **Rule 4 (ZCP-First & Indivisible SSoT)**: Active development resides in ZCP (`/var/www`). Tested changes reflect indivisibly to Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/`). Offloads roadmaps to `/var/www/artifacts/`.
+- **Rule 5 (Process-Level Safety & Obsessive Harness)**: Process safety and deduplication are enforced by `tool-guard.py` at PreToolUse/PreInvocation. Harnesses enforce bounded limits (`timeout 10s`, `WaitMsBeforeAsync: 10000`), F4 Halt Gate before app writes, and process cleanup via `manage_task`.
+- **Rule 6 (Epistemic Honesty & Absolute Anti-AMN Mandate)**: Anchors code and claims in live primary sources via [`mem_search`](file:///var/www/.agents/skills/cohalo/references/context.md), Context7, and verbatim official documentation in continuous present.
+- **Rule 7 (Continuous Present & Runtime Hygiene)**: Anchors all reasoning to live runtime state (`date -u`). Ensures clean execution hygiene with zero bytecode residue (`sys.dont_write_bytecode=True`). Delegates token optimization and router word budgets strictly to [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md).
+- **Rule 8 (Pure Positive Guidance Mandate)**: Formulate all instructions as deterministic, affirmative, and closed-domain bounds ("Emit strictly", "Compose using"). Guide behavior by explicitly detailing the exact expected action, maintaining a purely positive focus. Ingests evaluation standards from [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) and cognitive clarity from [`writing-for-agents`](file:///var/www/.claude/skills/writing-for-agents/SKILL.md).
 
 ## Decision Gates
 
@@ -42,3 +43,5 @@ skills-suite-validate
 - [`references/context.md`](file:///var/www/.agents/skills/cohalo/references/context.md) · [`references/context_engineering_caching.md`](file:///var/www/.agents/skills/cohalo/references/context_engineering_caching.md)
 - [`references/prompt_engineering_foundations.md`](file:///var/www/.agents/skills/cohalo/references/prompt_engineering_foundations.md) · [`references/sota_reasoning_prompting.md`](file:///var/www/.agents/skills/cohalo/references/sota_reasoning_prompting.md)
 - [`references/antipatterns_deprecations.md`](file:///var/www/.agents/skills/cohalo/references/antipatterns_deprecations.md) · [`references/harness.md`](file:///var/www/.agents/skills/cohalo/references/harness.md) · [`references/loops.md`](file:///var/www/.agents/skills/cohalo/references/loops.md)
+- [`writing-skills`](file:///var/www/.claude/skills/writing-skills/SKILL.md) — Anthropic benchmark, evaluation & test harness standards.
+- [`writing-for-agents`](file:///var/www/.claude/skills/writing-for-agents/SKILL.md) — Cognitive clarity and interface seams for AI agents.
