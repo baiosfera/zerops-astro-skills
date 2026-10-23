@@ -4,63 +4,38 @@ description: "Trigger: checkout-funnels, wompi integrity sha256, epayco sha256, 
 license: MIT
 metadata:
   author: "gentleman-programming"
-  version: "3.0"
+  version: "3.1"
 ---
 
-# `checkout-funnels` — Checkout & Conversion Engine (v3.0)
+# `checkout-funnels` — Checkout & Conversion Engine (v3.1)
 
 ## Activation Contract
-Architecting checkout funnels, payment gateways (**Wompi**, **ePayco**, **dLocal Go**, **Stripe**, **Mercado Pago**), signatures, 1-Click upsells, COD OTP verification, shipping carrier SPIs, or Meta CAPI in Zerops.
+Activate when architecting, building, or auditing multi-gateway checkout funnels (Wompi, ePayco, dLocal Go, Stripe, Mercado Pago), 1-Click upsells, COD OTP verification, shipping carrier SPIs, address geocoding, or Meta Conversions API (CAPI) on Zerops.
 
 ## Hard Rules & Positive Guidance
-- **Multi-Gateway Decoupling**: Decouple providers via `IPaymentGatewayProvider` without altering core order schemas.
-- **Cryptographic Verification**: Webhooks MUST be cryptographically verified (SHA-256/HMAC) before mutating orders.
-- **Idempotency Locking**: Webhooks acquire distributed locks in Valkey (`SET lock:tx:<id> 1 NX EX 3600`) to guarantee single execution.
+- **Multi-Gateway Decoupling**: Decouple gateway providers via `IPaymentGatewayProvider` without altering core order schemas.
+- **Cryptographic Verification**: Verify webhook signatures cryptographically (SHA-256 / HMAC) before updating order states.
+- **Idempotency Locking**: Acquire distributed locks in Valkey (`SET lock:tx:<id> 1 NX EX 3600`) to guarantee single-execution idempotency on webhooks.
 - **Pluggable Logistics SPI**: Abstract carrier rates and address validation via `IShippingCarrierProvider` and `IAddressValidator` SPIs.
-- **1-Click Upsell Protocol**: Process post-purchase upsells off-session using tokenized instruments with 3DS step-up handling.
-- **Hardened COD OTP**: Verify secure 6-digit WhatsApp OTPs (`crypto.randomInt`, Valkey rate limits, timing-safe equality).
-- **Dual-Tagging & CAPI**: Emit browser and server `Purchase` events to Meta CAPI v21.0 with shared `event_id` deduplication.
-- **Pluggable Discount Strategy & Session Autofill**: Model referral discounts via Strategy Pattern (SingleUsePerDomain, ContinuousDiscount, StandardRate). Checkouts automatically hydrate fields from authenticated user sessions.
-- **Zero Dedicated Sockets & 53300 Masking**: Checkout and webhook endpoints MUST use stateless `pool.query()` exclusively for reads and single queries; never hold dedicated `pool.connect()` clients across payment gateway HTTP fetches. Database connection exhaustion errors (SQLSTATE `53300`, `remaining connection slots`) MUST be intercepted and returned as user-friendly HTTP 503 retryable responses, never surfacing raw database errors.
-- **Process Hygiene**: Bound CLI commands (`timeout 10s`) and verify state with deterministic physical sensors.
+- **1-Click Upsell Protocol**: Process post-purchase upsells off-session using tokenized payment instruments with 3DS step-up handling.
+- **Hardened COD OTP**: Verify secure 6-digit WhatsApp OTPs using `crypto.randomInt`, Valkey rate limiters, and timing-safe equality checks.
+- **Dual-Tagging & Meta CAPI**: Emit browser and server `Purchase` events to Meta Conversions API v21.0 with shared `event_id` deduplication.
+- **Connection Isolation**: Use stateless `pool.query()` exclusively for reads and single queries in checkout endpoints. Intercept database exhaustion errors (SQLSTATE `53300`) and return user-friendly HTTP 503 retryable responses.
 
 ## Decision Gates
 
-| Objective | Protocol | Reference |
+| Objective | Strategy | Reference |
 |---|---|---|
-| Architecture | 4D comparative matrix | [`usage.md`](file:///var/www/.agents/skills/checkout-funnels/references/usage.md) |
-| Provider SPI | Dynamic gateway resolution | [`payment_provider_interface.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/payment_provider_interface.ts) |
-| Signatures | SHA-256 & HMAC formulas | [`gateways_validators.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/gateways_validators.ts) |
-| 1-Click Upsell | Tokenized re-authorization | [`astro_checkout_actions.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/astro_checkout_actions.ts) |
-| Shipping Rates | Multi-carrier rate shopping | [`shipping_carrier_provider.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/shipping_carrier_provider.ts) |
-| Addresses | International & DANE Divipola | [`address_validator.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/address_validator.ts) |
-| COD OTP | Valkey OTP state machine | [`cod_otp_manager.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/cod_otp_manager.ts) |
-| Cart Recovery | BullMQ abandonment queue | [`abandoned_cart_bullmq_worker.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/abandoned_cart_bullmq_worker.ts) |
-| Topology | Multi-service Zerops infra | [`infra.md`](file:///var/www/.agents/skills/checkout-funnels/references/infra.md) |
-| Validation | Deterministic sensor | [`checkout-funnels-validate.sh`](file:///var/www/.agents/skills/checkout-funnels/scripts/checkout-funnels-validate.sh) |
-
-## Execution Steps
-1. Configure gateway credentials and Valkey strings in Zerops.
-2. Instantiate `IPaymentGatewayProvider` in Astro Actions.
-3. Verify signatures and acquire distributed idempotency locks.
-4. Normalize addresses via `IAddressValidator` and quote carrier rates.
-5. Verify COD orders with 6-digit WhatsApp OTPs via `CodOtpManager`.
-6. Dispatch `Purchase` events to Meta Conversions API v21.0.
-7. Verify contracts via `scripts/checkout-funnels-validate.sh`.
-
-## Output Contract
-- High-converting checkout running on Astro 5 SSR in Zerops.
-- Verified webhooks, COD OTP workflows, passing physical sensors.
+| Architecture Matrix | 4D comparative checkout matrix | [`references/usage.md`](file:///var/www/.agents/skills/checkout-funnels/references/usage.md) |
+| Provider SPI | Dynamic payment gateway resolution | [`assets/payment_provider_interface.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/payment_provider_interface.ts) |
+| Signatures | SHA-256 & HMAC formula library | [`assets/gateways_validators.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/gateways_validators.ts) |
+| 1-Click Upsell | Tokenized re-authorization actions | [`assets/astro_checkout_actions.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/astro_checkout_actions.ts) |
+| Shipping Rates | Multi-carrier rate shopping SPI | [`assets/shipping_carrier_provider.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/shipping_carrier_provider.ts) |
+| Addresses | International & DANE Divipola normalization | [`assets/address_validator.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/address_validator.ts) |
+| COD OTP | Valkey OTP state machine & WhatsApp | [`assets/cod_otp_manager.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/cod_otp_manager.ts) |
+| Cart Recovery | BullMQ abandonment queue workers | [`assets/abandoned_cart_bullmq_worker.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/abandoned_cart_bullmq_worker.ts) |
+| Infrastructure | Multi-service Zerops deployment | [`references/infra.md`](file:///var/www/.agents/skills/checkout-funnels/references/infra.md) |
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/checkout-funnels/references/usage.md) — 4D matrix, gateway strategies, and COD OTP.
-- [`references/infra.md`](file:///var/www/.agents/skills/checkout-funnels/references/infra.md) — Topology, environment variables, and runbooks.
-- [`assets/checkout_funnels_production_recipes.json`](file:///var/www/.agents/skills/checkout-funnels/assets/checkout_funnels_production_recipes.json) — Production recipes.
-- [`assets/payment_provider_interface.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/payment_provider_interface.ts) — Gateway provider SPI.
-- [`assets/gateways_validators.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/gateways_validators.ts) — Signature validator functions.
-- [`assets/abandoned_cart_bullmq_worker.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/abandoned_cart_bullmq_worker.ts) — BullMQ cart recovery.
-- [`assets/astro_checkout_actions.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/astro_checkout_actions.ts) — Astro Actions checkout handler.
-- [`assets/shipping_carrier_provider.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/shipping_carrier_provider.ts) — Shipping carrier SPI.
-- [`assets/address_validator.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/address_validator.ts) — Address validators.
-- [`assets/cod_otp_manager.ts`](file:///var/www/.agents/skills/checkout-funnels/assets/cod_otp_manager.ts) — Hardened COD OTP manager.
-- [`scripts/checkout-funnels-validate.sh`](file:///var/www/.agents/skills/checkout-funnels/scripts/checkout-funnels-validate.sh) — Quality sensor.
+- [`references/usage.md`](file:///var/www/.agents/skills/checkout-funnels/references/usage.md) — Checkout architecture, gateway drivers, signature validation, and CAPI.
+- [`references/infra.md`](file:///var/www/.agents/skills/checkout-funnels/references/infra.md) — Multi-service topology, Valkey idempotency, and carrier logistics.
