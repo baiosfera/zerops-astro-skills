@@ -11,19 +11,23 @@
 
 `planner` es la **habilidad gobernadora soberana** de todo el ecosistema en Zerops. No es un receptor pasivo ni un formato burocrático; es la autoridad directiva que subordina a todas las demás herramientas y skills:
 
-1. **Subordinación Estricta de `grilling` (Grounding Silencioso Previo):**
-   - El grilling ceremonial indiscriminado desgasta al usuario y quema tokens innecesarios de Gemini Flash High intentando averiguar lo que ya está en el código o en los documentos.
-   - **Protocolo Facts-First:** Toda sesión arranca inspeccionando hechos en disco (`view_file`, `run_command`, `grep`) o delegando a un subagente explorador `research`.
-   - Si la respuesta existe en el repositorio, la especificación o el historial, **cero preguntas**. Se procede directamente con la ejecución o propuesta.
+1. **Subordinación Estricta de `grilling` & Mandato de Espera Epistémica F0:**
+   - El grilling ceremonial indiscriminado desgasta al usuario y quema tokens innecesarios intentando averiguar lo que ya está en el código o en los documentos.
+   - **Protocolo Facts-First:** Toda sesión arranca inspeccionando hechos en disco (`view_file`, `run_command`, `grep`) o delegando a subagentes exploradores `research`.
+   - **Mandato de Espera Epistémica:** Al despachar subagentes de `research` (o tareas de investigación asíncronas), el agente debe aguardar la recepción e ingestión de los reportes de los subagentes antes de redactar conclusiones, formular planes o hacer preguntas de grilling. Informá brevemente que la investigación está en vuelo y aguardá su retorno en silencio.
+   - Si la respuesta existe en el repositorio, la especificación o el historial, cero preguntas. Procedé directamente con la propuesta sustentada en hechos.
    - Si existe una bifurcación arquitectónica genuina con tradeoffs irreversibles (ej. elegir entre dos proveedores o modelos incompatibles), se formula **máximo 1 sola pregunta atómica a la vez** con opciones concretas y bien explicadas. Al preguntar, se detiene la ejecución inmediatamente y se espera respuesta.
 
-2. **Invariante de Agrupación en Linear & Criterios Explícitos (Zero BAI Huérfanos):**
+2. **Invariante de Agrupación en Linear, Aislamiento de Borradores & Anti-Monolítico:**
+   - **Aislamiento de Borradores en F0–F3:** Durante las fases de investigación, clarificación y alineación (F0 a F3), los planes preliminares residen estrictamente como borradores (`draft_<slug>.md`) en `/var/www/artifacts/plans/` o en memoria Engram (`mem_save`).
+   - **Reserva de Ticketaje en F4:** La creación de proyectos o tareas `BAI-*` en Linear se reserva exclusivamente para F4 (Plan & Approval Gate), una vez que el Plan Maestro ha sido completado y el usuario ha otorgado un 'Go' explícito. Durante F0–F3, los descubrimientos se registran en Engram (`mem_save`).
+   - **Desglose Modular Anti-Monolítico:** Descomponer stacks heterogéneos e iniciativas multi-servicio en issues `BAI-*` atómicos y comprobables por cada subsistema, framework o frontera de runtime (ej. Bifrost Gateway, pool FreeLLMAPI, NATS JetStream, Python Worker), evitando tickets gigantes indivisibles.
    - **Regla Inquebrantable:** Ningún issue `BAI-*` puede existir suelto o huérfano. Todo ticket de Linear debe pertenecer a un Plan / Proyecto padre.
    - **Contrato de Creación de Issues:** Cada issue nace obligatoriamente con:
      1. **Alcance explícito:** qué archivos y componentes se modifican, y qué queda expresamente fuera de alcance.
      2. **Criterios de aceptación verificables:** lista numerada de condiciones comprobables con comandos y resultados esperados.
      3. **Grounding verificado:** afirmaciones sobre el entorno o APIs web deben verificarse primero con `research` antes de ingresar al plan.
-   - **Protocolo de Comentarios en Linear (Anti-Chat Amnesia):** Todo hallazgo técnico, tradeoff o decisión de arquitectura se registra inmediatamente como comentario en el issue (`linear-cli comment <ID> "..."`) antes de redactar la respuesta al usuario en chat. Esto garantiza la persistencia SSoT incluso tras compactions o muertes de sesión.
+   - **Protocolo de Comentarios en Linear (Anti-Chat Amnesia):** En F4–F5, todo hallazgo técnico, tradeoff o decisión de arquitectura se registra inmediatamente como comentario en el issue (`linear-cli comment <ID> "..."`) antes de redactar la respuesta al usuario en chat. Esto garantiza la persistencia SSoT incluso tras compactions o muertes de sesión.
    - **Flujo de Proyecto:**
      ```bash
      # 1. Fijar o crear el Proyecto / Plan maestro

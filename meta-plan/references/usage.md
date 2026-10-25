@@ -29,17 +29,24 @@ flowchart TD
 
 ---
 
-## 2. Epistemic Tracking Protocol
+## 2. Epistemic Tracking & Draft Isolation Protocol
 
 Chat context is ephemeral and prone to compaction. All architectural decisions, gotchas, and milestone outcomes must be persisted synchronously:
 
-1. **Linear Comment (`linear-cli comment`)**:
+1. **Subagent Research Wait Contract (F0 Mandate)**:
+   - When dispatching `research` subagents or background epistemic queries, await the complete return and ingestion of their reports before drawing conclusions, drafting Master Plans, or opening grilling sessions.
+2. **Draft Plan Isolation (F0–F3)**:
+   - During discovery, grilling, and design (F0 to F3), plans reside strictly as drafts in `draft_<slug>.md` or in Engram (`mem_save`).
+   - Reserve Linear project and issue creation strictly for F4 (Plan & Approval Gate), after the Master Plan is complete and the user gives an explicit 'Go'.
+3. **Anti-Monolithic Modular Decomposition**:
+   - Decompose multi-service or multi-framework architectures into granular BAI issues per runtime, service, and boundary (e.g. separate issues for Bifrost Gateway, FreeLLMAPI pool, NATS JetStream, and Python Worker) rather than single monolithic tickets.
+4. **Linear Comment (`linear-cli comment`) in F4–F5**:
    - Record what was discovered, why an approach was chosen, and which files were modified.
    - Run before replying in chat whenever an architectural crossroad is resolved.
-2. **Engram Memory (`mem_save`)**:
+5. **Engram Memory (`mem_save`)**:
    - Record durable discoveries, gotchas, and patterns for cross-session longevity.
    - Self-check: *"Did I make an architectural decision or uncover a non-obvious pattern?"* If yes, call `mem_save` immediately.
-3. **Delivery Guarantee**:
+6. **Delivery Guarantee**:
    - Saving to memory or Linear is bookkeeping; always synthesize the user-facing answer clearly in the final turn message.
 
 ---

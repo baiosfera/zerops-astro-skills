@@ -4,22 +4,20 @@ description: "Trigger: meta-plan, planner, plan, master-plan, planificar, crear 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.0"
+  version: "1.1"
 ---
 
-# `meta-plan` — Master Strategic Planning & Epistemic Tracking Orchestrator (v1.0)
+# `meta-plan` — Master Strategic Planning & Epistemic Tracking Orchestrator (v1.1)
 
 ## Activation Contract
-Activate when structuring multi-step initiatives, architectural refactors, multi-service features, or triaging systemic defects across the Zerops ecosystem. Governs EPICS, TASK DECOMPOSITION, LINEAR SYNCHRONIZATION, AND EPISTEMIC RECALL.
+Activate when structuring multi-step initiatives, architectural refactors, multi-service features, or triaging systemic defects across Zerops. Governs EPICS, MODULAR TASK DECOMPOSITION, LINEAR SYNCHRONIZATION, AND EPISTEMIC RECALL.
 
 ## Hard Rules & Positive Guidance
-- **Proportional Activation Threshold**: Apply the strict dual-gate rule:
-  1. *Direct Domain Execution (Zero-Friction)*: Single-runtime tasks or standalone CLI tools (`.bin`) bypass `meta-plan` and execute directly with domain skills (`astro-web`, `postgresql`, `bun`, `codecraft`).
-  2. *Meta-Plan Activation (Mandatory)*: Multi-service initiatives ($\ge 2$ runtimes), foundational architectural changes, or complex tasks of $\ge 3$ steps require `meta-plan` and Linear issue tracking.
-- **Dual Planning & Clean Lifecycle**: Author Master Plan in `/var/www/artifacts/plans/<slug>_v1.md` (Drive SSoT). On epic completion (Done), archive to `archive/`, purge residual `.json` state (`linear_active_project.json`) leaving `/artifacts/` clean; `/artifacts/plans/` strictly holds active plans.
-- **Epistemic Persistence Before Delivery**: Persist technical discoveries and decisions in Linear (`linear-cli comment`) and Engram (`mem_save`) before replying. Never lose architecture findings in chat context.
-- **Physical Attestation on Transition**: Update Linear issue status with verified exit-0 physical evidence (`linear-cli update-status <id> Done --evidence "<proof>"`).
-- **Subordinate Execution Without Drifts**: Execute plans sequentially through `writing-plans` and `executing-plans`. Validate each step with physical tests before proceeding.
+- **Epistemic Subagent Wait (F0 Mandate)**: Await all research subagent reports before jumping to conclusions, drafting master plans, or conducting grilling.
+- **Proportional Activation Threshold**: Single-runtime tasks bypass meta-plan and execute directly with domain skills (`astro-web`, `postgresql`, `bun`, `codecraft`). Multi-service initiatives ($\ge 2$ runtimes), architectural changes, or complex tasks of $\ge 3$ steps activate `meta-plan`.
+- **Draft Isolation & F4 Linear Gate**: During F0–F3, work resides in `draft_<slug>.md` and Engram (`mem_save`). Creating Linear projects or BAIs is strictly prohibited in F0–F3; Linear sync activates strictly in F4 upon explicit 'Go' to the Master Plan in `/var/www/artifacts/plans/<slug>_v1.md`.
+- **Anti-Monolithic BAI Invariant**: Decompose architectures into granular BAI issues per runtime and boundary. Prohibited to collapse heterogeneous stacks into a single monolithic ticket.
+- **Epistemic Persistence & Clean Lifecycle**: Persist discoveries in Engram (F0–F5) and Linear comments (F4–F5). On completion, attest with physical evidence (exit 0), archive to `archive/<slug>.executed.md`, and purge operational `.json` states leaving `/artifacts/` clean.
 
 ## Active Sub-Skills Dispatch Table
 
@@ -28,7 +26,7 @@ Activate when structuring multi-step initiatives, architectural refactors, multi
 | **State Machine** | `cohalo` | [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md) | Fractal CoHaLo execution flow (F0 to F5) |
 | **Linear Engine** | `planner` | [`planner`](file:///var/www/.agents/skills/planner/SKILL.md) | Linear issue management, acceptance criteria, scope control |
 | **Plan Design** | `writing-plans` | [`writing-plans`](file:///var/www/.agents/skills/writing-plans/SKILL.md) | Granular step-by-step task breakdown |
-| **Implementation** | `executing-plans` | [`executing-plans`](file:///var/www/.agents/skills/executing-plans/SKILL.md) | Subordinate step execution without scope creep |
+| **Execution** | `executing-plans` | [`executing-plans`](file:///var/www/.agents/skills/executing-plans/SKILL.md) | Subordinate step execution without scope creep |
 | **Root Resolution** | `systemic-issue-triage` | [`systemic-issue-triage`](file:///var/www/.agents/skills/systemic-issue-triage/SKILL.md) | Audit systemic clusters and resolve at the root |
 
 ## Meta-Suites Dispatch Routing
@@ -41,18 +39,6 @@ Activate when structuring multi-step initiatives, architectural refactors, multi
 | GitOps, Versioning & Deployment Pipelines | `meta-gitops` | CI/CD workflows, zerops.yaml, releases |
 | Multi-Tier Epistemic Research & Benchmarks | `meta-research` | Compound research pipeline (Exa, Context7, Jina) |
 | Dedicated Application Software | Domain Skills | `astro-web`, `postgresql`, `bun`, `codecraft` |
-
-## Commands
-```bash
-# View active issue details
-LINEAR_SERVICE="zerops-astro-skills" linear-cli issue <ID>
-
-# Add progress comment or architectural decision
-LINEAR_SERVICE="zerops-astro-skills" linear-cli comment <ID> "<note>"
-
-# Close issue with mandatory physical evidence
-LINEAR_SERVICE="zerops-astro-skills" linear-cli update-status <ID> Done --evidence "<proof>"
-```
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/meta-plan/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/meta-plan/references/infra.md)
