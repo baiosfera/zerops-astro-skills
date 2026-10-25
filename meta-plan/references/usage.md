@@ -48,6 +48,17 @@ Chat context is ephemeral and prone to compaction. All architectural decisions, 
    - Self-check: *"Did I make an architectural decision or uncover a non-obvious pattern?"* If yes, call `mem_save` immediately.
 6. **Delivery Guarantee**:
    - Saving to memory or Linear is bookkeeping; always synthesize the user-facing answer clearly in the final turn message.
+7. **Immediate SSoT & Plan Mutation Invariant (Anti-Cháchara)**:
+   - When the user points out a missing requirement, corrects an approach, or sparks an architectural discovery at any phase:
+     1. Zero performative apologies or empty conversational affirmations in chat.
+     2. Mutate the active artifact immediately:
+        - In F0–F3: update the draft in `draft_<slug>.md`.
+        - In F4–F5: edit `/var/www/artifacts/plans/<slug>_v1.md` and synchronize Linear (`linear-cli create` for newly identified BAIs, `linear-cli update-status`, or `linear-cli comment`).
+     3. Persist the durable discovery in Engram (`mem_save`).
+     4. Report back concisely citing the exact modified artifact lines and Linear issues.
+8. **Default F1 Grilling Contract for Meta-Plan**:
+   - `meta-plan` activates specifically for multi-service or complex ($\ge 3$-step) initiatives.
+   - F1 (Clarification Gate / Grilling) is active BY DEFAULT: once epistemic inflow (F0) concludes, if there are product decisions, scope boundaries, or architectural trade-offs that local code alone cannot settle, the agent initiates grilling (strictly 1 focused question at a time) before moving to F4. The user does not need to manually solicit grilling for complex initiatives.
 
 ---
 
