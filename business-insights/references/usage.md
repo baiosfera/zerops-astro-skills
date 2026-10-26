@@ -19,7 +19,6 @@
 ## 2. Sub-Skills Inventory & Direct File Pointers
 
 * **Financial Metrics & P&L:** [`erpnext`](file:///var/www/.agents/skills/erpnext/SKILL.md) ([usage](file:///var/www/.agents/skills/erpnext/references/usage.md), [infra](file:///var/www/.agents/skills/erpnext/references/infra.md)).
-* **Visual Dashboards in Directus Insights:** [`directus`](file:///var/www/.agents/skills/directus/SKILL.md) ([usage](file:///var/www/.agents/skills/directus/references/usage.md), [infra](file:///var/www/.agents/skills/directus/references/infra.md)).
 
 ---
 

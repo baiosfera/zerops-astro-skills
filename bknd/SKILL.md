@@ -27,7 +27,6 @@ Activate when designing, architecting, building, or orchestrating backend micros
 |---|---|---|
 | **LXC Platform** | `zcp` ([`SKILL.md`](file:///var/www/.agents/skills/zcp/SKILL.md)) | Platform lifecycle, env vars, scale & logs |
 | **Persistent Storage** | `local-storage` ([`SKILL.md`](file:///var/www/.agents/skills/local-storage/SKILL.md)) | POSIX persistent disk volumes (`run.volume`) |
-| **Relational BaaS** | `directus` ([`SKILL.md`](file:///var/www/.agents/skills/directus/SKILL.md)) | CRM, PIM, Collections & REST/GraphQL BaaS |
 | **RPC & Event Broker** | `nats` ([`SKILL.md`](file:///var/www/.agents/skills/nats/SKILL.md)) | JetStream events & Request-Reply RPC (<0.3ms) |
 | **Database & Vector** | `postgresql` ([`SKILL.md`](file:///var/www/.agents/skills/postgresql/SKILL.md)) | PostgreSQL 18 with `pgvector` HNSW |
 | **Cache & Queues** | `valkey` ([`SKILL.md`](file:///var/www/.agents/skills/valkey/SKILL.md)) | Valkey 7.2, BullMQ queues & concurrency locks |

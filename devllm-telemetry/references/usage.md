@@ -18,7 +18,6 @@
 
 ## 2. Sub-Skills Inventory & Direct File Pointers
 
-* **Directus Collections & Panels:** [`directus`](file:///var/www/.agents/skills/directus/SKILL.md) ([usage](file:///var/www/.agents/skills/directus/references/usage.md), [infra](file:///var/www/.agents/skills/directus/references/infra.md)).
 * **NATS Server 2.12 Metrics:** [`nats`](file:///var/www/.agents/skills/nats/SKILL.md) ([usage](file:///var/www/.agents/skills/nats/references/usage.md), [infra](file:///var/www/.agents/skills/nats/references/infra.md)).
 * **Valkey & BullMQ Monitoring:** [`valkey`](file:///var/www/.agents/skills/valkey/SKILL.md) ([usage](file:///var/www/.agents/skills/valkey/references/usage.md), [infra](file:///var/www/.agents/skills/valkey/references/infra.md)).
 * **Backup Verification:** [`postgresql`](file:///var/www/.agents/skills/postgresql/SKILL.md) ([usage](file:///var/www/.agents/skills/postgresql/references/usage.md), [infra](file:///var/www/.agents/skills/postgresql/references/infra.md)).

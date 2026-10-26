@@ -19,7 +19,6 @@
 
 | Sub-Skill | Role in Backend Ecosystem | Direct SSoT Pointer |
 |---|---|---|
-| **`directus`** | Headless CMS, CRM, auto-generated REST/GraphQL API, user permissions | [`directus`](file:///var/www/.agents/skills/directus/SKILL.md) |
 | **`nats`** | NATS Server 2.12 Request-Reply RPC (<0.3ms P99), JetStream, :8222/varz | [`nats`](file:///var/www/.agents/skills/nats/SKILL.md) |
 | **`fastapi`** | High-performance Python microservices, pgvector HNSW search, ML inference | [`fastapi`](file:///var/www/.agents/skills/fastapi/SKILL.md) |
 | **`erpnext`** | Frappe Cloud REST API ($0 SaaS tier, legal DIAN billing & inventory sync) | [`erpnext`](file:///var/www/.agents/skills/erpnext/SKILL.md) |
