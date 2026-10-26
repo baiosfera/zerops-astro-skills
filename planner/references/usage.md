@@ -11,25 +11,14 @@
 
 `planner` es la **habilidad gobernadora soberana** de todo el ecosistema en Zerops. No es un receptor pasivo ni un formato burocrático; es la autoridad directiva que subordina a todas las demás herramientas y skills:
 
-1. **Subordinación Estricta de `grilling` & Mandato de Espera Epistémica F0:**
-   - El grilling ceremonial indiscriminado desgasta al usuario y quema tokens innecesarios intentando averiguar lo que ya está en el código o en los documentos.
-   - **Protocolo Facts-First:** Toda sesión arranca inspeccionando hechos en disco (`view_file`, `run_command`, `grep`) o delegando a subagentes exploradores `research`.
-   - **Mandato de Espera Epistémica:** Al despachar subagentes de `research` (o tareas de investigación asíncronas), el agente debe aguardar la recepción e ingestión de los reportes de los subagentes antes de redactar conclusiones, formular planes o hacer preguntas de grilling. Informá brevemente que la investigación está en vuelo y aguardá su retorno en silencio.
-   - Si la respuesta existe en el repositorio, la especificación o el historial, cero preguntas. Procedé directamente con la propuesta sustentada en hechos.
+1. **Subordinación Estricta de `grilling` (Grounding Silencioso Previo):**
+   - El grilling ceremonial indiscriminado desgasta al usuario y quema tokens innecesarios de Gemini Flash High intentando averiguar lo que ya está en el código o en los documentos.
+   - **Protocolo Facts-First:** Toda sesión arranca inspeccionando hechos en disco (`view_file`, `run_command`, `grep`) o delegando a un subagente explorador `research`.
+   - Si la respuesta existe en el repositorio, la especificación o el historial, **cero preguntas**. Se procede directamente con la ejecución o propuesta.
    - Si existe una bifurcación arquitectónica genuina con tradeoffs irreversibles (ej. elegir entre dos proveedores o modelos incompatibles), se formula **máximo 1 sola pregunta atómica a la vez** con opciones concretas y bien explicadas. Al preguntar, se detiene la ejecución inmediatamente y se espera respuesta.
-   - **Grilling por Defecto en Iniciativas Complejas (F1):** En proyectos de gran envergadura ($\ge 3$ pasos o multi-servicio bajo `meta-plan`), una vez concluido el inflow de hechos (F0), el grilling sobre requerimientos de negocio, prioridades y trade-offs se activa por defecto antes de generar el plan maestro. No requiere que el usuario lo pida manualmente.
 
-2. **Invariante de Agrupación en Linear, Aislamiento de Borradores & Anti-Monolítico:**
-   - **Aislamiento de Borradores en F0–F3:** Durante las fases de investigación, clarificación y alineación (F0 a F3), los planes preliminares residen estrictamente como borradores (`draft_<slug>.md`) en `/var/www/artifacts/plans/` o en memoria Engram (`mem_save`).
-   - **Reserva de Ticketaje en F4:** La creación de proyectos o tareas `BAI-*` en Linear se reserva exclusivamente para F4 (Plan & Approval Gate), una vez que el Plan Maestro ha sido completado y el usuario ha otorgado un 'Go' explícito. Durante F0–F3, los descubrimientos se registran en Engram (`mem_save`).
-   - **Invariante de Mutación Inmediata de SSoT (Anti-Cháchara):** Si el usuario corrige, complementa requerimientos o hace descubrir omisiones en cualquier fase, el agente debe abstenerse de disculpas vacías en chat. La corrección se inyecta inmediatamente en el borrador físico `draft_<slug>.md` (en F0–F3) o en el Plan Maestro `/var/www/artifacts/plans/<slug>_v1.md` y en los tickets de Linear (en F4–F5), persistiendo la lección en Engram (`mem_save`). El chat solo confirma qué cambió en el archivo físico y en Linear.
-   - **Desglose Modular Anti-Monolítico:** Descomponer stacks heterogéneos e iniciativas multi-servicio en issues `BAI-*` atómicos y comprobables por cada subsistema, framework o frontera de runtime (ej. Bifrost Gateway, pool FreeLLMAPI, NATS JetStream, Python Worker), evitando tickets gigantes indivisibles.
+2. **Invariante de Agrupación en Linear (Zero BAI Huérfanos):**
    - **Regla Inquebrantable:** Ningún issue `BAI-*` puede existir suelto o huérfano. Todo ticket de Linear debe pertenecer a un Plan / Proyecto padre.
-   - **Contrato de Creación de Issues:** Cada issue nace obligatoriamente con:
-     1. **Alcance explícito:** qué archivos y componentes se modifican, y qué queda expresamente fuera de alcance.
-     2. **Criterios de aceptación verificables:** lista numerada de condiciones comprobables con comandos y resultados esperados.
-     3. **Grounding verificado:** afirmaciones sobre el entorno o APIs web deben verificarse primero con `research` antes de ingresar al plan.
-   - **Protocolo de Comentarios en Linear (Anti-Chat Amnesia):** En F4–F5, todo hallazgo técnico, tradeoff o decisión de arquitectura se registra inmediatamente como comentario en el issue (`linear-cli comment <ID> "..."`) antes de redactar la respuesta al usuario en chat. Esto garantiza la persistencia SSoT incluso tras compactions o muertes de sesión.
    - **Flujo de Proyecto:**
      ```bash
      # 1. Fijar o crear el Proyecto / Plan maestro
@@ -49,16 +38,15 @@
    - El worker recibe el alcance específico, realiza las modificaciones, corre las comprobaciones locales y devuelve únicamente un reporte sintético con el diff y el resultado exit code 0.
    - El orquestador recibe el recibo, realiza la comprobación final de alto nivel y continúa, ahorrando decenas de miles de tokens de la ventana de contexto.
 
-4. **Compuerta de Sensores Físicos & Pruebas de Comportamiento (Anti-Checklist Theater):**
+4. **Compuerta de Sensores Físicos Rápidos y Baratos (Anti-Checklist Theater):**
    - Quedan erradicados los scripts sintéticos y validadores ceremoniales artificiales que bloquean o fallan con falsos positivos.
-   - **Requisito de Comportamiento en Done:** Prohibido marcar `Done` basándose únicamente en validadores genéricos o meros lintings. El arnés requiere evidencia física de pruebas que ejerciten el comportamiento del cambio (`bun test`, `pytest`, o sensor que verifique el contrato modificado exit code 0).
    - La verdad reside en tres sensores físicos rápidos, baratos y deterministas:
-     1. **Sensor de Sintaxis / Compilación:** `bun run build`, `python3 -m py_compile`, `node --check` o `bash -n` (exit code 0).
-     2. **Sensor de Comportamiento:** `bun test`, `pytest` o tests unitarios dedicados del arnés (`tool-guard.py --test`) (exit code 0).
-     3. **Sensor Funcional / Grep de Dominio:** comprobación viva mediante curl (`HTTP 200 OK`) o escaneo grep para verificar que no existan regresiones.
+     1. **Sensor de Sintaxis / Compilación:** `bun run build`, `node --check` o `tsc --noEmit` (exit code 0).
+     2. **Sensor de Comportamiento:** `bun test` o `pytest` (exit code 0).
+     3. **Sensor Funcional / Grep de Dominio:** comprobación viva mediante curl (`HTTP 200 OK`) o escaneo grep para verificar que no existan regresiones (ej. anchors indebidos, rutas hardcodeadas o auto-scrolls erróneos).
    - Solo cuando los sensores devuelven exit code 0, se procede a marcar la tarea como resuelta en Linear:
      ```bash
-     linear-cli update-status <ID> "Done" --evidence "45 tests unitarios pasan exit code 0 (tool-guard.py --test) y py_compile exit 0"
+     linear-cli update-status <ID> "Done" --evidence "bun test exit 0 (75 tests passing)"
      ```
 
 5. **Arquitectura Lego Desacoplada & Upstream Inmutable:**

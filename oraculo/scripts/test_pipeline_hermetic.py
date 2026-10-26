@@ -130,8 +130,17 @@ def test_sharder_engine_hermetic():
         assert (feeds_dir / "feed_occidental_tropical.md").exists()
         assert (feeds_dir / "feed_bazi_cuatro_pilares.md").exists()
 
-        # Verify Bronze shards and Gold feeds
-        print("✓ test_sharder_engine_hermetic passed (12 shards, 9 feeds)")
+        # Verify Platinum tier synthesis
+        from pipeline.synthesis import SynthesisEngine
+        synth = SynthesisEngine(temp_dir)
+        client_p = extraction_output.get("client_payload") or extraction_output.get("client_data", {})
+        s_res = synth.synthesize_all(client_p)
+        llm_dir = Path(temp_dir) / "raw" / "llm"
+        assert (llm_dir / "coach_technical_sheet.md").exists()
+        assert (llm_dir / "fase0_author_psychology.md").exists()
+        assert Path(s_res["astrobranding_brief"]).exists()
+        assert Path(s_res["brandbook_json"]).exists()
+        print("✓ test_sharder_engine_hermetic and synthesis passed")
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 

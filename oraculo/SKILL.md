@@ -4,40 +4,65 @@ description: "Trigger: oraculo, fase 0, fase0, carta natal, astrologia. Ejecuta 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "7.3"
+  version: "7.2" # pipeline engine version: "7.2"
 ---
 
-# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v7.3)
+# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v7.2)
 
 ## Activation Contract
-Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y compilación de Fase 0 (Data Lakehouse).
+Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y puente semiótico a `orchesbrand`.
 
-### Fast-Path Inmediato para Fase 0
-Ante solicitudes de "fase 0", "fase0" o "carta natal": la ausencia de `raw/` es normal. Ejecutar de inmediato:
+### Fast-Path Inmediato para Fase 0:
+Ante cualquier solicitud de "fase 0", "fase0", "carta natal": la ausencia de `raw/` es normal. Ejecutar de inmediato:
+`python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py <ruta>`
+o mediante el wrapper directo:
+`bash /var/www/.agents/skills/oraculo/scripts/fase0.sh <ruta>`
+Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards PostgreSQL, 9 feeds enciclopédicos Gold, y en Capa Platino los 4 artefactos en `raw/llm/`).
+
+## Hard Rules (CoHaLo Positive Guidance)
+- **Regla 1 (Arquitectura Federada):** Cada sub-skill astrológica mantiene su extractor canónico y referencias oficiales. Oráculo actúa como conductor asíncrono y sintetizador.
+- **Regla 2 (Motor Matemático):** Python extrae cómputos exactos y literatura clásica verbatim. Cero textos inventados en el motor.
+- **Regla 3 (Virtual Data Lakehouse Decoupled Canon 12-15-9-4):**
+  - **Bronze**: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
+  - **Silver**: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json` con punteros RFC 6901.
+  - **Gold (`-c` / `--compile`)**: Universal dynamic cache crawler ingesta 100% de `raw/json/cache/` sin hardcoding, reconcilia multi-motor (Tropical Placidus vs Tropical Campanus vs Sideral Fagan-Bradley vs Védico Lahiri D1-D60 + BaZi True Solar Time), genera matriz de discrepancias y 9 feeds enciclopédicos con 100% de textos verbatim.
+  - **Runner Desacoplado (`brandbook_pipeline_runner.py`)**: Síntesis de artefactos canónicos directamente en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (espejado a localstorage para `zcp-sync`): `coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md` y `brandbook_[marca].json`.
+  - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
+- **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
+- **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
+- **Regla 6 (Indivisibilidad SSoT):** Replicación exacta en `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/oraculo/`.
+
+## Decision Gates
+
+| Requerimiento | Acción Determinista | Referencia |
+|---|---|---|
+| **Fase 0 (Data Lake & Dossier)** | Ejecutar `omni_engine.py --file <ruta>` | [`references/omni_engine.md`](file:///var/www/.agents/skills/oraculo/references/omni_engine.md) |
+| **F1 (Occidental Tropical)** | Placidus / Whole Sign desde Shard 01 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
+| **F2 (Occidental Sideral)** | Fagan-Campanus desde Shard 02 (Mundoscopio & Cruz de Malta) | [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md) |
+| **F3 (Védica Jyotish)** | Lahiri Whole Sign, D10 & Shadbala desde Shard 03 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
+| **F4 a F6 (Ontología)** | BaZi, Human Design y Tikkun desde Shards 04, 05 y 06 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
+| **F7 a F9 (Estrategia)** | Vocación, Timing y Mentoría desde Shards 07 a 10 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
+| **Sub-Oráculos (`diag-*`)** | Consumir variantes de `VirtualDataLake` o `manifest.json` | [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md) |
+| **Validación Física** | Ejecutar validador físico (`exit code 0`) | [`scripts/oraculo-validate.sh`](file:///var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh) |
+
+## Commands
+
 ```bash
-python3 /var/www/zerops-astro-skills/oraculo/scripts/omni_engine.py <ruta_consultante>
-# o mediante el wrapper directo:
-bash /var/www/zerops-astro-skills/oraculo/scripts/fase0.sh <ruta_consultante>
+# Extracción federada y generación de Fase 0 y Data Lake (Fast-Path)
+python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py --file /ruta/a/consultante.txt
+
+# Wrapper directo en un solo paso
+bash /var/www/.agents/skills/oraculo/scripts/fase0.sh /ruta/a/consultante.txt
+
+# Validación física de integridad
+bash /var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh
 ```
-Compila atómicamente la totalidad de Fase 0 bajo el Canon 12-15-9-4 (12 shards Bronze, 15 relacionales Silver, 9 feeds Gold y 4 artefactos Platinum).
 
-## Core Directives & Canon 12-15-9-4
-- **Arquitectura Federada**: Cada sub-skill astrológica mantiene su extractor y referencias oficiales; Oráculo actúa como conductor asíncrono y sintetizador.
-- **Motor Matemático Invariable**: Extracción de cómputos exactos y literatura clásica verbatim. Cero textos inventados en el motor.
-- **Canon Virtual Data Lakehouse**:
-  - *Bronze*: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
-  - *Silver*: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json`.
-  - *Gold*: Universal dynamic cache crawler ingesta `raw/json/cache/`, reconcilia Tropical Placidus, Tropical Campanus, Sideral Fagan-Bradley, Védico Lahiri D1-D60 y BaZi True Solar Time.
-  - *Platinum*: Síntesis de artefactos en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (`coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md`, `brandbook_[marca].json`).
-- **Zero-Waste Single-Pass**: Fase 0 extrae el 100% en un único pase concurrente. Prohibido re-consumir APIs externas de pago post-Fase 0; las fases posteriores leen exclusivamente de disco.
-
-## Decision Gates & References
-- **Fase 0 & Data Lake**: [`omni_engine.md`](file:///var/www/zerops-astro-skills/oraculo/references/omni_engine.md) — Extracción federada, crawler de caché y síntesis.
-- **Domificaciones & Ayanamsas**: [`domifications_matrix.md`](file:///var/www/zerops-astro-skills/oraculo/references/domifications_matrix.md) — Placidus, Campanus, Whole Sign y Fagan-Bradley.
-- **Especificación de Fases (F1 a F11)**: [`phases.md`](file:///var/www/zerops-astro-skills/oraculo/references/phases.md) — Tropical, Sideral, Védica, BaZi, Human Design y Tikkun.
-- **APIs & MCPs Usage**: [`usage.md`](file:///var/www/zerops-astro-skills/oraculo/references/usage.md) — Endpoints REST, rate limits y token-buckets.
-- **Infraestructura & Sharding**: [`infra.md`](file:///var/www/zerops-astro-skills/oraculo/references/infra.md) — Variables de entorno, storage topology y CoHaLo harness.
-- **Validación Física**: [`oraculo-validate.sh``skills-suite-validate` — Verificador físico de integridad de shards (exit code 0).
-
-## Output Contract
-Data Lakehouse estructurado en `raw/`, 4 artefactos Platinum en `raw/llm/` y sincronización con SSoT.
+## Resources
+- **Matriz de Domificaciones & Ayanamsas**: [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md)
+- **Motor Omni Engine & Data Lake**: [`references/omni_engine.md`](file:///var/www/.agents/skills/oraculo/references/omni_engine.md)
+- **Taxonomía Tikkun**: [`references/tikkun_berg_taxonomy.md`](file:///var/www/.agents/skills/oraculo/references/tikkun_berg_taxonomy.md)
+- **Especificación de Fases**: [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md)
+- **Infraestructura & Sharding**: [`references/infra.md`](file:///var/www/.agents/skills/oraculo/references/infra.md)
+- **Guía de APIs & MCPs**: [`references/usage.md`](file:///var/www/.agents/skills/oraculo/references/usage.md)
+- **Validador Físico**: [`scripts/oraculo-validate.sh`](file:///var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh)
