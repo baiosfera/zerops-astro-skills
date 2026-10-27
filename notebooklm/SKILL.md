@@ -13,7 +13,7 @@ metadata:
 Activate when orchestrating Gemini Notebook / Google NotebookLM via `nlm` CLI, 49 FastMCP tools, or `nlm-tutor` v2.2.0. Operates under an explicit 3-layer architecture: Capa 1 FastMCP/CLI (`notebooklm_tools`), Capa 2 Pedagogical (`nlm-tutor` immutable), and Capa 3 Router (`notebooklm` skill).
 
 ## Hard Rules
-- **Google One AI Premium**: `NOTEBOOKLM_TIER_PRO_CONSUMER_USER` (300 sources/notebook, 500k words/source, 50 notebooks, Deep Research).
+- **Google One AI Premium**: `NOTEBOOKLM_TIER_PRO_CONSUMER_USER` (500 notebooks, 300 sources/notebook, 500k words/source, 200MB/file, 10k char system prompt, 10 Studio types).
 - **Cloud Studio Storage**: Artifacts reside in Google Cloud. Zero auto downloads; local downloads are manual and confined to `NOTEBOOKLM_DOWNLOAD_DIR`.
 - **Custom Reports**: Always use `report_format='Create Your Own'`; canned formats discard `custom_prompt`.
 - **Async Studio & Rename**: Launch with `--confirm -j`. Rename via `studio_status(action='rename')` ONLY after `status='completed'`.
