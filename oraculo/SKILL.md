@@ -43,7 +43,7 @@ Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards Post
 | **F4 a F6 (Ontología)** | BaZi, Human Design y Tikkun desde Shards 04, 05 y 06 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
 | **F7 a F9 (Estrategia)** | Vocación, Timing y Mentoría desde Shards 07 a 10 | [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md) |
 | **Sub-Oráculos (`diag-*`)** | Consumir variantes de `VirtualDataLake` o `manifest.json` | [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md) |
-| **Validación Física** | Ejecutar validador físico (`exit code 0`) | [`scripts/oraculo-validate.sh`](file:///var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh) |
+| **Validación Física** | Ejecutar validador físico (`exit code 0`) | `skills-suite-validate` |
 
 ## Commands
 
@@ -55,7 +55,7 @@ python3 /var/www/.agents/skills/oraculo/scripts/omni_engine.py --file /ruta/a/co
 bash /var/www/.agents/skills/oraculo/scripts/fase0.sh /ruta/a/consultante.txt
 
 # Validación física de integridad
-bash /var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh
+skills-suite-validate
 ```
 
 ## Resources
@@ -65,4 +65,4 @@ bash /var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh
 - **Especificación de Fases**: [`references/phases.md`](file:///var/www/.agents/skills/oraculo/references/phases.md)
 - **Infraestructura & Sharding**: [`references/infra.md`](file:///var/www/.agents/skills/oraculo/references/infra.md)
 - **Guía de APIs & MCPs**: [`references/usage.md`](file:///var/www/.agents/skills/oraculo/references/usage.md)
-- **Validador Físico**: [`scripts/oraculo-validate.sh`](file:///var/www/.agents/skills/oraculo/scripts/oraculo-validate.sh)
+- **Validador Físico**: `skills-suite-validate`
