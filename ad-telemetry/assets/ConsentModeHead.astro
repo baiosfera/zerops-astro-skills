@@ -1,0 +1,46 @@
+---
+export interface Props {
+  gtmId?: string;
+  defaultConsent?: "denied" | "granted";
+}
+
+const { gtmId, defaultConsent = "denied" } = Astro.props;
+---
+
+<!-- Google Consent Mode v2 Baseline (Synchronous in <head>) -->
+<script is:inline define:vars={{ defaultConsent, gtmId }}>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+  window.gtag = gtag;
+
+  // 1. Establish default denied signals before any scripts load
+  gtag('consent', 'default', {
+    'ad_storage': defaultConsent,
+    'ad_user_data': defaultConsent,
+    'ad_personalization': defaultConsent,
+    'analytics_storage': defaultConsent,
+    'wait_for_update': 500,
+  });
+
+  // 2. Rehydrate stored consent if user already granted permissions
+  try {
+    var stored = localStorage.getItem('user_consent_v2');
+    if (stored) {
+      var parsed = JSON.parse(stored);
+      gtag('consent', 'update', parsed);
+    }
+  } catch (e) {
+    console.warn('[ConsentMode] Failed to read localStorage', e);
+  }
+
+  // 3. Inject GTM container if ID provided
+  if (gtmId) {
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',gtmId);
+  }
+</script>

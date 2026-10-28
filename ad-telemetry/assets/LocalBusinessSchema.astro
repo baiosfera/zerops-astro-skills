@@ -1,0 +1,79 @@
+---
+import type { Graph, Thing } from 'schema-dts';
+import type { BrandPresenceProfile } from '@astrobranding/contracts';
+
+export interface Props {
+  profile: BrandPresenceProfile;
+}
+
+const { profile } = Astro.props;
+
+const baseEntity: Record<string, unknown> = {
+  '@id': `${profile.website_url}/#business`,
+  name: profile.business_name,
+  legalName: profile.legal_name || profile.business_name,
+  url: profile.website_url,
+  telephone: profile.primary_telephone,
+  email: profile.primary_email,
+  sameAs: profile.same_as_urls,
+};
+
+let entity: Thing;
+
+if (profile.presence_model === 'service_area_business') {
+  // Service Area Business: Omit street address and map pins to prevent Google suspension
+  entity = {
+    '@type': 'ProfessionalService',
+    ...baseEntity,
+    areaServed: profile.service_areas.map((area) => ({
+      '@type': 'City',
+      name: area,
+    })),
+  } as Thing;
+} else if (profile.presence_model === 'physical_storefront') {
+  // Physical Storefront: Provide full NAP, coordinates, and Google Maps CID
+  entity = {
+    '@type': profile.schema_org_type as any,
+    ...baseEntity,
+    hasMap: profile.has_map_url || (profile.google_maps_cid ? `https://www.google.com/maps?cid=${profile.google_maps_cid}` : undefined),
+    address: profile.street_address ? {
+      '@type': 'PostalAddress',
+      streetAddress: profile.street_address,
+      addressLocality: profile.locality,
+      addressRegion: profile.region,
+      postalCode: profile.postal_code,
+      addressCountry: profile.country_code,
+    } : undefined,
+    geo: profile.geo ? {
+      '@type': 'GeoCoordinates',
+      latitude: profile.geo.latitude,
+      longitude: profile.geo.longitude,
+    } : undefined,
+    openingHoursSpecification: profile.opening_hours.map((oh) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: oh.dayOfWeek,
+      opens: oh.opens,
+      closes: oh.closes,
+    })),
+  } as Thing;
+} else {
+  // Pure Online Business (National or Global)
+  entity = {
+    '@type': 'OnlineStore',
+    ...baseEntity,
+  } as Thing;
+}
+
+const graph: Graph = {
+  '@context': 'https://schema.org',
+  '@graph': [entity],
+};
+
+// Strict sanitization against XSS in JSON-LD injection
+const safeJsonLd = JSON.stringify(graph)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e')
+  .replace(/&/g, '\\u0026');
+---
+
+<script type="application/ld+json" set:html={safeJsonLd} />
