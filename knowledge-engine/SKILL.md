@@ -21,6 +21,7 @@ High-density knowledge bridge connecting Google NotebookLM course clusters with 
 - **Thematic Catalog & Cluster Mapping**: Consult [`catalog.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/catalog.md) for notebook IDs, source clusters, course roots, and playbook destinations.
 - **System Prompts & Extraction Blueprints**: Consult [`system_prompts.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/system_prompts.md) for specialized 10,000-character prompts tailored for NotebookLM synthesis.
 - **Decoupled Anti-Slop Fusion Protocol**: Consult [`anti_slop_fusion.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/anti_slop_fusion.md) for concrete workflows combining high-density course intelligence with local brand systems.
+- **Knowledge-Sync Manual**: Consult [`MANUAL_KNOWLEDGE_SYNC.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/MANUAL_KNOWLEDGE_SYNC.md) for full CLI commands, course compaction, polymorphic parsers, and 11-cluster topology.
 
 ## Workflow
 
