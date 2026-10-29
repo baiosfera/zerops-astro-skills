@@ -299,3 +299,32 @@ Every Astro 5 deployment must guard against the 3 invisible traps:
    Analytics scripts are embedded with `<script type="text/plain" data-category="analytics">`. They execute strictly after explicit user acceptance.
 3. **Decoupled Form Processing (`ContactAction.ts`)**:
    Forms submit via Astro Actions (`defineAction`) with Zod validation, dispatching dynamically to PostgreSQL, NATS, or fallback HTTP webhooks.
+
+---
+
+## 10. Universal Multi-Path Stealth Admin Authentication {#10-admin-auth}
+
+For administrative dashboards (e.g. `/adminn`):
+
+1. **Multi-Path Redundancy (Zero Assumptions)**:
+   - Provide simultaneous, independent authentication paths:
+     - **Path 1: Username/Email & Password**: PBKDF2 (`pbkdf2Sync` with 100,000 iterations, SHA-512, random 16-byte salt, `timingSafeEqual`).
+     - **Path 2: Telegram 1-Click Magic Link**: Deep link (`t.me/<bot>?start=login`) or `/login` command in Telegram. The bot writes a single-use 10-minute token to `admin_otps`. The user clicks the link (`https://<domain>/adminn?token=<token>`), the Astro frontmatter consumes the token, sets a secure 7-day session cookie, and issues an HTTP 302 redirect to the dashboard.
+     - **Path 3: WhatsApp OTP**: 6-digit numeric OTP sent via Evolution API (`http://evolution:8085`).
+2. **Drizzle ORM Null-Check Invariant**:
+   - In Drizzle ORM, querying null columns using `eq(table.column, null)` emits SQL `column = NULL`, which PostgreSQL evaluates to `UNKNOWN` (false) for all rows.
+   - Always import and use `isNull(table.column)` from `drizzle-orm`:
+     ```typescript
+     import { and, eq, gt, isNull } from "drizzle-orm";
+
+     const [otp] = await db.select().from(adminOtps).where(
+       and(
+         eq(adminOtps.token, token),
+         isNull(adminOtps.consumedAt),
+         gt(adminOtps.expiresAt, new Date())
+       )
+     ).limit(1);
+     ```
+3. **PBKDF2 Salt Buffer Invariant**:
+   - In Node.js/Bun, pass `Buffer.from(saltHex, "hex")` to `crypto.pbkdf2Sync`, never the hex string directly, to ensure cryptographic parity with raw binary salt hashes.
+

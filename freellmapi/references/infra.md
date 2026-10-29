@@ -109,3 +109,23 @@ When orchestrating or interacting with FreeLLMAPI in this Zerops container:
     curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/api/ping
     # MUST return 200
     ```
+
+---
+
+## 6. Model Seeding Invariant for Tool Calling & Fallback Priority
+
+When configuring the FreeLLMAPI SQLite database (`/mnt/localstorage/data.db`):
+
+- **Tool-Calling Model Seeding Invariant**:
+  - The FreeLLMAPI router filters tool-bearing requests (`tools` present in payload) using `supports_tools = 1`.
+  - Preview/text-only models (e.g. `dots-studio`, reasoning-preview variants) MUST have `supports_tools = 0`. If erroneously flagged as `supports_tools = 1`, FreeLLMAPI routes tool-calling agent queries to them, causing raw CoT monologue leakage and failed tool invocations.
+  - Primary tool-capable models (e.g., Groq `llama-3.3-70b-versatile`, Cerebras `llama3.3-70b`) MUST be explicitly inserted into the `models` table with `supports_tools = 1` and given top priority in `fallback_config`.
+  - Example SQLite configuration:
+    ```sql
+    UPDATE models SET supports_tools = 0 WHERE model_id LIKE '%dots-studio%';
+    INSERT OR REPLACE INTO models (model_id, provider_name, supports_tools, is_active)
+    VALUES 
+      ('llama-3.3-70b-versatile', 'groq', 1, 1),
+      ('llama3.3-70b', 'cerebras', 1, 1);
+    ```
+

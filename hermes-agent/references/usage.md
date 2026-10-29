@@ -277,6 +277,39 @@ async def handle_callback_approval(update: Update, context: ContextTypes.DEFAULT
         await query.edit_message_text(f"🛑 Deploy cancelled for `{service}`.")
 ```
 
+### Pattern 5: 1-Click Telegram Magic Link Auth for Web Admin Panel
+
+```python
+import secrets
+from datetime import datetime, timezone, timedelta
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes
+
+async def cmd_login(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Generates a secure 1-click magic login link for the web admin panel."""
+    user = update.effective_user
+    # 1. Verify user exists in admin_users or authorized telegram IDs
+    token = secrets.token_hex(24)
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=10)
+    
+    # 2. Persist single-use token in PostgreSQL admin_otps table
+    # INSERT INTO admin_otps (token, telegram_user_id, expires_at) VALUES (%s, %s, %s)
+    
+    domain = "https://example.com"
+    magic_url = f"{domain}/adminn?token={token}"
+    
+    keyboard = [[InlineKeyboardButton("🚀 Iniciar Sesión en 1 Clic", url=magic_url)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await update.message.reply_text(
+        "✨ *Acceso Directo al Panel de Administración*\n\n"
+        "Haz clic en el botón de abajo para ingresar automáticamente sin contraseñas.\n"
+        "⏱ Este enlace expira en 10 minutos y es de un solo uso.",
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+    )
+```
+
 ---
 
 ## 4. Error Catalog & Remediation Matrix
@@ -288,3 +321,5 @@ async def handle_callback_approval(update: Update, context: ContextTypes.DEFAULT
 | **Invalid `<tool_call>` JSON syntax** | Model emitted truncated or malformed JSON arguments. | Catch JSONDecodeError; return `<tool_response>{"error": "Malformed JSON arguments. Correct the JSON structure and retry."}</tool_response>`. |
 | **Non-existent tool hallucination** | Model invented a tool name not in the `<tools>` schema. | Return `<tool_response>{"error": "Tool '{name}' does not exist. Available tools: {list}"}</tool_response>` so the model re-evaluates. |
 | **Context Window Overflow** | Unbounded conversation history or oversized tool output. | Implement sliding-window truncation, summarize past turns, and cap tool output to 2000 tokens before re-injecting into the prompt. |
+| **Reasoning monologue bleed / `<think>` leak** | Reasoning models emit raw chain-of-thought tokens before final answer or tool calls. | Strip `<think>...</think>` tags using regex before delivering text to Telegram, and sanitize history before saving to database. |
+| **Response truncation mid-JSON** | `max_tokens` set too low (e.g. 300) when model produces reasoning before JSON arguments. | Set `max_tokens: 1024` or higher in completion parameters to ensure JSON tool payloads are never cut off. |
