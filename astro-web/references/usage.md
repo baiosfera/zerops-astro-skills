@@ -328,3 +328,48 @@ For administrative dashboards (e.g. `/adminn`):
 3. **PBKDF2 Salt Buffer Invariant**:
    - In Node.js/Bun, pass `Buffer.from(saltHex, "hex")` to `crypto.pbkdf2Sync`, never the hex string directly, to ensure cryptographic parity with raw binary salt hashes.
 
+
+
+---
+
+## 11. Sovereign Admin & UX Invariants (Standalone Pages, Mobile Gallery, Aspect Ratio & Prefetch Defense) {#11-admin-invariants}
+
+When architecting administrative dashboards, standalone sub-cockpits, or customer portals in Astro 5 SSR on Zerops, enforce these 6 mandatory physical invariants:
+
+### 1. Standalone Page Tailwind CSS Invariant
+Any page that does not inherit from `BaseLayout.astro` (such as `/adminn/index.astro`, `/adminn/dashboard.astro`, `/checkout.astro`, or embeddable cockpits) MUST import `theme.css` globally:
+```astro
+<style is:global>
+  @import "../../styles/theme.css";
+</style>
+```
+*Never* link statically via `<link rel="stylesheet" href="/styles/theme.css">`. Static links bypass Vite's Tailwind 4 processor, cause 404 Not Found errors on production CDN/L7 balancers, and serve completely unstyled (naked) HTML.
+
+### 2. Mobile Image Picker & Gallery Invariant
+In file inputs (`<input type="file" accept="image/*">`), NEVER use `capture="environment"` or `capture="user"` unless the business requirement explicitly demands exclusive real-time camera capture.
+The `capture` attribute intercepts the mobile operating system (iOS Safari, Android Chrome) and forcibly opens the camera, preventing users from selecting existing photos from their phone gallery, albums, or Google Photos / iCloud reels. Omit `capture` to provide the standard native OS chooser (Camera, Gallery, Files).
+
+### 3. Canvas Aspect-Ratio Invariant (Zero-Distortion Image Resizing)
+Client-side image compression on `<canvas>` must calculate an invariant scalar:
+```javascript
+const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+const width = Math.round(img.width * scale);
+const height = Math.round(img.height * scale);
+```
+Never mutate `maxHeight = height` or `maxWidth = width` in condition branches (`else { width = Math.round(...); maxHeight = height; }`), as this creates mismatched canvas dimensions, distorting portrait and landscape photos.
+
+### 4. Astro Actions & Middleware Session Scope Invariant
+Session cookies for administrative portals must be scoped to root (`path: "/"`), not `path: "/adminn"`.
+`middleware.ts` must validate the admin session token globally across all request paths, including `/_actions/*`. Scoping middleware to `pathname.startsWith("/adminn")` leaves Astro Actions unauthenticated, returning 401 Unauthorized errors when the client invokes actions.
+
+### 5. Crawler Prefetch & Bot Defense for 1-Click Magic Links
+Messaging applications (Telegram, WhatsApp, Slack, iMessage) deploy automated crawler bots (e.g. `TelegramBot (like TwitterBot)`) that send HTTP GET requests within <700ms to generate link previews.
+- In 1-click authentication flows, disable preview generation at the bot gateway: `link_preview_options: { is_disabled: true }`.
+- Or enforce that the GET request renders an explicit confirmation button ("Iniciar Sesión") before consuming the single-use cryptographic token, preventing premature invalidation.
+
+### 6. 360° Modular Administration Suite Contract
+Every e-commerce, aesthetic, or service brand scaffolded on Zerops must include a unified multi-tab `/adminn/dashboard` covering:
+1. **Catalog & Stock**: Pricing, descriptions, unit stock tracking, and dynamic category creation via `<datalist>`.
+2. **Services & Atelier**: Base pricing, editorial price ranges, duration (minutes), deposit requirements, badges, and photo uploads.
+3. **Bookings & Appointments**: Chronological booking tray, status transitions (`pending`, `confirmed`, `completed`, `cancelled`), and one-click WhatsApp client contact.
+4. **Site Settings & Banners**: Dynamic Hero and Lookbook image configuration persisted in `site_settings`.

@@ -21,6 +21,7 @@ Activate when architecting, developing, or optimizing Astro 5 SSR applications o
 - **Tailwind CSS 4**: Integrate via `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` design tokens.
 - **Pre-flight Craft Gate**: Calibrate 3 Dials: *Variance* (asymmetric layouts), *Motion* (smooth reveals), *Density* (brand-calibrated). Avoid untinted gray backgrounds and saturated purple gradients.
 - **Dynamic PostgreSQL SSR**: Render dynamic catalogs directly from PostgreSQL in the continuous present (`date >= NOW()`). Hydrate authenticated user profiles from session cookies to prevent checkout friction.
+- **Standalone Pages & Mobile UX**: Import `theme.css` via `<style is:global>` on standalone pages lacking layouts to emit Vite CSS. Omit `capture` on file inputs to preserve native gallery choice. Scale canvas uploads with `Math.min(maxWidth/w, maxHeight/h, 1)` for strict aspect-ratio parity. Scope admin auth cookies to `path: "/"` and guard 1-click magic links against crawler prefetch.
 
 ## Decision Gates
 
@@ -31,6 +32,7 @@ Activate when architecting, developing, or optimizing Astro 5 SSR applications o
 | Server Islands | Defer SSR components with ASTRO_KEY | [`references/usage.md#3-server-islands`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
 | Actions & NATS | Typed mutations with Valkey lock & NATS | [`references/usage.md#5-actions`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
 | Anti-Slop Gate | Variance, Motion, Density calibration | [`references/usage.md#7-anti-slop`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
+| Admin & Mobile UX | Standalone CSS, Gallery picker, aspect ratio, crawler defense | [`references/usage.md#11-admin-invariants`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
 | Topology | Bun 1.3, NATS 2.12, Valkey 7.2, Postgres 18 | [`references/infra.md#2-topology`](file:///var/www/.agents/skills/astro-web/references/infra.md) |
 | Lifecycle | Dev (`zsc noop`) + Prod (`bun build`) | [`references/infra.md#3-lifecycle`](file:///var/www/.agents/skills/astro-web/references/infra.md) |
 
