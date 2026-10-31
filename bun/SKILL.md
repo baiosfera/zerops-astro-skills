@@ -1,21 +1,22 @@
 ---
 name: bun
-description: "Trigger: bun, bun.serve, bun.sql, bun.build, bun:test, bunx, runtime bun@1.3.9, elysia, hono, fast http server, typescript nativo. Architect, develop, test, and deploy high-performance TypeScript/JavaScript services on native Bun and Zerops."
+description: "Trigger: bun, bun.serve, bun.sql, bun.build, bun:test, bunx, runtime bun@1.4, bun@1.3.9, elysia, hono, fast http server, typescript nativo. Architect, develop, test, and deploy high-performance TypeScript/JavaScript services on native Bun and Zerops."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "2.1"
+  version: "2.2"
 ---
 
-# Bun — Zerops Native Bun Runtime Engine (v2.1)
+# Bun — Zerops Native Bun Runtime Engine (v2.2)
 
 ## Activation Contract
-Activate whenever developing, building, testing, or running TypeScript/JavaScript services on native Bun (`runtime: ubuntu/bun@1.3` or `alpine/bun@1.3`), `Bun.serve`, native SQL (`bun:sqlite`, `bun.sql`), `bun test`, or lightweight HTTP frameworks (Elysia, Hono).
+Activate whenever developing, building, testing, or running TypeScript/JavaScript services on native Bun (`runtime: ubuntu/bun@1.4`, `alpine/bun@1.4`, or `bun@1.3`), `Bun.serve`, native SQL (`bun:sqlite`, `bun.sql`), `bun test`, or lightweight HTTP frameworks (Elysia, Hono).
 
 ## Hard Rules & Positive Guidance
 - **Runtime Base Selection**:
-  - `ubuntu/bun@1.3`: Default for full CGO/glibc compatibility, native compilation, and complex binary dependencies.
-  - `alpine/bun@1.3`: Preferred for minimal, lean microservices with static dependencies.
+  - `ubuntu/bun@1.4`: Latest engine with full CGO/glibc compatibility, native compilation, and complex binary dependencies.
+  - `alpine/bun@1.4`: Preferred for minimal, lean microservices with static dependencies.
+  - `ubuntu/bun@1.3`: Stable legacy production base.
 - **Native Bun Primitives**: Use `Bun.serve()` for high-throughput HTTP servers. Use `bun:test` for fast native test suites.
 - **Dependency & Cache Management**:
   - Configure `cache: [node_modules]` in `zerops.yaml` to accelerate build pipelines.

@@ -69,16 +69,7 @@ Substitute each structural slot from Step 1 using exclusively the vocabulary and
 
 ---
 
-## 5. Sovereign Invariant: 100% Brand-Agnostic Playbooks (Zero-Brand Slop)
-
-Playbooks compiled in `/var/www/baiosfera/PLAYBOOKS/` serve as the universal algorithmic foundation across all projects.
-
-1. **Absolute Ban on Upstream Brand Names**:
-   Never include names of academies, platforms, or commercial authors (e.g., `Platzi`, `DigitalMarketer`, `Velocity Media`, `Mindvalley`, `Carlos Muñoz`, etc.) within generated playbooks.
-2. **Pure Algorithmic & Structural Content**:
-   Playbooks must strictly contain mathematical conversion equations, psychological trigger frameworks, funnel schemas, and abstract wireframe contracts.
-3. **Downstream Transmutation Integrity**:
-   When downstream skills (`astro-web`, `frnt`, `bknd`) ingest a playbook, they must only receive universal frameworks to be transmuted with the active brand's tokens, guaranteeing 0 cross-brand contamination.
+## 4. Physical Verification Gate
 
 Before committing or integrating generated copy or landing page markup into Astro components, execute the physical anti-slop linter:
 

@@ -1,6 +1,6 @@
 # Node.js — Infrastructure & Platform Lifecycle Manual on Zerops
 
-This manual specifies the operational platform model, lifecycle commands, four-way architectural comparisons, and bounded execution harnesses for deploying the **Zerops Managed Node.js Runtime** (`type: nodejs@22` / `nodejs@24`).
+This manual specifies the operational platform model, lifecycle commands, four-way architectural comparisons, and bounded execution harnesses for deploying the **Zerops Managed Node.js Runtime** (`type: nodejs@26` / `nodejs@24` / `nodejs@22`).
 
 ---
 
@@ -12,7 +12,7 @@ Zerops Managed Node.js runs in unprivileged **Incus Linux Containers (LXC)** att
 # import.yaml - Production Topology for Node.js
 services:
   - hostname: api
-    type: nodejs@22 # or nodejs@24
+    type: nodejs@26 # or nodejs@24 (LTS)
     enableSubdomainAccess: true
 ```
 

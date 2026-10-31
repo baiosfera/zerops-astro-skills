@@ -215,12 +215,3 @@ When referencing environment variables or secrets stored in the Zerops Project V
     GROQ_API_KEY: ${WHISPER_GROQ_API_KEY}
     OPENAI_API_KEY: ${VAULT_OPENAI_API_KEY}
   ```
-
----
-
-## 8. FreeLLMAPI Upstream Timeout Invariant (504 Gateway Timeout Prevention)
-
-When proxying inference or agent tool-calling through `freellmapi` (`http://freellmapi:3001/v1`):
-- **Latency Invariant**: Agent tool generation and complex JSON extraction through free tier providers can take between 15s and 45s under high concurrency or cold starts.
-- **Configuration**: Always configure `default_request_timeout_in_seconds: 60` (or higher) in Bifrost provider config for `freellmapi` to prevent premature `504 Gateway Timeout` errors during tool-execution loops.
-

@@ -1,19 +1,19 @@
 ---
 name: ubuntu
-description: "Trigger: ubuntu, zerops ubuntu, base ubuntu 24, glibc, cgo, node-gyp, apt-get, native compilation. Architecture, compilation pipelines, glibc performance, and Zerops runtime deployment for Ubuntu 24.04 LTS."
+description: "Trigger: ubuntu, zerops ubuntu, base ubuntu 26, base ubuntu 24, glibc, cgo, node-gyp, apt-get, native compilation. Architecture, compilation pipelines, glibc performance, and Zerops runtime deployment for Ubuntu 26.04 and 24.04 LTS."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.0"
+  version: "1.1"
 ---
 
-# Ubuntu — Zerops Native Linux Architecture & Compilation Engine (v1.0)
+# Ubuntu — Zerops Native Linux Architecture & Compilation Engine (v1.1)
 
 ## Activation Contract
-Activate whenever authoring, building, or troubleshooting workloads on Ubuntu 24.04 LTS in Zerops (`base: ubuntu@24` or `os: ubuntu`), compiling C/C++/Rust/Go CGO binaries, building Python C-extension wheels, configuring native Node addons (`node-gyp`), running Deno, or evaluating Ubuntu vs Alpine runtime selection.
+Activate whenever authoring, building, or troubleshooting workloads on Ubuntu in Zerops (`base: ubuntu@26` or `base: ubuntu@24`), compiling C/C++/Rust/Go CGO binaries, building Python C-extension wheels, configuring native Node addons (`node-gyp`), running Deno, or evaluating Ubuntu vs Alpine runtime selection.
 
 ## Hard Rules
-- **Rule 1 (Continuous Present & Version Invariant)**: Target **Ubuntu 24.04 LTS (Noble Numbat)** exclusively (`base: ubuntu@24`). Legacy versions (`ubuntu@22`) are strictly deprecated for new services.
+- **Rule 1 (Continuous Present & Version Invariant)**: Target **Ubuntu 26.04 LTS** (`base: ubuntu@26`) or **Ubuntu 24.04 LTS** (`base: ubuntu@24`). Legacy versions (`ubuntu@22`) are strictly deprecated for new services.
 - **Rule 2 (Native Package Management)**: Always use `sudo apt-get update && sudo apt-get install -y <pkg>` (sudo is required as Zerops runs unprivileged). Never use `apk` in Ubuntu environments. Clean `/var/lib/apt/lists/*` to minimize build layer sizes.
 - **Rule 3 (Fractal CoHaLo Bounded Execution)**: All synchronous system commands MUST use strict timeouts (`timeout 10s`), synchronous wait (`WaitMsBeforeAsync: 10000`), and terminate orphan background processes with `manage_task action="kill"`.
 - **Rule 4 (Zero-Guessing Scaling)**: Do NOT author arbitrary `verticalAutoscaling` ranges in `import.yaml`. Zerops manages vertical autoscaling natively out-of-the-box.

@@ -1,0 +1,64 @@
+#zeropsPreprocessor=on
+project:
+  name: gentle-directus-suite
+  corePackage: LIGHT
+  envVariables:
+    KEY: <@generateRandomString(<32>)>
+    SECRET: <@generateRandomString(<32>)>
+    ADMIN_EMAIL: admin@gentle.ai
+    ADMIN_PASSWORD: <@generateRandomString(<16>)>
+
+services:
+  # ==========================================
+  # DIRECTUS 11+ BACKEND (NODE.JS 24 UBUNTU)
+  # ==========================================
+  - hostname: directus
+    type: nodejs@24
+    priority: 5
+    enableSubdomainAccess: true
+    startWithoutCode: true
+    minContainers: 1
+    maxContainers: 3
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minCpu: 1
+      maxCpu: 4
+      minRam: 1.0
+      maxRam: 4.0
+      minDisk: 2.0
+      maxDisk: 20.0
+    mount:
+      - storage
+
+  # ==========================================
+  # POSTGRESQL 18 (PERSISTENT METADATA & DATA)
+  # ==========================================
+  - hostname: db
+    type: postgresql:single@18
+    profile: oltp-hobby
+    priority: 10
+    verticalAutoscaling:
+      minCpu: 1
+      maxCpu: 4
+      minRam: 0.50
+      maxRam: 4.0
+      minDisk: 5.0
+      maxDisk: 50.0
+
+  # ==========================================
+  # VALKEY 7.2 (SESSIONS, CACHE & SYNC)
+  # ==========================================
+  - hostname: cache
+    type: valkey:single@7.2
+    profile: hobby
+    priority: 10
+
+  # ==========================================
+  # SHARED POSIX STORAGE (UPLOADS & MEDIA)
+  # ==========================================
+  - hostname: storage
+    type: shared-storage:single
+    priority: 10
+    verticalAutoscaling:
+      minDisk: 5.0
+      maxDisk: 60.0
