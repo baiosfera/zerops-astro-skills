@@ -1,6 +1,6 @@
-# Email Marketing: Infrastructure, Zerops Topology & Console Runbooks (v2.0)
+# Email Marketing: Infrastructure, Zerops Topology & Console Runbooks (v3.0)
 
-This manual provides production-grade infrastructure blueprints, DNS deliverability records (SPF, DKIM 2048-bit, DMARCbis RFC 9989, FCrDNS PTR), BullMQ rate-limited queue workers, and the Fractal CoHaLo operational harness for `email-marketing` running in Zerops.
+This manual provides production-grade infrastructure blueprints, DNS deliverability records (SPF, DKIM 2048-bit, DMARCbis RFC 9989, MTA-STS RFC 8461, TLS-RPT RFC 8460, BIMI), BullMQ rate-limited queue workers with stateful Circuit Breaker, and the Fractal CoHaLo operational harness for `email-marketing` running in Zerops.
 
 ---
 
@@ -27,6 +27,7 @@ This manual provides production-grade infrastructure blueprints, DNS deliverabil
 │   │ Valkey 7.2 Queue Engine (cache:6379)             │                                                 │
 │   │ - Queue: `emailDispatchQueue` (BullMQ)           │                                                 │
 │   │ - Rate Limiter: max 10 emails / 1000ms           │                                                 │
+│   │ - Circuit Breaker state cache (cooldown keys)    │                                                 │
 │   └───────────────┬──────────────────────────────────┘                                                 │
 │                   │ Pulls throttled job                                                                │
 │                   ▼                                                                                    │
@@ -47,27 +48,86 @@ This manual provides production-grade infrastructure blueprints, DNS deliverabil
 
 ---
 
-## 2. 2026 Deliverability & DNS Configuration Standards
+## 2. 2026 Deliverability & Cryptographic DNS Standards
 
-1. **Spam Complaint Thresholds (Google Postmaster Tools & Yahoo Sender Hub):**
-   * **Optimal Target:** Spam Complaint Rate **< 0.10%** (max 1 complaint per 1,000 sent emails).
-   * **Alert Zone:** 0.10% – 0.29% (progressive inbox deprioritization).
-   * **Hard Block:** **$\ge$ 0.30%** (outright rejection or universal SPAM placement).
-2. **Cryptographic DNS Records:**
-   * **SPF:** `TXT @ "v=spf1 include:zeptomail.net include:amazonses.com ~all"` (max 10 DNS lookups).
-   * **DKIM:** 2048-bit RSA keys mandatory (`zoho._domainkey` / Amazon SES CNAME selectors).
-   * **DMARCbis (RFC 9989):** `TXT _dmarc "v=DMARC1; p=quarantine; sp=quarantine; adkim=r; aspf=r; rua=mailto:dmarc@yourdomain.com;"`.
-   * **Reverse DNS (PTR):** Valid FCrDNS resolving between sending IP and mail server hostname.
-3. **RFC 8058 One-Click Unsubscribe:**
-   * `List-Unsubscribe: <https://api.yourdomain.com/unsubscribe?id=xxx>` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers signed under DKIM.
+### 2.1. Spam Complaint Thresholds (Google Postmaster Tools & Yahoo Sender Hub)
+* **Optimal Target:** Spam Complaint Rate **< 0.10%** (max 1 complaint per 1,000 sent emails).
+* **Alert Zone:** 0.10% – 0.29% (progressive inbox deprioritization and greylisting).
+* **Hard Block:** **$\ge$ 0.30%** (immediate rejection or universal SPAM folder placement).
+
+### 2.2. DMARCbis (RFC 9989, RFC 9990, RFC 9991)
+Published in 2026 as formal Proposed Standards:
+* **`pct` Tag:** Permanently deprecated and removed.
+* **`t` Tag (Testing):** Set to `t=n` for production enforcement. Replaces `pct=0`.
+* **`np` Tag (Non-Existent Domain Policy):** Mandatory protection against subdomain dictionary attacks. Set to `np=reject`.
+* **`psd` Tag (Public Suffix Domain):** Set to `psd=u` (unknown) or `psd=n` for sovereign organizational domains.
+* **DNS Tree Walk:** Evaluates nested `_dmarc` records progressively to organizational root.
+
+```dns
+; Canonical DMARCbis RFC 9989 Record
+_dmarc.yourdomain.com. IN TXT "v=DMARC1; p=quarantine; sp=quarantine; np=reject; adkim=r; aspf=r; t=n; rua=mailto:dmarc@yourdomain.com; ruf=mailto:dmarc-errors@yourdomain.com;"
+```
+
+### 2.3. DKIM (RFC 6376) & RSA 2048-Bit Floor
+* 2048-bit RSA keys mandatory across all selectors (`s=`). Keys below 2048-bit are penalized by Google/Yahoo reputation engines.
+* Ed25519 (RFC 8463) optional as secondary signature; RSA 2048 remains primary for legacy MTA compatibility.
+
+### 2.4. MTA-STS (RFC 8461) & TLS-RPT (RFC 8460)
+Guarantees encrypted transport and prevents STARTTLS stripping MITM attacks:
+1. **DNS TXT for MTA-STS:**
+   ```dns
+   _mta-sts.yourdomain.com. IN TXT "v=STSv1; id=2026110201;"
+   ```
+2. **Policy File (`https://mta-sts.yourdomain.com/.well-known/mta-sts.txt`):**
+   ```text
+   version: STSv1
+   mode: enforce
+   mx: feedback-smtp.us-east-1.amazonses.com
+   mx: mail.yourdomain.com
+   max_age: 604800
+   ```
+3. **DNS TXT for TLS-RPT:**
+   ```dns
+   _smtp._tls.yourdomain.com. IN TXT "v=TLSRPTv1; rua=mailto:tls-reports@yourdomain.com;"
+   ```
+
+### 2.5. BIMI (Brand Indicators for Message Identification)
+Displays verified brand logo in Gmail, Apple Mail, and Yahoo:
+```dns
+default._bimi.yourdomain.com. IN TXT "v=BIMI1; l=https://cdn.yourdomain.com/branding/logo-bimi.svg; a=https://cdn.yourdomain.com/branding/certificate.pem;"
+```
+* **Requirements:** DMARC in enforcement (`p=quarantine` or `p=reject`), SVG Tiny P/S strict format (no scripts, square aspect ratio), and Verified Mark Certificate (VMC) or Common Mark Certificate (CMC).
 
 ---
 
-## 3. Environment Variables Reference Dictionary
+## 3. Amazon SES v2 & Custom MAIL FROM Specification
+
+### 3.1. Envelope MAIL FROM Alignment
+Default SES sending envelope uses `<id>@amazonses.com`, which breaks SPF alignment under DMARC `aspf=r`. A dedicated subdomin (`mail.yourdomain.com`) aligns the envelope:
+1. **Subdomain MX Record:**
+   ```dns
+   mail.yourdomain.com. IN MX 10 feedback-smtp.us-east-1.amazonses.com.
+   ```
+2. **Subdomain SPF Record:**
+   ```dns
+   mail.yourdomain.com. IN TXT "v=spf1 include:amazonses.com ~all"
+   ```
+3. **Root Domain SPF Record:**
+   ```dns
+   yourdomain.com. IN TXT "v=spf1 include:amazonses.com include:zeptomail.net ~all"
+   ```
+
+### 3.2. Virtual Deliverability Manager (VDM) & SNS Event Destinations
+* **VDM:** Programmatically enabled for predictive reputation routing, engagement tracking, and shared IP optimization.
+* **Event Destinations:** All bounces and complaints route to an Amazon SNS Topic (`ses-deliverability-events`), which webhooks into Directus/PostgreSQL to atomically suppress failing addresses.
+
+---
+
+## 4. Environment Variables Reference Dictionary
 
 ```ini
 # ============================================================================
-# ZOHO ZEPTOMAIL (REST API & SMTP)
+# ZOHO ZEPTOMAIL (REST API v1.1)
 # ============================================================================
 ZEPTOMAIL_SEND_MAIL_TOKEN="Zoho-enczapikey wSsVR61...=="
 ZEPTOMAIL_DEFAULT_FROM_EMAIL="noreply@yourdomain.com"
@@ -76,13 +136,14 @@ ZEPTOMAIL_BOUNCE_ADDRESS="bounce@bounce.yourdomain.com"
 ZEPTOMAIL_REGION="com"
 
 # ============================================================================
-# AWS SES V2
+# AWS SES V2 (SDK v3 / IAM SigV4)
 # ============================================================================
 AWS_REGION="us-east-1"
 AWS_ACCESS_KEY_ID="AKIA..."
 AWS_SECRET_ACCESS_KEY="secret..."
 AWS_SES_CONFIGURATION_SET="deliverability-set"
 AWS_SES_DEFAULT_FROM="Store <noreply@yourdomain.com>"
+AWS_SES_CUSTOM_MAIL_FROM="mail.yourdomain.com"
 
 # ============================================================================
 # RESEND API
@@ -98,7 +159,7 @@ LISTMONK_API_USER="admin"
 LISTMONK_API_PASSWORD="listmonk_secure_password"
 
 # ============================================================================
-# ZEROPS QUEUE & NATS INFRASTRUCTURE
+# ZEROPS QUEUE & VALKEY INFRASTRUCTURE
 # ============================================================================
 VALKEY_CONNECTION_STRING="redis://cache:6379"
 DIRECTUS_URL="http://directus:8055"
@@ -108,17 +169,16 @@ NATS_URL="nats://nats:4222"
 
 ---
 
-## 4. Third-Party Console Setup Runbooks
+## 5. Third-Party Console Setup Runbooks
 
 ### 🟠 Runbook 1: Amazon SES v2 (`console.aws.amazon.com/ses`)
 1. Log in to [AWS SES Management Console](https://console.aws.amazon.com/ses) in `us-east-1`.
 2. Go to **Verified Identities** $\to$ **Create Identity** $\to$ Select **Domain**.
 3. Under **DKIM**, select **Easy DKIM** with **RSA 2048-bit** key length.
-4. Add generated DKIM `CNAME` records to Cloudflare DNS.
-5. Add SPF and DMARCbis TXT records.
-6. Request Production Access to exit sandbox mode.
-
----
+4. Add the 3 generated DKIM `CNAME` records to Cloudflare DNS.
+5. In **Custom MAIL FROM domain**, specify `mail.yourdomain.com`, add the MX and SPF records to Cloudflare.
+6. Under **Configuration Sets**, create `deliverability-set` and configure Event Destinations for Bounces & Complaints to Amazon SNS.
+7. Request Production Access to exit sandbox mode.
 
 ### 🟣 Runbook 2: Zoho ZeptoMail (`zeptomail.zoho.com`)
 1. Log in to [Zoho ZeptoMail Console](https://zeptomail.zoho.com).
@@ -128,7 +188,7 @@ NATS_URL="nats://nats:4222"
 
 ---
 
-## 5. BullMQ Rate-Limited Dispatcher Worker
+## 6. BullMQ Rate-Limited Dispatcher Worker with Circuit Breaker
 
 ```typescript
 import { Worker, Job } from "bullmq";
@@ -143,7 +203,6 @@ const connection = new Redis(process.env.VALKEY_CONNECTION_STRING || "redis://ca
 export const emailWorker = new Worker(
   "emailDispatchQueue",
   async (job: Job<UnifiedEmailPayload>) => {
-    console.log(`[Email Worker] Processing email delivery for ${job.data.to.join(", ")}`);
     const dispatcher = getAutoConfiguredDispatcher();
     try {
       return await dispatcher.send(job.data);
@@ -168,13 +227,11 @@ export const emailWorker = new Worker(
 
 ---
 
-## 6. Process Hygiene, Bounded Execution & Circuit Breakers (CoHaLo)
+## 7. Process Hygiene, Bounded Execution & Circuit Breakers (CoHaLo)
 
 All operations with `email-marketing` must strictly comply with the Fractal CoHaLo standard:
-
 * **Bounded Timeouts**: All email API calls must use explicit timeouts (`timeout 10s curl -f ...`).
 * **Synchronous Wait Enforcement**: For CLI commands and status verifications, specify `WaitMsBeforeAsync: 10000`.
 * **Zero Orphan Tasks**: Terminate all lingering email queue workers using `manage_task action="kill"`.
-* **Physical Sensor Attestation**:
-  * SMTP / API Ping check: Verify relay connectivity with status 200.
-* **Circuit Breaker Policy**: If primary provider returns 429 or 500, BullMQ worker automatically fails over to secondary relay (e.g. AWS SES v2 or Resend).
+* **Physical Sensor Attestation**: Execute `email-marketing-validate.sh` and `skills-suite-validate` with exit code 0 before completing turns.
+* **Circuit Breaker Policy**: If primary provider fails with 429, 500, or 503, the dispatcher automatically opens the circuit and diverts traffic to secondary provider for 60 seconds.

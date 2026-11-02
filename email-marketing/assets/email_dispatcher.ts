@@ -1,10 +1,10 @@
 /**
  * @file email_dispatcher.ts
- * @description Unified Multi-Provider Email Dispatch Engine
+ * @description Unified Multi-Provider Email Dispatch Engine with Circuit Breaker
  * Enforcing RFC 8058 One-Click List-Unsubscribe, RFC 9989 DMARCbis standards,
- * HTML size budget < 85 KB (preventing Gmail clipping), and support for:
- * Listmonk (Zerops native), ZeptoMail REST, AWS SES v2, Resend, and Generic SMTP.
- * @version 2.0.0
+ * Anti-Clipping HTML size budget < 85 KB (preventing Gmail clipping), Base64 prohibition,
+ * and resilient failover across: Listmonk, ZeptoMail REST, AWS SES v2, Resend, and Mock Sandbox.
+ * @version 3.0.0
  */
 
 import { Resend } from "resend";
@@ -56,16 +56,32 @@ export interface IEmailProvider {
   send(payload: UnifiedEmailPayload): Promise<DispatchResult>;
 }
 
+export interface CircuitState {
+  failures: number;
+  lastFailureTime: number;
+  isOpen: boolean;
+}
+
 /**
- * Validates HTML byte size to prevent Gmail clipping (< 102 KB limit, alert at 85 KB).
+ * Validates HTML byte size (< 85 KB rule) and prohibits inline Base64 assets
+ * to prevent Gmail message clipping and anti-spam penalties.
  */
 export function validateEmailPayloadHygiene(html: string, subject: string): void {
   const byteLength = Buffer.byteLength(html, "utf8");
 
+  // Prohibition of Base64 images and fonts
+  if (/data:(image|font)\/[a-zA-Z0-9\-\+\.]+;base64,/i.test(html)) {
+    console.warn(
+      `[Anti-SPAM Violation] Subject "${subject}" contains Base64 embedded data URIs. ` +
+      `Base64 assets inflate payload size, strip Gmail CSS, and penalize spam score. Use public HTTPS URLs instead.`
+    );
+  }
+
+  // Gmail 102 KB clipping threshold (< 85 KB safety floor)
   if (byteLength > 85 * 1024) {
     console.warn(
-      `[Email Hygiene Alert] HTML size for subject "${subject}" is ${(byteLength / 1024).toFixed(2)} KB. ` +
-      `Gmail clips content exceeding 102 KB, potentially hiding unsubscribe footers.`
+      `[Anti-Clipping Alert] HTML size for subject "${subject}" is ${(byteLength / 1024).toFixed(2)} KB. ` +
+      `Gmail strictly clips messages exceeding 102 KB, hiding unsubscribe footers and risking spam reports.`
     );
   }
 
@@ -211,6 +227,7 @@ export class AwsSesV2Provider implements IEmailProvider {
   async send(payload: UnifiedEmailPayload): Promise<DispatchResult> {
     const cmd = new SendEmailCommand({
       FromEmailAddress: payload.from || process.env.EMAIL_FROM_ADDRESS || "noreply@example.com",
+      ConfigurationSetName: process.env.AWS_SES_CONFIGURATION_SET || "deliverability-set",
       Destination: {
         ToAddresses: payload.to,
         CcAddresses: payload.cc,
@@ -300,10 +317,13 @@ export class MockSandboxProvider implements IEmailProvider {
 }
 
 /**
- * Unified Dispatcher Orchestrator
+ * Unified Dispatcher Orchestrator with Stateful Circuit Breaker
  */
 export class UnifiedEmailDispatcher {
   private providers: Map<SupportedEmailProvider, IEmailProvider> = new Map();
+  private circuitStates: Map<SupportedEmailProvider, CircuitState> = new Map();
+  private cooldownDurationMs = 60000; // 60 seconds cooldown for tripped circuit
+  private failureThreshold = 3;
 
   constructor() {
     this.registerProvider(new ListmonkProvider());
@@ -315,13 +335,46 @@ export class UnifiedEmailDispatcher {
 
   registerProvider(provider: IEmailProvider) {
     this.providers.set(provider.name, provider);
+    this.circuitStates.set(provider.name, { failures: 0, lastFailureTime: 0, isOpen: false });
+  }
+
+  private isCircuitAvailable(pName: SupportedEmailProvider): boolean {
+    const state = this.circuitStates.get(pName);
+    if (!state || !state.isOpen) return true;
+
+    // Check if cooldown elapsed to transition to half-open
+    if (Date.now() - state.lastFailureTime > this.cooldownDurationMs) {
+      state.isOpen = false;
+      state.failures = 0;
+      return true;
+    }
+    return false;
+  }
+
+  private recordSuccess(pName: SupportedEmailProvider) {
+    const state = this.circuitStates.get(pName);
+    if (state) {
+      state.failures = 0;
+      state.isOpen = false;
+    }
+  }
+
+  private recordFailure(pName: SupportedEmailProvider) {
+    const state = this.circuitStates.get(pName);
+    if (state) {
+      state.failures += 1;
+      state.lastFailureTime = Date.now();
+      if (state.failures >= this.failureThreshold) {
+        state.isOpen = true;
+        console.warn(`[Circuit Breaker Tripped] Provider ${pName} open for ${this.cooldownDurationMs / 1000}s cooldown.`);
+      }
+    }
   }
 
   async dispatch(
     payload: UnifiedEmailPayload,
     preferredProvider?: SupportedEmailProvider
   ): Promise<DispatchResult> {
-    // If HTML was not provided directly, render GenericTransactionalEmail as default
     if (!payload.html) {
       const templateElement = React.createElement(GenericTransactionalEmail, {
         headline: payload.subject,
@@ -345,9 +398,17 @@ export class UnifiedEmailDispatcher {
       const provider = this.providers.get(pName);
       if (!provider) continue;
 
+      if (!this.isCircuitAvailable(pName)) {
+        console.info(`[Circuit Breaker Bypass] Skipping ${pName} (circuit is open).`);
+        continue;
+      }
+
       try {
-        return await provider.send(payload);
-      } catch (err) {
+        const result = await provider.send(payload);
+        this.recordSuccess(pName);
+        return result;
+      } catch (err: any) {
+        this.recordFailure(pName);
         lastError = err as Error;
         console.warn(`[Failover] Provider ${pName} failed: ${lastError.message}. Cascading to next provider.`);
       }
@@ -355,4 +416,20 @@ export class UnifiedEmailDispatcher {
 
     throw new Error(`[All Email Providers Failed]: ${lastError?.message}`);
   }
+
+  async send(payload: UnifiedEmailPayload, preferredProvider?: SupportedEmailProvider): Promise<DispatchResult> {
+    return this.dispatch(payload, preferredProvider);
+  }
+}
+
+/**
+ * Singleton factory for dispatcher
+ */
+let globalDispatcherInstance: UnifiedEmailDispatcher | null = null;
+
+export function getAutoConfiguredDispatcher(): UnifiedEmailDispatcher {
+  if (!globalDispatcherInstance) {
+    globalDispatcherInstance = new UnifiedEmailDispatcher();
+  }
+  return globalDispatcherInstance;
 }
