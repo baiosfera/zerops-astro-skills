@@ -169,3 +169,28 @@ export async function dispatchTransactionalEmail(payload: UnifiedEmailPayload) {
 3. **Missing RFC 8058 Headers**: Omitting RFC 8058 headers on marketing blasts causes Yahoo and Gmail to penalize sender domain reputation.
 4. **Missing One-Click POST Receiver**: Having the headers in outgoing email but returning 404 or a login page on the POST endpoint violates RFC 8058 §4.
 5. **Ignoring Custom MAIL FROM on SES**: Sending with default `MAIL FROM: ...@amazonses.com` breaks DMARC SPF alignment under `aspf=r`. Always configure `mail.yourdomain.com`.
+6. **Sending Raw Email Addresses without RFC 5322 Display Names**: Raw addresses (`mentor@yourdomain.com`) trigger spam heuristics and lower open rates. Always format as `"Brand Name <email@yourdomain.com>"`.
+7. **Sparse Emails Triggering CLD3 Translation Banners**: Sending telegraphic emails packed with technical keywords or URLs without sufficient natural Spanish prose causes Google CLD3 to misclassify the email as English and prompt the user to translate it.
+
+---
+
+## 8. RFC 5322 Sender Formatting & Google CLD3 Anti-Translation Standard
+
+### 8.1. Sender Display Name Standard
+In all payloads dispatched via `UnifiedEmailDispatcher`, format the sender string adhering strictly to RFC 5322:
+```typescript
+const payload: UnifiedEmailPayload = {
+  // CORRECT: Display name + bracketed email
+  from: "Juan Damaren <mentor@juandamaren.com>",
+  // INCORRECT: mentor@juandamaren.com
+  to: ["customer@domain.com"],
+  subject: "Confirmación de acceso a la plataforma"
+};
+```
+
+### 8.2. Google CLD3 Language Detector & Anti-Translation Invariant
+Gmail runs Google's Compact Language Detector (CLD3) on every incoming message. To guarantee that Spanish messages never trigger the "¿Traducir del inglés?" banner:
+1. **MIME Header:** Inquire or inject `Content-Language: es` on all outbound payloads.
+2. **HTML Root Attributes:** `<html lang="es" xml:lang="es" translate="no" class="notranslate">`.
+3. **Google Meta Tag:** `<meta name="google" content="notranslate" />`.
+4. **Natural Spanish Prose Floor:** Ensure body content contains at least 30–50 words of natural Spanish prose with standard stopwords (*de, la, que, el, en, y, para, con*) to dilute technical FQDNs, URLs, and English framework tokens below the classification threshold.

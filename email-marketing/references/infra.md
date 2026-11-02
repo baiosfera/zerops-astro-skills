@@ -121,6 +121,30 @@ Default SES sending envelope uses `<id>@amazonses.com`, which breaks SPF alignme
 * **VDM:** Programmatically enabled for predictive reputation routing, engagement tracking, and shared IP optimization.
 * **Event Destinations:** All bounces and complaints route to an Amazon SNS Topic (`ses-deliverability-events`), which webhooks into Directus/PostgreSQL to atomically suppress failing addresses.
 
+### 3.3. Critical Identity Precedence Gotcha (Individual Email vs Domain Identity)
+* **The Trap:** If an individual email address (e.g. `mentor@yourdomain.com`) was verified in AWS SES *before* the domain identity (`yourdomain.com`), SES assigns individual identity settings higher precedence than domain settings.
+* **The Failure Mode:** Individual email identities in SES do NOT automatically inherit the domain's `MailFromDomain`. When sending from `mentor@yourdomain.com`, SES falls back to `<id>@amazonses.com`, causing Gmail to display *"via amazonses.com"* or *"enviado por amazonses.com"* and failing DMARC SPF alignment.
+* **The Resolution Protocol:**
+  1. Inspect email identity attributes: `aws ses get-identity-mail-from-domain-attributes --identities mentor@yourdomain.com`
+  2. If `MailFromDomain` is empty/null, set it explicitly:
+     ```bash
+     aws ses set-identity-mail-from-domain --identity "mentor@yourdomain.com" --mail-from-domain "mail.yourdomain.com" --behavior-on-mx-failure UseDefaultValue
+     ```
+  3. Alternatively, delete redundant individual email identities (`DeleteEmailIdentity`) to let the verified domain identity govern all addresses automatically.
+
+### 3.4. Domain Verification Cache Reset Protocol
+* **The Trap:** If domain verification is requested in SES before DNS records propagate to Cloudflare, SES records `ErrorType: HOST_NOT_FOUND` and enters an exponential backoff sleep (waiting 1 to 4 hours before the next poll).
+* **The Fast-Recovery Poke:** Calling `VerifyDomainIdentity` and `VerifyDomainDkim` via API/CLI immediately flushes the `HOST_NOT_FOUND` error cache, resetting `LastCheckedTimestamp` to `null` and putting the domain at the front of the AWS validation queue for instant verification (< 60s).
+
+### 3.5. Zero-Dollar Brand Avatar Strategy ($0 BIMI Alternative in Gmail)
+* **The Problem:** Official BIMI with verified blue checkmarks in Gmail strictly requires a Verified Mark Certificate (VMC) or Common Mark Certificate (CMC), costing upwards of $1,000 USD/year.
+* **The Sovereign Solution ($0 SaaS):**
+  1. Go to `https://accounts.google.com/signup` in incognito mode.
+  2. Select **"Use my current email address instead"** and enter the brand sender address (e.g. `contacto@brand.com` or `mentor@brand.com`). Complete email token verification.
+  3. (Alternative for organizations: provision a **Google Cloud Identity Free** tenant supporting up to 50 users at zero cost).
+  4. Navigate to `https://myaccount.google.com/personal-info` and upload the brand's logo / avatar as the profile picture.
+  5. **Result:** Gmail and Google Workspace automatically associate the uploaded profile photo with every outbound message from that address, rendering the brand avatar in recipient inboxes across all Gmail clients for $0.
+
 ---
 
 ## 4. Environment Variables Reference Dictionary

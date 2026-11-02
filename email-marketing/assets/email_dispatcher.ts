@@ -66,8 +66,16 @@ export interface CircuitState {
  * Validates HTML byte size (< 85 KB rule) and prohibits inline Base64 assets
  * to prevent Gmail message clipping and anti-spam penalties.
  */
-export function validateEmailPayloadHygiene(html: string, subject: string): void {
+export function validateEmailPayloadHygiene(html: string, subject: string, from?: string): void {
   const byteLength = Buffer.byteLength(html, "utf8");
+
+  // RFC 5322 Display Name hygiene check
+  if (from && !/<[^>]+>/.test(from)) {
+    console.warn(
+      `[RFC 5322 Sender Recommendation] Sender address "${from}" does not contain a display name. ` +
+      `Always format as "Brand Name <email@domain.com>" to improve open rates and avoid generic spam heuristics.`
+    );
+  }
 
   // Prohibition of Base64 images and fonts
   if (/data:(image|font)\/[a-zA-Z0-9\-\+\.]+;base64,/i.test(html)) {
@@ -173,14 +181,15 @@ export class ZeptoMailRestProvider implements IEmailProvider {
       subject: payload.subject,
       htmlbody: payload.html,
       textbody: payload.text,
-      ...(payload.unsubscribeUrl
-        ? {
-            headers: [
+      headers: [
+        { "Content-Language": "es" },
+        ...(payload.unsubscribeUrl
+          ? [
               { "List-Unsubscribe": `<${payload.unsubscribeUrl}>` },
               { "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
-            ],
-          }
-        : {}),
+            ]
+          : []),
+      ],
     };
 
     const res = await fetch(this.endpoint, {
@@ -240,12 +249,15 @@ export class AwsSesV2Provider implements IEmailProvider {
             Html: { Data: payload.html || "", Charset: "UTF-8" },
             Text: { Data: payload.text || "", Charset: "UTF-8" },
           },
-          Headers: payload.unsubscribeUrl
-            ? [
-                { Name: "List-Unsubscribe", Value: `<${payload.unsubscribeUrl}>` },
-                { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
-              ]
-            : [],
+          Headers: [
+            { Name: "Content-Language", Value: "es" },
+            ...(payload.unsubscribeUrl
+              ? [
+                  { Name: "List-Unsubscribe", Value: `<${payload.unsubscribeUrl}>` },
+                  { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
+                ]
+              : []),
+          ],
         },
       },
     });
@@ -278,12 +290,15 @@ export class ResendProvider implements IEmailProvider {
       subject: payload.subject,
       html: payload.html || "",
       text: payload.text,
-      headers: payload.unsubscribeUrl
-        ? {
-            "List-Unsubscribe": `<${payload.unsubscribeUrl}>`,
-            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-          }
-        : undefined,
+      headers: {
+        "Content-Language": "es",
+        ...(payload.unsubscribeUrl
+          ? {
+              "List-Unsubscribe": `<${payload.unsubscribeUrl}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            }
+          : {}),
+      },
     });
 
     if (res.error) {
@@ -386,7 +401,7 @@ export class UnifiedEmailDispatcher {
       payload.text = await toPlainText(templateElement);
     }
 
-    validateEmailPayloadHygiene(payload.html, payload.subject);
+    validateEmailPayloadHygiene(payload.html, payload.subject, payload.from);
 
     const providerOrder: SupportedEmailProvider[] = preferredProvider
       ? [preferredProvider, "listmonk", "zeptomail-rest", "aws-ses", "resend", "mock-sandbox"]
