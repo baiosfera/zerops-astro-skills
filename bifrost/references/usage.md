@@ -66,13 +66,26 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
 | `headers["x-tier"]` | string | Value of custom HTTP request header | `headers['x-tier'] == 'priority'` |
 | `virtual_key_id` | string | ID of the Virtual Key executing the request | `virtual_key_id == 'vk-prod'` |
 
-### B. Canonical Routing: FreeLLMAPI Primary with Pro Fallback
+### B. Canonical Zero-Leak Routing: FreeLLMAPI ($0) Default with Pro Fallback
 ```json
 {
   "routing_rules": [
     {
-      "id": "rule-freellm-first-pro-fallback",
-      "name": "FreeLLMAPI Default with Commercial Fallback",
+      "id": "rule-explicit-pro-override",
+      "name": "Route Explicit Pro Tier Requests Directly to Pro/DeepSeek",
+      "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-tier'] == 'pro' || headers['x-routing-tier'] == 'pro'",
+      "targets": [
+        {
+          "provider": "pro",
+          "weight": 1.0
+        }
+      ],
+      "fallbacks": ["freellmapi"],
+      "priority": 0
+    },
+    {
+      "id": "rule-freellm-zero-cost-universal",
+      "name": "Prioritize FreeLLMAPI ($0) for All Models (Chat, Code, Reasoning) with Paid Failover",
       "cel_expression": "true",
       "targets": [
         {
@@ -80,19 +93,8 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
           "weight": 1.0
         }
       ],
-      "fallbacks": ["pro"]
-    },
-    {
-      "id": "rule-complex-code-to-pro",
-      "name": "Heavy Reasoning Direct to Pro Provider",
-      "cel_expression": "model.contains('reasoning') || request_body.max_tokens > 8000",
-      "targets": [
-        {
-          "provider": "pro",
-          "weight": 1.0
-        }
-      ],
-      "fallbacks": ["freellmapi"]
+      "fallbacks": ["pro"],
+      "priority": 1
     }
   ]
 }
