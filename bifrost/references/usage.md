@@ -236,8 +236,8 @@ export ANTHROPIC_BASE_URL="http://localhost:8080/anthropic"
 export ANTHROPIC_API_KEY="sk-bf-prod-main-key"
 ```
 
-### Pattern 6: Dual-Tier Predictive Intent Routing & Circuit Breaker with Cooldown
-Avoid 12-22s reactive failovers by classifying intents upfront:
+### Pattern 6: Dual-Tier Predictive Intent Routing & Zero-Leak CEL
+Clients can pass intent headers to immediately route to Pro without testing FreeLLMAPI:
 ```typescript
 // Client-side predictive dispatch for WhatsApp Bots or Autonomous Workers
 const isTransactional = /comprar|precio|pago|ticket|reserva|orden|reclam/i.test(userText) || hasActiveTools;
@@ -247,14 +247,52 @@ const response = await fetch("http://bifrost:8080/v1/chat/completions", {
   headers: {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${BIFROST_VIRTUAL_KEY}`,
-    ...(isTransactional ? { "x-tier": "production" } : {})
+    ...(isTransactional ? { "x-force-deepseek": "true", "x-tier": "pro" } : {})
   },
   body: JSON.stringify({
-    model: isTransactional ? "deepseek-chat" : "auto",
+    model: isTransactional ? "deepseek-chat" : "llama-3.3-70b-versatile",
     messages: conversationMessages,
     temperature: 0.1
   })
 });
+```
+
+---
+
+## 6. Bifrost CLI (@maximhq/bifrost-cli v1.0.1) Operational Guide
+
+The `@maximhq/bifrost-cli` utility serves as the administrative bridge for managing Virtual Keys, inspecting circuit breaker status, and performing real-time inference probes.
+
+### A. Installation & Binary Architecture
+The npm package installs a bootstrap downloader at `/usr/bin/bifrost` that fetches the compiled Go binary into `~/.bifrost/bin/bifrost` on its first invocation.
+
+```bash
+# Global installation and first-run native binary hydration
+sudo npm install -g @maximhq/bifrost-cli
+/usr/bin/bifrost --help >/dev/null 2>&1 || true
+
+# Symlink native Go binary to global PATH
+sudo ln -sf "$HOME/.bifrost/bin/bifrost" /usr/local/bin/bifrost
+sudo ln -sf "$HOME/.bifrost/bin/bifrost" /usr/local/bin/bifrost-cli
+```
+
+### B. Common CLI Operations
+```bash
+# 1. Health check & cluster status probe
+curl -s http://bifrost:8080/healthz
+
+# 2. Virtual Keys listing via Management API
+curl -s -H "Authorization: Bearer $BIFROST_ADMIN_KEY" \
+  http://bifrost:8080/api/governance/virtual-keys
+
+# 3. Test inference via drop-in curl with zero-leak routing
+curl -s -X POST http://bifrost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $PROD_VIRTUAL_KEY" \
+  -d '{
+    "model": "llama-3.3-70b-versatile",
+    "messages": [{"role": "user", "content": "Ping Bifrost"}]
+  }'
 ```
 
 ---
@@ -279,4 +317,4 @@ const response = await fetch("http://bifrost:8080/v1/chat/completions", {
 - **Anti-Pattern 1: Empty Array in Key Configuration**: Setting `{"models": []}`. In v2.0 semantics, this blocks all models. Use `["*"]`.
 - **Anti-Pattern 2: Client Direct Upstream Key Bypass**: Sending raw provider keys directly to Bifrost. All requests require Virtual Keys.
 - **Anti-Pattern 3: Unbounded Semantic Cache Threshold**: Setting cosine threshold to `<0.75` causes false positive cache hits. Keep between `0.85` and `0.90`.
-- **Anti-Pattern 4: Reactive 429 Cascade Failover**: Routing all traffic to FreeLLMAPI and waiting for 429 errors before falling back to Pro Tier. This causes 12-22s cumulative latency, webhook timeouts in WhatsApp (Evolution API retry storms), and model hallucination on sales links. Always use Dual-Tier Predictive Intent Routing with a 120s Circuit Breaker Cooldown.
+- **Anti-Pattern 4: Premature Paid Routing & Missing Circuit Breakers**: Diverting coding or reasoning requests directly to commercial tiers like DeepSeek based on model name strings instead of utilizing FreeLLMAPI ($0 pool across 12 keys). Always enforce Inverted Zero-Leak CEL Routing (Priority 1: `true` -> FreeLLMAPI, Priority 0: explicit bypass `x-force-deepseek: true`) coupled with a 60s circuit breaker to eliminate both token expenditure leaks and cascading 429 timeouts.

@@ -20,13 +20,7 @@
   },
   "vector_store": {
     "enabled": true,
-    "type": "redis",
-    "config": {
-      "addr": "env.VALKEY_ADDR",
-      "password": "env.VALKEY_PASSWORD",
-      "db": 0,
-      "use_tls": false
-    }
+    "type": "chromem"
   },
   "mcp": {
     "client_configs": [
@@ -135,10 +129,47 @@
         "token_reset_duration": "1h"
       }
     ],
+    "circuit_breakers": [
+      {
+        "id": "freellmapi-exhaustion-breaker",
+        "provider": "freellmapi",
+        "triggers": {
+          "status_codes": [429, 500, 502, 503],
+          "header_triggers": [
+            {
+              "source": "response_header",
+              "header_name": "retry-after"
+            },
+            {
+              "source": "response_header",
+              "header_name": "x-ratelimit-remaining",
+              "header_value": "0"
+            }
+          ]
+        },
+        "default_cooldown": "60s",
+        "cooldown_header": "retry-after"
+      }
+    ],
     "routing_rules": [
       {
-        "id": "rule-freellm-primary-pro-fallback",
-        "name": "FreeLLMAPI Primary with Pro Fallback",
+        "id": "rule-explicit-pro-override",
+        "name": "Route Explicit Pro Tier Requests Directly to Pro",
+        "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-tier'] == 'pro' || headers['x-routing-tier'] == 'pro'",
+        "targets": [
+          {
+            "provider": "pro",
+            "weight": 1.0
+          }
+        ],
+        "fallbacks": [
+          "freellmapi"
+        ],
+        "priority": 0
+      },
+      {
+        "id": "rule-zero-cost-freellm-universal",
+        "name": "Prioritize FreeLLMAPI ($0) for All Models (Chat, Code, Reasoning) with Paid Failover",
         "cel_expression": "true",
         "targets": [
           {
@@ -146,7 +177,10 @@
             "weight": 1.0
           }
         ],
-        "fallbacks": ["pro"]
+        "fallbacks": [
+          "pro"
+        ],
+        "priority": 1
       }
     ]
   }

@@ -210,3 +210,37 @@ curl -s -X POST http://localhost:3001/mcp \
   - Giving developers direct keys from Groq, Cerebras, or Google AI Studio.
   - *Consequence*: Bypasses central quota tracking, eliminates automatic failover, and exposes raw credentials.
   - *Fix*: Hand out only the unified `freellmapi-...` token; manage upstream keys centrally via declarative config.
+
+---
+
+## 7. Sovereign 12-Key Dual-Layer Architecture & 7 Free-Tier Invariants
+
+FreeLLMAPI is engineered specifically for free-tier quotas, which differ fundamentally from uniform commercial API subscriptions. While enterprise gateways like Bifrost manage billing caps and uniform latency, FreeLLMAPI manages burst concurrency, cascading rate limits, and non-uniform quota exhaustion across free providers.
+
+### A. The 12-Key Dual-Layer Topology
+FreeLLMAPI aggregates 12 free API keys distributed across two fully independent account layers:
+- **Layer 1 (Primary Account Group - 6 Keys)**:
+  - `groq-primary`: Llama 3.3 70B Versatile
+  - `cerebras-primary`: Llama 3.1 70B (ultra-fast inference)
+  - `opencode-primary`: Qwen 2.5 Coder 32B (Zen coding specialist)
+  - `openrouter-primary`: Free tier models (DeepSeek R1 free, Gemma 2 9B)
+  - `github-primary`: GitHub Models Free Tier
+  - `ollama-primary`: Cloud-hosted free inference endpoint
+- **Layer 2 (Secondary Account Group - 6 Keys)**:
+  - Independent backup accounts for Groq, Cerebras, OpenCode, OpenRouter, GitHub, and HuggingFace.
+
+### B. The 7 Free-Tier Invariants
+1. **Provisional Token Leases**: Before streaming tokens from an upstream provider, FreeLLMAPI reserves a provisional lease in memory. If two concurrent agent queries hit the same key, the second query is routed to Layer 2 before the provider returns HTTP 429.
+2. **4-Tier Escalating Cooldowns**: When a key triggers HTTP 429, it enters deterministic escalating cooldowns:
+   - 1st strike: 2 minutes
+   - 2nd strike: 10 minutes
+   - 3rd strike: 1 hour
+   - 4th strike: 24 hours (daily quota exhausted)
+3. **Background 60s Active Recovery Probes**: Rather than waiting for a user query to fail or testing synchronously, FreeLLMAPI dispatches lightweight background probes (`/models` or 1-token pings) every 60s to reinstate cooled providers the instant their quota window resets.
+4. **Account-Level Shared Quota Pooling**: Keys belonging to the same organization are tagged so that hitting a rate limit on key A proactively adjusts the quota velocity for sibling keys in that account.
+5. **SQLite WAL Persistence**: State, cooldown timers, token leases, and encrypted keys are stored in `/app/server/data/freellmapi.db` under SQLite Write-Ahead Logging (WAL) mode, guaranteeing zero corruption during container reboots or Zerops deploys.
+6. **Thompson Sampling Bandit Router**: The router models each provider as an arm in a multi-armed bandit, balancing exploration of newly restored keys with exploitation of ultra-low latency providers (e.g. Cerebras).
+7. **Signed Catalog Synchronization**: Dynamic model capabilities (context window, tool-call support, vision support) are validated against signed upstream provider manifests to prevent agent prompts from breaking when a provider modifies its model endpoints.
+
+### C. Bifrost + FreeLLMAPI Coexistence Law
+Bifrost CANNOT replace FreeLLMAPI: Bifrost lacks in-flight token leases, escalating cooldown tiers, and account-level quota pooling. Placing FreeLLMAPI directly behind Bifrost (`Bifrost :8080` $\to$ `FreeLLMAPI :3001` $\to$ `Free Providers`) creates an indestructible single front door where 100% of base traffic runs at $0, and commercial paid tiers (DeepSeek) are invoked strictly as contingency fallbacks.

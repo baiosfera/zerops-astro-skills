@@ -4,38 +4,86 @@
   "keys": [
     {
       "platform": "groq",
-      "key": "env.GROQ_API_KEY",
-      "label": "Groq Cloud Main",
+      "key": "env.GROQ_API_KEY_1",
+      "label": "Groq Primary Account A",
+      "accountGroup": "account_a",
+      "enabled": true
+    },
+    {
+      "platform": "groq",
+      "key": "env.GROQ_API_KEY_2",
+      "label": "Groq Secondary Account B",
+      "accountGroup": "account_b",
       "enabled": true
     },
     {
       "platform": "cerebras",
-      "key": "env.CEREBRAS_API_KEY",
-      "label": "Cerebras Fast Inference",
+      "key": "env.CEREBRAS_API_KEY_1",
+      "label": "Cerebras Primary Account A",
+      "accountGroup": "account_a",
+      "enabled": true
+    },
+    {
+      "platform": "cerebras",
+      "key": "env.CEREBRAS_API_KEY_2",
+      "label": "Cerebras Secondary Account B",
+      "accountGroup": "account_b",
       "enabled": true
     },
     {
       "platform": "opencode",
-      "key": "env.OPENCODE_API_KEY",
-      "label": "OpenCode Zen Pool",
+      "key": "env.OPENCODE_API_KEY_1",
+      "label": "OpenCode Zen Account A",
+      "accountGroup": "account_a",
+      "enabled": true
+    },
+    {
+      "platform": "opencode",
+      "key": "env.OPENCODE_API_KEY_2",
+      "label": "OpenCode Zen Account B",
+      "accountGroup": "account_b",
       "enabled": true
     },
     {
       "platform": "openrouter",
-      "key": "env.OPENROUTER_API_KEY",
-      "label": "OpenRouter Free Models",
+      "key": "env.OPENROUTER_API_KEY_1",
+      "label": "OpenRouter Account A",
+      "accountGroup": "account_a",
+      "enabled": true
+    },
+    {
+      "platform": "openrouter",
+      "key": "env.OPENROUTER_API_KEY_2",
+      "label": "OpenRouter Account B",
+      "accountGroup": "account_b",
+      "enabled": true
+    },
+    {
+      "platform": "github",
+      "key": "env.GITHUB_MODELS_KEY_1",
+      "label": "GitHub Models Account A",
+      "accountGroup": "account_a",
+      "enabled": true
+    },
+    {
+      "platform": "github",
+      "key": "env.GITHUB_MODELS_KEY_2",
+      "label": "GitHub Models Account B",
+      "accountGroup": "account_b",
       "enabled": true
     },
     {
       "platform": "huggingface",
-      "key": "env.HUGGINGFACE_API_KEY",
-      "label": "HuggingFace Serverless",
+      "key": "env.HUGGINGFACE_API_KEY_1",
+      "label": "HuggingFace Serverless Account A",
+      "accountGroup": "account_a",
       "enabled": true
     },
     {
       "platform": "ollama",
-      "key": "env.OLLAMA_API_KEY",
-      "label": "Ollama Cloud Tier",
+      "key": "env.OLLAMA_API_KEY_1",
+      "label": "Ollama Cloud Tier Account B",
+      "accountGroup": "account_b",
       "enabled": true
     }
   ],
@@ -54,9 +102,12 @@
     }
   ],
   "routing": {
-    "strategy": "balanced",
+    "strategy": "thompson_sampling",
     "fallbackEnabled": true,
-    "cooldownSeconds": 300,
+    "cooldownSeconds": 120,
+    "escalatingCooldowns": [120, 600, 3600, 86400],
+    "backgroundProbeIntervalSeconds": 60,
+    "provisionalLeasesEnabled": true,
     "contextHandoff": "on_model_switch"
   },
   "models": [

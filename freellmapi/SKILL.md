@@ -4,27 +4,34 @@ description: "Trigger: freellmapi, free-llm-api, freellmapi gateway, multi-provi
 license: MIT
 metadata:
   author: "gentleman-programming"
-  version: "1.3"
+  version: "2.0"
 ---
 
-# `freellmapi` — Multi-Provider Free LLM Aggregation Gateway & Bridge (v1.3)
+# `freellmapi` — Multi-Provider Free LLM Aggregation Gateway & Bridge (v2.0)
 
 ## Activation Contract
-Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), configuring free multi-provider inference pools (Groq, Cerebras, OpenCode, OpenRouter), setting up upstream routing for Bifrost, or registering the `/mcp` server on Zerops.
+Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), configuring free multi-provider inference pools (Groq, Cerebras, OpenCode, GitHub Models, OpenRouter), setting up upstream routing for Bifrost, or operating the 12-key dual-layer quota pool on Zerops.
 
 ## Core Directives & Invariants
-- **Encrypted Storage & Volume Permissions**: Stored provider keys are AES-256-GCM encrypted in SQLite (`freellmapi.db`). Mount `/app/server/data` to persistent local storage with `chmod -R 777`. Bind `PORT=3001` to `0.0.0.0`.
-- **Zerops Env Precedence**: Inject production secrets via `zerops_env` using `FREEAPI_CONFIG_JSON`. Avoid baking dynamic secrets into `run.envVariables` inside `zerops.yaml`, which makes them immutable at service scope.
-- **Declarative Admin Seeding**: Declare `admin: { email, password }` in the declarative configuration during headless deployments. FreeLLMAPI seeds this account on first boot (`userCount === 0`), permanently closing the unauthenticated `/api/auth/setup` window.
-- **Fail-Fast & Anti-Cascade**: FreeLLMAPI acts as the zero-cost tier for non-transactional prompts behind Bifrost. Enforce fail-fast execution timeouts ($\le$ 2.5s) on upstream free providers. On HTTP 429, return deterministic 429 errors immediately without recursive multi-hop retries to let Bifrost circuit breakers trip to Pro Tier.
-- **Monorepo Workspace Isolation**: Isolate the application directory before executing `npm ci` or `zcli push` to avoid `EUNSUPPORTEDPROTOCOL` from parent monorepo workspace references.
+- **12-Key Sovereign Dual-Layer Pool**: Coalesce 12 free API keys distributed across 2 independent account layers (6 providers per layer: Groq, Cerebras, OpenCode Zen, GitHub Models, OpenRouter Free, HuggingFace/Ollama) to maximize free concurrency headroom without paying commercial egress.
+- **7 Free-Tier Invariants**:
+  1. *Provisional Token Leases*: Reserve estimated token budgets prior to streaming to prevent concurrency collapse.
+  2. *4-Tier Escalating Cooldowns*: On HTTP 429, escalate cooldowns deterministically (2m $\to$ 10m $\to$ 1h $\to$ 24h) per key.
+  3. *Background 60s Recovery Probes*: Probe cooled providers asynchronously every 60s without stalling incoming inference.
+  4. *Account-Level Shared Quotas*: Aggregate rate limits across keys belonging to the same account boundary.
+  5. *SQLite WAL Persistence*: Persist state in SQLite WAL mode (`/app/server/data/freellmapi.db`) mounted to persistent local storage with `chmod -R 777`.
+  6. *Thompson Sampling Bandit Router*: Select providers via multi-armed bandit dynamically weighting latency, quality, and remaining quota.
+  7. *Signed Catalog Synchronization*: Validate model metadata against verified provider manifests.
+- **Bifrost Tandem Invariant**: FreeLLMAPI listens on port 3001 as the internal $0 upstream for Bifrost (`http://freellmapi:3001/v1`). Clients connect through Bifrost (`http://bifrost:8080`); runtime inference never exposes raw FreeLLMAPI keys publicly.
+- **Fail-Fast Anti-Cascade**: Return deterministic 429 errors within $\le$ 2.5s on upstream exhaustion to let Bifrost's 60s circuit breaker trip to Pro Tier without cascading latency spikes.
+- **Zerops Env Precedence**: Inject secrets via `zerops_env` using `FREEAPI_CONFIG_JSON`. Declare `admin: { email, password }` during initial bootstrap to permanently close the `/api/auth/setup` window.
 
 ## Decision Gates & References
-- **Drop-in Clients & CLI Generators**: [`usage.md`](file:///var/www/zerops-astro-skills/freellmapi/references/usage.md) — OpenAI/Python/TS drop-in client patterns and error catalog.
-- **Zerops Topology & Lifecycle**: [`infra.md`](file:///var/www/zerops-astro-skills/freellmapi/references/infra.md) — Node.js 22 runtime, persistent mounts, and health probes.
-- **Bifrost Upstream & MCP Bridge**: [`agy_bifrost_bridge.md`](file:///var/www/zerops-astro-skills/freellmapi/references/agy_bifrost_bridge.md) — Single Front Door topology and `/mcp` streaming.
-- **Production Config Template**: [`freellmapi_production_template.json`](file:///var/www/zerops-astro-skills/freellmapi/assets/freellmapi_production_template.json) — Declarative JSON template.
-- **Validation**: [`freellmapi-validate.sh``skills-suite-validate` — Liveness sensor and token checker.
+- **Drop-in Clients & Quota Manual**: [`usage.md`](file:///var/www/zerops-astro-skills/freellmapi/references/usage.md) — 12-key architecture, client snippets, and cooldown catalog.
+- **Zerops Topology & Storage**: [`infra.md`](file:///var/www/zerops-astro-skills/freellmapi/references/infra.md) — Node.js runtime, persistent volumes, and health probes.
+- **Bifrost Tandem Bridge**: [`agy_bifrost_bridge.md`](file:///var/www/zerops-astro-skills/freellmapi/references/agy_bifrost_bridge.md) — Single Front Door upstream patterns.
+- **Production Config Template**: [`freellmapi_production_template.json`](file:///var/www/zerops-astro-skills/freellmapi/assets/freellmapi_production_template.json) — 12-key declarative configuration.
+- **Validation**: `skills-suite-validate` — Physical test sensor.
 
 ## Output Contract
-Deterministic OpenAI-compatible responses from `/v1/chat/completions`, active health probe (HTTP 200 on `/api/ping`), and zero orphan daemon processes.
+Deterministic OpenAI-compatible responses from `/v1/chat/completions`, active health probe (HTTP 200 on `/api/ping` and `/`), and zero orphan daemon processes.
