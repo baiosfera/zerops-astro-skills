@@ -13,6 +13,9 @@ metadata:
 Activate when ingesting universal TYM (Type-YAML-Markdown) playbooks from `/var/www/baiosfera/PLAYBOOKS/`, resolving algebraic semantic slots (`{{SLOT}}`) using W3C DTCG tokens from `/var/www/localstorage/${PROJECT_NAME}/dev/brandbook.json`, transmuting structural playbooks into high-converting copy (`growth-engine`), Astro 5 SSR components (`astro-web`), conversational WhatsApp qualification flows (`whatsapp-engine`), or deliverability-certified transactional emails (`email-marketing`).
 
 ## Hard Rules & Positive Guidance
+- **Dual-Upstream Doctrine Hierarchy (Layer 1 Invariant)**:
+  - *Layer 1A (Authority & Category)*: Query Crown Notebook `Categoría de Uno` (`63f2b7ea-bfce-482b-add5-02997157cb47`) for positioning, ontological moats, and high-value pricing.
+  - *Layer 1B (Conversion & Sales)*: Query Satellite Notebook `[VELOCITY_MEDIA_SPRINT_SALES]` (`68dfe298-4e0c-460b-a893-2137dd131359`) for elegant sales scripts, neurocopywriting, and sprint funnel mechanics. Neither layer may be bypassed or subordinated.
 - **Decoupled Downstream Boundary**: Consume solely universal, zero-slop TYM playbooks from `/var/www/baiosfera/PLAYBOOKS/`. Never embed author names, commercial academies, or static vendor identities into output artifacts.
 - **Deterministic Token Ingestion**: Read W3C DTCG tokens strictly from active local storage (`/var/www/localstorage/${PROJECT_NAME}/dev/brandbook.json`). Map DTCG nodes (`$value`, `$type`) to algebraic slots via compile-time validated RFC 6901 JSON pointers.
 - **Atomic Slot Hydration**: Execute AST-first replacement of all declared `{{SLOT}}` tags. Apply strict coalescing fallbacks for undefined non-required slots. Trigger validation halt when required slots fail resolution.
