@@ -89,3 +89,15 @@ This catalog maps the educational repositories in Google Drive SSoT (`/var/www/b
   - `/var/www/baiosfera/PLATZI/*branding*`, `/var/www/baiosfera/PLATZI/*estrategia-marca*`
 - **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/branding_playbook.md`
 - **Primary Extraction Focus**: Brand voice architecture, narrative moats, content distribution loops.
+
+---
+
+## 8. Crown Cluster: Categoría de Uno, Monopolio Personal & Category Design
+- **Notebook Target Title**: `Categoría de Uno`
+- **Live Notebook ID**: `63f2b7ea-bfce-482b-add5-02997157cb47`
+- **Domain Scope**: Ontological authority, Category Design, Personal Monopoly, Price the Client Not the Job, Blue Ocean Strategy, Disruptive Innovation, Paid Discovery ($150 USD), Two-Rill Engine, EPOCH Human Moat.
+- **Source Paths**:
+  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/INFLUENCE/*` (89 sources)
+  - Canonical Category Design literature (Play Bigger, Blue Ocean, Clayton Christensen, Blair Enns - 42 sources)
+- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/category_of_one_playbook.md`
+- **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion across Hermes, CrewAI, and brand-play without runtime RPC overhead.
