@@ -101,3 +101,14 @@ This catalog maps the educational repositories in Google Drive SSoT (`/var/www/b
   - Canonical Category Design literature (Play Bigger, Blue Ocean, Clayton Christensen, Blair Enns - 42 sources)
 - **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/00_category_of_one_playbook.md`
 - **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion across Hermes, CrewAI, and brand-play without runtime RPC overhead.
+
+---
+
+## 9. Satellite Cluster: Velocity Media Sprint Sales & Venta Consultiva
+- **Notebook Target Title**: `[VELOCITY_MEDIA_SPRINT_SALES]`
+- **Live Notebook ID**: `68dfe298-4e0c-460b-a893-2137dd131359`
+- **Domain Scope**: Consultative sales cycles, La Venta Elegante, high-velocity conversion sprints, objection inversion frameworks, 52 Perlas conversion mechanics, disruptive sales communication, offer ascension ladders, closed-loop diagnostic selling.
+- **Source Paths**:
+  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*` (36 courses, 43 master compendiums, excluding INFLUENCE)
+- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/consultative_sales_playbook.md`
+- **Primary Extraction Focus**: Algorithmic sales scripts, diagnostic closing mechanics, objection dismantling sequences, and sprint funnels.
