@@ -99,5 +99,5 @@ This catalog maps the educational repositories in Google Drive SSoT (`/var/www/b
 - **Source Paths**:
   - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/INFLUENCE/*` (89 sources)
   - Canonical Category Design literature (Play Bigger, Blue Ocean, Clayton Christensen, Blair Enns - 42 sources)
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/category_of_one_playbook.md`
+- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/00_category_of_one_playbook.md`
 - **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion across Hermes, CrewAI, and brand-play without runtime RPC overhead.

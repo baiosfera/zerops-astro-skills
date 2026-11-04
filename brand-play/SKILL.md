@@ -14,7 +14,7 @@ Activate when ingesting universal TYM (Type-YAML-Markdown) playbooks from `/var/
 
 ## Hard Rules & Positive Guidance
 - **Dual-Upstream Doctrine Hierarchy (Layer 1 Invariant)**:
-  - *Layer 1A (Authority & Category)*: Consume Canonical Crown Playbook `/var/www/baiosfera/PLAYBOOKS/category_of_one_playbook.md` (sub-millisecond local SSoT) backed upstream by Crown Notebook `Categoría de Uno` (`63f2b7ea-bfce-482b-add5-02997157cb47`) for positioning, ontological moats, and high-value pricing without runtime RPC latency.
+  - *Layer 1A (Authority & Category)*: Consume Canonical Crown Playbook `/var/www/baiosfera/PLAYBOOKS/00_category_of_one_playbook.md` (sub-millisecond local SSoT) backed upstream by Crown Notebook `Categoría de Uno` (`63f2b7ea-bfce-482b-add5-02997157cb47`) for positioning, ontological moats, and high-value pricing without runtime RPC latency.
   - *Layer 1B (Conversion & Sales)*: Consume Canonical Sales Playbooks (`consultative_sales_playbook.md`, `copywriting_playbook.md`, `funnels_cro_playbook.md`) backed upstream by Satellite Notebook `[VELOCITY_MEDIA_SPRINT_SALES]` (`68dfe298-4e0c-460b-a893-2137dd131359`) for elegant sales scripts, neurocopywriting, and sprint funnel mechanics. Neither layer may be bypassed or subordinated.
 - **Decoupled Downstream Boundary**: Consume solely universal, zero-slop TYM playbooks from `/var/www/baiosfera/PLAYBOOKS/`. Never embed author names, commercial academies, or static vendor identities into output artifacts.
 - **Deterministic Token Ingestion**: Read W3C DTCG tokens strictly from active local storage (`/var/www/localstorage/${PROJECT_NAME}/dev/brandbook.json`). Map DTCG nodes (`$value`, `$type`) to algebraic slots via compile-time validated RFC 6901 JSON pointers.

@@ -6,7 +6,7 @@ Before slot hydration and component transmutation, the downstream engine synthes
 
 | Layer | Canonical Local SSoT | Upstream Cluster / UUID | Focus / Scope | Output Contract |
 |---|---|---|---|---|
-| **Layer 1A** | `/var/www/baiosfera/PLAYBOOKS/category_of_one_playbook.md` | `Categoría de Uno` (`63f2b7ea-bfce-482b-add5-02997157cb47`) | Positioning, authority, ontological moats, value-based pricing, proprietary language | Brand Thesis, Value Equation, Authority Moat |
+| **Layer 1A** | `/var/www/baiosfera/PLAYBOOKS/00_category_of_one_playbook.md` | `Categoría de Uno` (`63f2b7ea-bfce-482b-add5-02997157cb47`) | Positioning, authority, ontological moats, value-based pricing, proprietary language | Brand Thesis, Value Equation, Authority Moat |
 | **Layer 1B** | `/var/www/baiosfera/PLAYBOOKS/consultative_sales_playbook.md` | `[VELOCITY_MEDIA_SPRINT_SALES]` (`68dfe298-4e0c-460b-a893-2137dd131359`) | Elegant sales closing, conversion funnels, neurocopywriting, objection inversion | Sales Scripts, Offer Stacks, Conversion Loops |
 
 ### Dual Synthesis Protocol
