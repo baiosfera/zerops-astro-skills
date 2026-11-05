@@ -1,12 +1,12 @@
 {
   "brand": "[MARCA]",
   "color_space": "oklch",
-  "selected_ecosystem_id": "eco_quiet_luxury",
+  "selected_ecosystem_id": "eco_authority_elegance",
   "ecosystems": [
     {
-      "id": "eco_quiet_luxury",
-      "name": "Quiet Luxury",
-      "concept": "Sutileza, elegancia atemporal y autoridad sin estridencias",
+      "id": "eco_authority_elegance",
+      "name": "Autoridad & Elegancia Rector",
+      "concept": "Ecosistema primario deducido del arquetipo rector de la marca",
       "themes": {
         "dark": {
           "primary": {
@@ -131,9 +131,9 @@
       }
     },
     {
-      "id": "eco_high_performance",
-      "name": "High Performance",
-      "concept": "Contraste extremo, dinamismo y alta conversión",
+      "id": "eco_avant_garde",
+      "name": "Vanguardia & Dinamismo",
+      "concept": "Contraste contemporáneo y energía activa deducida de la vertical",
       "themes": {
         "dark": {
           "primary": {
@@ -258,9 +258,9 @@
       }
     },
     {
-      "id": "eco_bio_sensual",
-      "name": "Bio-Sensual",
-      "concept": "Armonía orgánica, calidez biológica y textura humana",
+      "id": "eco_warm_organic",
+      "name": "Calidez & Conexión Esencial",
+      "concept": "Armonía envolvente y cercanía emocional propia de la marca",
       "themes": {
         "dark": {
           "primary": {

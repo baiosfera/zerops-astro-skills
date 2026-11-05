@@ -21,7 +21,7 @@ Chroma opera en el espacio perceptual uniforme OKLCH para garantizar transicione
 
 ## 2. Inyección Downstream en Tailwind CSS v4 & CSS Variables
 
-El manifiesto cromático exporta bloques nativos para Tailwind CSS v4 mediante directivas `@theme`:
+El manifiesto cromático exporta bloques nativos para Tailwind CSS v4 mediante directivas `@theme` desacopladas mediante variables CSS:
 
 ```css
 @theme {
@@ -35,20 +35,20 @@ El manifiesto cromático exporta bloques nativos para Tailwind CSS v4 mediante d
 }
 
 :root {
-  --brand-primary: oklch(0.55 0.18 280);
-  --brand-secondary: oklch(0.70 0.12 250);
-  --brand-accent: oklch(0.65 0.22 340);
-  --brand-bg: oklch(0.98 0.01 280);
-  --brand-surface: oklch(0.95 0.02 280);
-  --brand-text: oklch(0.15 0.03 280);
-  --brand-muted: oklch(0.45 0.04 280);
+  --brand-primary: oklch(0.75 0.15 85);
+  --brand-secondary: oklch(0.60 0.10 70);
+  --brand-accent: oklch(0.85 0.12 90);
+  --brand-bg: oklch(0.12 0.02 260);
+  --brand-surface: oklch(0.18 0.03 260);
+  --brand-text: oklch(0.96 0.01 260);
+  --brand-muted: oklch(0.60 0.03 260);
 }
 
-[data-theme="dark"] {
-  --brand-bg: oklch(0.12 0.02 280);
-  --brand-surface: oklch(0.18 0.03 280);
-  --brand-text: oklch(0.95 0.01 280);
-  --brand-muted: oklch(0.65 0.03 280);
+[data-theme="light"] {
+  --brand-bg: oklch(0.98 0.01 260);
+  --brand-surface: oklch(0.94 0.02 260);
+  --brand-text: oklch(0.12 0.02 260);
+  --brand-muted: oklch(0.40 0.03 260);
 }
 ```
 
@@ -56,6 +56,7 @@ El manifiesto cromático exporta bloques nativos para Tailwind CSS v4 mediante d
 
 ## 3. Contratos de Persistencia SSoT
 
-- **Manifiesto Cromático SSoT:** `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json`
-- **Espejo en Runtime Zerops:** `/var/www/localstorage/[MARCA]/dev/chroma_manifest.json`
+- **Manifiesto Cromático Primario SSoT:** `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/chroma_manifest.json`
+- **Espejo de Compatibilidad Histórica:** `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/chroma_manifest.json`
+- **Consumo en Runtime Zerops:** Leído dinámicamente por `/var/www/brandfont` y `/var/www/brandview`.
 - **Validación de Integridad:** Validado contra `assets/schemas/chroma_manifest.schema.json`.
