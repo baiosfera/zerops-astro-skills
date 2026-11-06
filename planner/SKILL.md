@@ -14,7 +14,7 @@ Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `gril
 
 ## 5 Invariantes Soberanos (Positive Guidance)
 1. **Facts-First Grounding & Anti-Grilling**: Iniciar siempre con inspección en disco o subagente `research`. Si los datos existen en el repo o la documentación, ejecutar sin preguntas. Reservar preguntas exclusivamente para bifurcaciones arquitectónicas reales con tradeoffs (máximo 1 pregunta atómica a la vez).
-2. **Linear Invariable Grouping (Zero-Orphan BAI)**: Todo issue `BAI-*` se crea estrictamente dentro de un Plan/Proyecto padre (`linear-cli create ... --project <ID|name>`). Prohibido generar issues huérfanos. Consolidar estado, decisiones y criterios en la descripción del Issue para economizar tokens en chat.
+2. **Linear Invariable Grouping & Plan Auto-Archive**: Todo issue `BAI-*` se crea estrictamente dentro de un Plan/Proyecto padre (`linear-cli create ... --project <ID|name>`). Al completar la iniciativa y verificar exit 0, el plan activo en `/var/www/artifacts/plans/<slug>.md` se mueve obligatoriamente a `archive/<slug>.executed.md` para desactivar el centinela `tool-guard.py` y prevenir falsos positivos.
 3. **Thin Orchestrator & Bounded Delegation**: Mantener contexto ligero delegando ediciones multi-archivo ($\ge 2$ archivos) o builds a subagentes temporales acotados (`invoke_subagent`). El orquestador sintetiza únicamente el resultado verificado.
 4. **Fast & Cheap Physical Attestation**: Toda tarea se valida con sensores deterministas de bajo costo antes de reportar completitud o marcar Done:
    - Chequeo estático / sintaxis: `bun run build` o `node --check` (exit 0).
@@ -39,7 +39,7 @@ Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `gril
 3. **F2 (Dual-RAG Alignment)**: Consultar especificaciones en `references/usage.md`.
 4. **F3 (Validation Feedforward)**: Chequeo de sintaxis física.
 5. **F4 (Plan & Approval)**: Enlazar a Proyecto en Linear con criterios verificables.
-6. **F5 (Execution & Fast Attestation)**: Delegación a subagente, tests físicos (`bun test` exit 0), actualización a Done y persistencia en Engram.
+6. **F5 (Execution & Fast Attestation)**: Delegación a subagente, tests físicos (`bun test` exit 0), actualización a Done, archivo mandatorio a `archive/<slug>.executed.md` y persistencia en Engram.
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)

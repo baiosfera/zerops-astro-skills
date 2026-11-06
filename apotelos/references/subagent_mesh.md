@@ -52,3 +52,29 @@ zerops_manage action="start" serviceHostname="bifrost"
 zerops_manage action="start" serviceHostname="hermes"
 ```
 The CLI waits for HTTP 200 on `/healthz` before dispatching tasks.
+
+---
+
+## 5. PydanticAI como Schema Governor para Linear GraphQL y CrewAI
+
+En el runtime Python (`hermes`), PydanticAI no compite con CrewAI; actúa como su **gobernador determinista de contratos**:
+1. **Linear GraphQL Typed Tooling**: `pydantic-ai` modela `LinearIssueInput` y `LinearPlanSpec`. Toda descomposición de issues cumple estrictamente los invariantes anti-monolíticos (5 BAIs atómicos por vertical).
+2. **Reintentos Estrictos (`ModelRetry`)**: Si el modelo propone un ticket sin criterios de aceptación o sin dependencias DAG, PydanticAI intercepta la validación y fuerza reintento local sin contaminar Linear.
+3. **Pidev Equivalence**: `pidev` (Node/Bun) consume los esquemas compilados utilizando **Zod**, manteniendo paridad tipada 1:1 entre el backend Python y el frontend Astro.
+
+---
+
+## 6. Ruteo Asimétrico de Modelos (Razonamiento F1–F4 vs Ejecución F5)
+
+Para optimizar costos (hasta 15x-20x) y velocidad sin perder rigor arquitectónico:
+- **F1–F4 (Razonamiento, Arquitectura, Planificación y Grilling)**: Modelos Frontier Reasoning (**Claude 3.7 Sonnet / Opus 4.8**, **Argon Thinking**).
+- **F5 (Scaffolding, Tool Calling, Tests, I/O)**: Modelos rápidos de alto rendimiento (**Gemini Flash 3.8 / 3.5**, Claude Haiku 4.5).
+- **Bifrost CEL Gateway**: Gobierna el ruteo mediante Virtual Keys (`vk-planner` -> Reasoning tier; `vk-crewai-exec` -> FreeLLMAPI / Flash tier).
+
+---
+
+## 7. Dossier Markdown SSoT y Aislamiento de Memoria
+
+Para evitar que Hermes, CrewAI o Pidev consuman tokens analizando documentos DOCX/PDF o redescubriendo verticales:
+- Apotelos compila `/.apotelos/dossiers/{brand}_approved_dossier.md` y lo replica al volumen NVMe `/var/www/localstorage/dossiers/`.
+- Todos los agentes leen este documento y los manifiestos JSON directamente como la Verdad Aprobada.

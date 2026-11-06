@@ -62,6 +62,20 @@ run:
 
 ---
 
+## 3. Gentle-AI Hermes Adapter & Shared Engram SSoT
+
+Hermes integra el adaptador nativo oficial de Gentle-AI (`internal/agents/hermes/adapter.go`) para operar como agente gobernado:
+1. **Instalación en Build / Init**:
+   - `prepareCommands`: Descarga el binario oficial de Gentle-AI (`gentle-ai_4.3.1_linux_amd64.tar.gz`).
+   - `initCommands`: Ejecuta `gentle-ai install --agents hermes --scope global`, inyectando `~/.hermes/SOUL.md` y configurando MCP Context7 / Engram.
+2. **Engram Shared Memory**:
+   - Monta persistentemente `/mnt/localstorage/engram` con `ENGRAM_STORAGE_DIR`.
+   - Permite a Hermes acceder a las decisiones arquitectónicas, contratos y estado compartidos con AGY y Pidev.
+3. **PydanticAI Schema Governor**:
+   - Gobierna las mutaciones hacia Linear y CrewAI con reintentos locales tipados (`ModelRetry`), impidiendo la emisión de payloads inválidos.
+
+---
+
 ## 3. Environment Variable Dictionary
 
 | Variable Name | Type | Required | Default | Description |
