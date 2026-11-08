@@ -17,6 +17,7 @@ Activate when planning commits, opening pull requests, configuring CI/CD pipelin
 - **Atomic Work Units**: Scope commits and PRs into small, self-contained units ($\le$ 400 lines). Break large initiatives into stacked, reviewable branches (`chained-pr`).
 - **Physical SSoT Parity Before Push**: Execute `ssot-parity-check` and assert exit code 0 before pushing changes to `origin/main` or deployment branches.
 - **Zero Live Edits Invariant**: Direct all production and preview code changes through Git repositories (`ghcicd`). Runtime containers mount repositories; never perform untracked live modifications.
+- **Client Repository Sovereignty & Namespace Isolation**: Isolate client repositories under their dedicated GitHub account (`https://github.com/<marca>/web`). Upstream namespace `baiosfera/*` is restricted strictly to core tooling, templates, and skills. Map `main` to production (`webprod`) and `dev` to development (`webdev`).
 - **Destructive Command Guardrails**: Guard against destructive operations (`git reset --hard`, `git push --force`, `rm -rf /`). Respect platform hooks and verification gates.
 
 ## Active Sub-Skills Dispatch Table

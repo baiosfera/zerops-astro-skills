@@ -60,7 +60,12 @@ Para aplicaciones web (`astro-web`, Bun, Node):
 2. **Capa Opcional de Staging (Para Auditoría QA Multi-Usuario)**:
    - En proyectos con equipos distribuidos o clientes que exijan aprobación previa antes de fusionar a `main`, se puede incorporar de forma opcional un servicio `<service>-stage` desplegado desde la rama `stage`.
    - Staging corre en su propio contenedor independiente con variables sandbox (Stripe Test, Directus Test). Es una extensión opcional y no bloquea el ciclo prioritario Dev/Prod.
-   - *Frontera de Repositorios*: Este pipeline pertenece exclusivamente a los repositorios de aplicación web (`astro-web`), **NUNCA** a la plantilla chasis `zerops-astrobranding`.
+   - *Frontera de Repositorios & Soberanía de Namespaces*:
+     * Este pipeline pertenece exclusivamente a los repositorios de aplicación web (`astro-web`), **NUNCA** a la plantilla chasis `zerops-astrobranding`.
+     * **Soberanía de Namespaces (Upstream vs Cliente)**: El namespace `baiosfera/*` en GitHub está reservado de forma estricta para plantillas base, chasis de infraestructura y catálogo de skills (`zerops-astrobranding`, `zerops-astro-skills`). Queda **terminantemente prohibido** alojar código o crear repositorios de clientes bajo `baiosfera`.
+     * **Repositorio del Cliente**: Cada marca opera en su propio repositorio soberano en GitHub: `https://github.com/<marca>/web`.
+     * **Resolución de Tokens**: El agente debe consultar las credenciales en `/var/www/baiosfera/0ZEROPS-AGY/users-apis/<Marca>/<marca>-keys.md` (ej: `GITHUB_TOKEN_GLAMUR`, `GITHUB_TOKEN_ELPLACERDC`), nunca usar el token de Baiosfera para clientes.
+     * **Mapeo de Ramas**: `main` despliega en el runtime `webprod` (producción); `dev` despliega en `webdev` (desarrollo).
 
 3. **Advertencia de Seguridad: Antipatrón de Simular Dev/Prod en Runtime Único**:
    - Intentar usar un solo contenedor Bun para servir dev y producción asignándole dos dominios DNS (`dev.dominio.com` y `dominio.com`) introduce graves fallas arquitectónicas:
