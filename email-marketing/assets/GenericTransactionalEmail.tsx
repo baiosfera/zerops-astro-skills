@@ -26,6 +26,7 @@ export interface GenericTransactionalEmailProps {
   footerNote?: string;
   unsubscribeUrl?: string;
   primaryColor?: string;
+  locale?: string;
 }
 
 export const GenericTransactionalEmail: React.FC<GenericTransactionalEmailProps> = ({
@@ -38,11 +39,14 @@ export const GenericTransactionalEmail: React.FC<GenericTransactionalEmailProps>
   actionUrl = "https://example.com/dashboard",
   footerNote = "This is an automated operational notification.",
   unsubscribeUrl = "https://example.com/unsubscribe",
-  primaryColor = "#2563eb"
+  primaryColor = "#2563eb",
+  locale = "es",
 }) => {
   return (
-    <Html lang="en" dir="ltr">
-      <Head />
+    <Html lang={locale} dir="ltr" className="notranslate" translate="no">
+      <Head>
+        <meta name="google" content="notranslate" />
+      </Head>
       <Preview>{previewText}</Preview>
       <Tailwind
         config={{
@@ -59,8 +63,8 @@ export const GenericTransactionalEmail: React.FC<GenericTransactionalEmailProps>
           }
         }}
       >
-        <Body className="bg-brandLight font-sans text-brandDark p-4">
-          <Container className="max-w-[580px] mx-auto bg-white rounded-lg border border-solid border-slate-200 p-8 shadow-sm">
+        <Body className="bg-brandLight font-sans text-brandDark p-4 notranslate" translate="no">
+          <Container className="max-w-[580px] mx-auto bg-white rounded-lg border border-solid border-slate-200 p-8 shadow-sm notranslate" translate="no">
             <Section className="mb-6">
               <Text className="text-xl font-bold tracking-tight text-brandDark uppercase m-0">
                 {brandName}

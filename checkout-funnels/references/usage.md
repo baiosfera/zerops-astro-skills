@@ -196,6 +196,14 @@ Fires `Purchase` events directly from the server to Meta CAPI with SHA-256 hashe
 ### Pattern 5: Escalated Cart Recovery Sequences with BullMQ and WhatsApp
 Schedules automated follow-up messages at 15 minutes and 2 hours with pre-populated checkout URLs and discount incentives via Evolution Go.
 
+### Pattern 6: Post-Purchase Transactional Email Invariant (Anti-Translation & Voice Parity)
+When order webhooks (Wompi, Bancolombia, Stripe, ePayco, COD) dispatch confirmation emails, they MUST adhere to the `email-marketing` **Anti-Translation Invariant**:
+1. **Google Translate Disabling Directives**: Include `<meta name="google" content="notranslate">`, `<html lang="[locale]" class="notranslate" translate="no">`, and root body `translate="no"`.
+2. **RFC 3282 Header**: Pass `Content-Language: [locale]` in email transmission.
+3. **Low CSS Token Ratio**: Avoid saturating children with inline styles (`font-size`, `margin`, `padding` on every tag); hoist layout styles to parent containers so statistical language classifiers (CLD2/CLD3) do not misclassify the email as English.
+4. **Solo Creator Voice Invariant**: Solo-founder or boutique stores must strictly use first-person singular (*"recibí tu pedido"*, *"ya estoy alistando tu paquete en Envigado"*, *"te escribiré con la guía"*). Corporate plural (*"nosotros"*, *"nuestro equipo"*) and robotic bot fluff are prohibited.
+5. **Municipal Geographic Accuracy**: Never hardcode fallback municipalities (e.g. Medellín instead of Envigado); resolve city from customer address or brand SSoT.
+
 ---
 
 ## 9. Anti-Patterns & Common Gotchas

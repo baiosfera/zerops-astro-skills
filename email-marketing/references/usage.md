@@ -73,6 +73,19 @@ export async function renderTemplateToHtml(props: any): Promise<string> {
 }
 ```
 
+### 3.5. Language Classification & Anti-Translation Invariant (Evitar "Parece que este mensaje está en inglés")
+Statistical language classifiers (Google Compact Language Detector CLD2/CLD3, FastText) analyze raw character n-grams and lexical tokens. In short transactional messages (50–120 words), inline CSS properties (`font-size`, `margin`, `padding`, `background-color`, `border`, `display`, `line-height`, `border-radius`, `letter-spacing`) inject dozens of English vocabulary words into the parser. When English CSS tokens rival or exceed the target language word count, the message is misclassified as English (`en`), triggering Gmail's banner *"Parece que este mensaje está en inglés / Traducir al español"*.
+
+To permanently inoculate templates against misclassification:
+1. **Google Translate Disabling Directives**:
+   - `<meta name="google" content="notranslate">` in `<head>`.
+   - `<html lang="es" class="notranslate" translate="no">`.
+   - `<body lang="es" class="notranslate" translate="no">`.
+   - Outer wrapper container: `class="notranslate" translate="no" lang="es"`.
+2. **RFC 3282 Header**: Emit `Content-Language: es` (never HTTP-only headers like `Accept-Language`).
+3. **CSS Token Dilution Prevention**: Hoist visual styles to the container or semantic classes rather than inlining 10 CSS properties on every child `<p>`, `<strong>`, and `<span>`.
+4. **Solo Creator Voice Invariant**: Solo-operator or boutique brands (e.g. fashion designers, coaches, consultants) must speak strictly in first-person singular (*"recibí tu pedido"*, *"ya estoy alistando tu paquete"*, *"te escribiré con el número de guía"*). Corporate plural (*"nosotros"*, *"nuestro equipo"*, *"queremos agradecerte"*) and robotic bot fluff are prohibited.
+
 ---
 
 ## 4. RFC 8058 One-Click Unsubscribe Endpoint Implementation
