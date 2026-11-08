@@ -68,6 +68,9 @@ The Zerops platform is operated exclusively through its native MCP tools:
   - *Parameters*: `serviceHostname`, `limit`. Inspects structured build and deployment failures (`stack.build`, `appVersion`).
 - **`zerops_mount`**:
   - *Parameters*: `action="mount|unmount|status"`. Mounts `/var/www/{hostname}` via SSHFS locally.
+- **`zcp-mount` (Herramienta Soberana de Remontaje Dinámico)**:
+  - *Comando*: `/usr/local/bin/zcp-mount`.
+  - *Función*: Escanea los servicios adoptados en `/var/www/.zcp/state/services/*.json`. Si el contenedor está encendido (`ACTIVE`), lo monta en `/var/www/{hostname}` vía SSHFS en <2s. Si está apagado, lo omite limpiamente sin errores. Permite apagar y prender runtimes a voluntad sin perder adopción ni configuración.
 - **`zerops_export`** & **`zerops_import`**:
   - *Parameters*: `content`/`filePath`, `override: true`, `confirmDestructive`.
 - **`zerops_browser`**:
