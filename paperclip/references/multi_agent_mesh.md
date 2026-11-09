@@ -37,11 +37,19 @@ INSERT INTO agents (
 );
 ```
 
-### Execution Flow
+### Execution Flow (Outbound: Paperclip ➔ Hermes)
 1. Paperclip sends `POST /v1/runs` with `{ input, prompt, issueId }`.
 2. Hermes dispatches an asynchronous worker and returns `{ id: run_id, status: "running" }`.
 3. Paperclip opens `GET /v1/runs/{run_id}/events` and streams SSE deltas (`message.delta`) directly into the Paperclip UI.
 4. On finish, Hermes emits `run.completed` with token usage and cost in cents.
+
+### Bidirectional Telemetry Bridge (Inbound: Hermes/Telegram ➔ Paperclip)
+To prevent control plane blindness when users interact with Hermes via Telegram (outside Paperclip UI), Hermes integrates `paperclip_bridge.py`:
+1. **Dynamic DB Discovery**: Hermes resolves Paperclip's PostgreSQL connection from `/mnt/localstorage/paperclip/instances/default/config.json`.
+2. **Heartbeat Run Telemetry**: Each Telegram turn writes a completed execution to `heartbeat_runs` (`invocation_source: 'telegram'`, token usage, duration, exit code 0).
+3. **Live Activity Stream**: Emits an audit event to `activity_log` (`action: 'agent.telegram_turn'`) with user prompt and response excerpt, appearing immediately on Paperclip's Dashboard.
+4. **Heartbeat Stamp**: Updates `agents.last_heartbeat_at = NOW()` and `status = 'idle'`, maintaining live presence in Org Charts.
+5. **Conversational Kanban Tools**: Hermes exposes `paperclip_list_tasks` and `paperclip_create_task` tools to inspect and create Paperclip issues directly from Telegram chat.
 
 ---
 
