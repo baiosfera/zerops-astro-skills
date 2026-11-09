@@ -50,7 +50,12 @@ INSERT INTO agents (
 CrewAI executes multi-agent polymorphic swarms (Researcher, Writer, Quality Analyst). There are two supported integration topologies:
 
 ### Option A: Via Hermes Gateway (Recommended — Zero Token Cost via Bifrost)
-Hermes exposes native CrewAI compilation directly through its Gateway. Setting the `X-Crew-Name` header routes the prompt to `CrewFactory.execute(crew_name, prompt)`:
+Hermes exposes native CrewAI compilation directly through its Gateway. Setting the `X-Crew-Name` header routes the prompt to `CrewFactory.execute(crew_name, prompt)`. Available registered crews in `/var/www/hermes/crews/`:
+- `general_research` / `investigacion`: Market research, technical synthesis, competitive analysis.
+- `astrology_timing`: Astrological and timing election analysis.
+- `google_seo`: Multi-surface search engine optimization.
+- `seo_aeo_geo`: AEO, GEO and schema graph optimization.
+- Any of the 83 sovereign skills dynamically via `UniversalSkillHarness` (e.g., `apotelos`, `ad-telemetry`, `brandbook`).
 
 ```json
 {
@@ -58,7 +63,7 @@ Hermes exposes native CrewAI compilation directly through its Gateway. Setting t
   "apiKey": "hermes-internal-key",
   "dangerouslyAllowInsecureRemoteHttp": true,
   "headers": {
-    "X-Crew-Name": "research_crew"
+    "X-Crew-Name": "general_research"
   },
   "sessionKeyStrategy": "issue",
   "timeoutSec": 600
@@ -103,9 +108,14 @@ INSERT INTO agents (
   'pi_local',
   '{
     "command": "pidev",
-    "model": "anthropic/claude-3-7-sonnet",
+    "model": "bifrost/auto",
     "thinking": "medium",
     "stdoutLogMode": "compact",
+    "env": {
+      "OPENAI_BASE_URL": "http://bifrost:8080/v1",
+      "OPENAI_API_KEY": "vk-bifrost",
+      "HERMES_MODEL_ENDPOINT": "http://bifrost:8080/v1"
+    },
     "timeoutSec": 600
   }'::jsonb,
   50000,
