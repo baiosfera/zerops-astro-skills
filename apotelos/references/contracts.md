@@ -49,6 +49,10 @@ class DynamicVerticalSpec(BaseModel):
         default=None,
         description="Polymorphic TOFU/MOFU/BOFU messaging ecosystem specification"
     )
+    brand_archetype: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Bifurcated archetype assignment: chroma_ecosystem_id, font_ecosystem_id, and workspace_path"
+    )
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
         description="Arbitrary extensible attributes without core schema modification"

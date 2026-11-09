@@ -67,16 +67,35 @@ En la realidad empresarial:
 
 ### Orden de Descubrimiento en Cascada (Cascading Discovery)
 Apotelos resuelve la configuración de marcas y verticales en el siguiente orden estricto:
-1. `/.apotelos/ecosystem.yaml` (o `.json`): Archivo nativo del proyecto.
-2. `/brandbook.json`: Bloque opcional `"verticals": { ... }`.
-3. `$LOCAL_STORAGE_PATH/brand/ecosystem.yaml`: Volumen NVMe persistente en Zerops.
-4. `/var/www/baiosfera/PROYECTOS/{PROJECT_NAME}/ecosystem.yaml`: Drive SSoT.
-5. **Fallback Zero-Config**: Si no existe ningún archivo, Apotelos sintetiza automáticamente una `root_vertical` para permitir arranques inmediatos sin configuración previa.
+1. `dev/verticals/ecosystem.json` (o specs curadas en `.json`): Archivos aprobados para desarrollo.
+2. `/.apotelos/ecosystem.yaml` (o `.json`): Archivo nativo del proyecto.
+3. `/brandbook.json`: Bloque opcional `"verticals": { ... }`.
+4. `$LOCAL_STORAGE_PATH/brand/ecosystem.yaml`: Volumen NVMe persistente en Zerops.
+5. `/var/www/baiosfera/PROYECTOS/{PROJECT_NAME}/ecosystem.yaml`: Drive SSoT.
+6. **Escaneo de Documentos Crudos (`verticales/`)**: Insumos `.docx`, `.pdf`, `.md`.
+7. **Fallback Zero-Config**: Si no existe ningún archivo, síntesis de `root_vertical` para arranques iniciales.
+
+### 3.1 Ciclo Soberano de Descubrimiento y Aprobación Humana (Anti-Autocracia)
+
+El descubrimiento de verticales sigue un ciclo estricto de 3 etapas que previene alucinaciones y carpetas huérfanas:
+
+1. **Etapa 1: Escaneo Profundo de Insumos Crudos (`apotelos list <FOLDER>`)**:
+   - Se ejecuta sobre el directorio de insumos crudos del cliente (e.g. `/var/www/baiosfera/PROYECTOS/{PROJECT}/verticales/`).
+   - Apotelos escanea todos los documentos (`.docx`, `.pdf`, `.md`, `.txt`), resuelve entidades en tablas, monografías conceptuales y landings de servicio con pricing tiers.
+   - **Salida**: Muestra la lista de posibles verticales candidatas descubiertas en el corpus. **No escribe ni muta nada en `dev/` aún.**
+
+2. **Etapa 2: Gate de Autorización y Curaduría Humana (Human-in-the-Loop)**:
+   - El operador o fundador humano revisa las candidatas descubiertas, decide cuáles se activan, ajusta sus nombres, dominios o subtemas.
+   - **Regla inmutable**: Ningún agente puede auto-declarar o materializar verticales en `dev/` sin autorización explícita del humano.
+
+3. **Etapa 3: Materialización Curada en `<PROJECT>/dev/verticals/`**:
+   - Una vez recibida la aprobación explícita, se escriben **única y exclusivamente los contratos JSON limpios y curados** (`ecosystem.json`, `<slug>.json`) en `<PROJECT>/dev/verticals/`.
+   - **Prohibición física**: Nunca copiar archivos binarios crudos (`.docx`, `.pdf`) a `dev/verticals/`. Este directorio es la SSoT técnica consumida directamente por los agentes constructores y programadores (Hermes, CrewAI, Gentle-Pi).
 
 ### Formato de `/.apotelos/ecosystem.yaml`
 ```yaml
-brand_slug: "catalinaglamur"
-umbrella_name: "Catalina Glamur Atelier"
+brand_slug: "universal-brand"
+umbrella_name: "Universal Brand Holding"
 design_tokens_ref: "brandbook.json"
 
 verticals:
@@ -87,11 +106,11 @@ verticals:
       pain_points: ["Pretinas que se enrollan al entrenar", "Telas transparentes"]
       desires: ["Ajuste anatómico estético", "Soporte de alta compresión"]
     unique_mechanism:
-      name: "Tejido Seamless Anatómico CG"
+      name: "Tejido Seamless Anatómico"
       contrast: "Frente a licras sintéticas que pierden elasticidad al tercer lavado"
     primary_offer:
       structure: "Pack Deportivo 2x1 con Flete Contra Entrega"
-      pricing: { currency: "COP", amount: 150000 }
+      pricing: { currency: "USD", amount: 49.00 }
     conversion_events: ["Purchase", "InitiateCheckout"]
 
   aesthetics:
@@ -101,13 +120,81 @@ verticals:
       pain_points: ["Tratamientos invasivos dolorosos", "Falta de diagnóstico biotipológico"]
       desires: ["Rejuvenecimiento natural", "Tonificación no invasiva"]
     unique_mechanism:
-      name: "Protocolo Dermo-Activo Glamur"
+      name: "Protocolo Dermo-Activo Exclusivo"
       contrast: "Frente a clínicas genéricas sin aparatología de vanguardia"
     primary_offer:
-      structure: "Valoración Facial Gratuita + 20% en Paquete de 5 Sesiones"
-      pricing: { currency: "COP", amount: 280000 }
+      structure: "Valoración Facial Gratuita + 20% en Paquete de Sesiones"
+      pricing: { currency: "USD", amount: 79.00 }
     conversion_events: ["Lead", "Schedule", "ContactWhatsApp"]
 ```
+
+---
+
+### 3.2. Arquitectura de Dos Capas y Bifurcación Arquetípica de Marca
+
+Para evitar que todas las verticales se vean idénticas y compartan los mismos colores y tipografías (lo que destruiría la credibilidad de verticales dispares como agencias B2B o comercios locales frente a marcas personales de lujo), Apotelos establece una arquitectura de persistencia y consumo en dos capas estrictas:
+
+```
+/mnt/localstorage/{PROJECT}/dev/
+│
+├── [Capa 0: Ingestión Maestra / Diagnóstico Global (Oráculo, Chroma, Fontgen)]
+│   ├── brandbook.json             <- Tokens maestros globales del holding/fundador
+│   ├── chroma_manifest.json       <- Catálogo con los 3 ecosistemas cromáticos calculados
+│   ├── font_manifest.json         <- Catálogo con los 3 ecosistemas tipográficos calculados
+│   ├── astrobranding_*.md         <- Documento rector de identidad y psicología arquetípica
+│   ├── system_prompt.md           <- Prompt base del sistema
+│   └── ecosystem.json             <- Topología de marcas
+│   ⚠️ REGLA DE ORO: Esta raíz NUNCA SE BORRA. Es la SSoT que zcp-sync sincroniza
+│      de forma bidireccional entre Google Drive y Local Storage para mantener paridad física.
+│
+├── _shared/                       <- Topología global cross-vertical (ecosystem.json)
+├── verticals/                     <- Contratos declarativos de dominio (Blackboard SSoT)
+│
+└── workspaces/                    <- [Capa 1: Bifurcación Especializada por Vertical]
+    ├── {vertical_slug_A}/
+    │   ├── brand/                 <- Tokens especializados asignados (brandbook.json, theme.css)
+    │   ├── strategy/              <- seo.md, dossier.md, psicología arquetípica
+    │   ├── copy/                  <- landings, emails, ofertas
+    │   └── web/                   <- contratos de componentes para PiDev / Astro 5 SSR
+    └── {vertical_slug_B}/
+        └── ...
+```
+
+#### Regla de Bifurcación Arquetípica en Verticales
+Cada vertical en `dev/verticals/{slug}.json` declara cuál de los 3 ecosistemas calculados por Chroma y Fontgen adopta según su Avatar y Rol en el Ecosistema:
+1. **Vertical Personal / High-Ticket / Monopolio (ej. `juan-damaren`)**:
+   - Color: `eco_solar_architect` (Oro Solar Mate `#daa24f` + Obsidiana Cálida `#090502`).
+   - Tipografía: `eco-1` (*Quiet Luxury Air Authority* - Serif de alta jerarquía).
+2. **Vertical B2B / Ingeniería / Automatización DFY (ej. `baiosfera`, `apotelos`)**:
+   - Color: `eco_abyssal_ink` (Azules estructurales, tinta abisal y acentos cian - Rigor Vishwakarma / Agua).
+   - Tipografía: `eco-2` (*High Performance Wood Precision* - Grotesk/Mono técnica).
+3. **Vertical Mística / Cosmología / Software Arquetípico (ej. `astrotipia`, `synthemika`)**:
+   - Color: `eco_terracotta_forge` (Terracota noble, cobre forjado y ámbar ahumado - Fuego / Alquimia).
+   - Tipografía: `eco-3` (*Alchemical Chitra Vanguard* - Tipografía alquímica con ligaduras discretas).
+
+#### Resolución en Cascada para Agentes y Herramientas (Zero Token Waste)
+Cuando Hermes, CrewAI o PiDev requieren los tokens de diseño para operar sobre una vertical:
+1. **Paso 1 (Especializado)**: Intenta leer `dev/workspaces/{slug}/brand/brandbook.json`.
+2. **Paso 2 (Fallback transparente)**: Si la vertical aún no fue bifurcada en su workspace, recurre a la Capa 0 maestra en `dev/brandbook.json`.
+3. **Escritura estricta**: Los agentes constructores tienen prohibido escribir nuevos activos sueltos en la raíz de `dev/`. Todo artefacto nuevo se persiste dentro de `dev/workspaces/{slug}/[brand|strategy|copy|web]/`.
+4. **Sincronización `zcp-sync`**: Sincroniza tanto la Capa 0 maestra como la Capa 1 de `workspaces/` con Google Drive, garantizando que arranques de nuevos ZCP (`iniciar.sh`) nazcan con paridad absoluta.
+
+---
+
+## 3.5. Ecosistema de Mensajería Polimórfica (TOFU / MOFU / BOFU & Anti-Colisión)
+
+Apotelos formaliza la orquestación omnicanal de forma desacoplada de cualquier marca o vertical:
+
+1. **Etapas de Ciclo de Vida**:
+   - **TOFU (Atracción y Captura)**: Entrega instantánea de lead magnet, onboarding inicial, bienvenida y confirmación de opt-in.
+   - **MOFU (Consideración y Nurture)**: Casos de estudio, educación sobre el Mecanismo Único, invitación a agendamiento o demo interactiva.
+   - **BOFU (Decisión y Conversión)**: Asistencia en checkout o recordatorio de slots de agenda, con cálculo dinámico de descuento acotado (`BoundedDiscount`) según margen.
+   - **POST_CONVERSION (Onboarding y Retención)**: Recibos transaccionales (P1), guías de uso, tracking y solicitud de feedback.
+
+2. **Políticas de Anti-Colisión & Fencing**:
+   - **Message Prioritization**: P1 (Transaccional) ignora frequency caps; P2 (Lifecycle) y P3 (Promocional) se subordinan a topes de frecuencia de 24 horas y `Quiet Hours` (21:00 a 08:00).
+   - **Cross-Channel Suppression**: Si el canal conversacional (WhatsApp) está activo, se silencia el correo promocional saliente.
+   - **Fencing Tokens en Valkey**: Cambios de etapa invalidan jobs diferidos en BullMQ mediante versionado monotónico (`HINCRBY stage_version`).
 
 ---
 

@@ -78,3 +78,19 @@ Para optimizar costos (hasta 15x-20x) y velocidad sin perder rigor arquitectóni
 Para evitar que Hermes, CrewAI o Pidev consuman tokens analizando documentos DOCX/PDF o redescubriendo verticales:
 - Apotelos compila `/.apotelos/dossiers/{brand}_approved_dossier.md` y lo replica al volumen NVMe `/var/www/localstorage/dossiers/`.
 - Todos los agentes leen este documento y los manifiestos JSON directamente como la Verdad Aprobada.
+
+---
+
+## 8. Arquitectura de Dos Capas y Workspaces Verticales Bounded Contexts
+
+Para evitar que los agentes constructores (Hermes, CrewAI, PiDev) saturen el contexto escaneando docenas de archivos en la raíz de `dev/` o contaminen los tokens de diseño entre marcas:
+1. **Capa 0 (Raíz `dev/`)**: Ingestión maestra del diagnóstico global (`brandbook.json`, `chroma_manifest.json`, `font_manifest.json`, `astrobranding_*.md`, `system_prompt.md`). Sincronizada bidireccionalmente con Google Drive SSoT vía `zcp-sync`. **Nunca se borra de la raíz.**
+2. **Capa 1 (`dev/workspaces/{vertical_slug}/`)**: Espacios de trabajo aislados por vertical con 4 subcapas funcionales:
+   - `brand/`: Tokens especializados asignados (`brandbook.json`, `chroma_manifest.json`, `theme.css`).
+   - `strategy/`: Dossier consolidado, estrategia SEO/AEO (`seo.md`), psicología arquetípica.
+   - `copy/`: Landings, ofertas, copys y secuencias de conversión.
+   - `web/`: Especificaciones y contratos de componentes para PiDev / Astro 5 SSR.
+3. **Resolución en Cascada para Herramientas**:
+   - `get_brandbook_tokens(slug)`: Lee prioritariamente de `dev/workspaces/{slug}/brand/brandbook.json`; si no fue bifurcado, realiza fallback transparente al maestro `dev/brandbook.json`.
+4. **Invariante Headless CrewAI**:
+   - `CREWAI_TELEMETRY_OPT_OUT="true"` y `OTEL_SDK_DISABLED="true"` para eliminar el prompt interactivo de 20s en runtimes desatendidos.
