@@ -48,11 +48,11 @@ Every event is formatted as `event: <type>\ndata: <json>\n\n`:
   ```
 - **Tool Invocation (`tool.call`)**:
   ```json
-  {"type": "tool.call", "tool": "get_store_products", "arguments": {"category": "activewear"}}
+  {"type": "tool.call", "tool": "execute_query", "arguments": {"query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"}}
   ```
 - **Tool Result (`tool.result`)**:
   ```json
-  {"type": "tool.result", "tool": "get_store_products", "status": "success", "output": "..."}
+  {"type": "tool.result", "tool": "execute_query", "status": "success", "output": "mentorships, bookings, clients"}
   ```
 - **Token Delta (`token.delta`)**:
   ```json
@@ -95,13 +95,29 @@ Paperclip AI must be operated with managed infrastructure to guarantee zero data
 
 ---
 
-## 4. Spend Caps & Frugal Zero-Leak Policy
+## 5. Dynamic Domain Agnosticism & Database Introspection
 
-To prevent runaway API costs, the mesh enforces:
+To prevent agentic hallucination, hardcoding of legacy project remnants (e.g. past e-commerce catalogs or specific brands), or rigid anti-commerce prohibitions, Hermes enforces **Dynamic Domain Introspection**:
+1. **Zero Hardcoded Catalogs**: Hermes must never assume fixed products, services, or pricing models out-of-the-box.
+2. **PostgreSQL 18 Live Introspection**: When asked about products, stock, bookings, or client sessions (e.g. Bioenka agroecology, Juan Damaren 1:1 mentorships, or consulting), Hermes queries `information_schema.tables` and live application tables via `execute_query`.
+3. **Factual Adaptation**:
+   - If tables exist (`mentorships`, `bookings`, `products`, `orders`), Hermes queries and mutates them factually.
+   - If tables do not exist, Hermes accurately reports the live database state and offers to generate the schema DDL or coordinate with PiDev (`gentle-pi` in `/var/www/webdev`) for UI forms.
 
-1. **Inference Hierarchy**:
-   - Priority 0: Explicit pro overrides (`x-force-deepseek: true`) routed to DeepSeek V3.
-   - Priority 1: FreeLLMAPI ($0 default across 34+ providers) with automated failover.
-2. **Paperclip Budget Policies**:
-   - Every agent is bound to a strict spend limit (e.g. $10/month or $0.50/run).
-   - If a run attempts to exceed its allocated budget, Hermes marks the run failed with `BUDGET_EXCEEDED` and returns an incident event to Paperclip.
+---
+
+## 6. CrewAI 1.15.30+ and PydanticAI `output_pydantic` Bridge
+
+Dynamic swarms orchestrated via `run_crew_ai` natively bridge CrewAI with Pydantic:
+1. **Dynamic Schema Compilation**: If `output_schema` is supplied (e.g. `{"decision": "str", "score": "int", "items": "list[str]"}`), `pydantic.create_model` compiles a dynamic `BaseModel` schema.
+2. **Strict Output Enforcement**: The generated schema is assigned to the terminal `Task(output_pydantic=DynamicModel)`.
+3. **Typed Result Extraction**: `crew.kickoff()` produces structured JSON via `output.pydantic.model_dump_json()`, guaranteeing 100% type safety and eliminating markdown hallucination.
+
+---
+
+## 7. Bifrost Governance SSoT Invariant
+
+When Bifrost runs with `config_store.enabled: true` backed by PostgreSQL (`config_store.type: "postgres"`):
+1. **Database Is Exclusive Authority**: Bifrost reads, writes, and validates Virtual Keys strictly against the PostgreSQL table `governance_virtual_keys`.
+2. **Static Config Ignored**: Keys in `config.json` are not dynamically watched or re-read after initial bootstrap.
+3. **Key Sync Mandate**: Any provisioned or updated Virtual Key (`vk-production-main`, `vk-hermes-agent`, `vk-crewai`, `vk-pidev`, `vk-pydanticai`) must be upserted directly into PostgreSQL via `/api/governance/virtual-keys` or SQL `INSERT INTO governance_virtual_keys ... ON CONFLICT (name) DO UPDATE`.

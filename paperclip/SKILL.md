@@ -43,7 +43,8 @@ Autonomous Agent Operating System and corporate control plane (`paperclip.ing` /
   ```
 - **Query Active Agents & Org Chart**:
   ```bash
-  psql "$DATABASE_URL" -c "SELECT id, name, role, title, adapter_type, reports_to, status FROM agents;"
+  PAPERCLIP_DB=$(jq -r '.database.connectionString' /mnt/localstorage/paperclip/instances/default/config.json 2>/dev/null || echo "$DATABASE_URL")
+  psql "$PAPERCLIP_DB" -c "SELECT id, name, role, title, adapter_type, reports_to, status FROM agents;"
   ```
 - **Validate Skill Suite & Governance**:
   ```bash

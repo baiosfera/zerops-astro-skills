@@ -110,10 +110,13 @@ Paperclip provides a bidirectional Model Context Protocol (MCP) interface:
 
 ### 1. Paperclip as MCP Server (`@paperclipai/mcp-server`)
 Enables external agents (Goose, Aider, OpenCode, Pi) to interact with Paperclip via standard MCP tools:
-- `paperclipCheckoutIssue({ issueId })`: Locks and assigns an issue to the calling agent.
-- `paperclipAddComment({ issueId, body })`: Posts a progress update or telemetry.
-- `paperclipCompleteTask({ issueId, summary, artifacts })`: Submits completion proof and moves issue to review.
-- `paperclipListIssues({ projectId, status })`: Discovers available work units.
+- `paperclipCheckoutIssue({ id })`: Locks and assigns an issue to the calling agent with an atomic execution run.
+- `paperclipReleaseIssue({ id })`: Releases the atomic checkout lock when pausing or unassigning work.
+- `paperclipUpdateIssue({ id, status, comment })`: Transitions issue lifecycle state (`in_progress`, `in_review`, `done`) and attaches work progress.
+- `paperclipUpsertIssueDocument({ issueId, key, title, content })`: Attaches specifications, artifacts, and delivery receipts directly to the issue.
+- `paperclipAddComment({ issueId, body })`: Posts a progress update, telemetry log, or blocker note.
+- `paperclipListIssues({ companyId, projectId, status, assigneeAgentId })`: Discovers actionable work units.
+- `paperclipAskUserQuestions`, `paperclipRequestConfirmation`, `paperclipCreateApproval`: Emits interactive governance prompts to the dashboard.
 
 ### 2. Paperclip as Governed MCP Gateway (`tool_mcp_gateways`)
 Proxies external MCP servers (GitHub, PostgreSQL, Linear, Directus) to protect the infrastructure:
@@ -123,7 +126,16 @@ Proxies external MCP servers (GitHub, PostgreSQL, Linear, Directus) to protect t
 
 ---
 
-## 6. CLI Reference & Operational Commands
+## 6. The No-Remote-Git Persistence Contract
+
+The local execution-workspace directory (`cwd`) is the **sole persistence boundary across heartbeats**:
+- **Zero Remote Push Invariant**: No adapter may invoke `git push` from adapter runtime code.
+- **Local Workspace Synchronization**: Code state is carried forward by syncing that local cwd to wherever the agent executes (SSH, sandbox, managed runtime) and syncing changes back when the heartbeat completes.
+- **Cross-Run Commit Propagation**: Commits propagate locally through `@paperclipai/adapter-utils` (`prepareWorkspaceForSshExecution` ➔ `restoreWorkspaceFromSshExecution`) with no git remote configured at any point.
+
+---
+
+## 7. CLI Reference & Operational Commands
 
 Paperclip provides an authenticated wrapper at `/usr/local/bin/paperclipai` (and `/var/www/.bin/paperclipai`):
 
@@ -139,4 +151,8 @@ cat /mnt/localstorage/paperclip/instances/default/config.json
 
 # Check server health and database status
 curl -s http://paperclip:3100/api/health
+
+# Query active agents and org chart using canonical connection string
+PAPERCLIP_DB=$(jq -r '.database.connectionString' /mnt/localstorage/paperclip/instances/default/config.json 2>/dev/null || echo "$DATABASE_URL")
+psql "$PAPERCLIP_DB" -c "SELECT id, name, role, title, adapter_type, reports_to, status FROM agents;"
 ```

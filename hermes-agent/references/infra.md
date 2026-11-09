@@ -142,3 +142,23 @@ zerops:
 | **Tool Execution Sensor** | Exit code `0` or valid JSON | Strict attestation before returning result to LLM scratchpad. |
 | **Container Memory Target** | 512 MB – 2 GB | Configurable in Zerops GUI / manifest based on traffic volume. |
 | **Container vCPU Target** | 0.5 – 2 vCPU | Elastic scaling handled automatically by Zerops LXC manager. |
+
+---
+
+## 6. SSoT Platform Invariants & Pitfall Mitigations
+
+### 6.1 Bifrost Governance PostgreSQL SSoT
+When Bifrost operates with `config_store.enabled: true` backed by PostgreSQL (`config_store.type: "postgres"`):
+- The runtime dashboard and key validation engine read exclusively from PostgreSQL table `governance_virtual_keys`.
+- Static entries in `config.json` are ignored for authorization and virtual key governance.
+- All provisioning scripts, hooks, and AGY bootstrap workflows must insert/update virtual keys directly in PostgreSQL or via the HTTP REST API (`/api/governance/virtual-keys`).
+
+### 6.2 Telegram Single-Instance Long-Polling Invariant
+- Telegram Bot API strictly prohibits concurrent `getUpdates` polling instances on the same bot token.
+- Running parallel scripts or test suites calling `getUpdates` while the primary background daemon is active will immediately fail with `telegram.error.Conflict: Conflict: terminated by other getUpdates request`.
+- All automated diagnostic suites must execute within the primary daemon loop or query HTTP webhook/health endpoints rather than launching competing pollers.
+
+### 6.3 Dynamic Domain Introspection Invariant
+- Hermes must never be hardcoded with static project catalogs or dummy e-commerce entities (e.g., specific apparel, makeup, or services from legacy projects).
+- Hermes must equally never be constrained by rigid anti-commerce prohibitions.
+- Hermes must inspect active PostgreSQL 18 tables dynamically via `execute_query` to adapt to whatever business models or services the active project requires (e.g. Bioenka products, Juan Damaren 1:1 mentorship bookings, or Apotelos consulting).

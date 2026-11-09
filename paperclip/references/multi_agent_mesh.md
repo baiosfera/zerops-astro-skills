@@ -172,7 +172,7 @@ mcpServers:
       PAPERCLIP_API_KEY: "{{agent_api_key}}"
       PAPERCLIP_URL: "http://paperclip:3100"
 ```
-Through this MCP bridge, Goose and Aider automatically call `paperclipCheckoutIssue`, report incremental progress, and mark tasks complete.
+Through this MCP bridge, Goose and Aider automatically call `paperclipCheckoutIssue` to lock issues, `paperclipAddComment` for progress telemetry, `paperclipUpsertIssueDocument` for work products, and `paperclipUpdateIssue` to move tasks to review.
 
 ---
 
@@ -205,3 +205,22 @@ Paperclip dispatches an HTTP POST payload containing:
   "callbackUrl": "http://paperclip:3100/api/runs/run_abc123/complete"
 }
 ```
+
+---
+
+## 6. Built-in Adapters Catalog & Grounding Invariants
+
+Paperclip ships with dedicated adapters for autonomous coding tools:
+
+| Adapter Name | Adapter Type | Execution Target | Grounding & Invariants |
+|---|---|---|---|
+| **Hermes Gateway** | `hermes_gateway` | HTTP/SSE bridge (`:8000`) | CEO & Chief of Staff. Routes runs asynchronously with live event streaming. |
+| **Pi Coding Agent** | `pi_local` | Embedded CLI (`pidev`) | Bun/Astro 5 mutations. Strictly grounded in Bifrost (`http://bifrost:8080/v1`). |
+| **CrewAI Runner** | `hermes_gateway` / `process` | Polymorphic dynamic swarm | Assembled via `SwarmCompiler` at $0 token cost via Bifrost (`vk-crewai`). |
+| **Claude Local** | `claude_local` | Local `claude` CLI | Local CLI wrapper. Context isolated to workspace cwd. |
+| **Codex Local** | `codex_local` | Local `codex` CLI | CLI executor. Reuses session continuity across heartbeats. |
+| **OpenCode Local** | `opencode_local` | Local `opencode` CLI | Open-source coding CLI. |
+| **OpenClaw Gateway**| `openclaw_gateway`| OpenClaw API endpoint | Remote gateway for web-native agent workflows. |
+| **Generic Process** | `process` | Command-line execution | Executes arbitrary tools (Aider, Goose) with environment isolation. |
+| **Generic HTTP** | `http` | Webhook HTTP POST | Cloud agent integration with callback contracts. |
+| **Factory Droid** | `droid_local` | Plugin CLI adapter | External coding agent adapter (`@henkey/droid-paperclip-adapter`). |

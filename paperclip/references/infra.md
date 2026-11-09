@@ -62,8 +62,15 @@ Paperclip utilizes Drizzle ORM on PostgreSQL 18. Key tables include:
 
 ### Authentication & Tenant
 - `"user"`: Better-Auth user profiles (`id`, `name`, `email`, `email_verified`).
-- `companies`: Tenant organization (`id`, `name`, `issue_prefix`, `created_at`).
+- `companies`: Tenant organization (`id`, `name`, `issue_prefix`, `created_at`). Active instance: `Baiosfera` (prefix `BAI`, id `2c915432-4c84-4b01-b90b-ee7482147eef`).
 - `company_onboarding_seeds`: Tracks completion of organizational setup (`company_id`, `revision`, `goal_id`, `agent_id`, `issue_id`, `applied_at`).
+
+### Canonical Database Connection Pattern
+In Zerops environments, `$DATABASE_URL` is not injected globally by default. All CLI tools and verification scripts must extract the active connection string from Paperclip's instance config:
+```bash
+PAPERCLIP_DB=$(jq -r '.database.connectionString' /mnt/localstorage/paperclip/instances/default/config.json 2>/dev/null || echo "$DATABASE_URL")
+psql "$PAPERCLIP_DB" -c "SELECT id, name, role, title, adapter_type, reports_to, status FROM agents;"
+```
 
 ### Work & Execution Plane
 - `agents`: Agent profiles, roles (`ceo`, `lead`, `worker`), `reports_to` recursion, `adapter_type`, `adapter_config` (JSONB), and monthly spend tracking (`budget_monthly_cents`, `spent_monthly_cents`).
