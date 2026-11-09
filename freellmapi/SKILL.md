@@ -24,7 +24,7 @@ Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), co
   7. *Signed Catalog Synchronization*: Validate model metadata against verified provider manifests.
 - **Bifrost Tandem Invariant**: FreeLLMAPI listens on port 3001 as the internal $0 upstream for Bifrost (`http://freellmapi:3001/v1`). Clients connect through Bifrost (`http://bifrost:8080`); runtime inference never exposes raw FreeLLMAPI keys publicly.
 - **Fail-Fast Anti-Cascade**: Return deterministic 429 errors within $\le$ 2.5s on upstream exhaustion to let Bifrost's 60s circuit breaker trip to Pro Tier without cascading latency spikes.
-- **Zerops Env Precedence**: Inject secrets via `zerops_env` using `FREEAPI_CONFIG_JSON`. Declare `admin: { email, password }` during initial bootstrap to permanently close the `/api/auth/setup` window.
+- **Zerops Env & Login Vault Contract**: Always inject admin credentials via `zerops_env action="set" sensitive=true` using keys `FREEAPI_ADMIN_EMAIL`, `FREEAPI_ADMIN_PASSWORD`, and `FREEAPI_CONFIG_JSON` containing `{ "admin": { "email", "password" } }`. Reference all three in `run.envVariables` in `zerops.yaml` to permanently lock the setup window and guarantee persistent login access.
 
 ## Decision Gates & References
 - **Drop-in Clients & Quota Manual**: [`usage.md`](file:///var/www/zerops-astro-skills/freellmapi/references/usage.md) — 12-key architecture, client snippets, and cooldown catalog.
