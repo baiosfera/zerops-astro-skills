@@ -10,7 +10,7 @@ version: "1.2.0"
 Activate when designing, auditing, or deploying business verticals, commercial funnels, multi-agent CrewAI/Hermes crews, or applying reverse-causality architecture ($\tau\epsilon$-Final $\to \tau\epsilon$-0) to any brand or holding in Zerops.
 
 ## 10 Sovereign Invariants (CoHaLo Hard Rules)
-1. **Reverse Causality Invariant ($\tau\epsilon$-Final $\to \tau\epsilon$-0)**: Always start from the immutable commercial outcome. Step 1 is Telemetry (`ad-telemetry`); Step 2 is AI/SEO Discovery (`seo-aeo-geo`); Step 3 is Irresistible Copy/Offer (`growth-engine`); Step 0 is the Unique Mechanism (`00_category_of_one_playbook.md` + Brandbook).
+1. **Reverse Causality Invariant ($\tau\epsilon$-Final $\to \tau\epsilon$-0)**: Start from the immutable commercial outcome. Step 1 is Telemetry (`ad-telemetry`); Step 2 is AI/SEO Discovery (`seo-aeo-geo`); Step 3 is Irresistible Copy/Offer (`growth-engine`); Step 0 is the Unique Mechanism (`00_category_of_one_playbook.md` + Brandbook).
 2. **Category of One (COO) Proportionality**: COO is mandatory for personal brands. Pure commercial e-commerce or generic retail verticals may bypass COO unless explicitly requested.
 3. **Agnostic Domain & Dynamic Target Resolution**: Never couple brands to Zerops container hostnames. Resolves in cascade: (1) CLI argument/path, (2) `/.apotelos/ecosystem.json`, (3) `$LOCAL_STORAGE_PATH/{brand}`, (4) SSoT `/var/www/baiosfera/PROYECTOS/{brand}`, (5) `brandbook.json`.
 4. **Domain Topology ($0 Extra IP)**: Multi-tenancy in single Bun runtime (`middleware.ts` host routing) or isolated runtimes both share the single project L7 Balancer IPv4 ($3 USD/mes). SEO is 100% isolated via distinct canonicals, sitemaps, and robots.txt.
