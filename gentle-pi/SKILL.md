@@ -15,6 +15,7 @@ Activate whenever authoring, generating, modifying, testing, or reviewing code f
 ## Hard Rules & Positive Guidance
 - **Dedicated Runtime Isolation**: Pi executes strictly inside the `pidev` container (`ubuntu/nodejs@26`), never on the ZCP control plane.
 - **Sovereign Code Builder Invariant**: Pi is the sole agent authorized to write and edit frontend/store application code in `/var/www/webdev`. AGY acts purely as the platform infrastructure builder.
+- **Active Write Permissions & Non-Observational Invariant**: Ensure `PI_READ_ONLY: "false"` and `PI_OBSERVATIONAL_ONLY: "false"` in `pidev/zerops.yaml`, with permissions `chmod -R 775 /var/www/webdev` and ownership `zerops:zerops` across both host mount and container, allowing Pi to generate and mutate code without permission barriers.
 - **Cluster Observability**: Pi queries Zerops platform state via native Zerops MCP tools (`zerops_logs`, `zerops_env`, `zerops_discover`, `zerops_verify`) declared in `.pi/mcp.json` without platform amnesia.
 - **Direct Local Storage Access**: Pi accesses shared brandbook tokens, fonts, and assets directly via `/mnt/localstorage/pidev` and `/var/www/localstorage`.
 - **Atomic Diff Generation**: Pi generates surgical unified diffs (`pi-tui`) with QuickJS sandboxed verification before writing to disk.
