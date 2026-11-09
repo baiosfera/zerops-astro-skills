@@ -47,6 +47,17 @@ When you need to call a tool, you MUST respond ONLY with the tool call in this e
 <tool_response>{"result": ...}</tool_response><|im_end|>`.
 7. **Synthesis**: Final assistant response generated and sent to the user.
 
+### 1.1 Canonical Affirmative Prompting & The Anti-Pink Elephant Invariant
+
+Hermes models (Hermes 3 / Hermes 4) are highly sensitive to their system prompt (arXiv:2408.11857). Overly defensive, prohibition-heavy prompts ("do not do X", "never output Y") trigger the **Ironic Process / Pink Elephant phenomenon** (Castricato et al., arXiv:2402.07896): attention heads assign high weights to the forbidden concept tokens, leading to hyper-refusal, attention dilution, or paradoxical execution of the prohibited behavior.
+
+#### SOTA Affirmative Prompt Invariants:
+1. **Positive Guidance (Grey Elephants)**: Tell the model affirmatively *what to do* rather than *what not to do*.
+2. **Structural Type Schemas over Natural Language Prose**: Constrain values, statuses, and boundaries using JSON Schema primitives (`enum`, `required`, typed properties) inside function parameters, rather than negative paragraphs in the system prompt.
+3. **Decoupled API Tool Schemas**: When connecting via OpenAI-compatible endpoints (Bifrost, FreeLLMAPI, vLLM), supply tools strictly through the native `tools` payload parameter. Avoid duplicating dozens of tool signatures in the system prompt text to preserve prompt caching and attention bandwidth.
+4. **Proportional Intent Handling**: Differentiate informational/exploratory questions from operational execution mandates. For conceptual questions, provide thorough analysis and strategy without calling execution tools; for explicit operational tasks, invoke tools to obtain physical evidence and deliver verified verdicts.
+
+
 ---
 
 ## 2. Telegram Bot Gateway Architecture
