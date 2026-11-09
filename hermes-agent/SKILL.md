@@ -13,6 +13,7 @@ Autonomous AI agent runtime powered by Nous Research Hermes models, featuring na
 | Domain | Scope & Capabilities | Authoritative Guide |
 |---|---|---|
 | **Tri-Pillar Mesh** | Hermes Gateway v1, Paperclip OS governance, CrewAI/PydanticAI dual-engine, PostgreSQL 18 + LocalStorage SSoT | [`references/paperclip_crewai_mesh.md`](file:///var/www/.agents/skills/hermes-agent/references/paperclip_crewai_mesh.md) |
+| **Apotelos Protocol & CLI** | Symmetric native `apotelos` CLI (`/usr/local/bin/apotelos`), reverse causality ($T_\text{final} \to T_0$), Blackboard manifest compilation, vertical ingestion | [`references/paperclip_crewai_mesh.md#4-apotelos-protocol--native-cli-execution`](file:///var/www/.agents/skills/hermes-agent/references/paperclip_crewai_mesh.md) |
 | **Astrological Worker** | Oráculo 15-shard computation, NATS RPC (`astrology.requests`), 11 XML gold feeds, PostgreSQL 18 ingest | [`references/suite_integration.md`](file:///var/www/.agents/skills/hermes-agent/references/suite_integration.md) |
 | **Runtime & Loop** | ChatML `<tool_call>`, scratchpad execution, Telegram Bot API 22.8, RBAC, anti-flood batching | [`references/usage.md`](file:///var/www/.agents/skills/hermes-agent/references/usage.md) |
 | **Zerops Infra** | Python 3.12 Ubuntu invariant, vendor caching, persistent storage, systemd/supervisord daemon | [`references/infra.md`](file:///var/www/.agents/skills/hermes-agent/references/infra.md) |

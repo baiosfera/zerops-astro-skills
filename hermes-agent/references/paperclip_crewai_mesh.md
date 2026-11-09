@@ -95,6 +95,32 @@ Paperclip AI must be operated with managed infrastructure to guarantee zero data
 
 ---
 
+## 4. Apotelos Protocol & Native CLI Execution
+
+Hermes operates as an authoritative downstream executor of the sovereign **Apotelos Protocol**:
+
+1. **Symmetric Native CLI Availability**:
+   - The CLI binary `apotelos` is installed natively at `/usr/local/bin/apotelos` across both ZCP and Hermes runtime containers.
+   - Built on Python 3.12 + Pydantic v2 with sub-50ms execution overhead and zero background daemon footprint.
+   - Invocable directly by the Hermes agent loop via `run_command("apotelos <command>")`.
+
+2. **Reverse Causality Regression ($T_\text{final} \to T_0$)**:
+   - `apotelos plan /mnt/localstorage/MentorIA/dev/verticals --vertical <slug>` maps the 5 reverse dominoes:
+     * Dominó 4 ($T_\text{final}$): Conversión & Cobro (Funnel polymorphic architecture).
+     * Dominó 3 ($T_{-1}$): Telemetría & Atribución (CAPI, TikTok, GTM 1st-party).
+     * Dominó 2 ($T_{-2}$): Descubrimiento AI-First & SEO Semántico (`/llms.txt`, Schema.org `@graph`).
+     * Dominó 1 ($T_{-3}$): Copywriting Neuro-persuasivo (3s hooks contra avatar pain points).
+     * Dominó 0 ($T_0$): Primer Dominó — Mecanismo Único Monopolístico (Category of One / OPB).
+
+3. **Autonomous Execution Pipeline**:
+   - Hermes ingests static vertical contracts from `/mnt/localstorage/MentorIA/dev/verticals/` via `get_vertical`.
+   - Compiles Blackboard Manifests via `apotelos run --vertical <slug>` or native python module.
+   - Hydrates brand tokens via `get_brandbook_tokens` and playbooks via `get_playbook`.
+   - Delegates copy production to dynamic CrewAI squads (`UniversalSkillHarness`) into `dev/workspaces/{slug}/copy/`.
+   - Hands off Astro 5 component scaffolding to Pi Coding Agent (`pidev`) via `pidev_dispatch_task`.
+
+---
+
 ## 5. Dynamic Domain Agnosticism & Database Introspection
 
 To prevent agentic hallucination, hardcoding of legacy project remnants (e.g. past e-commerce catalogs or specific brands), or rigid anti-commerce prohibitions, Hermes enforces **Dynamic Domain Introspection**:
