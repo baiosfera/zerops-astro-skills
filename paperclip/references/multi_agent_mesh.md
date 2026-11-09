@@ -50,12 +50,10 @@ INSERT INTO agents (
 CrewAI executes multi-agent polymorphic swarms (Researcher, Writer, Quality Analyst). There are two supported integration topologies:
 
 ### Option A: Via Hermes Gateway (Recommended — Zero Token Cost via Bifrost)
-Hermes exposes native CrewAI compilation directly through its Gateway. Setting the `X-Crew-Name` header routes the prompt to `CrewFactory.execute(crew_name, prompt)`. Available registered crews in `/var/www/hermes/crews/`:
-- `general_research` / `investigacion`: Market research, technical synthesis, competitive analysis.
-- `astrology_timing`: Astrological and timing election analysis.
-- `google_seo`: Multi-surface search engine optimization.
-- `seo_aeo_geo`: AEO, GEO and schema graph optimization.
-- Any of the 83 sovereign skills dynamically via `UniversalSkillHarness` (e.g., `apotelos`, `ad-telemetry`, `brandbook`).
+Hermes exposes native dynamic swarm compilation directly through its Gateway. In strict accordance with Observation #44 and `crewai-engine`, static `@CrewBase` squads are abolished in favor of programmatic assembly via `SwarmCompiler` and `DynamicSwarmSpec`. Agents are dynamically hydrated with any of the 83 sovereign skills via `SkillToolBridge`:
+- Dynamic Swarms assembled on the fly per issue requirement (e.g., Researcher, Synthesizer, Code Reviewer).
+- Zero-Token-Waste RAG ingestion via `TextFileKnowledgeSource` (chunk 2000, overlap 200).
+- Pure $0 inference routed through Bifrost Gateway (`http://bifrost:8080/v1`) with Virtual Key `vk-crewai` (`openai/auto` with header `x-routing-tier: free`).
 
 ```json
 {
@@ -63,7 +61,7 @@ Hermes exposes native CrewAI compilation directly through its Gateway. Setting t
   "apiKey": "hermes-internal-key",
   "dangerouslyAllowInsecureRemoteHttp": true,
   "headers": {
-    "X-Crew-Name": "general_research"
+    "X-Engine": "crewai-dynamic-swarm"
   },
   "sessionKeyStrategy": "issue",
   "timeoutSec": 600
@@ -128,7 +126,7 @@ INSERT INTO agents (
 
 ### Key Parameters:
 - `command`: "pidev" or "pi".
-- `model`: Provider-qualified model identifier (e.g., `anthropic/claude-3-7-sonnet`, `deepseek/deepseek-chat`).
+- `model`: Provider-qualified model identifier routed through Bifrost (e.g., `bifrost/auto`, `deepseek/deepseek-chat`, `bifrost/hermes-3-llama-3.1-8b`). All agent inference is grounded in `http://bifrost:8080/v1` to eliminate external vendor leakage.
 - `thinking`: `off`, `low`, `medium`, `high`.
 - `stdoutLogMode`: `"compact"` strips repetitive JSONL deltas to keep log size bounded.
 
