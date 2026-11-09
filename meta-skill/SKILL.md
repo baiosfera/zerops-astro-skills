@@ -19,7 +19,8 @@ Activate when authoring new skills, auditing existing skills, upgrading triggers
   * `docu`: Documentalist of truth. Synthesizes research dossiers into canonical specs.
   * `cohalo`: Positive Guidance, affirmative contracts, closed domains.
   * `skill-improver`: Lossless Dual-RAG unbundling (`SKILL.md` $\le 480$ words).
-  * `writing-for-agents` & `writing-skills`: Agent ergonomics and benchmarks.
+  * `writing-for-agents`: Cognitive ergonomics, context pointers, leading words.
+  * `writing-skills`: Process TDD (RED/GREEN/REFACTOR) via subagent pressure scenarios.
   * `skill-creator`: Clean-room scaffolding.
 - **Word Budget & Progressive Disclosure**: Routers (`SKILL.md`) strictly $\le 480$ words. Spatial offload to `references/`.
 - **Lossless AST**: Preserve 100% of methods, classes, and error handling during unbundling.
@@ -34,8 +35,8 @@ Activate when authoring new skills, auditing existing skills, upgrading triggers
 | **CoHaLo Prompting** | `cohalo` | [`cohalo`](file:///var/www/.agents/skills/cohalo/SKILL.md) | Positive guidance, affirmative instructions |
 | **Lossless Dual-RAG** | `skill-improver` | [`skill-improver`](file:///var/www/.agents/skills/skill-improver/SKILL.md) | Dual-RAG unbundling ($\le 480$ words), AST preservation |
 | **New Skill Scaffold** | `skill-creator` | [`skill-creator`](file:///var/www/.agents/skills/skill-creator/SKILL.md) | Clean-room scaffolding, YAML frontmatter |
-| **Cognitive Seams** | `writing-for-agents` | [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md) | Seams, agent cognitive load reduction |
-| **Anthropic Evaluation** | `writing-skills` | [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) | Benchmark, test scenarios, evaluation harness |
+| **Cognitive Seams** | `writing-for-agents` | [`writing-for-agents`](file:///var/www/.agents/skills/writing-for-agents/SKILL.md) | Seams, agent cognitive ergonomics, leading words |
+| **Process TDD Harness** | `writing-skills` | [`writing-skills`](file:///var/www/.agents/skills/writing-skills/SKILL.md) | Pressure scenarios with subagents (RED/GREEN/REFACTOR) |
 
 ## Decision Gates
 

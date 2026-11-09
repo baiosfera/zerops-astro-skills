@@ -29,6 +29,7 @@ To prevent architectural confusion and role overlap:
 | `skill-improver` | Dual-RAG unbundling ($\le 480$ words), AST preservation, lossless offloading | Upstream package; never modified directly on disk |
 | `skill-creator` | Clean-room scaffolding for new skill directories and YAML headers | Upstream package; never modified directly on disk |
 | `writing-for-agents` | Interface seams, agent cognitive ergonomics, navigation friction | Does NOT author technical facts or API specs |
+| `writing-skills` | Process TDD harness, pressure scenarios, loophole closure | Does NOT perform static syntax checks or linters |
 | `meta-skill` | Master orchestrator binding the end-to-end pipeline and enforcing physical gates | Does NOT replace the specialized sub-skills |
 
 ---

@@ -60,11 +60,18 @@ Apply upstream `skill-improver` standards:
 
 ---
 
-## 5. Step 5: Cognitive Polishing via `writing-for-agents` & `writing-skills`
+## 5. Step 5: Process TDD via `writing-skills` & Ergonomics via `writing-for-agents`
 
-Refine the ergonomic interface for LLM agents:
-1. **Seam Optimization (`writing-for-agents`)**: Clarify module boundaries so agents navigate files with minimal tool calls.
-2. **Evaluation Scenarios (`writing-skills`)**: Define concrete input-output test scenarios to verify skill behavior under load.
+Apply documentation TDD and agent cognitive ergonomics:
+1. **Process TDD Harness (`writing-skills`)**:
+   - **RED (Baseline Failure)**: Run pressure scenarios with a subagent *without the skill*. Document the agent's exact failure mode and rationalizations verbatim.
+   - **GREEN (Minimal Skill)**: Author the instruction addressing those specific rationalizations. Re-run scenarios with the skill to verify compliance.
+   - **REFACTOR (Loophole Closure)**: Identify new rationalizations under time, sunk cost, or exhaustion pressures, plug them with explicit counters, and re-test.
+2. **Cognitive Ergonomics & Context Pointers (`writing-for-agents`)**:
+   - **Context Pointers**: Front-load essential trigger keywords in the `description` field for reliable JIT retrieval.
+   - **Load Management**: Balance *context load* (always in window) vs *cognitive load* (reached on demand via pointer).
+   - **Leading Words**: Recruit priors the model already holds to anchor behaviors with minimal tokens.
+   - **Pure Positive Guidance**: Eliminate negation traps (Pink Elephants) by specifying exclusively what the agent *must do*.
 
 ---
 
