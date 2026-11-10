@@ -20,10 +20,11 @@ Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), co
   3. *Recovery Probes*: Probe cooled providers asynchronously every 60s without stalling incoming inference.
   4. *Account-Level Quotas*: Aggregate rate limits across keys belonging to the same account boundary.
   5. *SQLite WAL & User-Model Guard*: Persist in SQLite WAL mode (`/mnt/localstorage/freellmapi/data/freeapi.db`). Models MUST use `source = 'user'` to prevent deletion during daily remote sync.
-  6. *Dynamic Balanced Router*: Thompson-sampling Multi-Armed Bandit (MAB) weighting reliability, speed, and intelligence.
+  6. *Smartest MAB Router & Exploration*: Thompson-sampling Multi-Armed Bandit (MAB) with 'smartest' strategy (55% intelligence) and 'routing_explore_enabled = 1' to avoid exploitation starvation.
   7. *Bifrost Alias & 404 Shield*: Map consumer models (`qwen-3.8-27b`, `hermes-3-*`) to `auto` via Bifrost aliases.
   8. *Tool-Aware Token Estimation*: Sum serialized `tools` (`estimatedToolsTokens`) to prevent dispatching oversized schemas to low-TPM models.
   9. *Groq 7,000 ITPM Guard*: Enforce `tpm_limit = 7000` (not 70,000) for Groq on-demand models in `models` table.
+  10. *OpenRouter Frontier Balancing*: Position working OpenRouter free models (Nemotron 3.5 Lightning, Dots3 Note Preview) in top profile priorities alongside Cerebras and Groq.
 - **Bifrost Tandem Invariant**: FreeLLMAPI listens on port 3001 as the $0 upstream for Bifrost (`http://freellmapi:3001/v1`). Clients connect through Bifrost (`http://bifrost:8080`).
 - **Fail-Fast Anti-Cascade**: Return deterministic 429 errors within $\le$ 2.5s on upstream exhaustion to let Bifrost's 60s circuit breaker trip to Pro Tier without latency spikes.
 - **Zerops Env Vault**: Inject credentials via `zerops_env` (`FREEAPI_ADMIN_EMAIL`, `FREEAPI_ADMIN_PASSWORD`, `FREEAPI_CONFIG_JSON_SECRET`) referenced in `zerops.yaml`.
