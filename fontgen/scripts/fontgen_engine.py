@@ -377,6 +377,31 @@ NAKSHATRA_FEATURES = {
 
 
 # -----------------------------------------------------------------------------
+# Sovereign Dynamic Path & LocalStorage Discovery Helpers
+# -----------------------------------------------------------------------------
+
+def find_localstorage_roots() -> List[Path]:
+    """Dynamically resolves all persistent local storage mounts and active runtime volumes."""
+    roots: List[Path] = []
+    env_path = os.getenv("LOCAL_STORAGE_PATH")
+    if env_path and Path(env_path).exists():
+        p = Path(env_path).resolve()
+        if p not in roots:
+            roots.append(p)
+        if p.name in ("hermes", "paperclip", "engram", "pidev") and p.parent.exists():
+            par = p.parent.resolve()
+            if par not in roots:
+                roots.append(par)
+
+    for candidate in [Path("/mnt/localstorage"), Path("/var/www/localstorage")]:
+        if candidate.exists():
+            res = candidate.resolve()
+            if res not in roots:
+                roots.append(res)
+    return roots
+
+
+# -----------------------------------------------------------------------------
 # Fontgen Engine Implementation
 # -----------------------------------------------------------------------------
 
@@ -391,19 +416,110 @@ class FontgenEngine:
     Zero coupling with brandfont (visualization workbench).
     """
 
-    def __init__(self, brand: str, shards_path: Optional[Path] = None, brief_path: Optional[Path] = None, use_live_search: bool = True):
+    def __init__(self, brand: str, shards_path: Optional[Path] = None, brief_path: Optional[Path] = None,
+                 output_dir: Optional[Path] = None, use_live_search: bool = True, allow_default: bool = False):
         self.brand_raw = brand.strip()
         self.brand_upper = self.brand_raw.upper()
         self.brand_lower = self.brand_raw.lower()
-        self.shards_path = shards_path
-        self.brief_path = brief_path
+        self.shards_path = Path(shards_path).resolve() if shards_path else None
+        self.brief_path = Path(brief_path).resolve() if brief_path else None
+        self.output_dir = Path(output_dir).resolve() if output_dir else None
         self.use_live_search = use_live_search
+        self.allow_default = allow_default
 
         self.used_families: Set[str] = set()
 
+        # Dynamic SSoT fallback destinations
         self.diag_dir = Path(f"/var/www/baiosfera/ASTROLOGÍA/DIAG/{self.brand_upper}")
         self.project_dev_dir = Path(f"/var/www/baiosfera/PROYECTOS/{self.brand_upper}/dev")
         self.localstorage_dir = Path(f"/var/www/localstorage/{self.brand_upper}/dev")
+
+    def _discover_search_dirs(self) -> List[Path]:
+        """Dynamically discovers all potential dev, shared, and brand directories across the workspace and localstorage."""
+        dirs: List[Path] = []
+
+        # 1. Current working directory and ancestors up to 4 levels
+        curr = Path.cwd().resolve()
+        for p in [curr] + list(curr.parents)[:4]:
+            if p.exists() and p not in dirs:
+                dirs.append(p)
+            for sub in [p / "dev", p / "dev" / "_shared", p / "_shared", p / "brand"]:
+                if sub.exists() and sub not in dirs:
+                    dirs.append(sub)
+
+        # 2. Workspace directories matching brand or vertical
+        for base in list(dirs):
+            for ws_candidate in [
+                base / "workspaces" / self.brand_lower / "brand",
+                base / "workspaces" / self.brand_lower,
+                base / "dev" / "workspaces" / self.brand_lower / "brand",
+                base / "dev" / "workspaces" / self.brand_lower
+            ]:
+                if ws_candidate.exists() and ws_candidate not in dirs:
+                    dirs.append(ws_candidate)
+
+        # 3. Dynamic LocalStorage discovery across all projects (zero hardcoding)
+        for ls_root in find_localstorage_roots():
+            if not ls_root.exists():
+                continue
+            if ls_root not in dirs:
+                dirs.append(ls_root)
+            try:
+                for child in ls_root.iterdir():
+                    if child.is_dir() and not child.name.startswith("."):
+                        for sub in [
+                            child / "dev",
+                            child / "dev" / "_shared",
+                            child / "dev" / "workspaces" / self.brand_lower / "brand",
+                            child / "dev" / "workspaces" / self.brand_lower,
+                            child / "workspaces" / self.brand_lower / "brand",
+                            child / "brand"
+                        ]:
+                            if sub.exists() and sub not in dirs:
+                                dirs.append(sub)
+            except Exception:
+                pass
+
+        # 4. FUSE SSoT directories (if mounted)
+        fuse_diag = Path(f"/var/www/baiosfera/ASTROLOGÍA/DIAG/{self.brand_upper}")
+        if fuse_diag.exists() and fuse_diag not in dirs:
+            dirs.append(fuse_diag)
+        fuse_proj = Path(f"/var/www/baiosfera/PROYECTOS/{self.brand_upper}/dev")
+        if fuse_proj.exists() and fuse_proj not in dirs:
+            dirs.append(fuse_proj)
+
+        # 5. Dynamic ecosystem discovery (umbrella brand detection from ecosystem.json)
+        # ONLY add umbrella paths if self.brand_lower is verified as part of the ecosystem
+        for d in list(dirs):
+            for candidate_eco in [d / "ecosystem.json", d / "_shared" / "ecosystem.json", d / "dev" / "_shared" / "ecosystem.json"]:
+                if candidate_eco.exists():
+                    try:
+                        eco_data = json.loads(candidate_eco.read_text(encoding="utf-8"))
+                        verts = eco_data.get("verticals", {})
+                        is_member = False
+                        if isinstance(verts, dict):
+                            if self.brand_lower in verts or any(self.brand_lower == str(v.get("vertical_slug", "")).lower() for v in verts.values() if isinstance(v, dict)):
+                                is_member = True
+                        elif isinstance(verts, list):
+                            if self.brand_lower in [str(x).lower() for x in verts]:
+                                is_member = True
+
+                        if self.brand_lower == str(eco_data.get("brand_slug", "")).lower():
+                            is_member = True
+
+                        umb_slug = eco_data.get("umbrella_brand") or eco_data.get("brand_slug")
+                        if is_member and umb_slug:
+                            umb_upper = str(umb_slug).upper()
+                            u_diag = Path(f"/var/www/baiosfera/ASTROLOGÍA/DIAG/{umb_upper}")
+                            if u_diag.exists() and u_diag not in dirs:
+                                dirs.append(u_diag)
+                            u_proj = Path(f"/var/www/baiosfera/PROYECTOS/{umb_upper}/dev")
+                            if u_proj.exists() and u_proj not in dirs:
+                                dirs.append(u_proj)
+                    except Exception:
+                        pass
+
+        return dirs
 
     def _clean_family_name(self, raw_title: str) -> str:
         """Extracts a clean canonical typographic family name from title."""
@@ -481,21 +597,29 @@ class FontgenEngine:
         return fallback
 
     def resolve_inputs(self) -> Dict[str, Any]:
-        """Discovers astronomical coordinates from shards or brief."""
+        """Discovers astronomical coordinates dynamically from shards or brief."""
         data = {
-            "sun_sign": "Capricorn",
-            "mc_sign": "Virgo",
-            "day_master": "Wu",
-            "nakshatra": "Ashwini",
-            "dominant_element": "Earth"
+            "sun_sign": "",
+            "mc_sign": "",
+            "day_master": "",
+            "nakshatra": "",
+            "dominant_element": ""
         }
 
-        # 1. Shards Ingestion
+        search_dirs = self._discover_search_dirs()
+
+        # 1. Shards Ingestion (Explicit target or brand-specific diagnostic lakehouse)
         shards_target = self.shards_path
         if not shards_target:
-            potential = self.diag_dir / "raw" / "json" / "dumps" / "client_dumps_15_shards.json"
-            if potential.exists():
-                shards_target = potential
+            direct_potentials = [
+                self.diag_dir / "raw" / "json" / "dumps" / "client_dumps_15_shards.json",
+                self.diag_dir / "dumps" / "client_dumps_15_shards.json",
+                self.project_dev_dir / "client_dumps_15_shards.json"
+            ]
+            for p in direct_potentials:
+                if p.exists():
+                    shards_target = p
+                    break
 
         if shards_target and Path(shards_target).exists():
             try:
@@ -505,10 +629,10 @@ class FontgenEngine:
                 s4 = content.get("shard_04", {}).get("data", {})
 
                 tripod = s1.get("tripod_of_iron", {})
-                if "sun" in tripod:
-                    data["sun_sign"] = tripod["sun"].get("sign", data["sun_sign"])
-                if "midheaven_house_10" in tripod:
-                    data["mc_sign"] = tripod["midheaven_house_10"].get("sign", data["mc_sign"])
+                if "sun" in tripod and tripod["sun"].get("sign"):
+                    data["sun_sign"] = tripod["sun"]["sign"]
+                if "midheaven_house_10" in tripod and tripod["midheaven_house_10"].get("sign"):
+                    data["mc_sign"] = tripod["midheaven_house_10"]["sign"]
 
                 dm = s4.get("day_master", {})
                 if dm.get("name"):
@@ -518,53 +642,113 @@ class FontgenEngine:
                 if nak.get("name"):
                     data["nakshatra"] = nak.get("name").split()[0]
 
-                data["dominant_element"] = ZODIAC_ELEMENTS.get(data["sun_sign"], "Earth")
-                return data
+                if data["sun_sign"] and data["mc_sign"]:
+                    data["dominant_element"] = ZODIAC_ELEMENTS.get(data["sun_sign"], "Earth")
+                    if not data["day_master"]:
+                        data["day_master"] = "Wu"
+                    if not data["nakshatra"]:
+                        data["nakshatra"] = "Ashwini"
+                    return data
             except Exception:
                 pass
 
         # 2. Brief Ingestion fallback
-        candidates = []
+        candidates: List[Path] = []
         if self.brief_path and Path(self.brief_path).exists():
-            candidates.append(Path(self.brief_path))
+            candidates.append(Path(self.brief_path).resolve())
 
-        candidates.extend([
-            self.diag_dir / f"astrobranding_{self.brand_lower}.md",
-            self.diag_dir / "raw" / "llm" / f"astrobranding_{self.brand_lower}.md",
-            self.project_dev_dir / f"astrobranding_{self.brand_lower}.md",
-            self.localstorage_dir / f"astrobranding_{self.brand_lower}.md"
-        ])
-
-        # If brand is a vertical or umbrella alias, search for parent or local astrobranding_*.md
-        search_dirs = [
-            self.project_dev_dir,
-            self.localstorage_dir,
-            Path("/var/www/localstorage/MentorIA/dev"),
-            Path("/var/www/localstorage/MentorIA/dev/workspaces/juan-damaren/brand"),
-            Path("/var/www/baiosfera/PROYECTOS/DAMAREN/dev")
-        ]
+        # Check explicit brand-named briefs first
         for sdir in search_dirs:
-            if sdir.exists():
-                for found_brief in sdir.glob("astrobranding_*.md"):
-                    if found_brief not in candidates:
-                        candidates.append(found_brief)
+            if not sdir.exists():
+                continue
+            named_brief = sdir / f"astrobranding_{self.brand_lower}.md"
+            if named_brief.exists() and named_brief not in candidates:
+                candidates.append(named_brief)
+            raw_named = sdir / "raw" / "llm" / f"astrobranding_{self.brand_lower}.md"
+            if raw_named.exists() and raw_named not in candidates:
+                candidates.append(raw_named)
+
+        # If brand has no dedicated brief, inspect ecosystem.json to check if it's a verified vertical
+        # of an umbrella brand. Only verified verticals inherit their umbrella's master brief.
+        umbrella_slug = None
+        for sdir in search_dirs:
+            for eco_cand in [sdir / "ecosystem.json", sdir / "_shared" / "ecosystem.json", sdir / "dev" / "_shared" / "ecosystem.json"]:
+                if eco_cand.exists():
+                    try:
+                        eco_data = json.loads(eco_cand.read_text(encoding="utf-8"))
+                        verts = eco_data.get("verticals", {})
+                        is_vertical = False
+                        if isinstance(verts, dict):
+                            if self.brand_lower in verts:
+                                is_vertical = True
+                            elif any(self.brand_lower == str(v.get("vertical_slug", "")).lower() for v in verts.values() if isinstance(v, dict)):
+                                is_vertical = True
+                        elif isinstance(verts, list):
+                            if self.brand_lower in [str(x).lower() for x in verts]:
+                                is_vertical = True
+
+                        if is_vertical or self.brand_lower == str(eco_data.get("brand_slug", "")).lower():
+                            umbrella_slug = eco_data.get("brand_slug") or eco_data.get("umbrella_brand")
+                            break
+                    except Exception:
+                        pass
+            if umbrella_slug:
+                break
+
+        if umbrella_slug:
+            umb_lower = str(umbrella_slug).lower()
+            for sdir in search_dirs:
+                if not sdir.exists():
+                    continue
+                umb_brief = sdir / f"astrobranding_{umb_lower}.md"
+                if umb_brief.exists() and umb_brief not in candidates:
+                    candidates.append(umb_brief)
+                raw_umb = sdir / "raw" / "llm" / f"astrobranding_{umb_lower}.md"
+                if raw_umb.exists() and raw_umb not in candidates:
+                    candidates.append(raw_umb)
 
         for c in candidates:
-            if c.exists():
+            if c.exists() and c.is_file():
                 try:
                     txt = c.read_text(encoding="utf-8")
                     m_sun = re.search(r"\|\s*\*\*Sol Natal\*\*\s*\|\s*\*\*([A-Za-z]+)", txt) or re.search(r"(?:Sun Natal|Sol Natal)[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
                     m_mc = re.search(r"\|\s*\*\*Medio Cielo[^\*]*\*\*\s*\|\s*\*\*([A-Za-z]+)", txt) or re.search(r"(?:Midheaven|Medio Cielo)[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
                     m_nak = re.search(r"\*\*Nakshatra:\*\*\s*([A-Za-z]+)", txt) or re.search(r"Nakshatra[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
                     m_dm = re.search(r"\*\*Day Master:\*\*\s*([A-Za-z]+)", txt) or re.search(r"Day Master[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
+
                     if m_sun: data["sun_sign"] = m_sun.group(1).strip()
                     if m_mc: data["mc_sign"] = m_mc.group(1).strip()
                     if m_nak: data["nakshatra"] = m_nak.group(1).strip()
                     if m_dm: data["day_master"] = m_dm.group(1).strip()
-                    data["dominant_element"] = ZODIAC_ELEMENTS.get(data["sun_sign"], "Earth")
-                    return data
+
+                    if data["sun_sign"] and data["mc_sign"]:
+                        data["dominant_element"] = ZODIAC_ELEMENTS.get(data["sun_sign"], "Earth")
+                        if not data["day_master"]:
+                            data["day_master"] = "Wu"
+                        if not data["nakshatra"]:
+                            data["nakshatra"] = "Ashwini"
+                        return data
                 except Exception:
                     pass
+
+        # If data was not found
+        if not (data["sun_sign"] and data["mc_sign"]):
+            if not self.allow_default:
+                raise FileNotFoundError(
+                    f"No valid astrobranding brief or 15-shards data found for brand '{self.brand_raw}'.\n"
+                    f"Searched {len(search_dirs)} dynamic directories, checked candidates:\n"
+                    f"  - Brief candidates: {[str(c) for c in candidates]}\n"
+                    f"  - Search roots: {[str(d) for d in search_dirs[:8]]}\n"
+                    f"Ensure Oráculo (omni_engine.py) has run for this brand/umbrella or supply --brief / --shards explicitly."
+                )
+            # Standalone fallback mode only when explicitly allowed
+            data = {
+                "sun_sign": "Capricorn",
+                "mc_sign": "Virgo",
+                "day_master": "Wu",
+                "nakshatra": "Ashwini",
+                "dominant_element": "Earth"
+            }
 
         return data
 
@@ -989,22 +1173,42 @@ class FontgenEngine:
 
         manifest_str = json.dumps(manifest, indent=2, ensure_ascii=False)
 
-        # 1. Archive Destination: /var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/
-        self.diag_dir.mkdir(parents=True, exist_ok=True)
-        (self.diag_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
-        (self.diag_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+        # 1. Explicit Output Destination (if specified)
+        if self.output_dir:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            (self.output_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
+            (self.output_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
 
-        # 2. Project Dev Destination: /var/www/baiosfera/PROYECTOS/[MARCA]/dev/
-        self.project_dev_dir.mkdir(parents=True, exist_ok=True)
-        (self.project_dev_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
-        (self.project_dev_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+        # 2. Workspace brand directory if discovered dynamically
+        for sdir in self._discover_search_dirs():
+            if sdir.name == "brand" and self.brand_lower in str(sdir):
+                try:
+                    sdir.mkdir(parents=True, exist_ok=True)
+                    (sdir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
+                    (sdir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+                except Exception:
+                    pass
 
-        # 3. LocalStorage Dev (if mounted)
-        if Path("/var/www/localstorage").exists():
+        # 3. Archive Destination (if Google Drive SSoT is mounted): /var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/
+        if Path("/var/www/baiosfera").exists():
             try:
-                self.localstorage_dir.mkdir(parents=True, exist_ok=True)
-                (self.localstorage_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
-                (self.localstorage_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+                self.diag_dir.mkdir(parents=True, exist_ok=True)
+                (self.diag_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
+                (self.diag_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+
+                self.project_dev_dir.mkdir(parents=True, exist_ok=True)
+                (self.project_dev_dir / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
+                (self.project_dev_dir / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
+            except Exception:
+                pass
+
+        # 4. LocalStorage Dev (if mounted)
+        for ls_root in find_localstorage_roots():
+            ls_dev = ls_root / self.brand_upper / "dev"
+            try:
+                ls_dev.mkdir(parents=True, exist_ok=True)
+                (ls_dev / "font_manifest.json").write_text(manifest_str, encoding="utf-8")
+                (ls_dev / f"fontgen_{self.brand_lower}.md").write_text(markdown, encoding="utf-8")
             except Exception:
                 pass
 
@@ -1014,24 +1218,42 @@ class FontgenEngine:
 def derive_agnostic_typography(brand: str, shards: Optional[Dict[str, Any]] = None,
                                shards_path: Optional[Path] = None,
                                brief_path: Optional[Path] = None,
+                               output_dir: Optional[Path] = None,
                                selected_eco_id: str = "eco-1",
-                               use_live_search: bool = True) -> Dict[str, Any]:
-    engine = FontgenEngine(brand=brand, shards_path=shards_path, brief_path=brief_path, use_live_search=use_live_search)
+                               use_live_search: bool = True,
+                               allow_default: bool = False) -> Dict[str, Any]:
+    engine = FontgenEngine(
+        brand=brand,
+        shards_path=shards_path,
+        brief_path=brief_path,
+        output_dir=output_dir,
+        use_live_search=use_live_search,
+        allow_default=allow_default
+    )
     manifest, _ = engine.run(selected_eco_id=selected_eco_id, dry_run=False)
     return manifest
 
 
 def main():
     parser = argparse.ArgumentParser(description="Fontgen Engine — Verified Typographic Synthesizer")
-    parser.add_argument("--brand", required=True, help="Brand name (e.g. DAMAREN)")
+    parser.add_argument("--brand", required=True, help="Brand or vertical name (e.g. BAIOSFERA, DAMAREN, CATALINAGLAMUR)")
     parser.add_argument("--shards", type=Path, default=None, help="Path to client_dumps_15_shards.json")
     parser.add_argument("--brief", type=Path, default=None, help="Path to astrobranding_[marca].md")
+    parser.add_argument("--output-dir", type=Path, default=None, help="Explicit target directory for outputs")
     parser.add_argument("--eco", default="eco-1", choices=["eco-1", "eco-2", "eco-3"], help="Selected ecosystem ID")
     parser.add_argument("--dry-run", action="store_true", help="Calculate without writing to disk")
     parser.add_argument("--no-live", action="store_true", help="Disable real-time live search on Envato")
+    parser.add_argument("--allow-default", action="store_true", help="Allow fallback to canonical neutral archetype if no brief/shards found")
     args = parser.parse_args()
 
-    engine = FontgenEngine(brand=args.brand, shards_path=args.shards, brief_path=args.brief, use_live_search=not args.no_live)
+    engine = FontgenEngine(
+        brand=args.brand,
+        shards_path=args.shards,
+        brief_path=args.brief,
+        output_dir=args.output_dir,
+        use_live_search=not args.no_live,
+        allow_default=args.allow_default
+    )
     manifest, markdown = engine.run(selected_eco_id=args.eco, dry_run=args.dry_run)
 
     print(f"✅ FONTGEN ENGINE (V3.0 AGNOSTIC ENVATO SOURCING) EJECUTADO EXITOSAMENTE PARA: {args.brand.upper()}")

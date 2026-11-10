@@ -2118,15 +2118,44 @@ class BrandbookPipelineRunner:
         sb_dom = sb.get("dominant_planet", "Sol")
         sb_rupas = sb.get("max_rupas", 6.0)
 
-        # Dynamic typography choice
-        if mc_sign in ["Gemini", "Libra", "Aquarius", "Aries", "Leo", "Sagittarius"]:
-            disp_fonts = ["Space Grotesk", "Syne", "sans-serif"]
-            body_fonts = ["Outfit", "Inter", "sans-serif"]
-            mono_fonts = ["Space Mono", "monospace"]
-        else:
-            disp_fonts = ["Cormorant Garamond", "Cinzel", "serif"]
-            body_fonts = ["Plus Jakarta Sans", "Inter", "sans-serif"]
-            mono_fonts = ["JetBrains Mono", "monospace"]
+        # Dynamic typography choice with font_manifest.json ingestion
+        disp_fonts = []
+        body_fonts = []
+        mono_fonts = []
+
+        font_manifest_path = None
+        for cand_dir in [self.project_dev_dir, self.diag_dir, Path.cwd(), Path.cwd() / "brand"]:
+            if (cand_dir / "font_manifest.json").exists():
+                font_manifest_path = cand_dir / "font_manifest.json"
+                break
+
+        if font_manifest_path:
+            try:
+                fm = json.loads(font_manifest_path.read_text(encoding="utf-8"))
+                sel_eco = fm.get("selected_ecosystem", {})
+                tokens = sel_eco.get("tokens", {})
+                disp_val = tokens.get("display_primary", {}).get("$value")
+                body_val = tokens.get("ui_secondary", {}).get("$value")
+                if disp_val and body_val:
+                    disp_fonts = [disp_val, "serif" if "serif" in disp_val.lower() else "sans-serif"]
+                    body_fonts = [body_val, "Inter", "sans-serif"]
+                    mono_fonts = ["JetBrains Mono", "monospace"]
+            except Exception:
+                pass
+
+        if not disp_fonts:
+            if mc_sign in ["Gemini", "Libra", "Aquarius", "Aries", "Leo", "Sagittarius"]:
+                disp_fonts = ["Space Grotesk", "Syne", "sans-serif"]
+                body_fonts = ["Outfit", "Inter", "sans-serif"]
+                mono_fonts = ["Space Mono", "monospace"]
+            elif mc_sign in ["Cancer", "Scorpio", "Pisces"]:
+                disp_fonts = ["Fraunces", "Cormorant Garamond", "serif"]
+                body_fonts = ["Spectral", "Inter", "serif"]
+                mono_fonts = ["JetBrains Mono", "monospace"]
+            else: # Earth signs (Taurus, Virgo, Capricorn)
+                disp_fonts = ["Newsreader", "Cinzel", "serif"]
+                body_fonts = ["Inter", "-apple-system", "sans-serif"]
+                mono_fonts = ["JetBrains Mono", "monospace"]
 
         # Dynamic motion timing
         if sb_dom in ["Mercury", "Mars"]:
@@ -2331,7 +2360,7 @@ class BrandbookPipelineRunner:
             return default_str
 
         font_disp = format_font(typo.get("display"), "'Cinzel', serif")
-        font_body = format_font(typo.get("body"), "'Plus Jakarta Sans', sans-serif")
+        font_body = format_font(typo.get("body"), "'Inter', -apple-system, BlinkMacSystemFont, sans-serif")
         font_mono = format_font(typo.get("mono"), "'JetBrains Mono', monospace")
 
         return f"""/* ==========================================================================
