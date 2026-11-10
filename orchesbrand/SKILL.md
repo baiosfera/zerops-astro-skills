@@ -14,6 +14,8 @@ Activar para ejecutar el pipeline completo de branding o coordinar la generació
 
 ## Input Rule (Desacople SSoT & Modos de Ejecución)
 - **Fuente Primaria Indivisible:** Consume herméticamente `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0).
+- **Marcas Sombrilla & Verticales:** Para verticales de negocio (apotelos, astrotipia, baiosfera, seo-maps, synthemika), la marca sombrilla (`astrobranding_damaren.md`) rige la ontología junto con `dev/verticals/*.json`. Cero necesidad de cartas natales independientes de Fase 0.
+- **CLI Canónico de Ejecución:** `orchesbrand --vertical <slug|all> --phases fontgen,chroma,brandbook --audit`.
 - **Modo Desacoplado Directo:** Cada fase especializada (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) puede ejecutarse de forma autónoma e ingerir directamente desde el SSoT sin bloqueos en cascada.
 - **Modo Interactivo Paso a Paso (Brandview):** Permite disparar fases individuales a demanda desde la UI web, permitiendo al usuario seleccionar variantes y mutar manifiestos interactivamente.
 
