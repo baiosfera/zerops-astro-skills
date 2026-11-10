@@ -1,10 +1,10 @@
 ---
 name: "hermes-agent"
-description: "Nous Research Hermes-Agent (CalVer 2026.8+) Dual-RAG orchestrator for Zerops Python (Ubuntu invariant), Telegram Bot Gateway, Tri-Pillar Paperclip/CrewAI mesh, Oráculo Astrological Worker, and Antigravity (AGY) bridge."
-version: "2.2"
+description: "Trigger: hermes-agent, hermes, nous hermes, telegram hermes, apotelos mesh, astrological worker, progressive tools. Nous Research Hermes-Agent Dual-RAG orchestrator for Zerops Python, Telegram Gateway, Tri-Pillar Paperclip/CrewAI mesh, and Oráculo Astrological Worker."
+version: "2.3"
 ---
 
-# Hermes-Agent Engine, Telegram-to-AGY Gateway & Astrological Worker (v2.2)
+# Hermes-Agent Engine, Telegram-to-AGY Gateway & Astrological Worker (v2.3)
 
 Autonomous AI agent runtime powered by Nous Research Hermes models, featuring native function calling (`<tool_call>`), secure Telegram Gateway with anti-flood batching, Tri-Pillar mesh orchestration (Hermes + Paperclip + CrewAI/PydanticAI), Oráculo 15-shard astrological calculation worker on NATS JetStream, Zerops Python deployment, and bidirectional Antigravity (AGY) bridge.
 
@@ -14,6 +14,7 @@ Autonomous AI agent runtime powered by Nous Research Hermes models, featuring na
 |---|---|---|
 | **Tri-Pillar Mesh** | Hermes Gateway v1, Paperclip OS governance, CrewAI/PydanticAI dual-engine, PostgreSQL 18 + LocalStorage SSoT | [`references/paperclip_crewai_mesh.md`](file:///var/www/.agents/skills/hermes-agent/references/paperclip_crewai_mesh.md) |
 | **Apotelos Protocol & CLI** | Symmetric native `apotelos` CLI (`/usr/local/bin/apotelos`), reverse causality ($T_\text{final} \to T_0$), Blackboard manifest compilation, vertical ingestion | [`references/paperclip_crewai_mesh.md#4-apotelos-protocol--native-cli-execution`](file:///var/www/.agents/skills/hermes-agent/references/paperclip_crewai_mesh.md) |
+| **Progressive Tool Disclosure** | `classify_query_intent`: prune 42 tools to 0 on chitchat/conceptual queries (`x-freellm-task-type: chat`), saving ~5k tokens/turn and preventing Groq 7k ITPM 413 rejections | [`references/usage.md`](file:///var/www/.agents/skills/hermes-agent/references/usage.md) |
 | **Astrological Worker** | Oráculo 15-shard computation, NATS RPC (`astrology.requests`), 11 XML gold feeds, PostgreSQL 18 ingest | [`references/suite_integration.md`](file:///var/www/.agents/skills/hermes-agent/references/suite_integration.md) |
 | **Runtime & Loop** | ChatML `<tool_call>`, scratchpad execution, Telegram Bot API 22.8, RBAC, anti-flood batching | [`references/usage.md`](file:///var/www/.agents/skills/hermes-agent/references/usage.md) |
 | **Zerops Infra** | Python 3.12 Ubuntu invariant, vendor caching, persistent storage, systemd/supervisord daemon | [`references/infra.md`](file:///var/www/.agents/skills/hermes-agent/references/infra.md) |
@@ -26,7 +27,7 @@ Autonomous AI agent runtime powered by Nous Research Hermes models, featuring na
 [Inflow: Telegram / Paperclip Gateway v1] ──> [Gate 0: Epistemic Whitelist & RBAC]
                                                      │
                                                      ▼
-[Gate 1: Intent & Safety] ──────────────────> [Gate 2: Tool / Swarm Resolution]
+[Gate 1: Intent & Progressive Tool Pruning] ──> [Gate 2: Tool / Swarm Resolution]
                                                      │
                                                      ▼
 [Gate 3: Execution Sensor] ─────────────────> [Outflow: Verified Result / SSE Events]
