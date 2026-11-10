@@ -74,9 +74,26 @@ Hermes integra el adaptador nativo oficial de Gentle-AI (`internal/agents/hermes
 3. **PydanticAI Schema Governor**:
    - Gobierna las mutaciones hacia Linear y CrewAI con reintentos locales tipados (`ModelRetry`), impidiendo la emisión de payloads inválidos.
 
+## 3. Zerops 360 Topological Architecture (10 Cluster Services)
+
+Hermes opera como el centro de control consciente de los 10 servicios activos del cluster:
+
+| Service | Runtime / Base | Ports & Internal URLs | Operational Role & Interconnect |
+|---|---|---|---|
+| **`bifrost`** | alpine/go@1.22 | `http://bifrost:8080/v1` | AI Gateway & LLM Proxy (<100µs). Smart CEL routing, semantic cache, fallback circuit breaker. |
+| **`freellmapi`** | ubuntu/nodejs@24 | `http://freellmapi:3001/v1` | Multi-provider free-tier LLM inference pool (34+ providers, Qwen 2.5 Coder, Dots 280B MoE). |
+| **`paperclip`** | ubuntu/nodejs@26 | `http://paperclip:3100` | Agent OS & Control plane. Org charts, spend caps, task boards, SSE execution streaming. |
+| **`pidev`** | ubuntu/nodejs@26 | `http://pidev:3000` | Gentle-Pi (Pi Coding Agent) sovereign Astro frontend builder (`pidev_dispatch_task`). |
+| **`hermes`** | ubuntu/python@3.12 | `http://hermes:8000` | Sovereign orchestrator, Telegram gateway, NATS JetStream bridge, CrewAI runner. |
+| **`nats`** | nats:single@2.12 | `nats://nats:4222` | Ultra-fast event bus & JetStream RPC (<0.3ms P99) for inter-agent decoupled messaging. |
+| **`database`** | postgresql:single@18 | `postgres://app:***@database:5432/app` | Relational SSoT, pgvector HNSW embeddings, session state, Paperclip data lakehouse. |
+| **`valkey`** | valkey:single@7.2 | `redis://valkey:6379/0` | In-memory cache, sliding-window rate limiters, BullMQ ephemeral job queues. |
+| **`localstorage`** | local-storage:single@1 | `/mnt/localstorage` | High-throughput NVMe shared POSIX volume (brand assets, models, sqlite fallback). |
+| **`zcp`** | zcp@1 | `http://zcp:8080` (`/var/www`) | Development workspace, Antigravity CLI environment, IDE and SSoT git coordination. |
+
 ---
 
-## 3. Environment Variable Dictionary
+## 4. Environment Variable Dictionary
 
 | Variable Name | Type | Required | Default | Description |
 |---|---|---|---|---|
