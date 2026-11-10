@@ -524,19 +524,39 @@ class FontgenEngine:
                 pass
 
         # 2. Brief Ingestion fallback
-        candidates = [
+        candidates = []
+        if self.brief_path and Path(self.brief_path).exists():
+            candidates.append(Path(self.brief_path))
+
+        candidates.extend([
             self.diag_dir / f"astrobranding_{self.brand_lower}.md",
             self.diag_dir / "raw" / "llm" / f"astrobranding_{self.brand_lower}.md",
-            self.project_dev_dir / f"astrobranding_{self.brand_lower}.md"
+            self.project_dev_dir / f"astrobranding_{self.brand_lower}.md",
+            self.localstorage_dir / f"astrobranding_{self.brand_lower}.md"
+        ])
+
+        # If brand is a vertical or umbrella alias, search for parent or local astrobranding_*.md
+        search_dirs = [
+            self.project_dev_dir,
+            self.localstorage_dir,
+            Path("/var/www/localstorage/MentorIA/dev"),
+            Path("/var/www/localstorage/MentorIA/dev/workspaces/juan-damaren/brand"),
+            Path("/var/www/baiosfera/PROYECTOS/DAMAREN/dev")
         ]
+        for sdir in search_dirs:
+            if sdir.exists():
+                for found_brief in sdir.glob("astrobranding_*.md"):
+                    if found_brief not in candidates:
+                        candidates.append(found_brief)
+
         for c in candidates:
             if c.exists():
                 try:
                     txt = c.read_text(encoding="utf-8")
-                    m_sun = re.search(r"Sun Natal:\s*([A-Za-z]+)", txt)
-                    m_mc = re.search(r"Midheaven:\s*([A-Za-z]+)", txt)
-                    m_nak = re.search(r"Nakshatra:\s*([A-Za-z]+)", txt)
-                    m_dm = re.search(r"Day Master:\s*([A-Za-z]+)", txt)
+                    m_sun = re.search(r"\|\s*\*\*Sol Natal\*\*\s*\|\s*\*\*([A-Za-z]+)", txt) or re.search(r"(?:Sun Natal|Sol Natal)[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
+                    m_mc = re.search(r"\|\s*\*\*Medio Cielo[^\*]*\*\*\s*\|\s*\*\*([A-Za-z]+)", txt) or re.search(r"(?:Midheaven|Medio Cielo)[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
+                    m_nak = re.search(r"\*\*Nakshatra:\*\*\s*([A-Za-z]+)", txt) or re.search(r"Nakshatra[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
+                    m_dm = re.search(r"\*\*Day Master:\*\*\s*([A-Za-z]+)", txt) or re.search(r"Day Master[\s\:\*\|]+([A-Za-z]+)", txt, re.IGNORECASE)
                     if m_sun: data["sun_sign"] = m_sun.group(1).strip()
                     if m_mc: data["mc_sign"] = m_mc.group(1).strip()
                     if m_nak: data["nakshatra"] = m_nak.group(1).strip()
