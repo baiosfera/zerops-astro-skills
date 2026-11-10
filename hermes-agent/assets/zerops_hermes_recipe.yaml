@@ -1,37 +1,48 @@
-# Zerops Deployment Recipe for Hermes-Agent
-# Enforces the Ubuntu Invariant for Python 3.12 and Vendor Caching
-
 zerops:
   - setup: hermes
     build:
-      base: python@3.12
-      os: ubuntu
+      base: ubuntu/python@3.12
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y --no-install-recommends git curl ca-certificates tar gzip build-essential
       buildCommands:
-        - pip install --upgrade pip setuptools wheel
-        - pip install --target=./vendor -r requirements.txt
+        - pip install --upgrade pip setuptools wheel && pip install --target=./vendor -r requirements.txt
       deployFiles:
-        - vendor/
-        - hermes/
-        - config/
-        - main.py
-        - zerops.yaml
-      cacheFiles:
-        - /root/.cache/pip
+        - .
+      cache:
+        - vendor
     run:
-      base: python@3.12
-      os: ubuntu
+      base: ubuntu/python@3.12
+      volume:
+        hostname: localstorage
+        mountPath: /mnt/localstorage
+        readOnly: false
       ports:
         - port: 8000
           httpSupport: true
+      initCommands:
+        - sudo mkdir -p /mnt/localstorage/hermes/.hermes /mnt/localstorage/engram && sudo chown -R zerops:zerops /mnt/localstorage/hermes /mnt/localstorage/engram
+        - ln -sfn /mnt/localstorage/hermes/.hermes ~/.hermes
+        - if [ -f /mnt/localstorage/bin/gentle-ai ]; then sudo cp /mnt/localstorage/bin/gentle-ai /usr/local/bin/gentle-ai && sudo chmod +x /usr/local/bin/gentle-ai; elif [ -f /var/www/bin/gentle-ai ]; then sudo cp /var/www/bin/gentle-ai /usr/local/bin/gentle-ai && sudo chmod +x /usr/local/bin/gentle-ai; fi
+        - gentle-ai install --agents hermes --scope global || true
+        - if [ -f /var/www/scripts/apotelos ]; then sudo chmod +x /var/www/scripts/apotelos && sudo ln -sfn /var/www/scripts/apotelos /usr/local/bin/apotelos; elif [ -f /mnt/localstorage/bin/apotelos ]; then sudo ln -sfn /mnt/localstorage/bin/apotelos /usr/local/bin/apotelos; fi
       envVariables:
         PORT: "8000"
-        PYTHONPATH: "./vendor"
+        PYTHONPATH: "/var/www/vendor:/var/www"
         HERMES_MODEL_ENDPOINT: "http://bifrost:8080/v1"
         HERMES_MODEL_NAME: "auto"
-        ZCP_NATS_URL: "nats://nats:4222"
-        ZCP_MCP_URL: "http://zcp:8080/mcp"
-        VALKEY_URL: "redis://valkey:6379/0"
-      start: python main.py
+        BIFROST_VIRTUAL_KEY: "vk-hermes-agent"
+        DATABASE_URL: ${database_connectionString}
+        SUPERUSER_URL: "postgresql://${database_superUser}:${database_superUserPassword}@${database_hostname}:${database_port}/${database_dbName}"
+        NATS_URL: ${nats_connectionString}
+        ZCP_NATS_URL: ${nats_connectionString}
+        VALKEY_URL: ${valkey_connectionString}
+        LOCAL_STORAGE_PATH: "/mnt/localstorage/hermes"
+        ENGRAM_STORAGE_DIR: "/mnt/localstorage/engram"
+        CREWAI_TELEMETRY_OPT_OUT: "true"
+        OTEL_SDK_DISABLED: "true"
+        TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+        TELEGRAM_ALLOWED_USERS: ${TELEGRAM_ALLOWED_USERS}
+      start: python3 /var/www/main.py
       healthCheck:
         httpGet:
           port: 8000
