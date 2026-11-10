@@ -27,7 +27,7 @@ zerops:
         PORT: "8000"
         PYTHONPATH: "./vendor"
         HERMES_MODEL_ENDPOINT: "http://bifrost:8080/v1"
-        HERMES_MODEL_NAME: "hermes-3-llama-3.1-8b"
+        HERMES_MODEL_NAME: "auto"
         ZCP_NATS_URL: "nats://nats:4222"
         ZCP_MCP_URL: "http://zcp:8080/mcp"
         VALKEY_URL: "redis://valkey:6379/0"

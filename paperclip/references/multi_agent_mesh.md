@@ -134,7 +134,7 @@ INSERT INTO agents (
 
 ### Key Parameters:
 - `command`: "pidev" or "pi".
-- `model`: Provider-qualified model identifier routed through Bifrost (e.g., `bifrost/auto`, `deepseek/deepseek-chat`, `bifrost/hermes-3-llama-3.1-8b`). All agent inference is grounded in `http://bifrost:8080/v1` to eliminate external vendor leakage.
+- `model`: Provider-qualified model identifier routed through Bifrost (e.g., `bifrost/auto`, `deepseek/deepseek-chat`, `bifrost/auto`). All agent inference is grounded in `http://bifrost:8080/v1` to eliminate external vendor leakage.
 - `thinking`: `off`, `low`, `medium`, `high`.
 - `stdoutLogMode`: `"compact"` strips repetitive JSONL deltas to keep log size bounded.
 

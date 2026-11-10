@@ -13,7 +13,7 @@ agent:
 
 model:
   endpoint: "${HERMES_MODEL_ENDPOINT:-http://bifrost:8080/v1}"
-  model_name: "${HERMES_MODEL_NAME:-hermes-3-llama-3.1-8b}"
+  model_name: "${HERMES_MODEL_NAME:-auto}"
   api_key: "${HERMES_API_KEY:-dummy}"
   temperature: 0.2
   max_tokens: 4096

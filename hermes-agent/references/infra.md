@@ -81,7 +81,7 @@ Hermes integra el adaptador nativo oficial de Gentle-AI (`internal/agents/hermes
 | Variable Name | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `HERMES_MODEL_ENDPOINT` | URL | Yes | — | Base URL of the OpenAI-compatible inference endpoint (e.g. `http://bifrost:8080/v1` or vLLM). |
-| `HERMES_MODEL_NAME` | String | Yes | `hermes-3-llama-3.1-8b` | Exact model identifier used for inference. |
+| `HERMES_MODEL_NAME` | String | Yes | `auto` | Exact model identifier used for inference. |
 | `HERMES_API_KEY` | Secret | No | `dummy` | Authorization token for the upstream LLM endpoint. |
 | `TELEGRAM_BOT_TOKEN` | Secret | Yes | — | Authentication token issued by `@BotFather`. |
 | `TELEGRAM_ALLOWED_USERS` | String | Yes | — | Comma-separated list of authorized Telegram numeric user IDs (`e.g. "123456789,987654321"`). |
@@ -122,7 +122,7 @@ zerops:
         PORT: "8000"
         PYTHONPATH: "./vendor"
         HERMES_MODEL_ENDPOINT: "http://bifrost:8080/v1"
-        HERMES_MODEL_NAME: "hermes-3-llama-3.1-8b"
+        HERMES_MODEL_NAME: "auto"
         ZCP_NATS_URL: "nats://nats:4222"
       start: python main.py
       healthCheck:
