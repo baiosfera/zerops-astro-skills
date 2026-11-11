@@ -417,7 +417,8 @@ class FontgenEngine:
     """
 
     def __init__(self, brand: str, shards_path: Optional[Path] = None, brief_path: Optional[Path] = None,
-                 output_dir: Optional[Path] = None, use_live_search: bool = True, allow_default: bool = False):
+                 output_dir: Optional[Path] = None, use_live_search: bool = True, allow_default: bool = False,
+                 override_params: Optional[Dict[str, Any]] = None):
         self.brand_raw = brand.strip()
         self.brand_upper = self.brand_raw.upper()
         self.brand_lower = self.brand_raw.lower()
@@ -426,6 +427,7 @@ class FontgenEngine:
         self.output_dir = Path(output_dir).resolve() if output_dir else None
         self.use_live_search = use_live_search
         self.allow_default = allow_default
+        self.override_params = override_params or {}
 
         self.used_families: Set[str] = set()
 
@@ -606,6 +608,20 @@ class FontgenEngine:
             "dominant_element": ""
         }
 
+        # 0. Direct Explicit Parameter Ingestion (Ontological Differentiation)
+        if self.override_params:
+            for k in ["sun_sign", "mc_sign", "day_master", "nakshatra", "dominant_element"]:
+                if self.override_params.get(k):
+                    data[k] = str(self.override_params[k]).strip()
+            if data["sun_sign"] and not data["dominant_element"]:
+                data["dominant_element"] = ZODIAC_ELEMENTS.get(data["sun_sign"], "Earth")
+            if data["sun_sign"] and data["mc_sign"]:
+                if not data["day_master"]:
+                    data["day_master"] = "Wu"
+                if not data["nakshatra"]:
+                    data["nakshatra"] = "Ashwini"
+                return data
+
         search_dirs = self._discover_search_dirs()
 
         # 1. Shards Ingestion (Explicit target or brand-specific diagnostic lakehouse)
@@ -773,29 +789,54 @@ class FontgenEngine:
         nak_info = NAKSHATRA_FEATURES.get(nakshatra, {"feature": "liga 1", "accent_archetype": "monogram_emblem"})
 
         # --- ECOSISTEMA 1: QUIET LUXURY & AUTHORITY (MC + SUN) ---
-        if mc_elem in ["Earth", "Water"]:
-            query_prim1 = f"luxury architectural editorial serif font {mc_elem.lower()}"
-            query_acc1 = "interlocking luxury monogram logo brand seal"
-            fallback_prim_key1 = "luxury_editorial_serif"
-            fallback_acc_key1 = "monogram_holder"
+        pref_disp = self.override_params.get("display")
+        pref_body = self.override_params.get("body")
+        pref_acc = self.override_params.get("accent")
+
+        if pref_disp and pref_disp in ENVATO_VERIFIED_CATALOG:
+            fallback_prim_key1 = pref_disp
+            query_prim1 = f"luxury editorial serif font {pref_disp}"
+        elif mc_elem == "Earth":
+            fallback_prim_key1 = "architectural_serif"
+            query_prim1 = "luxury architectural editorial serif font earth"
+        elif mc_elem == "Water":
+            fallback_prim_key1 = "high_contrast_didone"
+            query_prim1 = "high contrast didone editorial serif font water"
+        elif mc_elem == "Fire":
+            fallback_prim_key1 = "romanesque_display"
+            query_prim1 = "royal inscriptional stone titling serif font fire"
+        else: # Air
+            fallback_prim_key1 = "modern_luxury_serif"
+            query_prim1 = "modern luxury editorial high contrast serif font air"
+
+        if pref_body and pref_body in GOOGLE_FONTS_CATALOG:
+            eco1_body = GOOGLE_FONTS_CATALOG[pref_body]
+        elif mc_elem == "Earth":
+            eco1_body = GOOGLE_FONTS_CATALOG["spectral"]
+        elif mc_elem == "Water":
             eco1_body = GOOGLE_FONTS_CATALOG["newsreader"]
         elif mc_elem == "Fire":
-            query_prim1 = "royal inscriptional stone titling serif font"
-            query_acc1 = "architectural monogram emblem font"
-            fallback_prim_key1 = "romanesque_display"
-            fallback_acc_key1 = "clarissa_monogram"
             eco1_body = GOOGLE_FONTS_CATALOG["instrument_sans"]
         else: # Air
-            query_prim1 = "modern luxury editorial high contrast serif font"
-            query_acc1 = "modern geometric monogram brand seal font"
-            fallback_prim_key1 = "modern_luxury_serif"
-            fallback_acc_key1 = "monogram_emblem"
             eco1_body = GOOGLE_FONTS_CATALOG["manrope"]
 
-        live_prim_1 = self._search_live_envato_fonts(query_prim1, category="serif")
+        if pref_acc and pref_acc in ENVATO_VERIFIED_CATALOG:
+            fallback_acc_key1 = pref_acc
+            query_acc1 = f"monogram brand seal font {pref_acc}"
+        elif mc_elem == "Fire":
+            fallback_acc_key1 = "clarissa_monogram"
+            query_acc1 = "architectural monogram emblem font"
+        elif mc_elem == "Air":
+            fallback_acc_key1 = "monogram_emblem"
+            query_acc1 = "modern geometric monogram brand seal font"
+        else:
+            fallback_acc_key1 = "monogram_holder"
+            query_acc1 = "interlocking luxury monogram logo brand seal"
+
+        live_prim_1 = self._search_live_envato_fonts(query_prim1, category="serif") if self.use_live_search else None
         eco1_prim = live_prim_1 if live_prim_1 else self._get_fallback_envato_font(fallback_prim_key1, category="serif")
 
-        live_acc_1 = self._search_live_envato_fonts(query_acc1, category="display")
+        live_acc_1 = self._search_live_envato_fonts(query_acc1, category="display") if self.use_live_search else None
         eco1_acc = live_acc_1 if live_acc_1 else self._get_fallback_envato_font(fallback_acc_key1, category="display")
 
         eco1 = {
@@ -1244,7 +1285,25 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Calculate without writing to disk")
     parser.add_argument("--no-live", action="store_true", help="Disable real-time live search on Envato")
     parser.add_argument("--allow-default", action="store_true", help="Allow fallback to canonical neutral archetype if no brief/shards found")
+    parser.add_argument("--sun-sign", default=None, help="Explicit sun sign (e.g. Scorpio, Gemini, Aries)")
+    parser.add_argument("--mc-sign", default=None, help="Explicit midheaven sign (e.g. Capricorn, Aquarius, Pisces)")
+    parser.add_argument("--day-master", default=None, help="Explicit BaZi day master (e.g. Ren, Jia, Bing)")
+    parser.add_argument("--nakshatra", default=None, help="Explicit Nakshatra (e.g. Anuradha, Mrigashira, Krittika)")
+    parser.add_argument("--dominant-element", default=None, help="Explicit dominant element (e.g. Earth, Water, Fire, Air)")
+    parser.add_argument("--display", default=None, help="Preferred Envato display font key (e.g. architectural_serif, high_contrast_didone, clean_geometric_sans)")
+    parser.add_argument("--body", default=None, help="Preferred Google Fonts body key (e.g. spectral, plus_jakarta_sans, urbanist)")
+    parser.add_argument("--accent", default=None, help="Preferred Envato accent key (e.g. monogram_holder, clarissa_monogram, modern_grotesk_stencil)")
     args = parser.parse_args()
+
+    override_params = {}
+    if args.sun_sign: override_params["sun_sign"] = args.sun_sign
+    if args.mc_sign: override_params["mc_sign"] = args.mc_sign
+    if args.day_master: override_params["day_master"] = args.day_master
+    if args.nakshatra: override_params["nakshatra"] = args.nakshatra
+    if args.dominant_element: override_params["dominant_element"] = args.dominant_element
+    if args.display: override_params["display"] = args.display
+    if args.body: override_params["body"] = args.body
+    if args.accent: override_params["accent"] = args.accent
 
     engine = FontgenEngine(
         brand=args.brand,
@@ -1252,7 +1311,8 @@ def main():
         brief_path=args.brief,
         output_dir=args.output_dir,
         use_live_search=not args.no_live,
-        allow_default=args.allow_default
+        allow_default=args.allow_default,
+        override_params=override_params if override_params else None
     )
     manifest, markdown = engine.run(selected_eco_id=args.eco, dry_run=args.dry_run)
 
