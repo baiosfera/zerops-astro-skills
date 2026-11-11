@@ -73,14 +73,21 @@ The `brand-play` engine consumes universal, mathematical TYM (Type-YAML-Markdown
 
 ## 3. Anti-Slop Validation & CLI Usage
 
-### CLI Commands
+### CLI Commands & Verification
 ```bash
 # Transmute a single playbook for active brand
-brand-play transmute --playbook offers_pricing --brand elplacerdc --target web
+brand-play transmute --playbook 00_category_of_one --brand juan-damaren --target all
 
-# Transmute all 18 playbooks for active brand across all targets
-brand-play transmute --all --brand elplacerdc --target all
+# Transmute all discovered playbooks for active brand across all targets
+brand-play transmute --all --brand juan-damaren --target all
 
-# Run integrity validation
+# List discovered playbooks and workspace brands
+brand-play list --playbooks
+brand-play list --brands
+
+# Execute physical deterministic unit test suite (exit 0)
+brand-play test
+
+# Run integrity validation and SSoT anti-drift check
 skills-suite-validate && ssot-parity-check
 ```
