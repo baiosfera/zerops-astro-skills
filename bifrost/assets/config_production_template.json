@@ -1,164 +1,311 @@
 {
   "$schema": "https://www.getbifrost.ai/schema",
   "version": 2,
-  "source_of_truth": "split",
-  "encryption_key": "env.BIFROST_ENCRYPTION_KEY",
-  "env_label": "PROD",
-  "setup_token": "env.BIFROST_SETUP_TOKEN",
   "server": {
-    "read_buffer_size": 65536,
-    "plugin_download_private_allowlist": []
+    "port": 8080,
+    "host": "0.0.0.0"
   },
-  "client": {
-    "initial_pool_size": 1000,
-    "drop_excess_requests": false,
-    "enable_logging": true,
-    "log_retention_days": 30,
-    "enforce_auth_on_inference": true,
-    "allowed_origins": ["*"],
-    "allowed_headers": ["Content-Type", "Authorization", "X-Api-Key", "x-bf-vk", "x-bf-dim-*"]
+  "config_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "env.PG_HOST",
+      "port": "5432",
+      "user": "env.PG_USER",
+      "password": "env.PG_PASSWORD",
+      "db_name": "env.PG_DATABASE",
+      "ssl_mode": "disable"
+    }
+  },
+  "logs_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "env.PG_HOST",
+      "port": "5432",
+      "user": "env.PG_USER",
+      "password": "env.PG_PASSWORD",
+      "db_name": "env.PG_DATABASE",
+      "ssl_mode": "disable"
+    }
   },
   "vector_store": {
     "enabled": true,
-    "type": "chromem"
-  },
-  "mcp": {
-    "client_configs": [
-      {
-        "name": "freellmapi-mcp",
-        "connection_type": "http",
-        "connection_string": "http://freellmapi:3001/mcp",
-        "tools_to_execute": ["*"],
-        "tools_to_auto_execute": ["list_models", "provider_health", "usage_summary"]
-      }
-    ],
-    "tool_manager_config": {
-      "max_agent_depth": 10,
-      "tool_execution_timeout": "30s"
+    "type": "chromem",
+    "config": {
+      "path": "/var/www/chromem",
+      "compress": true
     }
   },
+  "plugins": [
+    {
+      "name": "semantic_cache",
+      "enabled": true,
+      "config": {
+        "dimension": 1,
+        "ttl": 86400,
+        "threshold": 0.8,
+        "vector_store_namespace": "BifrostLocalCache",
+        "default_cache_key": "production-semantic-cache",
+        "cache_by_model": true,
+        "cache_by_provider": true
+      }
+    }
+  ],
   "providers": {
     "freellmapi": {
-      "base_provider_type": "openai",
-      "base_url": "http://freellmapi:3001/v1",
       "custom_provider_config": {
-        "enabled": true,
-        "api_type": "openai_compatible"
+        "base_provider_type": "openai"
       },
       "keys": [
         {
-          "name": "freellmapi-primary",
-          "value": "env.FREELLMAPI_KEY",
-          "models": ["*"],
+          "name": "freellmapi-primary-pool",
+          "value": "freellmapi-1a51f9aa17ab766b7e98b5b2ae3353a6bfb216d86868a4ef",
+          "models": [
+            "*"
+          ],
+          "aliases": {
+            "auto": "auto",
+            "gpt-4o": "auto",
+            "gpt-4o-mini": "auto",
+            "claude-3-5-sonnet": "auto",
+            "claude-3-haiku": "auto",
+            "gemini-2.5-flash": "auto",
+            "llama-3.3-70b": "auto"
+          },
           "weight": 1.0
         }
       ],
       "network_config": {
+        "base_url": "http://freellmapi:3001",
+        "allow_private_network": true,
         "default_request_timeout_in_seconds": 60,
-        "max_retries": 2
+        "max_retries": 1,
+        "retry_backoff_initial": "300ms",
+        "retry_backoff_max": "1s"
       }
     },
-    "pro": {
-      "base_provider_type": "openai",
-      "base_url": "env.PRO_BASE_URL",
+    "deepseek": {
       "keys": [
         {
-          "name": "pro-primary",
-          "value": "env.PRO_API_KEY",
-          "models": ["*"],
+          "name": "deepseek-pro-commercial",
+          "value": "env.DEEPSEEK_PRO_KEY",
+          "models": [
+            "*"
+          ],
+          "aliases": {
+            "auto": "deepseek-flash",
+            "deepseek-chat": "deepseek-flash",
+            "deepseek-flash": "deepseek-flash",
+            "deepseek-v4-pro": "deepseek-v4-pro",
+            "deepseek-coder": "deepseek-flash",
+            "deepseek-reasoner": "deepseek-v4-pro"
+          },
           "weight": 1.0
         }
       ],
       "network_config": {
         "default_request_timeout_in_seconds": 120,
-        "max_retries": 3
+        "max_retries": 3,
+        "retry_backoff_initial": "500ms",
+        "retry_backoff_max": "3s"
       }
     }
   },
   "governance": {
-    "auth_config": {
-      "is_enabled": true,
-      "admin_username": "env.BIFROST_ADMIN_USERNAME",
-      "admin_password": "env.BIFROST_ADMIN_PASSWORD",
-      "disable_auth_on_inference": false
-    },
     "virtual_keys": [
       {
         "id": "vk-production-main",
-        "name": "production-service-key",
-        "value": "env.PROD_VIRTUAL_KEY",
+        "name": "Production Sovereign Key",
+        "value": "vk-damaren-sovereign-2026",
         "is_active": true,
-        "rate_limit_id": "rl-standard",
-        "calendar_aligned": true,
+        "rate_limits": {
+          "requests_per_minute": 120
+        },
         "provider_configs": [
           {
             "provider": "freellmapi",
-            "allowed_models": ["*"],
-            "key_ids": ["*"],
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
             "weight": 1.0
           },
           {
-            "provider": "pro",
-            "allowed_models": ["*"],
-            "key_ids": ["*"],
+            "provider": "deepseek",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
             "weight": 1.0
           }
-        ],
-        "mcp_configs": [
+        ]
+      },
+      {
+        "id": "vk-hermes-agent",
+        "name": "Hermes Agent Autonomous",
+        "value": "vk-hermes-agent",
+        "is_active": true,
+        "rate_limits": {
+          "requests_per_minute": 60
+        },
+        "provider_configs": [
           {
-            "mcp_client_name": "freellmapi-mcp",
-            "tools_to_execute": ["*"]
+            "provider": "freellmapi",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          },
+          {
+            "provider": "deepseek",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      {
+        "id": "vk-crewai",
+        "name": "CrewAI Teams Autonomous",
+        "value": "vk-crewai",
+        "is_active": true,
+        "rate_limits": {
+          "requests_per_minute": 120
+        },
+        "provider_configs": [
+          {
+            "provider": "freellmapi",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          },
+          {
+            "provider": "deepseek",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      {
+        "id": "vk-pidev",
+        "name": "PiDev Sovereign Code Builder",
+        "value": "vk-pidev",
+        "is_active": true,
+        "rate_limits": {
+          "requests_per_minute": 120
+        },
+        "provider_configs": [
+          {
+            "provider": "freellmapi",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          },
+          {
+            "provider": "deepseek",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      {
+        "id": "vk-pydanticai",
+        "name": "PydanticAI Structured Contracts",
+        "value": "vk-pydanticai",
+        "is_active": true,
+        "rate_limits": {
+          "requests_per_minute": 60
+        },
+        "provider_configs": [
+          {
+            "provider": "freellmapi",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
+          },
+          {
+            "provider": "deepseek",
+            "allowed_models": [
+              "*"
+            ],
+            "key_ids": [
+              "*"
+            ],
+            "weight": 1.0
           }
         ]
       }
     ],
-    "budgets": [
-      {
-        "id": "budget-monthly-production",
-        "max_limit": 1000.0,
-        "reset_duration": "1M",
-        "virtual_key_id": "vk-production-main"
-      }
-    ],
-    "rate_limits": [
-      {
-        "id": "rl-standard",
-        "request_max_limit": 10000,
-        "request_reset_duration": "1h",
-        "token_max_limit": 10000000,
-        "token_reset_duration": "1h"
-      }
-    ],
-    "circuit_breakers": [
-      {
-        "id": "freellmapi-exhaustion-breaker",
-        "provider": "freellmapi",
-        "triggers": {
-          "status_codes": [429, 500, 502, 503],
-          "header_triggers": [
-            {
-              "source": "response_header",
-              "header_name": "retry-after"
-            },
-            {
-              "source": "response_header",
-              "header_name": "x-ratelimit-remaining",
-              "header_value": "0"
-            }
-          ]
-        },
-        "default_cooldown": "60s",
-        "cooldown_header": "retry-after"
-      }
-    ],
+    "circuit_breaker_config": {
+      "policies": [
+        {
+          "name": "freellmapi-exhaustion-breaker",
+          "enabled": true,
+          "primary_provider": "freellmapi",
+          "primary_model": "*",
+          "fallback_provider": "deepseek",
+          "fallback_model": "deepseek-flash",
+          "condition": {
+            "operator": "OR",
+            "signals": [
+              {
+                "source": "response_header",
+                "header_name": "retry-after"
+              },
+              {
+                "source": "response_header",
+                "header_name": "x-ratelimit-remaining",
+                "header_value": "0"
+              }
+            ]
+          },
+          "default_cooldown": "60s",
+          "cooldown_header": "retry-after"
+        }
+      ]
+    },
     "routing_rules": [
       {
         "id": "rule-explicit-pro-override",
-        "name": "Route Explicit Pro Tier Requests Directly to Pro",
-        "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-tier'] == 'pro' || headers['x-routing-tier'] == 'pro'",
+        "name": "Route Explicit Pro Tier Requests Directly to DeepSeek",
+        "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-tier'] == 'pro' || headers['x-routing-tier'] == 'pro' || model.startsWith('deepseek') || model.startsWith('deepseek/')",
         "targets": [
           {
-            "provider": "pro",
+            "provider": "deepseek",
             "weight": 1.0
           }
         ],
@@ -178,7 +325,7 @@
           }
         ],
         "fallbacks": [
-          "pro"
+          "deepseek"
         ],
         "priority": 1
       }
