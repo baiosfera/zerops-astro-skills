@@ -1,108 +1,30 @@
-# Planner Reference Manual: Operational Usage & Sovereign Governance Architecture (v10.0)
+# Planner Reference Manual: Operational Usage & Git-First Governance (v11.0)
 
 > **SSoT Reference Document:** `/var/www/.agents/skills/planner/references/usage.md`  
-> **Meta-Skill:** [`planner`](file:///var/www/.agents/skills/planner/SKILL.md)  
-> **Archetype:** Cognitive, Planning & Governance Orchestrator  
-> **Standard:** CoHaLo Positivo v8.4, Skill-Improver & Supreme Directive v8.4.
+> **Parent Meta-Skill:** [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md)  
+> **Standard:** Supreme Directive v9.1 & Zero Checklist-Theater
 
 ---
 
-## 1. Misión: El Supremo Gobernador de Orquestación
+## 1. Misión: Planeación Real & Cierre Honesto
 
-`planner` es la **habilidad gobernadora soberana** de todo el ecosistema en Zerops. No es un receptor pasivo ni un formato burocrático; es la autoridad directiva que subordina a todas las demás herramientas y skills:
+`planner` estructura iniciativas multi-servicio ($\ge 2$ runtimes o $\ge 3$ pasos) bajo [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) sin burocracia innecesaria para tareas simples.
 
-1. **Subordinación Estricta de `grilling` (Grounding Silencioso Previo):**
-   - El grilling ceremonial indiscriminado desgasta al usuario y quema tokens innecesarios de Gemini Flash High intentando averiguar lo que ya está en el código o en los documentos.
-   - **Protocolo Facts-First:** Toda sesión arranca inspeccionando hechos en disco (`view_file`, `run_command`, `grep`) o delegando a un subagente explorador `research`.
-   - Si la respuesta existe en el repositorio, la especificación o el historial, **cero preguntas**. Se procede directamente con la ejecución o propuesta.
-   - Si existe una bifurcación arquitectónica genuina con tradeoffs irreversibles (ej. elegir entre dos proveedores o modelos incompatibles), se formula **máximo 1 sola pregunta atómica a la vez** con opciones concretas y bien explicadas. Al preguntar, se detiene la ejecución inmediatamente y se espera respuesta.
-
-2. **Invariante de Agrupación en Linear (Zero BAI Huérfanos):**
-   - **Regla Inquebrantable:** Ningún issue `BAI-*` puede existir suelto o huérfano. Todo ticket de Linear debe pertenecer a un Plan / Proyecto padre.
-   - **Flujo de Proyecto:**
-     ```bash
-     # 1. Fijar o crear el Proyecto / Plan maestro
-     linear-cli set-project "<Nombre o UUID del Proyecto>"
-     # O crear un proyecto nuevo para una iniciativa mayor:
-     linear-cli create-project "Nombre del Plan" "Descripción y objetivos"
-
-     # 2. Crear las tareas agrupadas automáticamente bajo ese proyecto
-     linear-cli create "Título de la Tarea" "Descripción, criterios de aceptación y contexto"
-     ```
-   - **Auto-Grouping & Bloqueo Físico:** `linear-cli` persiste el proyecto activo en `/var/www/artifacts/linear_active_project.json` y auto-resuelve el proyecto para toda nueva tarea. Si un agente intenta crear una tarea sin proyecto y no hay proyecto activo resoluble, `linear-cli` rechaza la creación físicamente con error.
-   - **Economía de Tokens Inter-Sesión:** Toda la bitácora acumulada, decisiones y criterios de aceptación residen en el cuerpo del Issue en Linear. Esto permite que el chat se mantenga ultraliviano sin tener que reinyectar miles de tokens de contexto en cada turno.
-
-3. **Thin Orchestrator & Bounded Delegation (Patrón Gentle-AI):**
-   - El orquestador principal (AGY) mantiene un hilo de contexto delgado (Thin Orchestrator): **no carga archivos masivos (ej. 2.000 líneas) en su ventana principal si va a realizar múltiples modificaciones**.
-   - **Regla de Delegación Bounded:** Si una tarea requiere editar >= 2 archivos no triviales, compilar suites completas o explorar directorios extensos, el orquestador define e invoca un subagente worker temporal (`invoke_subagent`).
-   - El worker recibe el alcance específico, realiza las modificaciones, corre las comprobaciones locales y devuelve únicamente un reporte sintético con el diff y el resultado exit code 0.
-   - El orquestador recibe el recibo, realiza la comprobación final de alto nivel y continúa, ahorrando decenas de miles de tokens de la ventana de contexto.
-
-4. **Compuerta de Sensores Físicos Rápidos y Baratos (Anti-Checklist Theater):**
-   - Quedan erradicados los scripts sintéticos y validadores ceremoniales artificiales que bloquean o fallan con falsos positivos.
-   - La verdad reside en tres sensores físicos rápidos, baratos y deterministas:
-     1. **Sensor de Sintaxis / Compilación:** `bun run build`, `node --check` o `tsc --noEmit` (exit code 0).
-     2. **Sensor de Comportamiento:** `bun test` o `pytest` (exit code 0).
-     3. **Sensor Funcional / Grep de Dominio:** comprobación viva mediante curl (`HTTP 200 OK`) o escaneo grep para verificar que no existan regresiones (ej. anchors indebidos, rutas hardcodeadas o auto-scrolls erróneos).
-   - Solo cuando los sensores devuelven exit code 0, se procede a marcar la tarea como resuelta en Linear:
-     ```bash
-     linear-cli update-status <ID> "Done" --evidence "bun test exit 0 (75 tests passing)"
-     ```
-
-5. **Arquitectura Lego Desacoplada & Upstream Inmutable:**
-   - **Chasis Upstream:** `/var/www/zerops-astrobranding` es el plano maestro y esqueleto de Zerops. Permanece inmutable y desacoplado de la lógica de clientes.
-   - **Plantilla Constructora:** `/var/www/artifacts/templates/plantilla-universal-web-zerops-v4.md` define el modelo arquitectónico para cualquier marca o proyecto.
-   - **Workloads Derivadas:** Cada marca o aplicación tiene su propio repositorio de cliente (`<app>-prod` en `main`, `<app>-stage` en `stage`). El entorno de `stage` es efímero y se utiliza para verificar cambios a costo cero.
-   - **Interconexión Dinámica:** Cero acoplamiento hardcodeado. Los servicios se conectan vía DNS interno privado de Zerops (`http://bifrost:8080`, `http://evolution:8085`, `http://listmonk:9000`).
+1. **Facts-First & Anti-Grilling**: Inspeccionar disco vivo y fuentes primarias (`research`) antes de preguntar. Si hace falta decisión humana con tradeoffs reales, formular **máximo 1 pregunta atómica a la vez** y esperar respuesta.
+2. **F4 Audit & Go Gate**: Mantener borradores F0–F3 en `/var/www/artifacts/plans/draft_<slug>.md`. Publicar el plan maestro en `/var/www/artifacts/plans/<slug>.md` con criterios ejecutables y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*`.
+3. **Agrupación en Linear (`BAI-*`)**: Toda issue creada tras F4 `Go` pertenece a un Proyecto en Linear (`linear-cli set-project "<ID|name>"` / `create-project`).
+4. **Honest Reality Proof (Zero Checklist-Theater)**:
+   - Distinguir explícitamente `BEHAVIORALLY_VERIFIED` (tests/builds/sondas reales ejecutados en el alcance exacto) de `SYNTAX_ONLY` o `UNVERIFIED`.
+   - Marcar Linear `Done` exige `--evidence` con comandos reales ejecutados tras el último cambio y `exit 0`.
+5. **Topología Modular (`baiosfera/*` + Catálogo)**:
+   - `/var/www/zerops-astrobranding`: **Catálogo & Registry** (`recipes/`, `blueprints/`, `templates/`, `scripts/`, `iniciar.sh`).
+   - `/var/www/zerops-astro-skills`: **Suite de Skills** (`baiosfera/zerops-astro-skills`).
+   - `baiosfera/runtime-*` + `template-astro-web`: repositorios plantilla por runtime desplegables e interconectados por DNS interno (`zerops_discover`).
 
 ---
 
-## 2. Gobernanza Quad-Track SSoT & Máquina de Estados F0–F5
+## 2. Pistas Operativas (Git-First)
 
-Todo plan generado bajo `planner` se bifurca formalmente en una de cuatro pistas operativas:
-
-### 2.1 Track A: Skill Governance & SSoT Tooling
-Aplica a cambios en el ecosistema de habilidades (`.agents/skills/`), scripts Python de plataforma, scripts aprovisionadores (`setup-*.sh`, `unisetup.sh`, `iniciar.sh`) y directivas de gobernanza maestras.
-- Snapshot plano en `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<name>_v<ver>_<date>.bak/`.
-- Verificación de no-mutilación mediante `skill-improver`.
-- Reflejo indivisible hacia Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/`) y `git push origin main` a `zerops-astro-skills`.
-- Sensor físico universal: `skills-suite-validate` retornando exit code 0.
-
-### 2.2 Track B: Chasis Central Zerops Astrobranding
-Aplica al chasis central `/var/www/zerops-astrobranding` (plantilla Astro 5 SSR compartida, tokens base y herramientas).
-- Versionado y rollback nativo en Git/GitHub (ramas, tags y commits).
-- Cierre con commit convencional y `git push origin main` al repositorio de `zerops-astrobranding`.
-
-### 2.3 Track C: Workloads & Apps Derivadas (Plantilla Universal v4)
-Aplica a aplicaciones de clientes y microservicios desplegados en Zerops (`webdev`, tiendas, APIs) derivados de la Plantilla Universal v4.
-- Modelo GitOps Multi-Servicio (`<app>-prod` en `main`, `<app>-stage` en `stage`).
-- Repositorio de cliente propio con remoto `origin` en GitHub. El chasis actúa estrictamente como `upstream` para recibir mejoras sin empujar código del cliente hacia él.
-- Verificación física en vivo vía subdominio Zerops (`HTTP 200 OK`).
-
-### 2.4 Track D: Direct SSoT Data, Content & Business Assets
-Aplica a modificaciones directas de documentos Markdown, brandbooks, JSONs de configuración de negocio, plantillas de correo y assets en Google Drive (`/var/www/baiosfera/...`).
-- Cero ceremonias de plataforma: Prescinde de respaldos en `bak/` (Google Drive provee historial nativo de versiones).
-- Ciclo ágil: Inspección -> Mutación -> Validación de enlaces -> Persistencia en Engram LTM vía `mem_save`.
-
----
-
-## 3. Matriz de Decisiones & Casos de Uso
-
-| Caso de Uso / Necesidad | Skill Responsable | Protocolo / Acción | Referencia Canónica |
-|---|---|---|---|
-| Inflow Epistémico / Grounding | `research` | Inspección silenciosa previa; cero asunciones | [`research/SKILL.md`](file:///var/www/.agents/skills/research/SKILL.md) |
-| Aclaración de Requisitos | `planner` | Facts-first; máx 1 pregunta atómica a la vez | [`SKILL.md`](file:///var/www/.agents/skills/planner/SKILL.md) |
-| Linear Project Grouping | `linear-cli` | `linear-cli set-project` -> `create --project` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
-| Refactorización sin Pérdida | `skill-improver` | Modularización a `references/usage.md` | [`skill-improver/SKILL.md`](file:///var/www/.agents/skills/skill-improver/SKILL.md) |
-| Nueva Habilidad | `skill-creator` | Scaffolding canónico de 3 niveles | [`skill-creator/SKILL.md`](file:///var/www/.agents/skills/skill-creator/SKILL.md) |
-| Arneses & Presupuesto Tokens | `cohalo` | Bounded execution (`timeout 10s`, thin context) | [`cohalo/SKILL.md`](file:///var/www/.agents/skills/cohalo/SKILL.md) |
-| Despliegue de Workload Zerops | `bknd` / `frnt` | Validación `zcp-validate` y CI/CD GitOps | [`bknd/SKILL.md`](file:///var/www/.agents/skills/bknd/SKILL.md) · [`frnt/SKILL.md`](file:///var/www/.agents/skills/frnt/SKILL.md) |
-| Sensor Físico Universal | `skills-suite-validate` | `skills-suite-validate` exit code 0 | [`/usr/local/bin/skills-suite-validate`](file:///usr/local/bin/skills-suite-validate) |
-| Sensor de Aplicación | `bun test` / `pytest` | Suite física de pruebas exit code 0 | `ssh <svc> "cd /var/www && npm test"` |
-
----
-
-## 4. Política de Linear & Cierre en Memoria
-
-1. **Política de Linear:** Linear es obligatorio para iniciativas de proyecto, tareas de múltiples archivos o trabajos entre sesiones, asegurando persistencia de estado sin saturar la ventana de contexto. Toda tarea `BAI-*` debe ser hija de un Proyecto en Linear (`linear-cli set-project`).
-2. **Cierre de Memoria LTM:** Todo plan completado concluye registrando la bitácora arquitectónica ejecutando `mem_session_summary` en Engram, preservando los descubrimientos y archivos relevantes para la próxima sesión.
+- **Track A (Skills, Scripts & Gobernanza)**: Cambios en `zerops-astro-skills/`, `zerops-astrobranding/scripts/`, `.agents/rules/`, `AGENTS.md`. Validación con `tool-guard.py --test`, `skills-suite-validate`, `ssot-parity-check` y `git push origin main`.
+- **Track B (Runtimes & Plantillas `baiosfera/*`)**: Cambios en `runtime-*` / `template-astro-web` / apps de cliente. Validación con tests nativos (`bun test`, `pytest`, `go test`), `zerops_deploy` y sondas HTTP reales.
+- **Track C (Contenido / Documentación / Drive de Negocio)**: Docs de proyecto en `/var/www/baiosfera/PROYECTOS/<Marca>/`. Verificación de enlaces, esquema JSON y `mem_save`.

@@ -1,45 +1,30 @@
 ---
 name: planner
-description: "Trigger: planner, plan, master-plan, planificar, crear plan, diseña un plan, /plan, change proposal, version plan, roadmap. Universal Master Planning & SSoT Governance Orchestrator under CoHaLo v8.4 and Supreme Directive v8.3."
+description: "Trigger: planner, plan, master-plan, planificar, crear plan, diseña un plan, /plan, change proposal, version plan, roadmap. Linear Planning & SSoT Execution Router subordinate to meta-plan and Supreme Directive v9.1."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "10.0"
+  version: "11.0"
 ---
 
-# Planner — Supremo Gobernador de Orquestación & SSoT (v10.0)
+# Planner — Orquestador de Planes, Linear & Cierre Real (v11.0)
 
 ## Activation Contract
-Gobernador supremo de orquestación y arquitectura Zerops-First. Subordina `grilling`, comanda subagentes delegados y garantiza el arnés físico determinista bajo [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Tareas atómicas de un solo archivo ejecutan inline sin planes ceremoniales.
+Subordinado directo de [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) y [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Tasks atómicas ejecutan inline sin ceremonias. Iniciativas multi-servicio ($\ge 2$ runtimes o $\ge 3$ pasos) usan F0–F5 con `/var/www/artifacts/plans/` y Linear.
 
-## 5 Invariantes Soberanos (Positive Guidance)
-1. **Facts-First Grounding & Anti-Grilling**: Iniciar siempre con inspección en disco o subagente `research`. Si los datos existen en el repo o la documentación, ejecutar sin preguntas. Reservar preguntas exclusivamente para bifurcaciones arquitectónicas reales con tradeoffs (máximo 1 pregunta atómica a la vez).
-2. **Linear Invariable Grouping & Plan Auto-Archive**: Todo issue `BAI-*` se crea estrictamente dentro de un Plan/Proyecto padre (`linear-cli create ... --project <ID|name>`). Al completar la iniciativa y verificar exit 0, el plan activo en `/var/www/artifacts/plans/<slug>.md` se mueve obligatoriamente a `archive/<slug>.executed.md` para desactivar el centinela `tool-guard.py` y prevenir falsos positivos.
-3. **Thin Orchestrator & Bounded Delegation**: Mantener contexto ligero delegando ediciones multi-archivo ($\ge 2$ archivos) o builds a subagentes temporales acotados (`invoke_subagent`). El orquestador sintetiza únicamente el resultado verificado.
-4. **Fast & Cheap Physical Attestation**: Toda tarea se valida con sensores deterministas de bajo costo antes de reportar completitud o marcar Done:
-   - Chequeo estático / sintaxis: `bun run build` o `node --check` (exit 0).
-   - Tests de comportamiento: `bun test` o `pytest` (exit 0).
-   - Sensor funcional / grep: rutas correctas y cero regresiones.
-5. **Arquitectura Lego Desacoplada (Plantilla v4 & Zerops)**: Chasis inmutable en `/var/www/zerops-astrobranding`. Construcción según `plantilla-universal-web-zerops-v4.md`. Servicios interconectados vía DNS privado (`http://<servicio>:<puerto>`), con staging efímero.
+## Invariantes Soberanos (Positive Guidance)
+1. **Facts-First & Anti-Grilling**: Inspeccionar disco vivo y fuentes primarias (`research`) antes de preguntar. Reservar F1 para 1 bifurcación real con tradeoffs a la vez.
+2. **F4 Audit & Go Gate (Zero Premature Execution)**: En F4 publicar el plan en `/var/www/artifacts/plans/<slug>.md` con criterios ejecutables de cierre y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*` en Linear.
+3. **Linear Scoping & Auto-Archive**: Agrupar cada `BAI-*` bajo su proyecto (`linear-cli create ... --project <ID|name>`). Al completar F5 con evidencia real, mover el plan a `artifacts/plans/archive/<slug>.executed.md` y guardar síntesis en `mem_save`.
+4. **Honest Reality Proof (Zero Checklist-Theater)**: Validar el alcance exacto modificado con comandos ejecutables (`bun test`, `pytest`, `go build`, `zcli`/Zerops smoke). Reportar por separado `BEHAVIORALLY_VERIFIED`, `SYNTAX_ONLY` y `UNVERIFIED` antes de marcar `Done`.
+5. **Catálogo Modular & Repos Plantilla `baiosfera/*`**: [`zerops-astrobranding`](file:///var/www/zerops-astrobranding/iniciar.sh) gobierna recetas, blueprints, templates y scripts compartidos; el código fuente de cada runtime vive en su repo plantilla `baiosfera/runtime-*` + `template-astro-web`, interconectados vía DNS interno (`zerops_discover`).
 
 ## Decision Gates
 
 | Capa | Protocolo / Acción | Referencia |
 |---|---|---|
-| Inflow Epistémico | Inspección en disco $\to$ `research` 360 | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
-| Aclaración Restringida | Facts-first; máx 1 pregunta con opciones | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
-| Plan & Agrupación | `linear-cli create-project` / `create --project` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
-| Ejecución Delegada | Subagente worker acotado para $\ge 2$ archivos | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
-| Sensores Físicos | Tests exit code 0 $\to$ `linear-cli update-status` | [`skills-suite-validate`](file:///usr/local/bin/skills-suite-validate) |
-| Cierre SSoT | `mem_save` / `mem_session_summary` | [`engram`](file:///var/www/.agents/skills/planner/references/usage.md) |
-
-## Workflows Ejecutivos (F0–F5)
-1. **F0 (Inflow)**: Inspección silenciosa de hechos con subagente `research` o disco local.
-2. **F1 (Clarification Gate)**: Preguntar solo si no existe evidencia física en disco.
-3. **F2 (Dual-RAG Alignment)**: Consultar especificaciones en `references/usage.md`.
-4. **F3 (Validation Feedforward)**: Chequeo de sintaxis física.
-5. **F4 (Plan & Approval)**: Enlazar a Proyecto en Linear con criterios verificables.
-6. **F5 (Execution & Fast Attestation)**: Delegación a subagente, tests físicos (`bun test` exit 0), actualización a Done, archivo mandatorio a `archive/<slug>.executed.md` y persistencia en Engram.
-
-## References
-- [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) · [`references/planning_heuristics.md`](file:///var/www/.agents/skills/planner/references/planning_heuristics.md)
+| Orquestador Padre | Umbral proporcional y tabla meta-suites | [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) |
+| Epistémico F0 | Inspección viva + subagente `research` | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
+| Linear CLI | `create-project`, `create --project`, `comment`, `update-status` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
+| Sensores Reales | Tests reales + `skills-suite-validate` + `ssot-parity-check` | [`skills-suite-validate`](file:///var/www/.bin/skills-suite-validate) |
+| Detalles Operativos | Heurísticas y contratos SSoT Git-first | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |

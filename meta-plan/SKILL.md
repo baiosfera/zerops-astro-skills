@@ -13,11 +13,11 @@ metadata:
 Activate when structuring multi-step initiatives, architectural refactors, multi-service features, or triaging systemic defects across Zerops. Governs EPICS, MODULAR TASK DECOMPOSITION, LINEAR SYNCHRONIZATION, AND EPISTEMIC RECALL.
 
 ## Hard Rules & Positive Guidance
-- **Epistemic Subagent Wait (F0 Mandate)**: Await all research subagent reports before jumping to conclusions, drafting master plans, or conducting grilling.
-- **Proportional Activation Threshold**: Single-runtime tasks bypass meta-plan and execute directly with domain skills (`astro-web`, `postgresql`, `bun`, `codecraft`). Multi-service initiatives ($\ge 2$ runtimes), architectural changes, or complex tasks of $\ge 3$ steps activate `meta-plan`.
-- **Draft Isolation & F4 Linear Gate**: During F0–F3, work resides in `draft_<slug>.md` and Engram (`mem_save`). Creating Linear projects or BAIs is strictly prohibited in F0–F3; Linear sync activates strictly in F4 upon explicit 'Go' to the Master Plan in `/var/www/artifacts/plans/<slug>_v1.md`.
-- **Anti-Monolithic BAI Invariant**: Decompose architectures into granular BAI issues per runtime and boundary. Prohibited to collapse heterogeneous stacks into a single monolithic ticket.
-- **Epistemic Persistence & Clean Lifecycle**: Persist discoveries in Engram (F0–F5) and Linear comments (F4–F5). On completion, attest with physical evidence (exit 0), archive to `archive/<slug>.executed.md`, and purge operational `.json` states leaving `/artifacts/` clean.
+- **Epistemic Subagent Wait (F0 Mandate)**: Await all `research` subagent reports before drawing conclusions, drafting Master Plans, or opening grilling rounds.
+- **Proportional Activation Threshold**: Single-runtime tasks execute directly with domain skills (`astro-web`, `postgresql`, `bun`, `codecraft`). Multi-service initiatives ($\ge 2$ runtimes), architectural changes, or complex tasks of $\ge 3$ steps activate `meta-plan`.
+- **Draft Isolation & F4 Approval Gate**: Keep F0–F3 exploration inside `draft_<slug>.md` and Engram (`mem_save`). Present the F4 Master Plan (in `/var/www/artifacts/plans/<slug>.md`) with concrete executable verification criteria and wait for explicit `Go` before running mutations, creating or closing Linear epics, or dispatching execution.
+- **Anti-Monolithic BAI Invariant**: Decompose architectures into granular `BAI-*` issues per runtime and boundary, keeping heterogeneous stacks separated cleanly.
+- **Honest Verification & Clean Lifecycle**: Separate `BEHAVIORALLY_VERIFIED` (executed tests/builds/probes exit 0) from `SYNTAX_ONLY` or `UNVERIFIED`; close Linear `Done` only after real checks pass for the exact modified scope. Archive closed plans to `archive/<slug>.executed.md` and persist learnings via `mem_save`.
 
 ## Active Sub-Skills Dispatch Table
 

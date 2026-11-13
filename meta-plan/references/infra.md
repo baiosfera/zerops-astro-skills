@@ -42,13 +42,13 @@ LINEAR_SERVICE="zerops-astro-skills" linear-cli update-status BAI-348 Done \
 
 ## 3. Sovereign SSoT Synchronization Architecture
 
-All additions or updates to planning templates, meta-skills, or constitutional directives must maintain strict tripartite parity:
+All additions or updates to planning templates, meta-skills, or constitutional directives maintain clean parity across the Git SSoT surfaces:
 
-1. **Local Working Tree (`/var/www/zerops-astro-skills/`)**:
-   - Active development workspace.
-2. **Global Agent Customizations (`/var/www/.agents/skills/`)**:
-   - Runtime discovery directory for AI agents.
-3. **Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/`)**:
-   - Immutable off-platform persistence.
+1. **Skills Git SSoT (`/var/www/zerops-astro-skills/`)**:
+   - Canonical versioned skills repo (`baiosfera/zerops-astro-skills`), symlinked directly into `/var/www/.agents/skills/` and `~/.gemini/antigravity-cli/skills/`.
+2. **Catalog & Harness Git SSoT (`/var/www/zerops-astrobranding/`)**:
+   - Canonical registry (`recipes/`, `blueprints/`, `templates/`, `scripts/`), symlinked into `/var/www/.bin/` by `iniciar.sh`.
+3. **Optional Project Archive (`$DRIVE_SSOT_DIR`)**:
+   - Off-platform project archive for Engram cold snapshots (`/var/www/baiosfera/0ZEROPS-AGY/${ENGRAM_PROJECT}/engram`) when configured.
 
-Execute `ssot-parity-check` to verify that all three surfaces remain in bit-for-bit synchronization.
+Execute `ssot-parity-check` (read-only audit by default; pass `--fix` when syncing explicitly) to verify clean synchronization and clean git state.
