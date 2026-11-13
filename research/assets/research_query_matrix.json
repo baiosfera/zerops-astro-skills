@@ -1,26 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "ResearchQueryMatrix_v6.0",
-  "description": "Deterministic decision routing matrix for 12-engine multi-tier epistemic research and free-tier quota preservation.",
+  "title": "ResearchQueryMatrix_v9.0",
+  "description": "Deterministic routing matrix for the 7-phase epistemic grounding stack with Jina verbatim core and Brave/DuckDuckGo quota fallbacks.",
   "engines_catalog": {
-    "tier_0_memory": ["engram"],
-    "tier_1_official_docs": ["context7"],
-    "tier_2_discovery": ["exa", "tavily", "brave", "jina_search", "duckduckgo"],
-    "tier_3_verbatim": ["jina_reader", "native_http"],
-    "tier_4_scrapers": ["crawl4ai", "playwright", "puppeteer", "firecrawl"]
+    "phase_0_memory": ["engram"],
+    "phase_1_official_docs": ["context7"],
+    "phase_2_discovery_primary": ["exa", "tavily", "jina_mcp", "firecrawl_developer_search"],
+    "phase_2_discovery_fallback": ["brave", "duckduckgo", "jina_s_http"],
+    "phase_3_verbatim_core": ["jina_read_url", "jina_r_http", "web_fetch_exa", "tavily_extract", "native_curl"],
+    "phase_4_scrapers": ["firecrawl_scrape", "zerops_browser", "crawl4ai", "playwright"]
   },
   "quota_policies": {
-    "engram": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "context7": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "duckduckgo": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "jina_reader": { "limit_monthly": "1_000_000_tokens", "cost_per_query": 0, "priority": 1 },
-    "crawl4ai": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "playwright": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "puppeteer": { "limit_monthly": "unlimited", "cost_per_query": 0, "priority": 1 },
-    "exa": { "limit_monthly": 1000, "cost_per_query": 1, "priority": 2 },
-    "tavily": { "limit_monthly": 1000, "cost_per_query": 1, "priority": 2 },
-    "brave": { "limit_monthly": 2000, "cost_per_query": 1, "rate_limit_rps": 1, "priority": 2 },
-    "firecrawl": { "limit_monthly": 500, "cost_per_query": 1, "priority": 3 }
+    "engram": { "limit_monthly": "unlimited", "cost_per_query": 0, "tier": "F0" },
+    "context7": { "limit_monthly": "unlimited", "cost_per_query": 0, "tier": "F1" },
+    "jina_mcp": { "transport": "https://mcp.jina.ai/v1", "cost_per_query": "token_tier", "tier": "F2_F3_CORE" },
+    "exa": { "transport": "https://mcp.exa.ai/mcp", "limit_monthly": 1000, "tier": "F2_PRIMARY" },
+    "tavily": { "transport": "https://mcp.tavily.com/mcp/", "limit_monthly": 1000, "tier": "F2_PRIMARY" },
+    "firecrawl": { "transport": "https://mcp.firecrawl.dev/v2/mcp", "limit_monthly": 500, "tier": "F2_F4_CLOUD" },
+    "brave": { "transport": "npx @brave/brave-search-mcp-server", "limit_monthly": 2000, "rate_limit_rps": 1, "tier": "F2_FALLBACK_1" },
+    "duckduckgo": { "transport": "npx duckduckgo-mcp-server", "limit_monthly": "unlimited", "cost_per_query": 0, "tier": "F2_FALLBACK_2" }
   },
   "routing_rules": [
     {
@@ -29,9 +27,9 @@
       "phase_0_recall": "engram",
       "phase_1_official": "context7",
       "phase_2_discovery": "exa",
-      "phase_3_verbatim": "jina_reader",
-      "phase_4_scraper": "crawl4ai",
-      "fallback": "duckduckgo"
+      "phase_2_fallback": ["brave", "duckduckgo"],
+      "phase_3_verbatim": "jina_read_url",
+      "phase_4_scraper": "crawl4ai"
     },
     {
       "category": "versions_and_changelogs",
@@ -39,29 +37,29 @@
       "phase_0_recall": "engram",
       "phase_1_official": "context7",
       "phase_2_discovery": "tavily",
-      "phase_3_verbatim": "jina_reader",
-      "phase_4_scraper": "crawl4ai",
-      "fallback": "brave"
+      "phase_2_fallback": ["brave", "duckduckgo"],
+      "phase_3_verbatim": "jina_read_url",
+      "phase_4_scraper": "firecrawl_scrape"
     },
     {
       "category": "branding_and_typography",
       "keywords": ["font", "branding", "color", "palette", "design", "tokens", "oklch", "svg"],
       "phase_0_recall": "engram",
       "phase_1_official": null,
-      "phase_2_discovery": "brave",
-      "phase_3_verbatim": "jina_reader",
-      "phase_4_scraper": "playwright_or_puppeteer",
-      "fallback": "duckduckgo"
+      "phase_2_discovery": "exa",
+      "phase_2_fallback": ["brave", "duckduckgo"],
+      "phase_3_verbatim": "jina_read_url",
+      "phase_4_scraper": "playwright"
     },
     {
       "category": "heavy_spa_and_dynamic_pages",
       "keywords": ["infinite scroll", "spa", "dashboard", "dynamic js", "anti bot"],
       "phase_0_recall": "engram",
       "phase_1_official": null,
-      "phase_2_discovery": "brave",
-      "phase_3_verbatim": "jina_reader",
-      "phase_4_scraper": "crawl4ai_or_playwright",
-      "fallback": "firecrawl"
+      "phase_2_discovery": "tavily",
+      "phase_2_fallback": ["brave", "duckduckgo"],
+      "phase_3_verbatim": "jina_read_url",
+      "phase_4_scraper": "firecrawl_scrape"
     }
   ]
 }

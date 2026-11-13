@@ -1,50 +1,46 @@
 ---
 name: research
-description: "Trigger: research, investigar, buscar en vivo, estado del arte, benchmark, comparar tecnologias, versiones actuales, exa, tavily, brave, duckduckgo, jina, context7, firecrawl, crawl4ai, playwright, puppeteer, engram. Multi-tier compound epistemic research pipeline with 12 engines under Supreme Directive v8.2."
+description: "Trigger: research, investigar, buscar en vivo, estado del arte, benchmark, comparar tecnologias, versiones actuales, exa, tavily, brave, duckduckgo, jina, context7, firecrawl, crawl4ai, playwright, puppeteer, engram. Multi-tier 7-phase epistemic grounding pipeline (Engram, Context7, Exa, Tavily, Jina, Firecrawl, Brave/DuckDuckGo fallbacks) under Supreme Directive v9.0."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "8.5"
+  version: "9.0"
 ---
 
-# `research` — Compound Epistemic Grounding Engine (v8.5)
+# `research` — Compound Epistemic Grounding Engine (v9.0)
 
-Multi-tier engine orchestrating 12 epistemic tools across memory, package docs, search, and headless scraping. Benchmarks code against SOTA in the Continuous Present (`date -u`), enforcing Epistemic Honesty and Anti-AMN Mandates under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Mandates continuous epistemic inflow and real-time web verification, ensuring decisions are continuously benchmarked against primary sources.
+Anti-AMN analytical backbone enforcing live primary-source verification in the Continuous Present (`date -u`) under [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Parametric weights serve exclusively as unverified hypotheses until grounded across the 7 epistemic phases.
 
-## Architecture & Dual-RAG SSoT
+## Dual-RAG SSoT Pointers
 
-- **Exhaustive Workflows & Tool Recipes:** [references/usage.md](file:///var/www/.agents/skills/research/references/usage.md) — 12-engine catalog, grounding recipes, Crawl4AI, and Firecrawl extraction.
-- **Infrastructure, Quotas & Fallbacks:** [references/infra.md](file:///var/www/.agents/skills/research/references/infra.md) — API keys, quotas, rate limits, timeouts (`timeout 10s`), and failover.
-- **Engines Reference & Heuristics:** [references/tools.md](file:///var/www/.agents/skills/research/references/tools.md) · [references/heuristics.md](file:///var/www/.agents/skills/research/references/heuristics.md) — Engine specifications.
+- **7-Phase Workflows & Tool Calls:** [references/usage.md](file:///var/www/.agents/skills/research/references/usage.md)
+- **Remote MCPs, Quotas & Fallback Cascade:** [references/infra.md](file:///var/www/.agents/skills/research/references/infra.md)
+- **Engine Catalog & Parameters:** [references/tools.md](file:///var/www/.agents/skills/research/references/tools.md) · [references/heuristics.md](file:///var/www/.agents/skills/research/references/heuristics.md)
+
+## 7 Epistemic Phases (Mandatory Order)
+
+| Phase | Role | Active Engines (`ServerName` / CLI) | Exit Criterion |
+|---|---|---|---|
+| **F0** | **Local LTM Recall** | `engram` (`mem_search`, `mem_context`) | Check prior verified project decisions ($0) |
+| **F1** | **Canonical SDK Docs** | `context7` (`resolve-library-id`, `query-docs`) | Exact library signatures & active version ($0) |
+| **F2** | **Discovery + Fallbacks** | **Primary:** `exa` (`web_search_exa`), `tavily` (`tavily_search`), `jina` (`search_web`), `firecrawl` (`firecrawl_developer_search`)<br>**Fallbacks:** `brave` (`brave_web_search`) $\to$ `duckduckgo` (`duckduckgo_web_search`) | 3–5 canonical primary URLs; trigger Brave/DDG on error, 429, or empty quota |
+| **F3** | **Verbatim Reading** | **Jina Imprescindible:** `jina` (`read_url`, `extract_pdf`, `guess_datetime_url`) or `curl` `r.jina.ai/<url>`; secondary `web_fetch_exa`, `tavily_extract` | Full primary markdown read; snippets serve as discovery pointers only |
+| **F4** | **SPAs & Anti-Bot** | `firecrawl` (`firecrawl_scrape`, `firecrawl_map`, `firecrawl_interact`), `zerops_browser`, `crawl4ai`, `playwright` | Dynamic JS/WAF pages extracted cleanly |
+| **F5** | **Temporal Synthesis** | `date -u` + `jina` (`guess_datetime_url`) | Triangulate $\ge 2$ primary sources; mark GA/LTS vs beta/deprecated |
+| **F6** | **LTM Persistence** | `engram` (`mem_save`) | Store verified facts and canonical URLs |
 
 ## Operating Modalities
 
-1. **Inline Compound Grounding (Turn-Level Inflow):**
-   Invokes Exa, Brave, Tavily, Context7, or Jina Reader directly to contrast code with primary sources. Action-First Execution Lockdown guarantees verification before technical assertions (documented via epistemic_attestation in subagent reports). Model weights are unverified hypotheses.
-2. **Deep Research Dossier (Subagent Delegation):**
-   Mandatory when synthesizing 10+ sources or analyzing GitHub repos. Delegates to subagent injecting [assets/subagent_prompt_contract.md](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md) and offloading to `/var/www/artifacts/<target>_research_report.md`.
+1. **Inline Compound Grounding:** Run F0 $\to$ F1/F2 $\to$ **F3 Jina Verbatim** directly for single-library lookups, API diffs, or focused bug diagnosis.
+2. **Deep Research Dossier:** Delegate via `invoke_subagent` (`TypeName: "research"`) using [assets/subagent_prompt_contract.md](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md) when benchmarking stacks, inspecting repos, or synthesizing $\ge 5$ sources; write dossier to `/var/www/artifacts/research/<target>_research_report.md`.
 
-## Decision Routing Matrix (Compound Discovery Pipeline)
+## Positive Behavioral Contract
 
-| Research Stage | Orchestrated Tools | Epistemic Objective |
-|---|---|---|
-| **Multi-Index Discovery** | `web_search_exa` · `brave_web_search` · `tavily_search` · `firecrawl_developer_search` | Neural semantic search, 30B+ neutral index, agent skills |
-| **Site & API Mapping** | `firecrawl_map` · `tavily_map` | Complete URL hierarchy and documentation sitemaps |
-| **Verbatim Deep Inflow** | Jina Reader (`r.jina.ai`) · `web_fetch_exa` · `firecrawl_scrape` | Full Markdown extraction, JSON schemas, zero snippet clipping |
-| **Live AST & Contracts** | `context7` (`resolve-library-id` · `query-docs`) | Live package documentation, types, and official API specs |
-| **Dynamic SPAs & State** | `firecrawl_interact` · Zerops Browser · Playwright | DOM actions, JS rendering, dynamic state execution |
-| **Zero-Quota Fallback** | `duckduckgo_web_search` · Native HTTP · Crawl4AI | Resilient unmetered multi-hop fallback |
-
-## Hard Invariants
-
-1. **Zero-Local Isolation & Mandatory Web Grounding:** Technical evaluations benchmark local files against live external sources in the Continuous Present (`date -u`), continuously triangulating findings with live primary documentation.
-2. **Epistemic Honesty & Absolute Anti-AMN Mandate:** Pretrained memory (AMN) is unverified hypothesis. Grounding requires live primary sources verbatim (Context7, docs, AST, source code).
-3. **Primary Sources (Matt Pocock Standard):** Search snippets serve strictly as discovery pointers. Read canonical raw files via Jina Reader (`r.jina.ai`) or Context7 before establishing claims.
-4. **Credit Conservation & Token Hygiene:** Query Engram first. Set `maxCharacters: 3000` on Exa. Enforce >= 1.1s pauses on Brave. Catch DDG anomalies. Reserve Firecrawl for anti-bot sites.
-5. **Uncontaminated Query Formulation (Zero Internal Jargon Leakage):** Formulate search queries exclusively using neutral, universal industry terminology. Confine internal project acronyms and local governance identifiers strictly to local execution. Triangulate findings across multiple independent perspectives to maintain objective grounding.
+- **Zero-AMN Execution:** Verify every version, limit, schema, and flag through live F1–F4 tool calls before stating facts or editing skills/plans.
+- **Neutral Query Formulation:** Translate internal governance terms into universal industry keywords before querying external search engines.
+- **Jina-First Verbatim Extraction:** Read full candidate docs with `jina` (`read_url`) or `r.jina.ai` prior to citing conclusions; trigger `brave` then `duckduckgo` only as F2 fallbacks.
 
 ## Resources & Sensors
 
-- **Query Matrix:** [assets/research_query_matrix.json](file:///var/www/.agents/skills/research/assets/research_query_matrix.json)
-- **Subagent Contract:** [assets/subagent_prompt_contract.md](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md)
-- **Physical Sensor:** `skills-suite-validate`
+- **Routing Matrix:** [assets/research_query_matrix.json](file:///var/www/.agents/skills/research/assets/research_query_matrix.json) · **Subagent Contract:** [assets/subagent_prompt_contract.md](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md)
+- **Sensors:** `tool-guard.py --test` · `skills-suite-validate` · `ssot-parity-check`

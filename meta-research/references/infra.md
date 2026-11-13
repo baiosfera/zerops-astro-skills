@@ -1,42 +1,33 @@
-# `meta-research` — Infrastructure & Harness Contracts
+# `meta-research` — Infrastructure & Anti-AMN Harness Contracts (v2.0)
 
-This document specifies the subagent delegation architecture, context window budgeting, and verification gates governing `meta-research`.
+Subagent delegation rules, remote MCP architecture, and `tool-guard.py` physical enforcement governing `meta-research`.
 
 ---
 
 ## 1. Subagent Delegation Architecture
 
-Deep research inquiries involving multiple searches, extensive page reading, or exploratory comparisons consume significant context tokens:
-
-1. **When to Delegate**:
-   - Tasks requiring $\ge 3$ consecutive search queries.
-   - Broad competitive surveys across multiple libraries or frameworks.
-   - Parsing large technical documentation pages.
-2. **How to Delegate**:
-   - Use `invoke_subagent` with `TypeName: "research"`, `Role: "Epistemic Researcher"`.
-   - Pass a tightly scoped prompt naming the exact technical questions, target libraries, and expected comparison table.
-3. **Synthesis Delivery**:
-   - The primary orchestrator reads the child agent's synthesized output, verifies the conclusions against project constraints, and communicates the result concisely to the user.
+Delegate exploratory or multi-source inquiries to keep the parent orchestrator context compact:
+1. **When to Delegate:** Inquiries requiring `>= 3` queries, multi-library benchmarks, or external repo audits.
+2. **How to Delegate:** Call `invoke_subagent(TypeName="research", Role="Epistemic Researcher")` with explicit questions, target URLs/repos, and expected comparison format.
+3. **Mandatory Wait Gate:** Await subagent completion messages before drafting final F4 plans or creating Linear tickets (`tool-guard.py` enforces this wait in `PreToolUse` and `Stop`).
 
 ---
 
-## 2. Context Window & Token Economy
+## 2. Context Window & Transport Hygiene
 
-To prevent context exhaustion during intensive research sessions:
-
-| Research Strategy | Token Footprint | Recommended Action |
+| Strategy | Token Footprint | Execution Path |
 |---|---|---|
-| Single API signature lookup | Low (< 2K tokens) | Execute inline with `context7 query-docs` |
-| Library comparison (2-3 options) | Medium (5-10K tokens) | Execute inline with `exa` + `context7` |
-| Architectural benchmark or RFC study | High (> 20K tokens) | Delegate to `invoke_subagent` with `research` |
+| **Single SDK signature lookup** | Low (< 2K tokens) | Inline `context7:query-docs` |
+| **2–3 option verification** | Medium (5–10K tokens) | Inline `exa`/`tavily` + **`jina:read_url`** |
+| **Deep multi-repo / RFC audit** | High (> 20K tokens) | Delegate to `invoke_subagent(TypeName="research")` |
+
+Five primary research servers (`context7`, `exa`, `tavily`, `jina`, `firecrawl`) run via remote Streamable HTTP MCPs (`serverUrl`), consuming **0 local processes and 0 MB idle RAM** on `zcp`. Only F2 quota-fallback servers (`brave` 2.x, `duckduckgo`) run ephemeral `npx` processes on demand.
 
 ---
 
-## 3. Physical Verification & Anti-Drift Gates
+## 3. Physical Anti-AMN Guards (`tool-guard.py`) & Parity Sensors
 
-All additions or updates to `meta-research` must satisfy the universal sensors:
-
-1. **Universal Skill Sensor (`skills-suite-validate`)**:
-   - Validates frontmatter, word count limits ($\le$ 480 words), and reference link integrity.
-2. **SSoT Parity Sensor (`ssot-parity-check`)**:
-   - Asserts bit-for-bit parity across `/var/www/zerops-astro-skills/`, `/var/www/.agents/skills/`, and Google Drive SSoT.
+1. **`search_web` Routing Gate:** Built-in `search_web` is blocked and redirected to `context7`, `exa`, `tavily`, `jina`, `firecrawl`, fallbacks `brave`/`duckduckgo`, or `research` subagents.
+2. **Skill & F4 Plan Grounding Gate:** Mutating skills or writing final F4 plans requires recent live research telemetry in `/tmp/.research_grounding_state.json`.
+3. **Anti-AMN Stop Gate:** Prompts requesting external research, SOTA benchmarks, or Anti-AMN checks must invoke at least one live research engine AND a verbatim primary read (F3 Jina/Context7/Fetch) during the turn.
+4. **Sensors:** Verify every change with `tool-guard.py --test`, `skills-suite-validate`, and `ssot-parity-check` (`exit code 0`).
