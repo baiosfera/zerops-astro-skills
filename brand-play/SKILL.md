@@ -39,6 +39,6 @@ Activate when ingesting universal TYM (Type-YAML-Markdown) playbooks from `/mnt/
 
 ## Commands
 ```bash
-brand-play transmute --playbook offers_pricing --brand elplacerdc --target all
+brand-play transmute --playbook offers_pricing --brand "${PROJECT_NAME}" --target all
 skills-suite-validate && ssot-parity-check
 ```

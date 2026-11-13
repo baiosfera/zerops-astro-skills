@@ -26,7 +26,7 @@ The `brand-play` skill operates across three physical storage tiers in the Zerop
    - Headers: `x-tier: production`, `Content-Type: application/json`.
    - Bifrost CEL routing automatically failovers between Groq, Cerebras, and upstream providers with $< 100\mu\text{s}$ latency.
 3. **SSoT Parity Invariant**:
-   - All custom skills in `zerops-astro-skills` must maintain 100% bit-for-bit parity with `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/` and Git `origin/main`.
+   - All custom skills in `zerops-astro-skills` maintain bit-for-bit parity with Git `origin/main` and `/var/www/.agents/skills/` (verified read-only via `ssot-parity-check`).
 
 ---
 

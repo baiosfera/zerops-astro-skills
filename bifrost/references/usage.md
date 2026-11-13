@@ -163,7 +163,7 @@ Bifrost functions as an enterprise MCP Aggregator and Gateway:
 ```bash
 curl -X POST http://localhost:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-bf-prod-main-key" \
+  -H "Authorization: Bearer ${BIFROST_VIRTUAL_KEY}" \
   -d '{
     "model": "llama-3.3-70b-versatile",
     "messages": [
@@ -181,7 +181,7 @@ from openai import OpenAI
 # Any Python agent, worker, or script connects without vendor lock-in
 client = OpenAI(
     base_url=os.getenv("OPENAI_BASE_URL", "http://localhost:8080/v1"),
-    api_key=os.getenv("OPENAI_API_KEY", "sk-bf-prod-main-key")
+    api_key=os.getenv("OPENAI_API_KEY", "")
 )
 
 response = client.chat.completions.create(
@@ -198,7 +198,7 @@ import OpenAI from "openai";
 
 const ai = new OpenAI({
   baseURL: process.env.OPENAI_BASE_URL || "http://localhost:8080/v1",
-  apiKey: process.env.OPENAI_API_KEY || "sk-bf-prod-main-key",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 async function runInference(prompt: string) {
@@ -218,7 +218,7 @@ async function runInference(prompt: string) {
 ```bash
 curl -X POST http://localhost:8080/anthropic/v1/messages \
   -H "Content-Type: application/json" \
-  -H "x-api-key: sk-bf-prod-main-key" \
+  -H "x-api-key: ${BIFROST_VIRTUAL_KEY}" \
   -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "claude-3-5-sonnet-20241022",
@@ -231,9 +231,9 @@ curl -X POST http://localhost:8080/anthropic/v1/messages \
 Any terminal agent or CLI tool adhering to standard environment variables connects immediately:
 ```bash
 export OPENAI_BASE_URL="http://localhost:8080/v1"
-export OPENAI_API_KEY="sk-bf-prod-main-key"
+export OPENAI_API_KEY="${BIFROST_VIRTUAL_KEY}"
 export ANTHROPIC_BASE_URL="http://localhost:8080/anthropic"
-export ANTHROPIC_API_KEY="sk-bf-prod-main-key"
+export ANTHROPIC_API_KEY="${BIFROST_VIRTUAL_KEY}"
 ```
 
 ### Pattern 6: Dual-Tier Predictive Intent Routing & Zero-Leak CEL

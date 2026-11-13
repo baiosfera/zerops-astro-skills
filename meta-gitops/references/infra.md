@@ -15,7 +15,7 @@ ssot-parity-check
 
 ### Verification Checks
 
-1. **Governance Rules**: Bit-for-bit parity between `/var/www/.agents/rules/` and Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/rules/`).
+1. **Governance Rules**: Parity between `/var/www/.agents/rules/00-SUPREME-DIRECTIVE.md`, `/var/www/zerops-astrobranding/.agents/rules/00-SUPREME-DIRECTIVE.md`, and Antigravity runtime rules (`~/.gemini/antigravity-cli/rules/`).
 2. **Core Scripts**: Executable integrity in `/var/www/zerops-astrobranding/scripts/` and `/usr/local/bin/`.
 3. **Custom Skills**: Parity across all 74 sovereign custom skills in `/var/www/zerops-astro-skills/` and Drive SSoT.
 4. **Git Status**: Working tree clean and up to date with `origin/main`.

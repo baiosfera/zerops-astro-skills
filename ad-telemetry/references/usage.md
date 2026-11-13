@@ -98,7 +98,7 @@ Consent Mode v2 requires 4 explicit signals:
 ## 3. 1st-Party Cookie Attribution Engine (`__attr_session`)
 
 ### Cookie Taxonomy (90-Day Root Domain)
-- `Domain`: Root domain with leading dot (e.g. `.catalinaglamur.com`) so it is accessible across `checkout.*`, `shop.*`, and root.
+- `Domain`: Root domain with leading dot (e.g. `.example.com`) so it is accessible across `checkout.*`, `shop.*`, and root.
 - `SameSite`: `Lax`.
 - `Secure`: `true`.
 - `Max-Age`: `7776000` (90 days).

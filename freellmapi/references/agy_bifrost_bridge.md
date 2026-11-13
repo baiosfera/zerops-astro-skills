@@ -126,17 +126,17 @@ All agents, workers, and tools executing inside containers or workflows point ex
 ```bash
 # Point agents through Bifrost Gateway (Single Front Door)
 export OPENAI_BASE_URL="http://bifrost:8080/v1"
-export OPENAI_API_KEY="sk-bf-antigravity-key"
+export OPENAI_API_KEY="${BIFROST_VIRTUAL_KEY}"
 
 # For Anthropic wire protocol clients:
 export ANTHROPIC_BASE_URL="http://bifrost:8080/anthropic/v1"
-export ANTHROPIC_API_KEY="sk-bf-antigravity-key"
+export ANTHROPIC_API_KEY="${BIFROST_VIRTUAL_KEY}"
 ```
 
 ### Method C: Zero-Touch Declarative Ingestion via `setup-keys.sh`
 To inject existing ecosystem credentials into FreeLLMAPI on startup without manual UI interaction:
-1. Credentials from `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/apis/baiosfera_freellm.md` are mapped to `FREEAPI_CONFIG_JSON`.
-2. FreeLLMAPI parses the configuration on boot and updates the encrypted SQLite database idempotently.
+1. Credentials from `/var/www/baiosfera/0ZEROPS-AGY/${PROJECT_NAME}/apis/freellm_keys.md` (or Zerops `vault`) are mapped to `FREEAPI_CONFIG_JSON`.
+2. FreeLLMAPI parses the configuration on boot and updates its persistent store idempotently.
 
 ---
 
@@ -154,7 +154,7 @@ timeout 5s curl -s -f http://localhost:8080/health || exit 1
 # 3. Perform end-to-end inference request via Bifrost
 curl -s -X POST http://localhost:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-bf-antigravity-key" \
+  -H "Authorization: Bearer ${BIFROST_VIRTUAL_KEY}" \
   -d '{
     "model": "auto:smart",
     "messages": [{"role": "user", "content": "ping"}]

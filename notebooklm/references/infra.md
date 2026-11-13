@@ -29,7 +29,7 @@ Para renovar credenciales de forma visual e interactiva sin sobrecargar el servi
 
 ### D. Persistencia SSoT en Google Drive
 Las credenciales de sesión se sincronizan y resguardan en:
-`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/mcp/.nlm-auth/`
+`/var/www/baiosfera/0ZEROPS-AGY/${ENGRAM_PROJECT}/mcp/.nlm-auth/`
 - `nlm-cookies.json`: Snapshot de las cookies de sesión exportadas.
 - Al aprovisionar un contenedor virgen con `unisetup.sh`, las credenciales se restauran automáticamente en `~/.notebooklm/` o el almacén de perfil de `nlm`.
 

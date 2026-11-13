@@ -76,10 +76,10 @@ The `brand-play` engine consumes universal, mathematical TYM (Type-YAML-Markdown
 ### CLI Commands & Verification
 ```bash
 # Transmute a single playbook for active brand
-brand-play transmute --playbook 00_category_of_one --brand juan-damaren --target all
+brand-play transmute --playbook 00_category_of_one --brand "${PROJECT_NAME}" --target all
 
 # Transmute all discovered playbooks for active brand across all targets
-brand-play transmute --all --brand juan-damaren --target all
+brand-play transmute --all --brand "${PROJECT_NAME}" --target all
 
 # List discovered playbooks and workspace brands
 brand-play list --playbooks

@@ -60,7 +60,7 @@
       "keys": [
         {
           "name": "freellmapi-primary-pool",
-          "value": "freellmapi-1a51f9aa17ab766b7e98b5b2ae3353a6bfb216d86868a4ef",
+          "value": "env.FREELLMAPI_CLIENT_KEY",
           "models": [
             "*"
           ],
@@ -117,7 +117,7 @@
       {
         "id": "vk-production-main",
         "name": "Production Sovereign Key",
-        "value": "vk-damaren-sovereign-2026",
+        "value": "env.BIFROST_MASTER_VK",
         "is_active": true,
         "rate_limits": {
           "requests_per_minute": 120

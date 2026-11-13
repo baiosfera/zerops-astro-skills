@@ -30,7 +30,7 @@ Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards Post
   - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
 - **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
 - **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
-- **Regla 6 (Indivisibilidad SSoT):** Replicación exacta en `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/oraculo/`.
+- **Regla 6 (SSoT Soberano):** Mantenimiento directo en `/var/www/zerops-astro-skills/oraculo/` (enlazado vía symlink en `/var/www/.agents/skills/oraculo/`).
 
 ## Decision Gates
 

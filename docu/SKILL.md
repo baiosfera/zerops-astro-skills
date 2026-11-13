@@ -18,7 +18,7 @@ Activate when authoring, updating, certifying, or auditing Dual-RAG skills acros
 - **Rule 3 (Lossless Invariant, Zero Deletion & skill-improver)**: Preserves 100% of technical signals via spatial offloading to `references/` without truncation, applying `skill-improver` standards.
 - **Rule 4 (Reality Over Checklist Theater & Physical Sensors)**: All sensors execute real physical assertions (compilers, AST, tests, exit code 0). Scripts based solely on `[ -f ]` or `grep` are checklist theater and eliminated.
 - **Rule 5 (Scaffolding & skill-creator Standard)**: Scaffolds new skills adhering to `skill-creator` standards via [`assets/skill_scaffold.py`](file:///var/www/.agents/skills/docu/assets/skill_scaffold.py).
-- **Rule 6 (8-Node Anti-Amnesia Physical Harness & SSoT Parity)**: Executes mutations through 8 checkpoints: (1) Backup in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/`, (2) `skill-improver` unbundling, (3) SemVer bump, (4) CoHaLo guidance, (5) Drive mirror, (6) Generator sync in `unisetup.sh`, (7) Sensor attestation (`exit code 0`), and (8) Registry refresh + Engram commit (`mem_save`).
+- **Rule 6 (Anti-Amnesia Physical Harness & SSoT Parity)**: Executes mutations through: (1) `skill-improver` unbundling, (2) SemVer bump, (3) CoHaLo Positive Guidance, (4) Git SSoT sync via `iniciar.sh`, (5) real sensor attestation (`skills-suite-validate` + `ssot-parity-check` exit 0), and (6) registry refresh + Engram commit (`mem_save`).
 
 ## Decision Gates
 

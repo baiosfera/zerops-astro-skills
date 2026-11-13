@@ -69,7 +69,7 @@
   1. **Pre-Audit (via `skill-improver`)**: Audit existing skill against style guide criteria (frontmatter, trigger clarity, body token budget, actionability, decision tables).
   2. **Zero Deletion / Lossless Invariant**: Never delete technical constraints, endpoints, types, or rules. Spatial-offload detail from `SKILL.md` to `references/usage.md` or `assets/`.
   3. **Positive Guidance & CoHaLo**: Eradicate legacy negative directives; convert constraints into positive deterministic contracts and physical validation scripts.
-  4. **8-Node Physical Chain**: Snapshot backup in `0zcp-123/bak/skills/` -> edit -> SemVer bump -> sensor test (`*-validate.sh` exit 0) -> SSoT Drive mirror -> generator sync -> registry refresh -> `mem_save`.
+  4. **Verification Chain**: edit -> SemVer bump -> real sensor test (`skills-suite-validate` exit 0) -> Git SSoT push -> registry refresh -> `mem_save`.
 - **Mode C: Certification & Invariance Mode (Anti-Churn)**: When auditing an existing skill, evaluate the 5 normative criteria defined in [`references/certification.md`](file:///var/www/.agents/skills/docu/references/certification.md). If all criteria pass with exit code 0 on the physical sensor, declare the skill `Certified Optimal / Invariant / Anti-Fragile` and preserve 0 byte modifications on disk, eliminating compulsive churn.
 
 ### Step 5: High-Density Reference Drafting (Zero Deletion Invariant)
@@ -89,11 +89,9 @@
 - Use absolute clickable file links (`file:///var/www/.agents/skills/<target>/...`).
 - **Anti-Artifacts Invariant**: Permanent files MUST resolve within the skill tree; avoid linking to temporary `/var/www/artifacts/` in permanent references.
 
-### Step 7: Local Sensor Attestation & SSoT Backup
-- Create an uncompressed pre-mutation backup in `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/bak/skills/<target>_v<ver>_<timestamp>.bak/`.
-- Run [`scripts/docu-validate.sh`](file:///var/www/.agents/skills/docu/scripts/docu-validate.sh) to attest token budget, frontmatter, deep hygiene, and round-trip generation.
+### Step 7: Local Sensor Attestation & Verification
+- Verify frontmatter, references, and executable tests via `skills-suite-validate` (exit code 0).
 
-### Step 8: SSoT Replication, Clean-Room Attestation & LTM Commit
-- Mirror files to Google Drive SSoT (`/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/.agents/skills/<target>/`) and global Antigravity profile.
-- Execute `/var/www/baiosfera/0ZEROPS-AGY/0zcp-123/scripts/unisetup.sh` to attest end-to-end cold boot replicability.
-- Persist milestone in Engram LTM (`mem_save`).
+### Step 8: Git SSoT Replication & LTM Commit
+- Ensure clean symlink parity in `/var/www/.agents/skills/<target>/` via `ssot-parity-check`.
+- Commit and push changes to upstream `baiosfera/zerops-astro-skills` and persist the milestone in Engram (`mem_save`).
