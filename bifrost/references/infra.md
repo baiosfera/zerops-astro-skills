@@ -25,7 +25,9 @@ Bifrost is deployed on Zerops as an ultra-fast, autonomous Linux service running
 | `GOMEMLIMIT` | String | Recommended | Container RAM * 0.9 | Soft memory limit for Go runtime (e.g. `900MiB` on 1GB container) to prevent OOM kills. |
 | `GOGC` | Integer | Recommended | `200` | Garbage collection trigger threshold. `200` doubles heap headroom for sub-100µs throughput. |
 | `BIFROST_ENCRYPTION_KEY` | String | Yes | — | Secret passphrase used by Argon2id KDF to derive 32-byte AES-256 key for DB secret encryption. |
-| `BIFROST_SETUP_TOKEN` | String | Conditional | — | Operator bootstrap token required to create the first admin user account. |
+| `BIFROST_ADMIN_USERNAME` | String | Yes (v2.3+) | `admin` | Headless dashboard admin username referenced via `env.BIFROST_ADMIN_USERNAME` in `governance.auth_config`. |
+| `BIFROST_ADMIN_PASSWORD` | String | Yes (v2.3+) | — | Strong admin password referenced via `env.BIFROST_ADMIN_PASSWORD` in `governance.auth_config` (unlocks `SetupLockMiddleware` without interactive setup). |
+| `BIFROST_SETUP_TOKEN` | String | Conditional | — | Operator bootstrap token required only when `governance.auth_config.is_enabled` is false. |
 | `BIFROST_ENV_LABEL` | String | No | `PROD` | Visual environment tag (max 10 chars) rendered in the Bifrost UI header. |
 | `PG_HOST` | String | Required in Prod | `database` | PostgreSQL 18 host (${database_hostname}). |
 | `PG_PORT` | Integer | Required in Prod | `5432` | PostgreSQL 18 port. |
@@ -77,11 +79,19 @@ In `config.json`:
     "enabled": true,
     "type": "chromem",
     "config": {
-      "addr": "env.VALKEY_ADDR",
-      "password": "env.VALKEY_PASSWORD",
-      "db": 0,
-      "use_tls": false,
-      "cluster_mode": false
+      "path": "/mnt/localstorage/bifrost/chromem",
+      "compress": true
+    }
+  },
+  "client": {
+    "enforce_auth_on_inference": false
+  },
+  "governance": {
+    "auth_config": {
+      "is_enabled": true,
+      "admin_username": "env.BIFROST_ADMIN_USERNAME",
+      "admin_password": "env.BIFROST_ADMIN_PASSWORD",
+      "disable_auth_on_inference": false
     }
   },
   "plugins": [
@@ -215,3 +225,9 @@ When referencing environment variables or secrets stored in the Zerops Project V
     GROQ_API_KEY: ${WHISPER_GROQ_API_KEY}
     OPENAI_API_KEY: ${VAULT_OPENAI_API_KEY}
   ```
+
+## 8. v2.3.0 Setup Lock & PostgreSQL 18 Connection Budget Invariants
+- **SetupLockMiddleware (`v2.3.0+`)**: Bifrost locks all `/api/*` dashboard endpoints with `403` and redirects `/` to `/login` ("Finish setting up Bifrost") unless `governance.auth_config.is_enabled: true` is configured with `env.BIFROST_ADMIN_USERNAME` and `env.BIFROST_ADMIN_PASSWORD` (or `BIFROST_SETUP_TOKEN` is set for interactive setup).
+- **Inference Auth Default**: `v2.3.0` defaults `client.enforce_auth_on_inference` to `true` on fresh deployments when omitted; set `"client": { "enforce_auth_on_inference": false }` explicitly if internal Zerops services call `/v1/*` without virtual keys.
+- **No `-version` Flag**: `bifrost` v2.3.0 Go binary does not support `-version`/`--version`; query `GET /api/version` instead.
+- **PostgreSQL 18 `max_connections=25` Budget**: Zerops `postgresql:single@18` defaults to 25 connections (22 non-superuser slots). Keep sibling service pools bounded (`paperclip` `DATABASE_POOL_MAX=4`, `whatsappbot` `PG_POOL_MAX=3`, `evolution` `CONNECTION LIMIT 4`) so Bifrost `config_store` + `logs_store` dashboard queries never hit `SQLSTATE 53300`.
