@@ -62,8 +62,8 @@ flowchart RL
 
 Un error crítico común es asumir que 1 cliente = 1 producto monolítico.
 En la realidad empresarial:
-- **Catalina Glamur**: Hoy vende ropa deportiva y maquillaje (e-commerce transaccional); mañana abre un atelier de estética facial y corporal en Envigado (servicios locales).
-- **Holding Damaren**: Alberga múltiples firmas (Juan Damaren para mentoría y negocios, J. Den Kreiss para libros y bienestar, Sankana para arte y sexología).
+- **Marca Híbrida (Retail + Servicios)**: Hoy vende indumentaria y cosmética (e-commerce transaccional); mañana abre un estudio de servicios presenciales (reservas locales).
+- **Holding Multi-Vertical**: Alberga múltiples firmas independientes (ej. una firma para mentoría/negocios, otra para publicaciones/bienestar y otra para arte/cultura).
 
 ### Orden de Descubrimiento en Cascada (Cascading Discovery)
 Apotelos resuelve la configuración de marcas y verticales en el siguiente orden estricto:

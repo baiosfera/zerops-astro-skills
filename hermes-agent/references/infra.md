@@ -178,4 +178,4 @@ When Bifrost operates with `config_store.enabled: true` backed by PostgreSQL (`c
 ### 6.3 Dynamic Domain Introspection Invariant
 - Hermes must never be hardcoded with static project catalogs or dummy e-commerce entities (e.g., specific apparel, makeup, or services from legacy projects).
 - Hermes must equally never be constrained by rigid anti-commerce prohibitions.
-- Hermes must inspect active PostgreSQL 18 tables dynamically via `execute_query` to adapt to whatever business models or services the active project requires (e.g. Bioenka products, Juan Damaren 1:1 mentorship bookings, or Apotelos consulting).
+- Hermes must inspect active PostgreSQL 18 tables dynamically via `execute_query` to adapt to whatever business models or services the active project requires (e.g. e-commerce catalogs, 1:1 mentorship bookings, or consulting).

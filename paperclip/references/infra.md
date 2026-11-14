@@ -8,7 +8,7 @@ This reference details the infrastructure layout, persistence mechanics, and Pos
 
 Paperclip is deployed as a sovereign service inside the Zerops Incus LXC infrastructure:
 - **Runtime**: Node.js 26 (`nodejs@26`) on Ubuntu 24.04 LTS.
-- **Port**: `3100` (HTTP LAN internal, exposed via public subdomain `paperclip-*.ny1.zerops.app`).
+- **Port**: `3100` (HTTP LAN internal, exposed via public subdomain `${zeropsSubdomain}` / `https://paperclip-*.zerops.app`).
 - **Database**: PostgreSQL 18 managed cluster (`database:5432/paperclip`).
 - **Persistent Volume**: Zerops LocalStorage NVMe volume mounted at `/mnt/localstorage` (single-kernel POSIX semantics).
 

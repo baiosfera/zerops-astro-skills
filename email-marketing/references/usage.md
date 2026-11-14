@@ -194,8 +194,8 @@ In all payloads dispatched via `UnifiedEmailDispatcher`, format the sender strin
 ```typescript
 const payload: UnifiedEmailPayload = {
   // CORRECT: Display name + bracketed email
-  from: "Juan Damaren <mentor@juandamaren.com>",
-  // INCORRECT: mentor@juandamaren.com
+  from: "Acme Brand <hello@brand-domain.com>",
+  // INCORRECT: hello@brand-domain.com
   to: ["customer@domain.com"],
   subject: "Confirmación de acceso a la plataforma"
 };

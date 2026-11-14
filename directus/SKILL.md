@@ -38,20 +38,13 @@ Activate when architecting, provisioning, configuring, extending, or deploying D
 | Physical Validation Sensor | Attest skill structure, frontmatter, tokens & links | `skills-suite-validate` |
 
 ## Execution Steps
-1. Provision multi-service stack via Zerops `import.yaml`.
-2. Configure `zerops.yaml` with Node.js 24 on `os: ubuntu` with `sharp` support and `zsc execOnce` bootstrap.
-3. Wire cache and synchronization to Valkey (`CACHE_REDIS: ${cache_connectionString}`) and database to PostgreSQL 18.
-4. Mount persistent storage to `/mnt/localstorage/directus/uploads` with `chmod -R 777`.
-5. Connect Directus Flows for NATS event dispatching and deploy RAG extension hooks for `pgvector`.
-6. Verify gateway health via physical sensor probe (`curl -f http://directus:8055/server/health`).
+1. Provision stack via `import.yaml` and configure `zerops.yaml` (`os: ubuntu`, Node 24, `zsc execOnce` bootstrap).
+2. Wire Valkey (`CACHE_REDIS: ${cache_connectionString}`) and PostgreSQL 18; mount `/mnt/localstorage/directus/uploads` (`chmod -R 777`).
+3. Enable Directus Flows for NATS events, deploy RAG `pgvector` hooks, and verify `curl -f http://directus:8055/server/health`.
 
 ## Output Contract
-- Production Directus 11+ instance on Zerops Incus LXC (`os: ubuntu`) with Valkey sync.
-- Fully wired backend supporting `bknd`, `devllm-telemetry`, `business-insights`, RAG `pgvector`, and passing physical sensors.
+- Production Directus 11+ on Zerops (`os: ubuntu`) with Valkey sync, RAG `pgvector`, and passing sensors.
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/directus/references/usage.md) — 4D matrix, `@directus/sdk`, telemetry, business KPIs, Flows, RAG `pgvector` hooks.
-- [`references/infra.md`](file:///var/www/.agents/skills/directus/references/infra.md) — Multi-service topology, `import.yaml`, `zerops.yaml`, Google OAuth 2.0, CoHaLo harness.
-- [`assets/directus_production_recipes.json`](file:///var/www/.agents/skills/directus/assets/directus_production_recipes.json) — Production recipes, RAG hook code, telemetry schemas.
-- [`assets/import_template.yaml`](file:///var/www/.agents/skills/directus/assets/import_template.yaml) — Production import template for Directus 11+ stack.
-- [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/directus/assets/zerops_template.yaml) — Full zerops.yaml template for Directus 11+.
+- [`references/usage.md`](file:///var/www/.agents/skills/directus/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/directus/references/infra.md)
+- [`assets/directus_production_recipes.json`](file:///var/www/.agents/skills/directus/assets/directus_production_recipes.json) · [`assets/import_template.yaml`](file:///var/www/.agents/skills/directus/assets/import_template.yaml) · [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/directus/assets/zerops_template.yaml)

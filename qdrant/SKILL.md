@@ -34,21 +34,15 @@ Activate when architecting, querying, provisioning, or connecting to Qdrant 1.12
 | Verified Client Recipes | TypeScript (`@qdrant/js-client-rest`), Python (`qdrant-client`), Go gRPC | [`assets/qdrant_production_recipes.json`](file:///var/www/.agents/skills/qdrant/assets/qdrant_production_recipes.json) |
 
 ## Critical Workflows / Execution Steps
-1. Define Qdrant topology in `import.yaml` using `type: qdrant:single@1.12` or `type: qdrant:ha@1.12`.
-2. Connect from runtime services via `6333` (REST) or `6334` (gRPC) using `${qdrant_hostname}` and `${qdrant_apiKey}`.
-3. Provision collections with named dense and sparse vectors and payload keyword indexes.
-4. **Process Hygiene & Bounded Execution (CoHaLo)**: Execute commands with `timeout 10s`, `WaitMsBeforeAsync: 10000`, and clean orphan tasks with `manage_task action="kill"`.
-5. **Circuit Breaker (CoHaLo)**: Limit retries to 2 attempts on failure (HTTP 500 / timeout) before escalating.
-6. **Sensor Attestation**: Verify physical sensor check (HTTP 200 on `:6333/healthz` or client connect exit code 0).
+1. Define `type: qdrant:single@1.12` or `type: qdrant:ha@1.12` in `import.yaml` and connect via `6333` (REST) or `6334` (gRPC) using `${qdrant_hostname}` and `${qdrant_apiKey}`.
+2. Provision collections with named dense/sparse vectors and `tenant_id` keyword payload indexes.
+3. Enforce CoHaLo bounds (`timeout 10s`, max 2 retries, `manage_task action="kill"`) and verify HTTP `200` on `:6333/healthz`.
 
 ## Output Contract
 - Validated `import.yaml` and `zerops.yaml` manifests targeting Qdrant on Zerops.
 - Verified collection creation, hybrid search, and payload filtering with zero orphaned tasks.
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/qdrant/references/usage.md) — Developer manual, Query API, Named Dense/Sparse vectors, Hybrid Search RRF, Payload Pre-filtering, and polyglot clients.
-- [`references/infra.md`](file:///var/www/.agents/skills/qdrant/references/infra.md) — Infrastructure manual, :single vs :ha cluster, ports 6333/6334, API key authentication, Four-Way comparison, and CoHaLo process hygiene.
-- [`assets/qdrant_production_recipes.json`](file:///var/www/.agents/skills/qdrant/assets/qdrant_production_recipes.json) — Production-ready recipes for collection setup, RRF queries, and payload filters.
-- [`assets/import_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/import_template.yaml) — Clean `import.yaml` template with native elastic autoscaling.
-- [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/zerops_template.yaml) — Application lifecycle `zerops.yaml` template with Qdrant wiring.
-- [`scripts/qdrant-validate.sh``skills-suite-validate` — Physical integrity validator for the qdrant skill suite.
+- [`references/usage.md`](file:///var/www/.agents/skills/qdrant/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/qdrant/references/infra.md)
+- [`assets/qdrant_production_recipes.json`](file:///var/www/.agents/skills/qdrant/assets/qdrant_production_recipes.json) · [`assets/import_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/import_template.yaml) · [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/zerops_template.yaml)
+- [`scripts/qdrant-validate.sh``skills-suite-validate`

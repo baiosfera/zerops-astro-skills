@@ -48,7 +48,7 @@ Para aplicaciones web (`astro-web`, Bun, Node):
    - **Ambiente Dev (`webdev`)**:
      * Espacio de trabajo iterativo montado en `/var/www/{service}`.
      * Supervisado en tiempo real con `zerops_dev_server action="start"` o verificado con `zerops_deploy`.
-     * Accesible inmediatamente a través del subdominio de Zerops (`https://{hostname}-{port}.ny1.zerops.app`) con hot-reload instantáneo y **0 commits de spam** en Git.
+     * Accesible inmediatamente a través del subdominio de Zerops (`https://{hostname}-{hash}-{port}.<region>.zerops.app` o `${zeropsSubdomain}`) con hot-reload instantáneo y **0 commits de spam** en Git.
    - **Ambiente Prod (`<domain>.com` / `<service>-prod`)**:
      * Contenedor Bun independiente e inmutable, conectado a su dominio oficial a través de Cloudflare (SSL Full Strict).
      * El release a producción se dispara de forma 100% automatizada únicamente cuando el trabajo en `dev` está probado y se hace push a la rama `main` en GitHub, activando GitHub Actions (`zeropsio/actions@v1.0.2`) con `ZEROPS_PROD_SERVICE_ID`.

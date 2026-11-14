@@ -13,16 +13,14 @@ metadata:
 Activate for CI/CD pipelines, GitHub Actions (`zeropsio/actions@v1.0.2`), `gh` CLI, Cloudflare API, ephemeral workspaces, or multi-environment delivery in Zerops.
 
 ## Hard Rules & Positive Guidance
-- **Commit Discipline & Anti-Commit-Spam**: Local commits track atomic steps under Conventional Commits. Batched pushes or feature branches merged via **Squash & Merge** (`gh pr merge --squash --delete-branch`). Avoid micro-pushes to `main`.
-- **Zero Live Edits on Production**: Production runs immutable releases exclusively via GitHub Actions or release tags (`v*`). Never edit live production code directly on `<app_domain>`.
-- **Namespace Sovereignty (Upstream vs Client Repos)**: The GitHub namespace `baiosfera/*` is reserved strictly for upstream platform chasis and skills (`zerops-astrobranding`, `zerops-astro-skills`). Every client application MUST live in its own sovereign GitHub organization or user account (`https://github.com/<marca>/web`). The agent resolves tokens in `/var/www/baiosfera/0ZEROPS-AGY/users-apis/<Marca>/<marca>-keys.md` (e.g. `GITHUB_TOKEN_<MARCA>`). Canonical branch mapping: `main` -> `webprod`, `dev` -> `webdev`.
-- **Sovereign Dev/Prod Delivery (Option B Priority)**: The canonical default workflow couples iterative development in Zerops (`/var/www/{hostname}` with subdomains, hot-reload, zero commit spam) with automated, immutable production deploys via GitHub Actions (`zeropsio/actions@v1.0.2`) on push to `main` connected to Cloudflare SSL Full Strict.
-- **Ephemeral & Disposable Workspaces ($0 Cost)**: The development workspace (`webdev`) is 100% disposable. With SSoT in GitHub (`main`) and production deployed, `webdev` can be stopped or deleted when not in active use for zero cost, and re-provisioned in seconds from `main` when needed.
-- **Agnostic Delivery Shield**: Disconnect Zerops GUI webhooks when using GitHub Actions to avoid duplicate builds.
-- **Kebab-Case CI/CD Contract**: `zeropsio/actions@v1.0.2` strictly requires `access-token` and `service-id` in kebab-case.
-- **Autonomous Provisioning**: Manage secrets via `gh secret set ZEROPS_TOKEN` and `gh secret set ZEROPS_PROD_SERVICE_ID`. Configure DNS and SSL Full Strict (`value: strict`) via Cloudflare API v4.
-- **Fractal CoHaLo**: Enforce bounded execution (`timeout 10s`), wait limits (`WaitMsBeforeAsync: 10000`), and sensors (`gh auth status` / `zerops_verify`).
-- **Zero Deletion Invariant**: Lossless specifications in [`references/usage.md`](file:///var/www/.agents/skills/ghcicd/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/ghcicd/references/infra.md).
+- **Commit Discipline & Anti-Commit-Spam**: Use Conventional Commits locally and batch pushes or **Squash & Merge** (`gh pr merge --squash --delete-branch`). Avoid micro-pushes to `main`.
+- **Zero Live Edits on Production**: Production runs immutable releases exclusively via GitHub Actions or release tags (`v*`). Never edit live production code directly.
+- **Namespace Sovereignty (Upstream vs Client)**: `baiosfera/*` is reserved for upstream platform repos (`zerops-astrobranding`, `zerops-astro-skills`, `template-astro-web`, `runtime-*`). Client apps live in `https://github.com/<marca>/<app>` using tokens from `/var/www/baiosfera/0ZEROPS-AGY/users-apis/<Marca>/<marca>-keys.md` (`main` -> `webprod`, `dev` -> `webdev`).
+- **Sovereign Dev/Prod Delivery (Option B)**: Develop iteratively in Zerops (`/var/www/{hostname}`) and deploy immutable builds to production via GitHub Actions (`zeropsio/actions@v1.0.2`) behind Cloudflare SSL Full Strict.
+- **Ephemeral Dev Workspaces**: With SSoT in GitHub (`main`), `webdev` is disposable ($0 when stopped/deleted) and re-provisions from `main`.
+- **Agnostic Delivery & Kebab-Case**: Disconnect Zerops GUI webhooks when using GitHub Actions. `zeropsio/actions@v1.0.2` requires `access-token` and `service-id` in kebab-case.
+- **Autonomous Provisioning & CoHaLo**: Set `ZEROPS_TOKEN` / `ZEROPS_PROD_SERVICE_ID` via `gh secret set`, configure DNS/SSL Strict via Cloudflare API v4, and enforce `timeout 10s` + `zerops_verify`.
+- **References**: Full specifications in [`references/usage.md`](file:///var/www/.agents/skills/ghcicd/references/usage.md) and [`references/infra.md`](file:///var/www/.agents/skills/ghcicd/references/infra.md).
 
 ## Decision Gates
 

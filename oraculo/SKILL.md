@@ -20,17 +20,14 @@ o mediante el wrapper directo:
 Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards PostgreSQL, 9 feeds enciclopédicos Gold, y en Capa Platino los 4 artefactos en `raw/llm/`).
 
 ## Hard Rules (CoHaLo Positive Guidance)
-- **Regla 1 (Arquitectura Federada):** Cada sub-skill astrológica mantiene su extractor canónico y referencias oficiales. Oráculo actúa como conductor asíncrono y sintetizador.
-- **Regla 2 (Motor Matemático):** Python extrae cómputos exactos y literatura clásica verbatim. Cero textos inventados en el motor.
-- **Regla 3 (Virtual Data Lakehouse Decoupled Canon 12-15-9-4):**
-  - **Bronze**: 12 Shards Físicos JSON en `raw/json/dumps/` (`shard_01` a `shard_12`).
-  - **Silver**: 15 Shards Relacionales en `client_dumps_15_shards.json` para PostgreSQL y `manifest.json` con punteros RFC 6901.
-  - **Gold (`-c` / `--compile`)**: Universal dynamic cache crawler ingesta 100% de `raw/json/cache/` sin hardcoding, reconcilia multi-motor (Tropical Placidus vs Tropical Campanus vs Sideral Fagan-Bradley vs Védico Lahiri D1-D60 + BaZi True Solar Time), genera matriz de discrepancias y 9 feeds enciclopédicos con 100% de textos verbatim.
-  - **Runner Desacoplado (`brandbook_pipeline_runner.py`)**: Síntesis de artefactos canónicos directamente en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (espejado a localstorage para `zcp-sync`): `coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md` y `brandbook_[marca].json`.
-  - **Audit**: Micro-audits atómicos por proveedor en `raw/json/audit/` y macro-audit en `extraction_health_audit.md`.
-- **Regla 4 (Auditoría de Cuotas):** `extraction_health_audit.md` registra estados HTTP reales y créditos en vivo (`X-Credits-Remaining`).
-- **Regla 5 (Matriz de Domificaciones):** Mapeo canónico en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md).
-- **Regla 6 (SSoT Soberano):** Mantenimiento directo en `/var/www/zerops-astro-skills/oraculo/` (enlazado vía symlink en `/var/www/.agents/skills/oraculo/`).
+- **Regla 1 (Arquitectura Federada):** Cada sub-skill astrológica mantiene su extractor canónico; Oráculo actúa como conductor asíncrono y sintetizador.
+- **Regla 2 (Motor Matemático):** Python extrae cómputos exactos y literatura clásica verbatim sin textos inventados.
+- **Regla 3 (Virtual Data Lakehouse Canon 12-15-9-4):**
+  - **Bronze / Silver**: 12 shards JSON en `raw/json/dumps/` + 15 shards relacionales en `client_dumps_15_shards.json` y `manifest.json` (RFC 6901).
+  - **Gold (`-c`)**: Ingesta dinámica de `raw/json/cache/` reconciliando Tropical Placidus/Campanus, Sideral Fagan-Bradley, Védico Lahiri D1-D60 y BaZi True Solar Time en 9 feeds verbatim.
+  - **Runner (`brandbook_pipeline_runner.py`)**: Sintetiza en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (`coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md`, `brandbook_[marca].json`).
+  - **Audit**: Micro-audits en `raw/json/audit/` y `extraction_health_audit.md` con estado HTTP y `X-Credits-Remaining`.
+- **Regla 4 (Domificaciones & SSoT):** Mapeo en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md); mantenimiento en `/var/www/zerops-astro-skills/oraculo/`.
 
 ## Decision Gates
 

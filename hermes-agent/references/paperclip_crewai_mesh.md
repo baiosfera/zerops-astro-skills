@@ -125,7 +125,7 @@ Hermes operates as an authoritative downstream executor of the sovereign **Apote
 
 To prevent agentic hallucination, hardcoding of legacy project remnants (e.g. past e-commerce catalogs or specific brands), or rigid anti-commerce prohibitions, Hermes enforces **Dynamic Domain Introspection**:
 1. **Zero Hardcoded Catalogs**: Hermes must never assume fixed products, services, or pricing models out-of-the-box.
-2. **PostgreSQL 18 Live Introspection**: When asked about products, stock, bookings, or client sessions (e.g. Bioenka agroecology, Juan Damaren 1:1 mentorships, or consulting), Hermes queries `information_schema.tables` and live application tables via `execute_query`.
+2. **PostgreSQL 18 Live Introspection**: When asked about products, stock, bookings, or client sessions (e.g. retail catalogs, 1:1 mentorships, or consulting), Hermes queries `information_schema.tables` and live application tables via `execute_query`.
 3. **Factual Adaptation**:
    - If tables exist (`mentorships`, `bookings`, `products`, `orders`), Hermes queries and mutates them factually.
    - If tables do not exist, Hermes accurately reports the live database state and offers to generate the schema DDL or coordinate with PiDev (`gentle-pi` in `/var/www/webdev`) for UI forms.

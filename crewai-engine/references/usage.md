@@ -11,7 +11,7 @@ from apps.hermes.crewai_engine.compiler import SwarmCompiler
 
 spec = DynamicSwarmSpec(
     crew_name="category-of-one-squad",
-    mission_goal="Establish personal monopoly for Juan Damaren across 3 verticals",
+    mission_goal="Establish category-of-one positioning across 3 brand verticals",
     process="sequential",
     tier="free",
     playbooks=[

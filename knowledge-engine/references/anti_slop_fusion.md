@@ -60,8 +60,8 @@ Read the active project's brand definition from:
 
 Extract the brand constraints:
 1. **Pronoun & Addressing**: Form of address (`tú`, `vos`, `usted`).
-2. **Lexical Tone**: Dominant emotional frequency (ej. hedonismo elegante y misterio en El Placer de Compartir; lujo silencioso y rigor artesanal en Catalina Glamur).
-3. **Blacklisted Vocabulary**: Terms rejected by the brand's identity manual (ej. términos místicos o esotéricos en El Placer de Compartir; jerga barata o urgencia desesperada en Catalina Glamur).
+2. **Lexical Tone**: Dominant emotional frequency (e.g. refined editorial wit for an experiential brand; quiet luxury and artisanal rigor for a high-ticket studio).
+3. **Blacklisted Vocabulary**: Terms rejected by the brand's identity manual (e.g. mystical clichés for a rationalist brand; cheap urgency or discount jargon for a luxury brand).
 4. **Visual & Design Tokens**: Tailwind CSS classes, OKLCH colors, and typography styles defined in the brandbook.
 
 ### Transmutation Rule:
