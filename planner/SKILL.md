@@ -14,8 +14,8 @@ Subordinado directo de [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SK
 
 ## Invariantes Soberanos (Positive Guidance)
 1. **Facts-First & Anti-Grilling**: Inspeccionar disco vivo y fuentes primarias (`research`) antes de preguntar. Reservar F1 para 1 bifurcación real con tradeoffs a la vez.
-2. **F4 Audit & Go Gate (Zero Premature Execution)**: En F4 publicar el plan en `/var/www/artifacts/plans/<slug>.md` con criterios ejecutables de cierre y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*` en Linear.
-3. **Linear Scoping & Auto-Archive**: Agrupar cada `BAI-*` bajo su proyecto (`linear-cli create ... --project <ID|name>`). Al completar F5 con evidencia real, mover el plan a `artifacts/plans/archive/<slug>.executed.md` y guardar síntesis en `mem_save`.
+2. **F4 Audit & Go Gate (Zero Premature Execution)**: En F4 publicar el plan en `/var/www/artifacts/plans/<PROJECT_NAME>/<slug>.md` (con frontmatter `project: <PROJECT_NAME>`) con criterios ejecutables de cierre y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*` en Linear.
+3. **Linear Scoping, Isolation & Auto-Archive**: Agrupar cada `BAI-*` bajo su proyecto (`linear-cli create ... --project <ID|name>`); `linear-cli` aísla su estado por proyecto bajo `.linear_state/<PROJECT_NAME>/`. Al completar F5 con evidencia real, mover el plan a `artifacts/plans/archive/<slug>.executed.md` y guardar síntesis en `mem_save`.
 4. **Honest Reality Proof (Zero Checklist-Theater)**: Validar el alcance exacto modificado con comandos ejecutables (`bun test`, `pytest`, `go build`, `zcli`/Zerops smoke). Reportar por separado `BEHAVIORALLY_VERIFIED`, `SYNTAX_ONLY` y `UNVERIFIED` antes de marcar `Done`.
 5. **Catálogo Modular & Repos Plantilla `baiosfera/*`**: [`zerops-astrobranding`](file:///var/www/zerops-astrobranding/iniciar.sh) gobierna recetas, blueprints, templates y scripts compartidos; el código fuente de cada runtime vive en su repo plantilla `baiosfera/runtime-*` + `template-astro-web`, interconectados vía DNS interno (`zerops_discover`).
 

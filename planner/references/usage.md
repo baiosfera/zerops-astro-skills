@@ -11,8 +11,8 @@
 `planner` estructura iniciativas multi-servicio ($\ge 2$ runtimes o $\ge 3$ pasos) bajo [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) sin burocracia innecesaria para tareas simples.
 
 1. **Facts-First & Anti-Grilling**: Inspeccionar disco vivo y fuentes primarias (`research`) antes de preguntar. Si hace falta decisión humana con tradeoffs reales, formular **máximo 1 pregunta atómica a la vez** y esperar respuesta.
-2. **F4 Audit & Go Gate**: Mantener borradores F0–F3 en `/var/www/artifacts/plans/draft_<slug>.md`. Publicar el plan maestro en `/var/www/artifacts/plans/<slug>.md` con criterios ejecutables y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*`.
-3. **Agrupación en Linear (`BAI-*`)**: Toda issue creada tras F4 `Go` pertenece a un Proyecto en Linear (`linear-cli set-project "<ID|name>"` / `create-project`).
+2. **F4 Audit, Multi-Project Isolation & Go Gate**: Mantener borradores F0–F3 en `/var/www/artifacts/plans/${PROJECT_NAME}/draft_<slug>.md`. Publicar el plan maestro en `/var/www/artifacts/plans/${PROJECT_NAME}/<slug>.md` (con cabecera YAML `project: ${PROJECT_NAME}`) con criterios ejecutables y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*`.
+3. **Agrupación en Linear (`BAI-*`) & Estado Aislado**: Toda issue creada tras F4 `Go` pertenece a un Proyecto en Linear (`linear-cli set-project "<ID|name>"` / `create-project`). `linear-cli` persiste el proyecto activo y actividad bajo `/var/www/artifacts/.linear_state/${PROJECT_NAME}/` para evitar colisiones entre proyectos Zerops en Google Drive SSoT.
 4. **Honest Reality Proof (Zero Checklist-Theater)**:
    - Distinguir explícitamente `BEHAVIORALLY_VERIFIED` (tests/builds/sondas reales ejecutados en el alcance exacto) de `SYNTAX_ONLY` o `UNVERIFIED`.
    - Marcar Linear `Done` exige `--evidence` con comandos reales ejecutados tras el último cambio y `exit 0`.

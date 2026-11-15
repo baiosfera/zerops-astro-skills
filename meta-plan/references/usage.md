@@ -53,7 +53,7 @@ Chat context is ephemeral and prone to compaction. All architectural decisions, 
      1. Zero performative apologies or empty conversational affirmations in chat.
      2. Mutate the active artifact immediately:
         - In F0–F3: update the draft in `draft_<slug>.md`.
-        - In F4–F5: edit `/var/www/artifacts/plans/<slug>_v1.md` and synchronize Linear (`linear-cli create` for newly identified BAIs, `linear-cli update-status`, or `linear-cli comment`).
+        - In F4–F5: edit `/var/www/artifacts/plans/<PROJECT_NAME>/<slug>_v1.md` (including `project: <PROJECT_NAME>` YAML frontmatter so shared Google Drive plans stay isolated across Zerops projects) and synchronize Linear (`linear-cli create` for newly identified BAIs, `linear-cli update-status`, or `linear-cli comment`, which persists state under `/var/www/artifacts/.linear_state/<PROJECT_NAME>/`).
      3. Persist the durable discovery in Engram (`mem_save`).
      4. Report back concisely citing the exact modified artifact lines and Linear issues.
 8. **Default F1 Grilling Contract for Meta-Plan**:
