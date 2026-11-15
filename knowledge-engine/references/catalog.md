@@ -1,6 +1,6 @@
 # Thematic Course Clusters & Knowledge Catalog
 
-This catalog maps the educational repositories in Google Drive SSoT (`/var/www/baiosfera/CURSOS`, `/var/www/baiosfera/PLATZI`, `/var/www/baiosfera/DIGITALMARKETER`) into 7 sovereign specialized thematic clusters in Google NotebookLM and their corresponding distilled playbooks in `/var/www/baiosfera/PLAYBOOKS/`.
+This catalog maps the educational repositories in Google Drive (`baiosfera:CURSOS`, `PLATZI`, `DIGITALMARKETER`) into the **Baiosfera Knowledge Hub** (`/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/` with 20 Master Playbooks `00..19`, `04_BANCOS_TACTICOS/` with 3 Tactical Banks, and Qdrant `baiosfera_knowledge` served via `http://knowledge:8000/mcp`).
 
 ---
 
@@ -99,8 +99,8 @@ This catalog maps the educational repositories in Google Drive SSoT (`/var/www/b
 - **Source Paths**:
   - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/INFLUENCE/*` (89 sources)
   - Canonical Category Design literature (Play Bigger, Blue Ocean, Clayton Christensen, Blair Enns - 42 sources)
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/00_category_of_one_playbook.md`
-- **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion across Hermes, CrewAI, and brand-play without runtime RPC overhead.
+- **Distilled SSoT Playbook**: `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/00_category_of_one.md` (+ `04_BANCOS_TACTICOS/00_category_of_one_swipes_y_guiones.md`)
+- **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion and Qdrant MCP retrieval without runtime NLM RPC overhead.
 
 ---
 
@@ -109,6 +109,6 @@ This catalog maps the educational repositories in Google Drive SSoT (`/var/www/b
 - **Live Notebook ID**: `68dfe298-4e0c-460b-a893-2137dd131359`
 - **Domain Scope**: Consultative sales cycles, La Venta Elegante, high-velocity conversion sprints, objection inversion frameworks, 52 Perlas conversion mechanics, disruptive sales communication, offer ascension ladders, closed-loop diagnostic selling.
 - **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*` (36 courses, 43 master compendiums, excluding INFLUENCE)
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/consultative_sales_playbook.md`
+  - `baiosfera:CURSOS/VELOCITYMEDIA/*` (36 courses, excluding INFLUENCE)
+- **Distilled SSoT Playbook**: `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/01_velocity_sales_doctrine.md` (+ `02..19` Specialty Playbooks & `01_biblioteca_210_prompts_maestros.md`, `02_swipes_copy_email_y_paid_ads.md`)
 - **Primary Extraction Focus**: Algorithmic sales scripts, diagnostic closing mechanics, objection dismantling sequences, and sprint funnels.

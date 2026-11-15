@@ -1,6 +1,6 @@
 # Decoupled Anti-Slop Fusion Protocol
 
-This document defines the 2-step transmutation protocol that merges upstream knowledge extracted from courses (via Google NotebookLM or `/var/www/baiosfera/PLAYBOOKS/`) with downstream brand identity systems (`brandbook.json`).
+This document defines the 2-step transmutation protocol that merges upstream knowledge extracted into **Baiosfera Knowledge Hub** (`/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/` & `04_BANCOS_TACTICOS/`, indexed in Qdrant `baiosfera_knowledge` and served via `http://knowledge:8000/mcp`) with downstream brand identity systems (`brandbook.json`).
 
 ---
 
@@ -37,7 +37,7 @@ To preserve authentic brand differentiation across multiple Zerops projects, str
 
 ## 2. Step 1: Upstream Structural Extraction
 
-Query the relevant NotebookLM cluster or read the corresponding SSoT playbook in `/var/www/baiosfera/PLAYBOOKS/`.
+Query **Baiosfera Knowledge Hub** via MCP (`http://knowledge:8000/mcp`) / REST (`/v1/search`, `/v1/playbook`) or read the canonical playbook in `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/`.
 Extract strictly the abstract formula, leaving variable slots for brand data:
 
 ### Example: Alex Hormozi Offer Skeleton

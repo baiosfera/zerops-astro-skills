@@ -6,8 +6,8 @@ The `brand-play` skill operates across three physical storage tiers in the Zerop
 
 | Tier | Path | Purpose | Performance / Semantics |
 |---|---|---|---|
-| **Primary SSoT** | `/var/www/baiosfera/PLAYBOOKS/` | Universal canonical TYM playbooks | Indestructible Google Drive mirror; shared across all brands |
-| **Brand Assets** | `/var/www/localstorage/${PROJECT_NAME}/dev/brandbook.json` | Active brand W3C DTCG tokens | NVMe persistent volume (`local-storage:single@1`); isolated per brand |
+| **Primary SSoT** | `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/` & `04_BANCOS_TACTICOS/` | Canonical 20 Master Playbooks + 3 Tactical Banks (`baiosfera:KNOWLEDGE_HUB` mirror) | Sub-millisecond NVMe local storage + Qdrant `baiosfera_knowledge` (`http://knowledge:8000/mcp`) |
+| **Brand Assets** | `/var/www/localstorage/workspaces/${PROJECT_NAME}/` · `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}/dev/brandbook.json` | Active brand W3C DTCG tokens | Isolated per client brand |
 | **Transmutation Cache** | Valkey 7.2 (`valkey:single@7.2`) | Rendered copy & component cache | Sub-millisecond memory cache; key pattern `brandplay:cache:${brand}:${slug}` (TTL 24h) |
 
 ---
