@@ -132,18 +132,18 @@ To prevent agentic hallucination, hardcoding of legacy project remnants (e.g. pa
 
 ---
 
-## 6. CrewAI 1.15.30+ and PydanticAI `output_pydantic` Bridge
+## 6. CrewAI 1.15.30+ & In-Memory Pydantic v2 Bridge
 
-Dynamic swarms orchestrated via `run_crew_ai` natively bridge CrewAI with Pydantic:
-1. **Dynamic Schema Compilation**: If `output_schema` is supplied (e.g. `{"decision": "str", "score": "int", "items": "list[str]"}`), `pydantic.create_model` compiles a dynamic `BaseModel` schema.
-2. **Strict Output Enforcement**: The generated schema is assigned to the terminal `Task(output_pydantic=DynamicModel)`.
-3. **Typed Result Extraction**: `crew.kickoff()` produces structured JSON via `output.pydantic.model_dump_json()`, guaranteeing 100% type safety and eliminating markdown hallucination.
+Dynamic swarms orchestrated via `SwarmCompiler` / `run_crew_ai` inject schemas into the task prompt and validate outputs in memory:
+1. **Dynamic Schema Compilation**: If `output_schema` is supplied, `pydantic.create_model` builds a `BaseModel`, formatted cleanly by `InMemoryPydanticParser.format_task_prompt(...)`.
+2. **In-Memory Extraction**: Validate raw output deterministically with `InMemoryPydanticParser.parse(...)` / `model_validate_json()`, avoiding CrewAI's `output_pydantic` double-HTTP overhead (`InternalInstructor`) against rate-limited free endpoints.
+3. **Zero-Cost Local Knowledge**: Default `KnowledgeLoader` uses CrewAI's built-in `{"provider": "onnx"}` embedder backed by `CREWAI_STORAGE_DIR`.
 
 ---
 
 ## 7. Bifrost Governance SSoT Invariant
 
 When Bifrost runs with `config_store.enabled: true` backed by PostgreSQL (`config_store.type: "postgres"`):
-1. **Database Is Exclusive Authority**: Bifrost reads, writes, and validates Virtual Keys strictly against the PostgreSQL table `governance_virtual_keys`.
-2. **Static Config Ignored**: Keys in `config.json` are not dynamically watched or re-read after initial bootstrap.
-3. **Key Sync Mandate**: Any provisioned or updated Virtual Key (`vk-production-main`, `vk-hermes-agent`, `vk-crewai`, `vk-pidev`, `vk-pydanticai`) must be upserted directly into PostgreSQL via `/api/governance/virtual-keys` or SQL `INSERT INTO governance_virtual_keys ... ON CONFLICT (name) DO UPDATE`.
+1. **Database Persists Seeded State**: Bifrost stores Virtual Keys (`governance_virtual_keys`), provider configs (`config_keys`), and routing rules (`routing_rules`) in PG18.
+2. **Static Edits Require Sync**: Updating `config.json` after initial DB seed does not overwrite existing PG rows automatically; synchronize via Governance API or SQL (`aliases_json` must remain SQL `NULL` when empty under encryption).
+3. **Single Env-Backed Master VK**: Reference `${BIFROST_MASTER_VK}` (`vk-production-main`, `value: "env.BIFROST_VIRTUAL_KEY"`) across Hermes and CrewAI instead of committing static plaintext Virtual Keys.

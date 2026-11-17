@@ -35,9 +35,9 @@ Bifrost is deployed on Zerops as an ultra-fast, autonomous Linux service running
 | `PG_PASSWORD` | String | Required in Prod | — | PostgreSQL password (${database_password}). |
 | `PG_DATABASE` | String | Required in Prod | — | PostgreSQL database name (${database_dbName}). |
 | `DATABASE_URL` | String | Recommended | — | Complete connection string (${database_connectionString}). |
-| `VALKEY_ADDR` | String | Recommended | `valkey:6379` | Valkey 7.2 host:port for Redis-compatible vector cache. |
-| `VALKEY_PASSWORD` | String | Recommended | — | Valkey 7.2 password (${valkey_password}). |
-| `FREELLMAPI_URL` | String | Optional | `http://freellmapi:3001/v1` | Upstream URL for FreeLLMAPI custom provider (port 3001). |
+| `FREELLMAPI_UNIFIED_KEY` | String | Required | — | FreeLLMAPI unified client key (`${FREELLMAPI_CLIENT_KEY}`). |
+| `BIFROST_VIRTUAL_KEY` | String | Required | — | Master Virtual Key (`${BIFROST_MASTER_VK}`) referenced by `vk-production-main`. |
+| `FREELLMAPI_URL` | String | Optional | `http://freellmapi:3001` | Base URL for FreeLLMAPI custom provider (`network_config.base_url`, port 3001). |
 
 ---
 
@@ -151,23 +151,20 @@ zerops:
           port: 8080
           path: /health
       envVariables:
-        APP_PORT: "8080"
-        APP_HOST: "0.0.0.0"
-        APP_DIR: "/mnt/localstorage/bifrost"
+        PORT: "8080"
+        HOST: "0.0.0.0"
         GOMEMLIMIT: "900MiB"
         GOGC: "200"
         PG_HOST: ${database_hostname}
-        PG_PORT: "5432"
+        PG_PORT: ${database_port}
         PG_USER: ${database_user}
         PG_PASSWORD: ${database_password}
         PG_DATABASE: ${database_dbName}
-        DATABASE_URL: ${database_connectionString}
-        BIFROST_DB_TYPE: "postgres"
-        BIFROST_DB_DSN: ${database_connectionString}
-        VALKEY_ADDR: "valkey:6379"
-        VALKEY_PASSWORD: ${valkey_password}
-        FREELLMAPI_URL: "http://freellmapi:3001/v1"
-        BIFROST_ENCRYPTION_KEY: "env.BIFROST_ENCRYPTION_KEY"
+        FREELLMAPI_UNIFIED_KEY: ${FREELLMAPI_CLIENT_KEY}
+        BIFROST_VIRTUAL_KEY: ${BIFROST_MASTER_VK}
+        BIFROST_ADMIN_USERNAME: ${BIFROST_ADMIN_USER_SECRET}
+        BIFROST_ADMIN_PASSWORD: ${BIFROST_ADMIN_PASS_SECRET}
+        BIFROST_ENCRYPTION_KEY: ${BIFROST_ENC_KEY_SECRET}
 ```
 
 ---

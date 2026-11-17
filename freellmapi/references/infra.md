@@ -57,34 +57,45 @@ FreeLLMAPI relies on SQLite (`better-sqlite3`) with WAL (Write-Ahead Logging) en
 ```yaml
 zerops:
   - setup: freellmapi
+    build:
+      base: ubuntu/nodejs@24
+      prepareCommands:
+        - sudo apt-get update && sudo apt-get install -y build-essential python3
+      buildCommands:
+        - npm ci
+        - mkdir -p client/src/data && cp cli/tools.json client/src/data/agent-tools.json
+        - npm rebuild better-sqlite3
+        - npm run build -w client
+        - npm run build -w server
+      deployFiles:
+        - .
+      cache:
+        - node_modules
     run:
-      base: nodejs@22
+      base: ubuntu/nodejs@24
+      volume:
+        hostname: localstorage
+        mountPath: /mnt/localstorage
+        readOnly: false
       ports:
         - port: 3001
           httpSupport: true
-      prepareCommands:
-        - apt-get update && apt-get install -y --no-install-recommends python3 make g++ curl ca-certificates
-        - npm ci --omit=dev
-        - npm run build
-        - mkdir -p /app/server/data
-        - chmod -R 777 /app/server/data
       initCommands:
-        - node server/dist/index.js &
-        - sleep 3
-        - curl -f http://localhost:3001/api/ping || exit 1
-        - killall node
-      start:
-        exec: node server/dist/index.js
+        - sudo mkdir -p /mnt/localstorage/freellmapi/data && sudo chown -R zerops:zerops /mnt/localstorage/freellmapi && sudo chmod -R 777 /mnt/localstorage/freellmapi
+      envVariables:
+        PORT: "3001"
+        HOST: "0.0.0.0"
+        NODE_ENV: "production"
+        FREEAPI_DB_PATH: "/mnt/localstorage/freellmapi/data/freeapi.db"
+        FREEAPI_CONFIG_PATH: "/mnt/localstorage/freellmapi/config.json"
+        ENCRYPTION_KEY: ${FREEAPI_ENCRYPTION_KEY}
+        FREEAPI_UNIFIED_API_KEY: ${FREELLMAPI_CLIENT_KEY}
+        FREEAPI_CONFIG_JSON: ${FREEAPI_CONFIG_JSON_SECRET}
+      start: node /var/www/server/dist/index.js
       healthCheck:
         httpGet:
           port: 3001
           path: /api/ping
-      envVariables:
-        PORT: "3001"
-        NODE_ENV: "production"
-        FREELLMAPI_CONTEXT_HANDOFF: "on_model_switch"
-        FREEAPI_DB_PATH: "/app/server/data/freellmapi.db"
-        ENCRYPTION_KEY: "generate-32-byte-hex-with-openssl-rand-hex-32"
 ```
 
 ---

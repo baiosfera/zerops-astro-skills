@@ -28,7 +28,8 @@ Behind Bifrost, requests are dynamically routed across two primary upstream targ
 
 Every consumer, agent, and operator configuring Bifrost MUST enforce these active invariants:
 
-1. **Inversion of Empty Allow-Lists (`version: 2` Semantics)**:
+1. **Omit Legacy `version` & Allow-List Inversion**:
+   - Omit top-level `"version"` (`"version": 2` enables legacy backwards-compatibility mode).
    - `[]` (empty array) strictly means **DENY ALL**.
    - `["*"]` is strictly required to **ALLOW ALL**.
    - Applies to: provider key `models`, Virtual Key `allowed_models`, Virtual Key `key_ids`, and Virtual Key MCP `tools_to_execute`.
@@ -66,17 +67,17 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
 | `headers["x-tier"]` | string | Value of custom HTTP request header | `headers['x-tier'] == 'priority'` |
 | `virtual_key_id` | string | ID of the Virtual Key executing the request | `virtual_key_id == 'vk-prod'` |
 
-### B. Canonical Zero-Leak Routing: FreeLLMAPI ($0) Default with Pro Fallback
+### B. Canonical Zero-Leak Routing: Strict FreeLLMAPI ($0) Default
 ```json
 {
   "routing_rules": [
     {
       "id": "rule-explicit-pro-override",
-      "name": "Route Explicit Pro Tier Requests Directly to Pro/DeepSeek",
-      "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-tier'] == 'pro' || headers['x-routing-tier'] == 'pro'",
+      "name": "Explicit Pro Override to DeepSeek Only When Requested",
+      "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-routing-tier'] == 'pro' || headers['x-tier'] == 'pro' || headers['x-tier'] == 'production' || model.startsWith('deepseek')",
       "targets": [
         {
-          "provider": "pro",
+          "provider": "deepseek",
           "weight": 1.0
         }
       ],
@@ -84,8 +85,21 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
       "priority": 0
     },
     {
-      "id": "rule-freellm-zero-cost-universal",
-      "name": "Prioritize FreeLLMAPI ($0) for All Models (Chat, Code, Reasoning) with Paid Failover",
+      "id": "rule-freellm-opt-in-paid-fallback",
+      "name": "FreeLLMAPI Primary with Opt-In DeepSeek Fallback Only",
+      "cel_expression": "headers['x-allow-paid-fallback'] == 'true'",
+      "targets": [
+        {
+          "provider": "freellmapi",
+          "weight": 1.0
+        }
+      ],
+      "fallbacks": ["deepseek"],
+      "priority": 1
+    },
+    {
+      "id": "rule-freellm-zero-cost-strict",
+      "name": "Default Zero-Cost Routing Strictly to FreeLLMAPI",
       "cel_expression": "true",
       "targets": [
         {
@@ -93,8 +107,8 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
           "weight": 1.0
         }
       ],
-      "fallbacks": ["pro"],
-      "priority": 1
+      "fallbacks": [],
+      "priority": 2
     }
   ]
 }
@@ -102,25 +116,24 @@ Bifrost evaluates routing rules at microsecond speeds using Common Expression La
 
 ---
 
-## 4. Semantic Caching Architecture (Valkey / Redis)
+## 4. Semantic Caching Architecture (`chromem` / `qdrant`)
 
 Bifrost incorporates native vector caching to eliminate redundant inference calls:
-- **Direct Cache (Exact Match):** Uses deterministic SHA-256 hash over prompt and hyper-parameters with `dimension: 1`.
-- **Semantic Cache:** Generates embeddings and evaluates cosine similarity against previous prompts.
+- **Direct Cache (Exact Match):** Uses deterministic SHA-256 hash over prompt and hyper-parameters with `dimension: 1` (no external embeddings needed).
+- **Semantic Cache (`qdrant` multi-node):** Evaluates cosine similarity when backed by Qdrant gRPC (`port: 6334`).
 
-### A. Configuration in `config.json`
+### A. Configuration in `config.json` (Single-Node `chromem` Default)
 ```json
 "vector_store": {
   "enabled": true,
-  "type": "redis",
+  "type": "chromem",
   "config": {
-    "addr": "env.VALKEY_ADDR",
-    "password": "env.VALKEY_PASSWORD",
-    "db": 0,
-    "use_tls": false
+    "path": "/mnt/localstorage/bifrost/chromem",
+    "compress": true
   }
 }
 ```
+> For multi-replica HA, replace `type: "chromem"` with `"type": "qdrant"` (`"host": "qdrant"`, `"port": 6334`). Never use `"type": "redis"` against vanilla Valkey 7.2.
 
 ### B. Operational Parameters
 - **Similarity Threshold:** Recommended `0.85` (values below 0.80 cause semantic false positives; above 0.90 reduce cache hit rates).
@@ -305,16 +318,16 @@ curl -s -X POST http://bifrost:8080/v1/chat/completions \
 | **401 Unauthorized** | `unauthorized` | Missing, invalid, or expired Virtual Key. | Rejected immediately. | Provide valid `sk-bf-*` Virtual Key. |
 | **402 Payment Required** | `payment_required` | Upstream provider credits exhausted. | Rotates key without backoff. | Replenish upstream account balance. |
 | **403 Forbidden** | `model_not_allowed` | Model not permitted by Virtual Key allow-list. | Blocked by governance engine. | Update `allowed_models` to `["*"]` or add model. |
-| **429 Too Many Requests**| `rate_limit_error` | Upstream rate limit reached. | Rotates to fallback upstream. | Bifrost failover redirects to Pro or sibling key. |
+| **429 Too Many Requests**| `rate_limit_error` | Upstream rate limit reached. | Rotates keys with integer-ms backoff (`retry_backoff_initial`/`max`); respects rule `fallbacks[]`. | Keep default `fallbacks: []` unless `x-allow-paid-fallback: true` is intentionally sent. |
 | **429 Too Many Requests**| `budget_exceeded` | Virtual Key budget cap reached. | Hard block by governance engine. | Increase budget allocation in `config.json`. |
-| **502 Bad Gateway** | `upstream_credentials_exhausted` | All configured upstream keys failed. | Aborts retries; returns 502. | Verify upstream provider availability and keys. |
-| **503 / 504 Timeout** | `gateway_timeout` | Upstream timeout or connection dropped. | Retries up to `max_retries`, then triggers fallbacks. | Check network connectivity to upstreams. |
+| **502 Bad Gateway** | `upstream_credentials_exhausted` | All configured upstream keys failed (`401`/`402`/`403`/model-unreachable `404`). | Rotates keys without backoff, then aborts or checks rule `fallbacks[]`. | Verify upstream provider availability and keys. |
+| **503 / 504 Timeout** | `gateway_timeout` | Upstream timeout or connection dropped. | Retries same key with backoff up to `max_retries`, then checks rule `fallbacks[]`. | Check network connectivity to upstreams. |
 
 ---
 
 ## 8. Common Anti-Patterns
 
-- **Anti-Pattern 1: Empty Array in Key Configuration**: Setting `{"models": []}`. In v2.0 semantics, this blocks all models. Use `["*"]`.
-- **Anti-Pattern 2: Client Direct Upstream Key Bypass**: Sending raw provider keys directly to Bifrost. All requests require Virtual Keys.
-- **Anti-Pattern 3: Unbounded Semantic Cache Threshold**: Setting cosine threshold to `<0.75` causes false positive cache hits. Keep between `0.85` and `0.90`.
-- **Anti-Pattern 4: Premature Paid Routing & Missing Circuit Breakers**: Diverting coding or reasoning requests directly to commercial tiers like DeepSeek based on model name strings instead of utilizing FreeLLMAPI ($0 pool across 12 keys). Always enforce Inverted Zero-Leak CEL Routing (Priority 1: `true` -> FreeLLMAPI, Priority 0: explicit bypass `x-force-deepseek: true`) coupled with a 60s circuit breaker to eliminate both token expenditure leaks and cascading 429 timeouts.
+- **Anti-Pattern 1: Empty Array in Key Configuration**: Setting `{"models": []}` blocks all models. Always use `["*"]`.
+- **Anti-Pattern 2: Plaintext Virtual Keys or Enterprise-Only Fields in OSS**: Never hardcode plaintext VKs in `config.json` or put `circuit_breaker_config` inside `governance` (`circuit_breaker_config` is Enterprise-only top-level).
+- **Anti-Pattern 3: String Backoffs or Redis Cache on Valkey**: Always use integer ms (`500`, `3000`) for `retry_backoff_initial`/`max`, and use `chromem` or `qdrant` for `vector_store` (never `redis` on Valkey 7.2).
+- **Anti-Pattern 4: Premature Paid Routing & Catch-All Fallbacks**: Diverting `code`/`reason` models or failing free requests automatically to DeepSeek drains paid credits. Keep Priority 2 catch-all `fallbacks: []` so Pro escalation requires explicit `x-force-deepseek: true`, `x-routing-tier: pro`, `model: deepseek*`, or opt-in `x-allow-paid-fallback: true`.

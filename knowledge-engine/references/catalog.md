@@ -1,114 +1,40 @@
-# Thematic Course Clusters & Knowledge Catalog
+# Knowledge Hub Catalog & Granular Playbook Matrix (v4.0 — Drive-First)
 
-This catalog maps the educational repositories in Google Drive (`baiosfera:CURSOS`, `PLATZI`, `DIGITALMARKETER`) into the **Baiosfera Knowledge Hub** (`/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/` with 20 Master Playbooks `00..19`, `04_BANCOS_TACTICOS/` with 3 Tactical Banks, and Qdrant `baiosfera_knowledge` served via `http://knowledge:8000/mcp`).
-
----
-
-## 1. Cluster: Copywriting & Persuasión Vanguardista
-- **Notebook Target Title**: `[ESPECIALIDAD_COPY_TITULARES_Y_GANCHOS]`
-- **Live Notebook ID**: `e103fdf6-337b-4f40-b45f-b44d0660dc40`
-- **Notebook URL**: `https://notebook.google.com/notebook/e103fdf6-337b-4f40-b45f-b44d0660dc40`
-- **Domain Scope**: Direct response copywriting, high-converting headlines, curiosity & urgency hooks, emotional narrative arcs, PAS (Problem-Agitate-Solve), AIDA, storytelling frameworks, microcopy for CTAs and forms, objection dismantling, proof stacks.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*copy*`
-  - `/var/www/baiosfera/CURSOS/MCV/*copy*`
-  - `/var/www/baiosfera/PLATZI/*copywriting*`, `/var/www/baiosfera/PLATZI/*redaccion*`
-  - `/var/www/baiosfera/DIGITALMARKETER/*copy*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/copywriting_playbook.md`
-- **Primary Extraction Focus**: Universal formulas, psychological triggers, and syntactic rhythm patterns decoupled from specific market niches.
+This catalog maps the clean educational corpus in Google Drive (`baiosfera:KNOWLEDGE_HUB/01_TRANSCRIPCIONES_LIMPIAS/`, including `DIGITALMARKETER` [EN], `PLATZI`, `CA`, `MCV`, `SCVIP`, `CENOF`, `VELOCITYMEDIA`, `ESCRITURA_LIBROS`, `SEO`, `MARKETING`) into **21 specialized Master Playbooks + `INDEX.json`** in `03_PLAYBOOKS_MAESTROS/` and **3 Tactical Banks** in `04_BANCOS_TACTICOS/`. Any ZCP project syncs them automatically into `/mnt/localstorage/playbooks/` via `iniciar.sh` and `zcp-sync` with zero mandatory Qdrant runtime.
 
 ---
 
-## 2. Cluster: Ofertas Irresistibles & Value Equation
-- **Notebook Target Title**: `[ESPECIALIDAD_OFERTAS_Y_PRICING]`
-- **Domain Scope**: Grand Slam Offers, Alex Hormozi Value Equation ($\frac{\text{Dream Outcome} \times \text{Perceived Likelihood}}{\text{Time Delay} \times \text{Effort \& Sacrifice}}$), premium pricing psychology, guarantee engineering (conditional, unconditional, anti-guarantees), scarcity & urgency mechanics, bonus stacking, naming formulas (M.A.G.I.C.).
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*oferta*`
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*hormozi*`
-  - `/var/www/baiosfera/DIGITALMARKETER/*offer*`
-  - `/var/www/baiosfera/PLATZI/*modelos-negocio*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/ofertas_playbook.md`
-- **Primary Extraction Focus**: Offer structural breakdown, price-to-value anchors, risk reversal blueprints.
+## 1. Master Playbooks (`03_PLAYBOOKS_MAESTROS/`)
+
+| ID | Focus & Apotelos Role | Target Agents |
+|---|---|---|
+| `00_category_of_one.md` | **Corona 1 (`tau_0_corona_1`)**: Blue Ocean, categoría propia, mecanismo único, pricing por valor | `strategist`, `brand_architect`, `copywriter` |
+| `01_velocity_sales_doctrine.md` | **Corona 2 (`tau_0_corona_2`)**: Venta sutil, tensión constructiva, sobredemanda, apalancamiento | `strategist`, `copywriter`, `sales_closer` |
+| `02_psicologia_consumidor_y_avatar.md` | **Fundamentos (`tau_0_icp`)**: Niveles de conciencia, dolores, VoC, sesgos, prueba social | `strategist`, `copywriter`, `ads_planner` |
+| `03_ofertas_irresistibles_y_pricing.md` | **Fundamentos (`tau_3_oferta`)**: Ecuación de valor, bonos, anclaje, tripwires, garantías | `strategist`, `copywriter`, `cro_architect` |
+| `04_branding_autoridad_y_storytelling.md` | **Fundamentos (`tau_0_voz_marca`)**: Voz verbal, arco narrativo, autoridad | `brand_architect`, `copywriter`, `content_strategist` |
+| `05_copywriting_landings_y_angulos.md` | **Conversión (`tau_3_copy_astro_web`)**: Landings SEO-first & Ads-first, hooks, bullets, objeciones | `copywriter`, `astro_web_builder` |
+| `06_vsl_webinars_y_lanzamientos.md` | **Conversión (`tau_3_video_ventas`)**: Guiones VSL, webinars, retos, promociones | `copywriter`, `funnel_architect` |
+| `07_funnels_checkout_y_pagos.md` | **Conversión (`tau_3_conversion_transaccional`)**: Embudos, `checkout-funnels`, bumps/upsells, `payment-gateways` (Wompi, ePayco, Bold, Stripe, dLocalGo, MercadoPago, COD OTP) | `funnel_architect`, `astro_web_builder`, `checkout_engineer` |
+| `08_analitica_cro_y_experimentacion.md` | **Telemetría (`tau_1_medicion`)**: GA4, CAC/LTV/AOV, tests A/B, UX CRO | `analytics_engineer`, `cro_architect` |
+| `09_seo_tecnico_y_contenidos.md` | **Descubrimiento (`tau_2_seo`)**: Keywords, topic clusters, siloing, Schema.org, Cloudflare Edge | `seo_specialist`, `copywriter`, `astro_web_builder` |
+| `10_aeo_y_geo_busqueda_ia.md` | **Descubrimiento (`tau_2_aeo_geo`)**: Citabilidad en IA (ChatGPT/Perplexity/AI Overviews), `llms.txt`, JSON-LD | `seo_specialist`, `copywriter`, `astro_web_builder` |
+| `11_youtube_y_video_largo.md` | **Orgánico (`tau_2_video_largo`)**: Packaging CTR, retención, SEO YouTube, captura de leads | `content_strategist`, `video_strategist` |
+| `12_reels_tiktok_y_instagram_organico.md` | **Orgánico (`tau_2_social_corto`)**: Hooks 3s, formatos virales, historias, DM triggers | `content_strategist`, `social_manager` |
+| `13_linkedin_b2b_y_autoridad.md` | **Orgánico (`tau_2_b2b`)**: Perfil All-Star, posts B2B, social selling | `content_strategist`, `b2b_prospector` |
+| `14_meta_ads_y_creativos.md` | **Paid Media (`tau_1_paid_meta`)**: Estructura Meta Ads, testing de ángulos, escalado | `media_buyer`, `creative_strategist`, `copywriter` |
+| `15_google_ads_search_y_pmax.md` | **Paid Media (`tau_1_paid_google`)**: Search intención alta, Shopping/PMax, Quality Score | `media_buyer`, `seo_specialist` |
+| `16_tiktok_ads_y_linkedin_ads.md` | **Paid Media (`tau_1_paid_expansion`)**: Spark Ads UGC, LinkedIn Ads B2B | `media_buyer`, `creative_strategist` |
+| `17_ad_telemetry_pixeles_y_consent.md` | **Telemetría (`tau_1_telemetria_core`)**: Meta CAPI, Google Enhanced Conversions, TikTok Events API, LinkedIn Insight/CAPI, Consent Mode v2, Outbox PG18+NATS | `telemetry_engineer`, `astro_web_builder`, `media_buyer` |
+| `18_email_marketing_y_deliverability.md` | **Retención (`tau_4_email_coherente`)**: Listmonk/ZeptoMail + BullMQ, secuencias ciclo de vida, DMARC/DKIM | `lifecycle_marketer`, `copywriter` |
+| `19_whatsapp_conversacional_y_cierre.md` | **Retención (`tau_4_whatsapp_coherente`)**: EvolutionGo + NATS + Valkey fencing, calificación BANT y cierre | `conversational_designer`, `sales_closer` |
+| `20_ventas_consultivas_high_ticket.md` | **Retención (`tau_4_cierre_humano`)**: Cierre 1 llamada, neuroventas, manejo de objeciones | `sales_closer`, `strategist` |
 
 ---
 
-## 3. Cluster: Funnels, Páginas de Aterrizaje & Conversión
-- **Notebook Target Title**: `[ESPECIALIDAD_FUNNELS_CHECKOUTS_Y_BUMPS]`
-- **Domain Scope**: Landing page information architecture, above-the-fold visual hierarchy, high-converting checkout flows, order bumps, 1-click upsells/downsells, VSL (Video Sales Letters) scripts, thank you page monetization, Conversion Rate Optimization (CRO), mobile friction elimination.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*landing*`, `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*funnel*`
-  - `/var/www/baiosfera/PLATZI/*conversion*`, `/var/www/baiosfera/PLATZI/*cro*`
-  - `/var/www/baiosfera/DIGITALMARKETER/*funnel*`, `/var/www/baiosfera/DIGITALMARKETER/*landing*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/funnels_playbook.md`
-- **Primary Extraction Focus**: Wireframe sequencing, section-by-section logic, conversion blockers and CRO heuristics.
+## 2. Tactical Banks (`04_BANCOS_TACTICOS/`) & Routing (`INDEX.json`)
 
----
-
-## 4. Cluster: WhatsApp Funnels & Conversational Commerce
-- **Notebook Target Title**: `[ESPECIALIDAD_WHATSAPP_MARKETING_Y_BOTS]`
-- **Domain Scope**: Inbound qualification state machines, conversational copywriting, automated lead nurturing, objection handling in direct chat, human-in-the-loop takeover protocol, broadcast messaging without bans, event launch countdowns, abandoned cart recovery via WhatsApp OTP.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*whatsapp*`
-  - `/var/www/baiosfera/CURSOS/MCV/*whatsapp*`
-  - `/var/www/baiosfera/PLATZI/*whatsapp*`, `/var/www/baiosfera/PLATZI/*mensajeria*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/whatsapp_playbook.md`
-- **Primary Extraction Focus**: Chat message pacing, conversational scripts, friction-free payment links, anti-spam hygiene.
-
----
-
-## 5. Cluster: Email Marketing, Secuencias & Entregabilidad
-- **Notebook Target Title**: `[ESPECIALIDAD_EMAIL_AUTOMATION_Y_NURTURE]`
-- **Domain Scope**: Welcome sequences (Soap Opera Sequence), daily nurture (Seinfeld style emails), automated abandoned cart recovery, re-engagement campaigns, transactional email optimization, technical deliverability (DMARC, DKIM, SPF, list hygiene, bounce & spam complaint handling), spam keyword avoidance.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*email*`
-  - `/var/www/baiosfera/DIGITALMARKETER/*email*`
-  - `/var/www/baiosfera/PLATZI/*email*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/email_marketing_playbook.md`
-- **Primary Extraction Focus**: Subject line formulas, open rate optimizations, click-through storytelling, zero-spam structure.
-
----
-
-## 6. Cluster: Paid Ads, Tráfico & Creativos Virales
-- **Notebook Target Title**: `[ESPECIALIDAD_META_ADS_CREATIVOS_Y_PAUTA]`
-- **Domain Scope**: Meta Ads (Facebook/Instagram), TikTok Ads, Google Search / Performance Max, UGC (User-Generated Content) frameworks, 3-second hook testing matrices, angle diversification, creative fatigue mitigation, budget scaling algorithms, Meta CAPI integration.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*trafico*`, `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*ads*`
-  - `/var/www/baiosfera/CURSOS/MCV/[VIP] [2026-10]_Inteligencia-Viral-2026-Julian-Alborna_Mis-Cursos-Virtuales/`
-  - `/var/www/baiosfera/PLATZI/*pauta*`, `/var/www/baiosfera/PLATZI/*facebook-ads*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/paid_ads_playbook.md`
-- **Primary Extraction Focus**: Ad script structures, visual hook triggers, rapid iterative testing matrices.
-
----
-
-## 7. Cluster: Branding, Posicionamiento & Content Marketing
-- **Notebook Target Title**: `[ESPECIALIDAD_BRANDING_Y_POSICIONAMIENTO]`
-- **Domain Scope**: Narrative positioning, Category of One, brand archetypes, content pillars, organic social media flywheel, authority building, customer journey lifecycle, long-term brand equity vs direct response balance.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*branding*`, `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/*contenido*`
-  - `/var/www/baiosfera/DIGITALMARKETER/*content*`
-  - `/var/www/baiosfera/PLATZI/*branding*`, `/var/www/baiosfera/PLATZI/*estrategia-marca*`
-- **Distilled SSoT Playbook**: `/var/www/baiosfera/PLAYBOOKS/branding_playbook.md`
-- **Primary Extraction Focus**: Brand voice architecture, narrative moats, content distribution loops.
-
----
-
-## 8. Crown Cluster: Categoría de Uno, Monopolio Personal & Category Design
-- **Notebook Target Title**: `Categoría de Uno`
-- **Live Notebook ID**: `63f2b7ea-bfce-482b-add5-02997157cb47`
-- **Domain Scope**: Ontological authority, Category Design, Personal Monopoly, Price the Client Not the Job, Blue Ocean Strategy, Disruptive Innovation, Paid Discovery ($150 USD), Two-Rill Engine, EPOCH Human Moat.
-- **Source Paths**:
-  - `/var/www/baiosfera/CURSOS/VELOCITYMEDIA/INFLUENCE/*` (89 sources)
-  - Canonical Category Design literature (Play Bigger, Blue Ocean, Clayton Christensen, Blair Enns - 42 sources)
-- **Distilled SSoT Playbook**: `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/00_category_of_one.md` (+ `04_BANCOS_TACTICOS/00_category_of_one_swipes_y_guiones.md`)
-- **Primary Extraction Focus**: Upstream strategic doctrine for sub-millisecond local ingestion and Qdrant MCP retrieval without runtime NLM RPC overhead.
-
----
-
-## 9. Satellite Cluster: Velocity Media Sprint Sales & Venta Consultiva
-- **Notebook Target Title**: `[VELOCITY_MEDIA_SPRINT_SALES]`
-- **Live Notebook ID**: `68dfe298-4e0c-460b-a893-2137dd131359`
-- **Domain Scope**: Consultative sales cycles, La Venta Elegante, high-velocity conversion sprints, objection inversion frameworks, 52 Perlas conversion mechanics, disruptive sales communication, offer ascension ladders, closed-loop diagnostic selling.
-- **Source Paths**:
-  - `baiosfera:CURSOS/VELOCITYMEDIA/*` (36 courses, excluding INFLUENCE)
-- **Distilled SSoT Playbook**: `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/01_velocity_sales_doctrine.md` (+ `02..19` Specialty Playbooks & `01_biblioteca_210_prompts_maestros.md`, `02_swipes_copy_email_y_paid_ads.md`)
-- **Primary Extraction Focus**: Algorithmic sales scripts, diagnostic closing mechanics, objection dismantling sequences, and sprint funnels.
+- `00_category_of_one_swipes_y_guiones.md` — Swipes estratégicos y guiones de autoridad.
+- `01_biblioteca_210_prompts_maestros.md` — Biblioteca de prompts tácticos.
+- `02_swipes_copy_email_y_paid_ads.md` — Swipes de copy, asuntos email y ángulos de pauta.
+- `03_PLAYBOOKS_MAESTROS/INDEX.json` — Mapa ligero (`< 7 KB`) con `task_routes` para CrewAI / Hermes (`brand_strategy_blackboard`, `astro_web_landing_seo_ads_first`, `checkout_funnels_y_pagos`, `vsl_webinars_lanzamientos`, `paid_media_campanas`, `organic_growth_y_contenido`, `retencion_email_whatsapp_cierre`).

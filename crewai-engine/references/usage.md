@@ -6,8 +6,9 @@ The compiler assembles agents and tasks from declarative specs without hardcoded
 
 ```python
 from pathlib import Path
-from apps.hermes.crewai_engine.spec import DynamicSwarmSpec, AgentSpec, TaskSpec
-from apps.hermes.crewai_engine.compiler import SwarmCompiler
+from crewai_engine.spec import DynamicSwarmSpec, AgentSpec, TaskSpec
+from crewai_engine.compiler import SwarmCompiler
+from crewai_engine.knowledge_loader import KnowledgeLoader
 
 spec = DynamicSwarmSpec(
     crew_name="category-of-one-squad",

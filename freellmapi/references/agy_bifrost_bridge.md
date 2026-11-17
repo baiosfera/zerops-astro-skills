@@ -22,12 +22,11 @@ This manual establishes the operational contract connecting **Maxim AI Bifrost**
 
 ## 2. Bifrost Configuration for FreeLLMAPI Upstream
 
-In Bifrost's production declarative configuration file (`config.json` version 2), define `freellmapi` as an OpenAI-compatible custom provider:
+In Bifrost's declarative configuration (`config.json`), define `freellmapi` as an OpenAI-compatible custom provider and ensure `fallbacks` on the default catch-all rule stays `[]` unless paid escalation is explicitly requested:
 
 ```json
 {
   "$schema": "https://www.getbifrost.ai/schema",
-  "version": 2,
   "providers": {
     "freellmapi": {
       "keys": [
@@ -39,25 +38,22 @@ In Bifrost's production declarative configuration file (`config.json` version 2)
         }
       ],
       "network_config": {
-        "base_url": "http://freellmapi:3001/v1",
+        "base_url": "http://freellmapi:3001",
+        "allow_private_network": true,
         "default_request_timeout_in_seconds": 120,
-        "max_retries": 3,
-        "retry_backoff_initial": 500,
-        "retry_backoff_max": 3000
+        "max_retries": 2,
+        "retry_backoff_initial": 300,
+        "retry_backoff_max": 1000
       },
       "custom_provider_config": {
-        "base_provider_type": "openai",
-        "allowed_requests": {
-          "chat_completion": true,
-          "chat_completion_stream": true
-        }
+        "base_provider_type": "openai"
       }
     },
-    "openai-commercial": {
+    "deepseek": {
       "keys": [
         {
-          "name": "openai-backup-key",
-          "value": "env.OPENAI_API_KEY",
+          "name": "deepseek-pro-commercial",
+          "value": "env.DEEPSEEK_API_KEY",
           "models": ["*"],
           "weight": 1.0
         }
@@ -67,9 +63,9 @@ In Bifrost's production declarative configuration file (`config.json` version 2)
   "governance": {
     "virtual_keys": [
       {
-        "id": "vk-agent-pool",
-        "name": "antigravity-agent-key",
-        "value": "env.AGENT_VIRTUAL_KEY",
+        "id": "vk-production-main",
+        "name": "Production Sovereign Key",
+        "value": "env.BIFROST_VIRTUAL_KEY",
         "is_active": true,
         "provider_configs": [
           {
@@ -79,28 +75,38 @@ In Bifrost's production declarative configuration file (`config.json` version 2)
             "weight": 1.0
           },
           {
-            "provider": "openai-commercial",
+            "provider": "deepseek",
             "allowed_models": ["*"],
             "key_ids": ["*"],
-            "weight": 0.0
+            "weight": 1.0
           }
         ]
       }
     ],
     "routing_rules": [
       {
-        "id": "rule-freellm-zero-cost-priority",
-        "name": "Prioritize FreeLLMAPI with Paid Commercial Failover",
+        "id": "rule-explicit-pro-override",
+        "name": "Explicit Pro Override to DeepSeek Only When Requested",
+        "cel_expression": "headers['x-force-deepseek'] == 'true' || headers['x-routing-tier'] == 'pro' || headers['x-tier'] == 'pro' || headers['x-tier'] == 'production' || model.startsWith('deepseek')",
+        "targets": [{"provider": "deepseek", "weight": 1.0}],
+        "fallbacks": ["freellmapi"],
+        "priority": 0
+      },
+      {
+        "id": "rule-freellm-opt-in-paid-fallback",
+        "name": "FreeLLMAPI Primary with Opt-In DeepSeek Fallback Only",
+        "cel_expression": "headers['x-allow-paid-fallback'] == 'true'",
+        "targets": [{"provider": "freellmapi", "weight": 1.0}],
+        "fallbacks": ["deepseek"],
+        "priority": 1
+      },
+      {
+        "id": "rule-freellm-zero-cost-strict",
+        "name": "Default Zero-Cost Routing Strictly to FreeLLMAPI",
         "cel_expression": "true",
-        "targets": [
-          {
-            "provider": "freellmapi",
-            "weight": 1.0
-          }
-        ],
-        "fallbacks": [
-          "openai-commercial"
-        ]
+        "targets": [{"provider": "freellmapi", "weight": 1.0}],
+        "fallbacks": [],
+        "priority": 2
       }
     ]
   }
