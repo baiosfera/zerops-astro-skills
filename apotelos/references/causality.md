@@ -43,5 +43,5 @@ flowchart RL
 - **Entregables**: Gancho de 3 segundos contra el dolor del avatar, promesa de transformación, contraste de alternativas de mercado y garantía de reversión de riesgo.
 
 ### Dominó 0 ($\tau\epsilon$-0): El Primer Dominó (Mecanismo Único)
-- **Invariante**: Extraído de `00_category_of_one.md`, `01_velocity_sales_doctrine.md` y `brandbook.json`.
+- **Invariante**: Extraído de `00_category_of_one.md`, `01_sales_and_conversion_doctrine.md` y `brandbook.json`.
 - **Entregables**: El vehículo propietario patentable o conceptualmente único que hace que la oferta sea incomparable (Categoría de Uno).

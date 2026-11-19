@@ -10,12 +10,12 @@ metadata:
 # `brand-play` — Sovereign Downstream Playbook Transmutator (v2.0)
 
 ## Activation Contract
-Activate when ingesting universal TYM playbooks, `INDEX.json` task routes, and Tactical Banks from `/mnt/localstorage/playbooks/` (or `/var/www/localstorage/knowledge_hub/03_PLAYBOOKS_MAESTROS/` & `04_BANCOS_TACTICOS/`), resolving algebraic semantic slots (`{{SLOT_*}}`) using W3C DTCG tokens from brand workspaces and `brandbook.json`, and transmuting structural playbooks into SEO-first/Ads-first copy (`growth-engine`), Astro 5 SSR components (`astro-web`), conversational WhatsApp flows (`whatsapp-engine`), or deliverability-certified emails (`email-marketing`).
+Activate when ingesting universal playbooks and `INDEX.json` task routes from `/mnt/localstorage/playbooks/` (`/var/www/localstorage/knowledge_hub/02_PLAYBOOKS_MAESTROS/`), resolving algebraic semantic slots (`{{SLOT_*}}`) using W3C DTCG tokens from brand workspaces and `brandbook.json`, and transmuting playbooks into SEO-first/Ads-first copy (`growth-engine`), Astro 5 SSR components (`astro-web`), conversational WhatsApp flows (`whatsapp-engine`), or deliverability-certified emails (`email-marketing`).
 
 ## Hard Rules & Positive Guidance
 - **Dual-Upstream Doctrine Hierarchy (Layer 1 Invariant)**:
-  - *Layer 1A (Authority & Category)*: Consume Crown Playbook `00_category_of_one.md` + `00_category_of_one_swipes_y_guiones.md` for ontological positioning, personal monopoly, and value pricing.
-  - *Layer 1B (Conversion & Granular Execution)*: Consume Crown Playbook `01_velocity_sales_doctrine.md` + task-routed granular playbooks (`02`..`20` via `INDEX.json`) + Tactical Banks (`01_biblioteca_210_prompts_maestros.md`, `02_swipes_copy_email_y_paid_ads.md`). Both Crown layers anchor every downstream artifact together.
+  - *Layer 1A (Authority & Category)*: Consume Crown Playbook `00_category_of_one.md` for ontological positioning, personal monopoly, and value pricing.
+  - *Layer 1B (Conversion & Granular Execution)*: Consume Crown Playbook `01_sales_and_conversion_doctrine.md` + task-routed granular playbooks (`02..N` via `INDEX.json`, each embedding its formulas, scripts, and swipes). Both Crown layers anchor every downstream artifact together.
 - **Apotelos Blackboard Coherence**: Bind copy, SEO/AEO/GEO, Ad-Telemetry (`ad-telemetry`), checkout (`checkout-funnels`), Email (`Listmonk`), and WhatsApp (`EvolutionGo`) through one shared brand Blackboard so every surface reinforces the exact same promise, mechanism, and conversion event.
 - **Decoupled Brand-Agnostic Output**: Consume universal TYM playbooks from localstorage/Drive and emit strictly brand-agnostic templates free of external vendor names, commercial academies, or static author identities.
 - **Deterministic Token Ingestion**: Read W3C DTCG tokens from the active client workspace (`/var/www/localstorage/workspaces/${PROJECT_NAME}/`, `/var/www/localstorage/${PROJECT_NAME}/`, or `/var/www/baiosfera/PROYECTOS/${PROJECT_NAME}/dev/brandbook.json`). Map DTCG nodes (`$value`, `$type`) to algebraic slots via RFC 6901 JSON pointers.

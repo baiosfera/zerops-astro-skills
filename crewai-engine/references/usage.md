@@ -16,7 +16,7 @@ spec = DynamicSwarmSpec(
     process="sequential",
     tier="free",
     playbooks=[
-        Path("/mnt/localstorage/playbooks/00_category_of_one_playbook.md")
+        Path("/mnt/localstorage/playbooks/00_category_of_one.md")
     ],
     agents=[
         AgentSpec(
