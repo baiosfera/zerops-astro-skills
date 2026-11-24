@@ -207,3 +207,9 @@ Gmail runs Google's Compact Language Detector (CLD3) on every incoming message. 
 2. **HTML Root Attributes:** `<html lang="es" xml:lang="es" translate="no" class="notranslate">`.
 3. **Google Meta Tag:** `<meta name="google" content="notranslate" />`.
 4. **Natural Spanish Prose Floor:** Ensure body content contains at least 30–50 words of natural Spanish prose with standard stopwords (*de, la, que, el, en, y, para, con*) to dilute technical FQDNs, URLs, and English framework tokens below the classification threshold.
+
+---
+
+## 9. Playbook Master Mapping (`INDEX.json`)
+- **`12_email_marketing_and_lifecycle_automation.md`** — TOFU/MOFU/BOFU welcome, abandonment, re-engagement sequences, deliverability hygiene (<85KB, 0 Base64, RFC 8058).
+- **`09_whatsapp_and_conversational_automation.md`** — Cross-channel anti-collision suppression with conversational WhatsApp flows.

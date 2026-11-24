@@ -108,11 +108,15 @@ export class ListmonkProvider implements IEmailProvider {
 
   constructor(
     baseUrl = process.env.LISTMONK_URL || "http://listmonk:9000",
-    username = process.env.LISTMONK_API_USER || "admin",
-    password = process.env.LISTMONK_API_PASSWORD || "listmonk_pass"
+    username = process.env.LISTMONK_API_USER || "api",
+    apiTokenOrPassword = process.env.LISTMONK_API_TOKEN || process.env.LISTMONK_API_PASSWORD || ""
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
-    this.authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`;
+    if (process.env.LISTMONK_API_TOKEN || (!process.env.LISTMONK_API_PASSWORD && apiTokenOrPassword)) {
+      this.authHeader = `token ${username}:${apiTokenOrPassword}`;
+    } else {
+      this.authHeader = `Basic ${Buffer.from(`${username}:${apiTokenOrPassword}`).toString("base64")}`;
+    }
   }
 
   async send(payload: UnifiedEmailPayload): Promise<DispatchResult> {

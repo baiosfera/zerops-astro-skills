@@ -257,5 +257,5 @@ All operations with `email-marketing` must strictly comply with the Fractal CoHa
 * **Bounded Timeouts**: All email API calls must use explicit timeouts (`timeout 10s curl -f ...`).
 * **Synchronous Wait Enforcement**: For CLI commands and status verifications, specify `WaitMsBeforeAsync: 10000`.
 * **Zero Orphan Tasks**: Terminate all lingering email queue workers using `manage_task action="kill"`.
-* **Physical Sensor Attestation**: Execute `email-marketing-validate.sh` and `skills-suite-validate` with exit code 0 before completing turns.
+* **Physical Sensor Attestation**: Execute `skills-suite-validate` with exit code 0 before completing turns.
 * **Circuit Breaker Policy**: If primary provider fails with 429, 500, or 503, the dispatcher automatically opens the circuit and diverts traffic to secondary provider for 60 seconds.

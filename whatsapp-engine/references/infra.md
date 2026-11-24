@@ -196,10 +196,10 @@ When handling incoming audio notes, PDFs, images, and stickers:
 
 All operations with Evolution Go must strictly follow the Fractal CoHaLo standard:
 
-* **Bounded Timeouts**: All health check probes and API inquiries must use explicit timeouts (`timeout 10s curl -f http://evolutiongo:8080/health`).
+* **Bounded Timeouts**: All health check probes and API inquiries must use explicit timeouts (`timeout 10s curl -f http://evolution:8085/health`).
 * **Synchronous Wait Enforcement**: For CLI commands and status verifications, specify `WaitMsBeforeAsync: 10000`.
 * **Zero Orphan Tasks**: Terminate all lingering workers and background monitoring scripts using `manage_task action="kill"`.
 * **Physical Sensor Attestation**:
-  * Gateway health check: `curl -s -o /dev/null -w "%{http_code}" http://evolutiongo:8080/health` $\implies$ Expected: `200`.
+  * Gateway health check: `curl -s -o /dev/null -w "%{http_code}" http://evolution:8085/health` $\implies$ Expected: `200`.
   * Database connectivity: `psql "$db_connectionString" -c 'SELECT count(*) FROM whatsmeow_device;'`.
 * **Circuit Breaker Policy**: If instance pairing fails 2 consecutive times due to socket drop, initiate automatic logout via `DELETE /instance/logout/{instance}` and restart instance socket cleanly.

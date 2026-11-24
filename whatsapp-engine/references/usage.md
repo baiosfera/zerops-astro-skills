@@ -40,7 +40,7 @@ This manual provides the comprehensive reference for REST endpoints, WebSockets,
 
 All administrative endpoints require the global API key supplied via the `apikey` HTTP header.
 
-* **Base URL**: `http://<evolutiongo-hostname>:8080` (Zerops internal DNS) or `https://<domain>`
+* **Base URL**: `http://<evolution-hostname>:8085` (Zerops internal DNS) or `https://<domain>`
 * **Global Auth Header**: `apikey: <GLOBAL_API_KEY>`
 
 ### Instance Lifecycle Endpoints
@@ -58,7 +58,7 @@ All administrative endpoints require the global API key supplied via the `apikey
 ### Create Instance (`POST /instance/create`)
 
 ```bash
-curl -s -X POST http://evolutiongo:8080/instance/create \
+curl -s -X POST http://evolution:8085/instance/create \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,7 +78,7 @@ curl -s -X POST http://evolutiongo:8080/instance/create \
 ### Pairing with Phone Number (`POST /instance/pair`)
 
 ```bash
-curl -s -X POST http://evolutiongo:8080/instance/pair \
+curl -s -X POST http://evolution:8085/instance/pair \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -122,7 +122,7 @@ Supports both URL resolution and Base64 payloads with automatic MIME detection:
 
 ```bash
 # Sending Audio Voice Note (PTT)
-curl -s -X POST http://evolutiongo:8080/send/media \
+curl -s -X POST http://evolution:8085/send/media \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -139,7 +139,7 @@ curl -s -X POST http://evolutiongo:8080/send/media \
 Renders interactive sliding cards with automatic JPEG thumbnail generation:
 
 ```bash
-curl -s -X POST http://evolutiongo:8080/send/carousel \
+curl -s -X POST http://evolution:8085/send/carousel \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -172,7 +172,7 @@ curl -s -X POST http://evolutiongo:8080/send/carousel \
 ### D. Publish WhatsApp Status (`POST /send/status/text` & `/send/status/media`)
 
 ```bash
-curl -s -X POST http://evolutiongo:8080/send/status/text \
+curl -s -X POST http://evolution:8085/send/status/text \
   -H "apikey: your-global-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -312,7 +312,7 @@ for await (const msg of sub) {
     await valkey.expire(historyKey, 7200); // 2 hours TTL
 
     // 6. Send Response back via Evolution Go
-    await fetch("http://evolutiongo:8080/send/text", {
+    await fetch("http://evolution:8085/send/text", {
       method: "POST",
       headers: {
         "apikey": process.env.GLOBAL_API_KEY || "your-global-api-key",
@@ -442,3 +442,10 @@ When a decoupled messaging container restarts or Evolution API reconnects, Evolu
 10. **Volatile Memory-Only Takeover Without PostgreSQL SSoT**: Storing bot takeover purely in volatile Valkey keys loses silence states on container redeploy or cache eviction. Always persist status in PostgreSQL `leads.metadata` and re-hydrate Valkey on cache miss.
 11. **Short Deduplication Locks (45s) Under Queue Replays**: Using short locks permits duplicate processing when Evolution retries 60s later or replays queues upon reconnect. Always set 24h locks (`EX 86400`).
 
+
+---
+
+## Playbook Master Mapping (`INDEX.json`)
+- **`09_whatsapp_and_conversational_automation.md`** — Evolution `:8085` early ACK flows, `#stop`/`#mute` invariants, recovery sequences.
+- **`10_tiktok_and_shortform_video.md`** — Short-form viewer-to-WhatsApp keyword automations.
+- **`12_email_marketing_and_lifecycle_automation.md`** — Omnichannel suppression and handoff between Listmonk email and WhatsApp.

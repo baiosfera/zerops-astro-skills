@@ -102,6 +102,29 @@ export class WompiPaymentAdapter implements IPaymentGatewayProvider {
       return { isValid: false, gateway: "wompi", transactionId: "", orderId: "", status: "FAILED", amountInCents: 0, currency: "COP" };
     }
 
+    let isValid = true;
+    if (this.eventsSecret) {
+      const properties: string[] = Array.isArray(event?.signature?.properties) ? event.signature.properties : [];
+      const checksumReceived = String(
+        event?.signature?.checksum || input.headers["x-event-checksum"] || ""
+      ).trim().toLowerCase();
+
+      if (!checksumReceived || properties.length === 0 || !event?.timestamp) {
+        isValid = false;
+      } else {
+        const concatenated = properties
+          .map((propPath) => {
+            return propPath.split(".").reduce((acc: any, key: string) => (acc != null ? acc[key] : ""), event.data) ?? "";
+          })
+          .join("");
+        const rawToSign = `${concatenated}${event.timestamp}${this.eventsSecret}`;
+        const expected = crypto.createHash("sha256").update(rawToSign, "utf8").digest("hex").toLowerCase();
+        isValid =
+          expected.length === checksumReceived.length &&
+          crypto.timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(checksumReceived, "utf8"));
+      }
+    }
+
     const statusMap: Record<string, NormalizedPaymentStatus> = {
       APPROVED: "APPROVED",
       DECLINED: "REJECTED",
@@ -111,7 +134,7 @@ export class WompiPaymentAdapter implements IPaymentGatewayProvider {
     };
 
     return {
-      isValid: true,
+      isValid,
       gateway: "wompi",
       transactionId: transaction.id,
       orderId: transaction.reference,
@@ -240,13 +263,50 @@ export class DLocalGoPaymentAdapter implements IPaymentGatewayProvider {
   async verifyWebhook(input: WebhookVerificationInput): Promise<WebhookVerificationResult> {
     const bodyStr = typeof input.rawBody === "string" ? input.rawBody : input.rawBody.toString("utf8");
     const data = JSON.parse(bodyStr);
+
+    const rawAuthHeader = String(
+      input.headers["x-dlocal-signature"] ||
+      input.headers["authorization"] ||
+      input.headers["Authorization"] ||
+      ""
+    ).trim();
+
+    let signatureHex = "";
+    const sigMatch = rawAuthHeader.match(/Signature:\s*([a-fA-F0-9]+)/i);
+    if (sigMatch) {
+      signatureHex = sigMatch[1].toLowerCase();
+    } else if (/^[a-fA-F0-9]{64}$/.test(rawAuthHeader)) {
+      signatureHex = rawAuthHeader.toLowerCase();
+    }
+
+    let isValid = false;
+    if (this.secretKey && signatureHex.length === 64) {
+      const payloadToSign = `${this.apiKey}${bodyStr}`;
+      const expectedHex = crypto
+        .createHmac("sha256", this.secretKey)
+        .update(payloadToSign, "utf8")
+        .digest("hex")
+        .toLowerCase();
+      isValid = crypto.timingSafeEqual(
+        Buffer.from(expectedHex, "utf8"),
+        Buffer.from(signatureHex, "utf8")
+      );
+    }
+
+    const rawStatus = String(data.status || "PENDING").toUpperCase();
+    let status: NormalizedPaymentStatus = "PENDING";
+    if (rawStatus === "PAID" || rawStatus === "COMPLETED") status = "APPROVED";
+    else if (rawStatus === "REJECTED" || rawStatus === "DECLINED") status = "REJECTED";
+    else if (rawStatus === "FAILED" || rawStatus === "CANCELLED") status = "FAILED";
+    else if (rawStatus === "REFUNDED") status = "REFUNDED";
+
     return {
-      isValid: true,
+      isValid,
       gateway: "dlocalgo",
-      transactionId: data.id,
-      orderId: data.order_id,
-      status: data.status === "PAID" ? "APPROVED" : "PENDING",
-      amountInCents: (data.amount || 0) * 100,
+      transactionId: data.id || "",
+      orderId: data.order_id || "",
+      status,
+      amountInCents: Math.round(Number(data.amount || 0) * 100),
       currency: data.currency || "USD",
       rawEvent: data,
     };
@@ -307,8 +367,26 @@ export class StripePaymentAdapter implements IPaymentGatewayProvider {
     const event = JSON.parse(bodyStr);
     const session = event?.data?.object;
 
+    let isValid = true;
+    if (this.webhookSecret) {
+      const sigHeader = String(input.headers["stripe-signature"] || input.headers["Stripe-Signature"] || "");
+      const parts = Object.fromEntries(sigHeader.split(",").map((p) => p.trim().split("=")));
+      const timestamp = parts["t"];
+      const v1 = parts["v1"]?.toLowerCase();
+      if (!timestamp || !v1 || v1.length !== 64) {
+        isValid = false;
+      } else {
+        const expected = crypto
+          .createHmac("sha256", this.webhookSecret)
+          .update(`${timestamp}.${bodyStr}`, "utf8")
+          .digest("hex")
+          .toLowerCase();
+        isValid = crypto.timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(v1, "utf8"));
+      }
+    }
+
     return {
-      isValid: true,
+      isValid,
       gateway: "stripe",
       transactionId: session?.id || "",
       orderId: session?.client_reference_id || "",

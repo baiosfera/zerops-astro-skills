@@ -101,7 +101,7 @@ export async function generateAndSendCodOtp(orderId: string, phone: string): Pro
 
   // Send WhatsApp message via Evolution Go
   const instance = process.env.WA_INSTANCE || 'default';
-  await fetch(`http://evolutiongo:8080/message/sendText/${instance}`, {
+  await fetch(`http://evolution:8085/message/sendText/${instance}`, {
     method: 'POST',
     headers: { 'apikey': process.env.EVOGO_API_KEY || 'key', 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -211,3 +211,11 @@ When order webhooks (Wompi, Bancolombia, Stripe, ePayco, COD) dispatch confirmat
 1. **Processing Payments Without Signature Validation**: Accepting webhook callbacks without verifying SHA-256 or HMAC signatures allows attackers to forge payment approvals.
 2. **Missing Idempotency Locking**: Gateway retries can cause duplicate inventory deductions if webhooks lack Valkey distributed locking.
 3. **Storing Raw Card Data**: Never log or store credit card numbers (PAN) or CVVs. Always rely on gateway tokenization.
+
+---
+
+## 10. Playbook Master Mapping (`INDEX.json`)
+- **`03_irresistible_offers_and_pricing.md`** — Order bump mechanics, PWYW floor anchoring, tiered pricing contrast.
+- **`04_funnels_vsl_webinars_and_challenges.md`** — Post-VSL checkout transitions and bifurcated SLO routing.
+- **`05_web_cro_landings_and_ecommerce.md`** — Above-the-fold checkout friction removal, mobile UX, trust signals.
+- **`15_consultative_sales_and_high_ticket_closing.md`** — Application calendar gating and post-checkout strategic call handoff.
