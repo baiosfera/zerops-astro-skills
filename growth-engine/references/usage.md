@@ -464,3 +464,12 @@ For premium tiers, enterprise B2B, or high-value offers across any industry:
 - Prioritize concise, evidence-based descriptions of deliverables, outcomes, and service levels.
 
 
+
+---
+
+## 8. Playbook Master Mapping (`INDEX.json`)
+- **`02_copywriting_and_neurosales.md`** — 3-second hooks, neurosales structures, anti-slop voice calibration.
+- **`03_irresistible_offers_and_pricing.md`** — Value equation, order bumps, PWYW/upsell framing, risk reversal.
+- **`04_funnels_vsl_webinars_and_challenges.md`** — VSL scripts (3–4 min), bifurcated ready-now vs. diagnostic paths.
+- **`08_instagram_growth_reels_and_funnels.md`** — Short-form capture hooks and organic DM-to-funnel bridges.
+- **`15_consultative_sales_and_high_ticket_closing.md`** — High-ticket call scripts, double-option close, objection dissolution.

@@ -22,7 +22,7 @@ Activate when ingesting universal playbooks and `INDEX.json` task routes from `/
 - **Atomic Slot Hydration**: Execute AST-first replacement of all declared `{{SLOT_*}}` tags with coalescing fallbacks for optional slots and validation gates on required slots.
 - **Bifrost Gateway Routing**: Route downstream AI synthesis through `http://bifrost:8080/v1/chat/completions` (`model: "auto"` for `$0` FreeLLMAPI first, `x-tier: production` when paid fallback is required).
 - **Target Invariant Compliance**:
-  - *Growth Engine & Astro Web*: Enforce SEO-first/Ads-first copy, Tailwind CSS v4 `@theme` tokens, Schema.org JSON-LD, `llms.txt`, and `ad-telemetry` (`fbp`/`fbc`/`gclid`/`ttclid`/`li_fat_id` + Consent Mode v2).
+  - *Growth Engine & Astro Web*: Enforce SEO-first/Ads-first copy, Tailwind CSS v4 `@theme` tokens, Schema.org JSON-LD, `llms.txt`, `ad-telemetry` (`fbp`/`fbc`/`gclid`/`ttclid`/`li_fat_id` + Consent Mode v2), and craft standards ([`impeccable`](file:///var/www/.agents/skills/impeccable/SKILL.md), [`design-taste-frontend`](file:///var/www/.agents/skills/taste-skill/SKILL.md), [`codecraft`](file:///var/www/.agents/skills/codecraft/SKILL.md)).
   - *WhatsApp & Email*: Ground conversational flows in real-time present (`date >= NOW()`), operator takeover locks, HTML `< 85 KB`, and RFC 8058 One-Click headers.
 - **Physical Certification**: Attest integrity through `skills-suite-validate` and `ssot-parity-check` (Exit code 0).
 
@@ -38,6 +38,6 @@ Activate when ingesting universal playbooks and `INDEX.json` task routes from `/
 
 ## Commands
 ```bash
-brand-play transmute --playbook 03_ofertas_irresistibles_y_pricing --brand "${PROJECT_NAME}" --target all
+brand-play transmute --playbook 03_irresistible_offers_and_pricing --brand "${PROJECT_NAME}" --target all
 skills-suite-validate && ssot-parity-check
 ```

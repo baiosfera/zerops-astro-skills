@@ -20,7 +20,7 @@ Activate when orchestrating Gemini Notebook / Google NotebookLM via `nlm` CLI, 4
 - **Router-Reference Separation**: `SKILL.md` routes. Syntax in [`references/usage.md`](references/usage.md); infra in [`references/infra.md`](references/infra.md).
 - **Sequential Ingestion**: Parameter `-f` accepts one file. Ingest sequentially via Bash loop with `--wait --wait-timeout 600`.
 - **Compute Quotas & Zero Fees**: Track rolling (~5h) and weekly (7d) quotas. Uses Google One compute with zero external fees.
-- **CoHaLo Harness**: Wrap commands with `timeout 10s` and background tasks with `WaitMsBeforeAsync: 10000`. Validate with `scripts/notebooklm-validate.sh` (`exit code 0`).
+- **CoHaLo Harness**: Wrap commands with `timeout 10s` and background tasks with `WaitMsBeforeAsync: 10000`. Validate with `skills-suite-validate` (`exit code 0`).
 
 ## Decision Gates
 
@@ -41,4 +41,4 @@ Activate when orchestrating Gemini Notebook / Google NotebookLM via `nlm` CLI, 4
 ## References
 - [`references/usage.md`](references/usage.md) — 49 FastMCP tools, 43 file extensions, verified CLI syntax, Studio options, nlm-tutor v2.2.0.
 - [`references/infra.md`](references/infra.md) — Google One AI Premium contract, cookie lifecycle (`__Secure-1PSIDTS`), CDP transport, compute quotas, CoHaLo harness.
-- [`scripts/notebooklm-validate.sh``skills-suite-validate` — Deterministic physical sensor for skill integrity.
+- `skills-suite-validate` — Deterministic physical sensor for skill integrity.

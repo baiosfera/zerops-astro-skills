@@ -202,7 +202,7 @@ Scheduled task executing every 6 hours to fetch cumulative P&L and gross margin 
 ### Pattern 3: High-Performance Funnel Aggregations with PostgreSQL Indexes
 PostgreSQL composite indexes on `orders(created_at, status, total_amount)` provide sub-millisecond aggregations for 100k+ records.
 
-### Pattern 4: WhatsApp Cart Recovery Tracking ([`evolutiongo`](file:///var/www/.agents/skills/evolutiongo/SKILL.md))
+### Pattern 4: WhatsApp Cart Recovery Tracking ([`whatsapp-engine`](file:///var/www/.agents/skills/whatsapp-engine/SKILL.md))
 Directus collection flag `recovered_from_whatsapp = true` enables tracking revenue saved via automated WhatsApp sequences.
 
 ### Pattern 5: Low-Margin & High-AR Alerts via NATS JetStream

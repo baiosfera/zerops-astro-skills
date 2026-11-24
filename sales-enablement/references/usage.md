@@ -85,3 +85,11 @@ When a lead achieves grade `A_HOT`, triggers an explicit human request, or surfa
 1. The AI engine serializes conversation history and qualification state via `HandoverBriefingSchema`.
 2. Emits an event `sales.handover.requested` to NATS JetStream or triggers `ICrmAdapter.createDeal()`.
 3. Sets conversational state to paused for AI, notifying human sales reps with full contextual briefing.
+
+---
+
+## 5. Playbook Master Mapping (`INDEX.json`)
+- **`01_sales_and_conversion_doctrine.md`** — Core conversion doctrine, BANT/CHAMP qualification gates, buyer readiness classification.
+- **`10_tiktok_and_shortform_video.md`** — Inbound social-to-DM qualification triggers.
+- **`11_linkedin_b2b_authority_and_ads.md`** — B2B DM conversation starters and consultative discovery framing.
+- **`17_applied_ai_agents_and_prompt_systems.md`** — Zod-governed AI diagnostic agents, Bifrost `$0` routing, deterministic handover schemas.

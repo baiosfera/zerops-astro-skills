@@ -33,7 +33,7 @@ CrewAI's `output_pydantic` triggers an internal synchronous call via `converter.
 ## 3. Physical Zerops Container Boundaries & Symmetric CLI Parity
 
 - **Symmetric Native CLI Architecture (`/usr/local/bin/apotelos`)**:
-  The `apotelos` executable is installed identically at `/usr/local/bin/apotelos` across both `zcp` (control plane) and `hermes` (agent execution runtime), sharing `/mnt/localstorage/workspaces/` and `/mnt/localstorage/playbooks/` (`INDEX.json` task routes + `00..20`) with zero environment drift.
+  The `apotelos` executable is installed identically at `/usr/local/bin/apotelos` across both `zcp` (control plane) and `hermes` (agent execution runtime), sharing `/mnt/localstorage/workspaces/` and `/mnt/localstorage/playbooks/` (`INDEX.json` task routes + `00..17`) with zero environment drift.
 - **`zcp` Container (Control Plane)**:
   Runs `/usr/local/bin/apotelos` for discovery, static contract auditing, behavioral testing, and Linear coordination.
 - **`hermes` Container (Ubuntu Python 3.12 Runtime)**:

@@ -45,4 +45,4 @@ Activate when architecting, querying, provisioning, or connecting to Qdrant 1.12
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/qdrant/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/qdrant/references/infra.md)
 - [`assets/qdrant_production_recipes.json`](file:///var/www/.agents/skills/qdrant/assets/qdrant_production_recipes.json) · [`assets/import_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/import_template.yaml) · [`assets/zerops_template.yaml`](file:///var/www/.agents/skills/qdrant/assets/zerops_template.yaml)
-- [`scripts/qdrant-validate.sh``skills-suite-validate`
+- `skills-suite-validate`

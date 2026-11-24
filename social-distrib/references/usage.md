@@ -175,3 +175,10 @@ export async function scheduleDelayedPost(params: {
   });
 }
 ```
+
+---
+
+## Playbook Master Mapping (`INDEX.json`)
+- **`11_linkedin_b2b_authority_and_ads.md`** — B2B PDF carousels, executive authority cadence, thought-leader amplification.
+- **`12_email_marketing_and_lifecycle_automation.md`** — Social-to-newsletter capture bridges and content repurposing.
+- **`16_personal_branding_authority_and_communities.md`** — Category-of-One personal monopoly distribution and community flywheels.

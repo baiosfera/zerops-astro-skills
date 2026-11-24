@@ -147,7 +147,7 @@ fractal_harness:
       url: "${FRAPPE_URL}/api/resource/CRM%20Lead?limit_page_length=1"
       expected_status: 200
     file_system_probe:
-      script: "bash scripts/crmfrappe-validate.sh"
+      script: "skills-suite-validate"
       expected_exit_code: 0
 ```
 

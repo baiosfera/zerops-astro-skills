@@ -32,8 +32,8 @@ Activate for CI/CD pipelines, GitHub Actions (`zeropsio/actions@v1.0.2`), `gh` C
 | 4D CI/CD Matrix | Actions vs Webhook vs zcli vs dev_server | [`references/usage.md#1-4d-comparative-architectural-matrix-deployment-methods-in-zerops`](file:///var/www/.agents/skills/ghcicd/references/usage.md) |
 | Workflows | Production, staging & release workflows | [`references/usage.md#3-github-actions-workflows-with-zeropsioactionsv102`](file:///var/www/.agents/skills/ghcicd/references/usage.md) |
 | Secrets & Ports | ZEROPS_TOKEN, Service IDs & Ports | [`references/infra.md`](file:///var/www/.agents/skills/ghcicd/references/infra.md) |
-| Physical Validation | Deterministic validation sensor | [`scripts/ghcicd-validate.sh``skills-suite-validate` |
+| Physical Validation | Deterministic validation sensor | `skills-suite-validate` |
 
 ## References
 - [`references/usage.md`](file:///var/www/.agents/skills/ghcicd/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/ghcicd/references/infra.md)
-- [`assets/ghcicd_production_recipes.json`](file:///var/www/.agents/skills/ghcicd/assets/ghcicd_production_recipes.json) · [`scripts/ghcicd-validate.sh``skills-suite-validate`
+- [`assets/ghcicd_production_recipes.json`](file:///var/www/.agents/skills/ghcicd/assets/ghcicd_production_recipes.json) · `skills-suite-validate`

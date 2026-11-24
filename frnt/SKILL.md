@@ -25,7 +25,7 @@ Activate when designing, architecting, building, or optimizing client web applic
 
 | Capability | Sub-Skill | Role & Boundary |
 |---|---|---|
-| **Core SSR** | `astro-web` ([`SKILL.md`](file:///var/www/.agents/skills/astro-web/SKILL.md)) | Astro 5 SSR, Server Islands & routing |
+| **Core SSR & Craft** | `astro-web` · `impeccable` · `taste-skill` · `codecraft` | Astro 5 SSR, craft & code discipline ([`astro-web`](file:///var/www/.agents/skills/astro-web/SKILL.md)) |
 | **Interactive Islands** | `react-19` ([`SKILL.md`](file:///var/www/.agents/skills/react-19/SKILL.md)) | Client components with React Compiler |
 | **Client State** | `zustand-5` ([`SKILL.md`](file:///var/www/.agents/skills/zustand-5/SKILL.md)) | Lightweight persistent cart store |
 | **Styling & Tokens** | `tailwind-4` ([`SKILL.md`](file:///var/www/.agents/skills/tailwind-4/SKILL.md)) | OKLCH colors, CSS theme variables |

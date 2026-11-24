@@ -29,7 +29,7 @@
 | **`brandbook`** | Design token SSoT (`brandbook.json`), typography & palette compiler | [`brandbook`](file:///var/www/.agents/skills/brandbook/SKILL.md) |
 | **`ai-sdk-5`** | Streaming chat widgets, conversational shopping assistants | [`ai-sdk-5`](file:///var/www/.agents/skills/ai-sdk-5/SKILL.md) |
 | **`cloudflare`** | Edge CDN caching, Turnstile anti-bot, SSL Full Strict | [`cloudflare`](file:///var/www/.agents/skills/cloudflare/SKILL.md) |
-| **`react-native`** | Cross-platform native mobile applications sharing TypeScript schemas | [`react-native`](file:///var/www/.agents/skills/react-native/SKILL.md) |
+| **`react-native`** | Cross-platform native mobile apps sharing TypeScript schemas | External mobile workspace adapter |
 
 ---
 

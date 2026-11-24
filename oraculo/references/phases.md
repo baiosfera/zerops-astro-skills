@@ -97,7 +97,7 @@
 Cada fase opera mediante la tríada determinista de CoHaLo:
 1. **Context Layer (Co):** Esquema JSON tipado cerrado que el motor genera en `raw/feeds/feed_fase[N].md`.
 2. **Harness & Positive Guidance (Ha):** Los 3 Pilares Conceptuales que el modelo debe desarrollar afirmativamente a partir de los datos inyectados en su contexto.
-3. **Loop Layer (Lo):** Sensor físico determinista (`oraculo-validate.sh`) que verifica la estructura del feed y la ausencia de datos fuera de esquema.
+3. **Loop Layer (Lo):** Sensor físico determinista (`skills-suite-validate`) que verifica la estructura del feed y la ausencia de datos fuera de esquema.
 
 ---
 

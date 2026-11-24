@@ -373,3 +373,11 @@ Every e-commerce, aesthetic, or service brand scaffolded on Zerops must include 
 2. **Services & Atelier**: Base pricing, editorial price ranges, duration (minutes), deposit requirements, badges, and photo uploads.
 3. **Bookings & Appointments**: Chronological booking tray, status transitions (`pending`, `confirmed`, `completed`, `cancelled`), and one-click WhatsApp client contact.
 4. **Site Settings & Banners**: Dynamic Hero and Lookbook image configuration persisted in `site_settings`.
+
+---
+
+## Playbook Master Mapping (`INDEX.json`)
+- **`05_web_cro_landings_and_ecommerce.md`** — High-converting Astro 5 SSR landing architecture, Server Islands (`server:defer`), zero-CLS skeletons.
+- **`06_seo_aeo_geo_and_organic_content.md`** — Schema.org `@graph`, `llms.txt`, host-aware `robots.txt`, Core Web Vitals.
+- **`07_ad_telemetry_ga4_gtm_and_metrics.md`** — Consent Mode v2 head injection, 1st-party `__attr_session`, SSR CAPI actions.
+- **`17_applied_ai_agents_and_prompt_systems.md`** — Streaming AI diagnostic islands wired to Bifrost gateway.
