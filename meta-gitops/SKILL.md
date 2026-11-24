@@ -29,7 +29,6 @@ Activate when planning commits, opening pull requests, configuring CI/CD pipelin
 | **Branch Management** | `branch-pr` | [`branch-pr`](file:///var/www/.agents/skills/branch-pr/SKILL.md) | Issue-first branches, clean PR bodies, review readiness |
 | **Stacked PR Slicing** | `chained-pr` | [`chained-pr`](file:///var/www/.agents/skills/chained-pr/SKILL.md) | Slicing large changes ($\ge$ 400 lines) into chained review units |
 | **Adversarial Review** | `judgment-day` | [`judgment-day`](file:///var/www/.agents/skills/judgment-day/SKILL.md) | Blind dual-lens review before production merges |
-| **Safety Guardrails** | `git-guardrails-claude-code` | [`git-guardrails-claude-code`](file:///var/www/.agents/skills/git-guardrails-claude-code/SKILL.md) | Blocking destructive git commands in execution environments |
 
 ## Decision Gates
 

@@ -1,18 +1,14 @@
-# Planning Heuristics & F4 Approval Gate (v11.0)
+# Planning Heuristics & F4 Approval Gate (v12.0)
 
-> **Standard:** Supreme Directive v9.1 · Proportional Activation · Zero Premature Execution
+> **Standard:** Supreme Directive v10.0 · Proportional Activation · Optional Linear
 
 ---
 
-## 1. Cuándo Activar `meta-plan` / `planner`
-- **Inline Directo (sin Linear)**: Cambios acotados en un único servicio, script o doc ($\le 2$ pasos reversibles).
-- **F0–F5 Completo (`meta-plan` + Linear)**: Iniciativas multi-servicio, cambios constitucionales o migraciones estructurales ($\ge 3$ pasos).
+## 1. When to Activate `meta-plan` / `planner`
+- **Inline Direct (`update_steps`, zero plan file, zero Linear)**: Bounded changes in a single runtime, script, or doc.
+- **Full Plan + `Go` Gate (Linear still optional)**: Multi-service initiatives ($\ge 2$ runtimes), constitutional/governance changes, or high-risk migrations.
 
-## 2. Compuerta F4 (`Audit & Go`)
-1. Durante **F0–F3**, toda investigación y borrador viven en `/var/www/artifacts/plans/draft_<slug>.md` y `mem_save`.
-2. En **F4**, presentar el plan al usuario con archivos exactos, riesgos y criterios de verificación real, y **detenerse hasta recibir `Go` explícito**.
-3. Recién después del `Go`: promover el plan (`Status: Approved`), crear/actualizar tickets `BAI-*` bajo su proyecto en Linear, ejecutar secuencialmente, verificar en vivo y archivar el plan cerrado en `/var/www/artifacts/plans/archive/<slug>.executed.md`.
-
-## 3. Higiene Post-Ejecución
-- Nunca marcar `Done` si faltan builds/tests reales del alcance modificado.
-- Actualizar Engram con decisiones duraderas y causas raíz (`mem_save` / `mem_session_summary`).
+## 2. F4 Approval Gate (`Audit & Go`)
+1. During exploration, keep drafts in `/var/www/artifacts/plans/draft_<slug>.md` or `mem_save`.
+2. Present the plan with exact files, risks, and executable checks, then wait for explicit `Go`.
+3. After `Go`, execute step-by-step, verify the modified scope, archive the plan to `/var/www/artifacts/plans/archive/<slug>.executed.md`, and run `mem_save`. Only touch Linear if the user requested it.

@@ -17,7 +17,7 @@ Activate when creating, auditing, refactoring, or optimizing system directives, 
 - **Pure Positive Guidance**: Formulate all constitutional directives and rules as deterministic, affirmative, and closed-domain contracts ("Emit strictly", "Execute via", "Anchor in"). Eliminate open-ended negative prohibitions.
 - **Cognitive Load Minimization**: Structure rules with `cognitive-doc-design`: lead with the decision, use progressive disclosure, chunk related invariants into high-contrast tables, and prioritize recognition over recall.
 - **Checkable Completion Criteria**: Every system directive must specify its physical verification sensor or exit-0 proof command (`writing-for-agents`). Vague bounds ("maintain quality", "be careful") are strictly prohibited.
-- **Physical Attestation Before Assertion**: Claim task completion strictly after `skills-suite-validate` and `ssot-parity-check` pass with exit code 0.
+- **Physical Attestation Before Assertion**: Claim task completion strictly after `skills-suite-validate` and `ssot-parity-check` pass with exit code 0 when governance or skill files were modified.
 
 ## Active Sub-Skills Dispatch Table
 

@@ -19,8 +19,8 @@ Activate when authoring, modifying, auditing, or refactoring operational bash/py
   * Python: `python3 -m py_compile <path>` (exit code 0 required).
   * Bash: `bash -n <path>` (exit code 0 required).
 - **Pre-Mutation Snapshot**: Create an automated preventive backup (`cp <file> <file>.bak`) before editing critical operational scripts or security hooks.
-- **Two Sovereign Sensors Invariant**: Centralize all capability and drift validation strictly in `skills-suite-validate` and `ssot-parity-check`. Prohibit synthetic redundant sensors.
-- **Physical Attestation Before Assertion**: Claim task completion strictly after test suites pass with exit code 0 (`tool-guard.py --test` and sensor runs).
+- **Two Sovereign Sensors Invariant**: Centralize skill validation in `skills-suite-validate` and parity validation in `ssot-parity-check`, running them when scripts, hooks, skills, or governance change.
+- **Physical Attestation Before Assertion**: Claim task completion strictly after scoped tests pass with exit code 0 (`tool-guard.py --test`, `py_compile`, `bash -n`).
 
 ## Active Sub-Skills Dispatch Table
 

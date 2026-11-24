@@ -30,7 +30,7 @@ Activate when designing deep module interfaces, implementing features test-first
 | **Deep Architecture** | `codebase-design` | [`codebase-design`](file:///var/www/.agents/skills/codebase-design/SKILL.md) | Deep modules, simple interfaces |
 | **Test-First Loop** | `tdd` | [`tdd`](file:///var/www/.agents/skills/tdd/SKILL.md) | Red-Green-Refactor, behavioral assertions |
 | **Evidence & Proof** | `verification-before-completion` | [`verification-before-completion`](file:///var/www/.agents/skills/verification-before-completion/SKILL.md) | Physical validation, exit code 0 |
-| **Root Cause Debug** | `systematic-debugging` | [`systematic-debugging`](file:///var/www/.agents/skills/systematic-debugging/SKILL.md) | Reproduce, isolate, fix root cause |
+| **Root Cause Debug** | `diagnosing-bugs` | [`diagnosing-bugs`](file:///var/www/.agents/skills/diagnosing-bugs/SKILL.md) | Reproduce, isolate, fix root cause |
 | **Quality & Standards**| `code-review` | [`code-review`](file:///var/www/.agents/skills/code-review/SKILL.md) | Standards check, spec matching |
 | **Atomic Commits** | `work-unit-commits` | [`work-unit-commits`](file:///var/www/.agents/skills/work-unit-commits/SKILL.md) | Reviewable units, zero AI attribution |
 

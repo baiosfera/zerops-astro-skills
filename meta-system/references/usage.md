@@ -28,7 +28,7 @@ Transform open-ended negative prohibitions into deterministic, closed-domain con
 |---|---|---|
 | *"Never hallucinate APIs or limits"* | *"Anchor all technical assertions in live primary sources (`date -u`, Context7, Exa verbatim) or physical inspection (`zerops_discover`)."* | Gives the agent an actionable execution path instead of an abstract fear. |
 | *"Don't write untested code"* | *"Execute TDD test-first: author the failing test (Red), implement minimal logic (Green), clean structure (Refactor)."* | Enforces physical execution sequence. |
-| *"Never respond in chat without proof"* | *"Persist all architectural findings in Linear (`linear-cli comment`) and Engram (`mem_save`) before delivering the response in chat."* | Creates audit trail and eliminates ephemeral loss. |
+| *"Never respond in chat without proof"* | *"Verify the modified scope with real exit-0 commands and persist durable decisions in Engram (`mem_save`) before delivering the response."* | Creates audit trail without mandatory ticket overhead. |
 | *"Don't auto-scale ZCP"* | *"Maintain ZCP strictly at 1 single container (`minContainers: 1, maxContainers: 1`) in `cpuMode: SHARED`."* | Prevents split-brain by setting exact configuration parameters. |
 | *"Do not truncate code to fit tokens"* | *"Develop software and scripts with full AST depth and zero arbitrary line/token limits (CoHaLo Engineering)."* | Eliminates mutilated code and stub comments. |
 

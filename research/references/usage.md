@@ -27,11 +27,11 @@ Execute sequentially inside the active turn for single-library checks, API verif
    - **Local Zero-Cost Headless:** `crawl4ai` or `playwright` via `run_command`.
 6. **F5–F6 — Synthesize & Persist:** Verify current time (`date -u`), cross-check `>= 2` primary sources, cite canonical URLs, and save durable insights with `engram:mem_save`.
 
-### Modality B: Deep Research Dossier (Subagent Delegation)
-Activate when synthesizing `>= 5` sources, comparing multiple tools/frameworks, or inspecting external repositories:
-1. Launch `invoke_subagent` with `TypeName: "research"` and `Role: "<Scope> Researcher"`, injecting [`assets/subagent_prompt_contract.md`](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md).
-2. The subagent runs F0–F6, writes the report to `/var/www/artifacts/research/<target>_research_report.md`, and returns a concise summary with `<epistemic_attestation>`.
-3. Await all subagent completion messages before drafting final architecture plans or mutating skills.
+### Modality B: Broad Local Codebase Audit (Subagent Delegation)
+Because `research` subagents in `agy 1.5.16` run in a read-only sandbox **with no external network access**, keep all external MCP web/SDK searches inline in Modality A, and reserve `invoke_subagent` (`TypeName: "research"`, `Model: "flash"`) for broad multi-directory local codebase audits:
+1. Launch `invoke_subagent` with `TypeName: "research"`, `Model: "flash"`, and `Role: "<Scope> Auditor"`, injecting [`assets/subagent_prompt_contract.md`](file:///var/www/.agents/skills/research/assets/subagent_prompt_contract.md).
+2. Instruct the subagent to return path:line evidence and numeric metrics concisely (or write large dossiers to `/var/www/artifacts/research/<target>_research_report.md`).
+3. Await completion notifications without polling before drafting plans.
 
 ---
 

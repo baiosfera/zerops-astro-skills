@@ -26,9 +26,9 @@ Activate when designing, architecting, building, or optimizing client web applic
 | Capability | Sub-Skill | Role & Boundary |
 |---|---|---|
 | **Core SSR** | `astro-web` ([`SKILL.md`](file:///var/www/.agents/skills/astro-web/SKILL.md)) | Astro 5 SSR, Server Islands & routing |
-| **Interactive Islands** | `react-19` ([`SKILL.md`](file:///home/zerops/.gemini/antigravity-cli/skills/react-19/SKILL.md)) | Client components with React Compiler |
-| **Client State** | `zustand-5` ([`SKILL.md`](file:///home/zerops/.gemini/antigravity-cli/skills/zustand-5/SKILL.md)) | Lightweight persistent cart store |
-| **Styling & Tokens** | `tailwind-4` ([`SKILL.md`](file:///home/zerops/.gemini/antigravity-cli/skills/tailwind-4/SKILL.md)) | OKLCH colors, CSS theme variables |
+| **Interactive Islands** | `react-19` ([`SKILL.md`](file:///var/www/.agents/skills/react-19/SKILL.md)) | Client components with React Compiler |
+| **Client State** | `zustand-5` ([`SKILL.md`](file:///var/www/.agents/skills/zustand-5/SKILL.md)) | Lightweight persistent cart store |
+| **Styling & Tokens** | `tailwind-4` ([`SKILL.md`](file:///var/www/.agents/skills/tailwind-4/SKILL.md)) | OKLCH colors, CSS theme variables |
 | **Funnels & CAPI** | `checkout-funnels` ([`SKILL.md`](file:///var/www/.agents/skills/checkout-funnels/SKILL.md)) | Multi-country checkout UI & Meta CAPI |
 | **Payment Drivers** | `payment-gateways` ([`SKILL.md`](file:///var/www/.agents/skills/payment-gateways/SKILL.md)) | Wompi, Bold, Stripe, COD OTP & locks |
 | **Edge Ingress** | `cloudflare` ([`SKILL.md`](file:///var/www/.agents/skills/cloudflare/SKILL.md)) | Edge caching & Turnstile anti-bot |

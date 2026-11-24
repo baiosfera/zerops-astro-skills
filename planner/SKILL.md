@@ -1,30 +1,29 @@
 ---
 name: planner
-description: "Trigger: planner, plan, master-plan, planificar, crear plan, diseña un plan, /plan, change proposal, version plan, roadmap. Linear Planning & SSoT Execution Router subordinate to meta-plan and Supreme Directive v9.1."
+description: "Trigger: planner, plan, master-plan, planificar, crear plan, /plan, change proposal, roadmap, optional linear. Proportional planning router subordinate to meta-plan and Supreme Directive v10.0."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "11.0"
+  version: "12.0"
 ---
 
-# Planner — Orquestador de Planes, Linear & Cierre Real (v11.0)
+# Planner — Proportional Planning & Honest Closure (v12.0)
 
 ## Activation Contract
-Subordinado directo de [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) y [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Tasks atómicas ejecutan inline sin ceremonias. Iniciativas multi-servicio ($\ge 2$ runtimes o $\ge 3$ pasos) usan F0–F5 con `/var/www/artifacts/plans/` y Linear.
+Subordinate to [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) and [`00-SUPREME-DIRECTIVE.md`](file:///var/www/.agents/rules/00-SUPREME-DIRECTIVE.md). Bounded tasks run inline with `update_steps`. Multi-service ($\ge 2$ runtimes) or high-risk architectural changes use `/var/www/artifacts/plans/` and require explicit `Go`. Linear (`linear-cli`) is **optional** (only when explicitly requested by the user or run autonomously by `hermes`/`paperclip`).
 
-## Invariantes Soberanos (Positive Guidance)
-1. **Facts-First & Anti-Grilling**: Inspeccionar disco vivo y fuentes primarias (`research`) antes de preguntar. Reservar F1 para 1 bifurcación real con tradeoffs a la vez.
-2. **F4 Audit & Go Gate (Zero Premature Execution)**: En F4 publicar el plan en `/var/www/artifacts/plans/<PROJECT_NAME>/<slug>.md` (con frontmatter `project: <PROJECT_NAME>`) con criterios ejecutables de cierre y esperar `Go` explícito antes de ejecutar código o crear/cerrar épicas `BAI-*` en Linear.
-3. **Linear Scoping, Isolation & Auto-Archive**: Agrupar cada `BAI-*` bajo su proyecto (`linear-cli create ... --project <ID|name>`); `linear-cli` aísla su estado por proyecto bajo `.linear_state/<PROJECT_NAME>/`. Al completar F5 con evidencia real, mover el plan a `artifacts/plans/archive/<slug>.executed.md` y guardar síntesis en `mem_save`.
-4. **Honest Reality Proof (Zero Checklist-Theater)**: Validar el alcance exacto modificado con comandos ejecutables (`bun test`, `pytest`, `go build`, `zcli`/Zerops smoke). Reportar por separado `BEHAVIORALLY_VERIFIED`, `SYNTAX_ONLY` y `UNVERIFIED` antes de marcar `Done`.
-5. **Catálogo Modular & Repos Plantilla `baiosfera/*`**: [`zerops-astrobranding`](file:///var/www/zerops-astrobranding/iniciar.sh) gobierna recetas, blueprints, templates y scripts compartidos; el código fuente de cada runtime vive en su repo plantilla `baiosfera/runtime-*` + `template-astro-web`, interconectados vía DNS interno (`zerops_discover`).
+## Sovereign Invariants
+1. **Facts-First & Anti-Grilling**: Inspect local files and live primary sources before asking. Limit clarifications to 1 concrete decision with trade-offs.
+2. **Proportional Plan & Go Gate**: Publish multi-service/high-risk plans in `/var/www/artifacts/plans/<PROJECT_NAME>/<slug>.md` (YAML `project: <PROJECT_NAME>`) with executable verification criteria and wait for explicit `Go`.
+3. **Optional Linear Scoping**: When Linear is requested, group `BAI-*` issues under a project (`linear-cli create ... --project <ID|name>`) and close with `--evidence`. Do not create Linear tickets unasked in interactive `agy` sessions.
+4. **Scoped Reality Proof**: Verify the exact modified scope (`zcp run {hostname} ...`, `py_compile`, `bash -n`, HTTP probe; `skills-suite-validate` / `ssot-parity-check` only when skills/governance changed). Report `BEHAVIORALLY_VERIFIED`, `SYNTAX_ONLY`, and `UNVERIFIED` separately, archive executed plans to `archive/<slug>.executed.md`, and save durable decisions via `mem_save`.
+5. **Modular `baiosfera/*` Topology**: [`zerops-astrobranding`](file:///var/www/zerops-astrobranding/iniciar.sh) owns recipes, blueprints, templates, and shared scripts; runtime code lives in `baiosfera/runtime-*` + `template-astro-web`.
 
 ## Decision Gates
 
-| Capa | Protocolo / Acción | Referencia |
+| Layer | Protocol / Action | Reference |
 |---|---|---|
-| Orquestador Padre | Umbral proporcional y tabla meta-suites | [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) |
-| Epistémico F0 | Inspección viva + subagente `research` | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
-| Linear CLI | `create-project`, `create --project`, `comment`, `update-status` | [`linear-cli`](file:///var/www/.bin/linear-cli) |
-| Sensores Reales | Tests reales + `skills-suite-validate` + `ssot-parity-check` | [`skills-suite-validate`](file:///var/www/.bin/skills-suite-validate) |
-| Detalles Operativos | Heurísticas y contratos SSoT Git-first | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |
+| Parent Orchestrator | Proportional threshold & meta-suite routing | [`meta-plan`](file:///var/www/.agents/skills/meta-plan/SKILL.md) |
+| External Grounding | Inline MCP (`context7`, `exa`, `tavily`, `jina`); `flash` subagent for broad local scans | [`research`](file:///var/www/.agents/skills/research/SKILL.md) |
+| Optional Linear CLI | `create-project`, `create`, `comment`, `update-status` (on request only) | [`linear-cli`](file:///var/www/.bin/linear-cli) |
+| Operational Details | Git-first tracks and scoped verification | [`references/usage.md`](file:///var/www/.agents/skills/planner/references/usage.md) |

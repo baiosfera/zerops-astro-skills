@@ -1,54 +1,24 @@
-# `meta-plan` — Infrastructure & Harness Contracts
-
-This document specifies the CLI harnesses, issue lifecycle states, and physical attestation requirements governing `meta-plan`.
+# `meta-plan` — Infrastructure & Optional Linear Harness (v2.0)
 
 ---
 
-## 1. Linear CLI Safe Invocation Harness
+## 1. Optional Linear CLI Safe Invocation
 
-When executing `linear-cli` commands inside Zerops ZCP control plane, stopped runtime containers can leave disconnected FUSE SSHFS mount points at `/var/www/{service}`, causing directory scans to hang in kernel `request_wait_answer`.
-
-To guarantee non-blocking, deterministic CLI execution:
+Use `linear-cli` only when explicitly requested by the user or inside unattended `hermes`/`paperclip` workflows. Always pass `LINEAR_SERVICE` pointing to an active local directory so stopped FUSE mounts under `/var/www/{service}` are never scanned:
 
 ```bash
-# ALWAYS prefix linear-cli invocations with LINEAR_SERVICE targeting an active or sovereign directory
 LINEAR_SERVICE="zerops-astro-skills" linear-cli issue <ID>
 LINEAR_SERVICE="zerops-astro-skills" linear-cli comment <ID> "<note>"
-LINEAR_SERVICE="zerops-astro-skills" linear-cli update-status <ID> "<status>" [--evidence "<proof>"]
+LINEAR_SERVICE="zerops-astro-skills" linear-cli update-status <ID> Done --evidence "<scoped command exit 0>"
 ```
+
+`linear-cli` isolates `.linear_state/<PROJECT_NAME>/` per Zerops project and enforces `--evidence` on `Done` transitions without re-running unrelated test suites.
 
 ---
 
-## 2. Issue Lifecycle & Physical Attestation Gates
+## 2. Scoped Verification Gates
 
-Transitions between issue states must be backed by verifiable reality:
-
-| Transition | Required Evidence / Precondition | Sensor |
-|---|---|---|
-| **Todo $\to$ In Progress** | Scope defined, acceptance criteria established in Linear description. | Initial verification |
-| **In Progress $\to$ In Progress (Checkpoint)** | Architectural findings and intermediate discoveries recorded. | `linear-cli comment` + `mem_save` |
-| **In Progress $\to$ Done** | Universal sensors pass with exit code 0; physical test commands executed. Must provide `--evidence`. | `skills-suite-validate` · `ssot-parity-check` |
-
-### Closure Contract
-
-Closing an issue (`Done`) without `--evidence` is strictly rejected by the CLI and platform governance. The `--evidence` argument must contain the exact command, exit code, and test summary:
-
-```bash
-LINEAR_SERVICE="zerops-astro-skills" linear-cli update-status BAI-348 Done \
-  --evidence "skills-suite-validate passed (125/125 exit 0). ssot-parity-check passed (exit 0)."
-```
-
----
-
-## 3. Sovereign SSoT Synchronization Architecture
-
-All additions or updates to planning templates, meta-skills, or constitutional directives maintain clean parity across the Git SSoT surfaces:
-
-1. **Skills Git SSoT (`/var/www/zerops-astro-skills/`)**:
-   - Canonical versioned skills repo (`baiosfera/zerops-astro-skills`), symlinked directly into `/var/www/.agents/skills/` and `~/.gemini/antigravity-cli/skills/`.
-2. **Catalog & Harness Git SSoT (`/var/www/zerops-astrobranding/`)**:
-   - Canonical registry (`recipes/`, `blueprints/`, `templates/`, `scripts/`), symlinked into `/var/www/.bin/` by `iniciar.sh`.
-3. **Optional Project Archive (`$DRIVE_SSOT_DIR`)**:
-   - Off-platform project archive for Engram cold snapshots (`/var/www/baiosfera/0ZEROPS-AGY/${ENGRAM_PROJECT}/engram`) when configured.
-
-Execute `ssot-parity-check` (read-only audit by default; pass `--fix` when syncing explicitly) to verify clean synchronization and clean git state.
+Run only the sensors matching the modified surface:
+- **Skills changed**: `skills-suite-validate` (structural `< 0.4s`, pass `--with-tests` when skill scripts changed).
+- **Catalog / hooks / governance changed**: `tool-guard.py --test` and `ssot-parity-check`.
+- **Runtime service changed**: `zcp run {hostname} <test-cmd>` (`bun test`, `pytest`, `go test`) + HTTP probe if applicable.

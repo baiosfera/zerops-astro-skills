@@ -1,85 +1,31 @@
-# `meta-plan` — Usage & Implementation Guide
+# `meta-plan` — Usage & Implementation Guide (v2.0)
 
-This guide establishes the operational procedures for atomic planning, epistemic tracking, and proportional activation under Supreme Directive v8.5 and CoHaLo standards.
+Operational procedures for proportional planning, native `agy 1.5.16` step tracking, and optional Linear coordination under Supreme Directive v10.0.
 
 ---
 
 ## 1. Proportional Activation Threshold (Zero-Friction vs Structured)
 
-To eliminate unnecessary bureaucracy and token waste, all tasks must be routed according to the Proportional Activation Threshold:
-
-```mermaid
-flowchart TD
-    Task["Incoming Task"] --> ScopeCheck{"Scope Evaluation"}
-    ScopeCheck -->|"Single Runtime / Script / CLI Tool"| Direct["Direct Domain Execution<br>(astro-web, postgresql, bun, codecraft)<br>Zero Linear / Zero Meta-Plan Overhead"]
-    ScopeCheck -->|"Multi-Service (>= 2 runtimes) OR<br>Architectural Change OR<br>>= 3 Sequential Steps"| MetaPlan["Meta-Plan Activation<br>(Linear Epic / Issue Tracking + Epistemic Sync)"]
-    MetaPlan --> Breakdown["Step-by-Step Atomic Plan (writing-plans)"]
-    Breakdown --> Exec["Subordinate Execution (executing-plans)"]
-    Exec --> Attest["Physical Attestation & Closure (--evidence)"]
-```
-
-### Routing Rules
-
 | Scope Class | Execution Route | Justification |
 |---|---|---|
-| **Bounded Domain Task** (e.g. edit Astro component, fix SQL query, run `.bin/nlm-tutor`) | Direct Domain Skill (`astro-web`, `postgresql`, `bun`, `codecraft`) | No cognitive coordination overhead; direct edit and test execution. |
-| **Multi-Service Initiative** (e.g. wire NATS between `brand` and `evolution`) | `meta-plan` + Linear Issue | Requires contract alignment across multiple runtime boundaries. |
-| **Systemic Refactor / Architecture** (e.g. migrate storage, alter constitutional rules) | `meta-plan` + Linear Issue | High blast radius; requires explicit acceptance criteria and rollback points. |
-| **Complex Task ($\ge 3$ Steps)** | `meta-plan` + Linear Issue | Prevents context drift and step omission during multi-turn execution. |
+| **Bounded Domain Task** (single runtime/script/doc) | Inline + `update_steps` + Domain Skill | Zero artifact or ticket overhead. |
+| **Multi-Service or High-Risk Architecture** ($\ge 2$ runtimes, migrations, constitutional rules) | `meta-plan` + `/var/www/artifacts/plans/` + explicit `Go` | Aligns contracts and trade-offs before mutation. |
+| **Explicit User Linear Request / Autonomous 24/7 (`hermes`/`paperclip`)** | Add optional `linear-cli` issues (`BAI-*`) | Persists asynchronous backlog state when requested. |
 
 ---
 
-## 2. Epistemic Tracking & Draft Isolation Protocol
+## 2. Tracking & Plan Lifecycle
 
-Chat context is ephemeral and prone to compaction. All architectural decisions, gotchas, and milestone outcomes must be persisted synchronously:
-
-1. **Subagent Research Wait Contract (F0 Mandate)**:
-   - When dispatching `research` subagents or background epistemic queries, await the complete return and ingestion of their reports before drawing conclusions, drafting Master Plans, or opening grilling sessions.
-2. **Draft Plan Isolation (F0–F3)**:
-   - During discovery, grilling, and design (F0 to F3), plans reside strictly as drafts in `draft_<slug>.md` or in Engram (`mem_save`).
-   - Reserve Linear project and issue creation strictly for F4 (Plan & Approval Gate), after the Master Plan is complete and the user gives an explicit 'Go'.
-3. **Anti-Monolithic Modular Decomposition**:
-   - Decompose multi-service or multi-framework architectures into granular BAI issues per runtime, service, and boundary (e.g. separate issues for Bifrost Gateway, FreeLLMAPI pool, NATS JetStream, and Python Worker) rather than single monolithic tickets.
-4. **Linear Comment (`linear-cli comment`) in F4–F5**:
-   - Record what was discovered, why an approach was chosen, and which files were modified.
-   - Run before replying in chat whenever an architectural crossroad is resolved.
-5. **Engram Memory (`mem_save`)**:
-   - Record durable discoveries, gotchas, and patterns for cross-session longevity.
-   - Self-check: *"Did I make an architectural decision or uncover a non-obvious pattern?"* If yes, call `mem_save` immediately.
-6. **Delivery Guarantee**:
-   - Saving to memory or Linear is bookkeeping; always synthesize the user-facing answer clearly in the final turn message.
-7. **Immediate SSoT & Plan Mutation Invariant (Anti-Cháchara)**:
-   - When the user points out a missing requirement, corrects an approach, or sparks an architectural discovery at any phase:
-     1. Zero performative apologies or empty conversational affirmations in chat.
-     2. Mutate the active artifact immediately:
-        - In F0–F3: update the draft in `draft_<slug>.md`.
-        - In F4–F5: edit `/var/www/artifacts/plans/<PROJECT_NAME>/<slug>_v1.md` (including `project: <PROJECT_NAME>` YAML frontmatter so shared Google Drive plans stay isolated across Zerops projects) and synchronize Linear (`linear-cli create` for newly identified BAIs, `linear-cli update-status`, or `linear-cli comment`, which persists state under `/var/www/artifacts/.linear_state/<PROJECT_NAME>/`).
-     3. Persist the durable discovery in Engram (`mem_save`).
-     4. Report back concisely citing the exact modified artifact lines and Linear issues.
-8. **Default F1 Grilling Contract for Meta-Plan**:
-   - `meta-plan` activates specifically for multi-service or complex ($\ge 3$-step) initiatives.
-   - F1 (Clarification Gate / Grilling) is active BY DEFAULT: once epistemic inflow (F0) concludes, if there are product decisions, scope boundaries, or architectural trade-offs that local code alone cannot settle, the agent initiates grilling (strictly 1 focused question at a time) before moving to F4. The user does not need to manually solicit grilling for complex initiatives.
+1. **Primary Tracking**: Use `update_steps` for live checklist progress in `agy 1.5.16` and `engram:mem_save` for durable cross-session decisions.
+2. **Draft & Master Plan**: Keep multi-service drafts in `/var/www/artifacts/plans/<PROJECT_NAME>/draft_<slug>.md` and present the approved F4 plan in `<slug>.md` (with `project: <PROJECT_NAME>` YAML frontmatter) with executable verification criteria before mutating.
+3. **Optional Linear Discipline**: Only create/update `BAI-*` issues via `linear-cli` when explicitly requested by the user or driven by `hermes`/`paperclip`. When used, decompose per runtime boundary rather than monolithic tickets.
+4. **Immediate SSoT Mutation**: When requirements change, update the active plan file and `mem_save` immediately without conversational filler.
+5. **Clean Archive**: After scoped verification passes (`exit 0`), move executed plans to `/var/www/artifacts/plans/archive/<slug>.executed.md`.
 
 ---
 
-## 3. Subordinate Plan Execution Protocol
+## 3. Systemic Root Cause Triage (`systemic-issue-triage`)
 
-When executing a multi-step plan under `meta-plan`:
-
-1. **Author the Plan (`writing-plans`)**:
-   - Every task must specify: Purpose, Files to modify, Exact code diff or implementation, and Physical verification command.
-2. **Execute Sequentially (`executing-plans`)**:
-   - Never skip steps or batch changes without verification.
-   - Execute one step at a time, verify with physical tests (`bun test`, `pytest`, `bash -n`), and check off the item.
-3. **Stop on Blockers**:
-   - If an unexpected error or breaking change occurs, STOP immediately. Do not attempt blind workarounds that mutate unapproved surfaces.
-
----
-
-## 4. Systemic Root Cause Triage (`systemic-issue-triage`)
-
-When encountering recurring bugs or backlog clusters:
-
-1. **Map the Mechanism**: Trace the failure to its structural root rather than patching superficial symptoms.
-2. **Deletion-Driven Fixes**: Prefer removing dead code, redundant shims, or duplicate configurations over adding defensive layers.
-3. **Sovereign Verification**: Ensure the fix is permanently validated by the universal sensors (`skills-suite-validate` and `ssot-parity-check`).
+1. **Map the Mechanism**: Trace recurring defects to their structural root rather than patching symptoms.
+2. **Deletion-Driven Fixes**: Prefer removing dead code, redundant shims, or duplicate rules over adding defensive layers.
+3. **Scoped Verification**: Run only the tests/validators matching the modified scope (`exit 0`).
