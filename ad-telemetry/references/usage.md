@@ -127,3 +127,30 @@ Before sending to Meta CAPI, Google Ads Enhanced Conversions, or TikTok Events A
 1. **Email**: Trim leading/trailing whitespace, lowercase, remove dots for Gmail (`john.doe@gmail.com` $\to$ `johndoe@gmail.com`), strip `+alias`. Hash with SHA-256.
 2. **Phone**: Strip non-digits, format in E.164 (`+573001234567`). Hash with SHA-256.
 3. **First/Last Name**: Trim, lowercase, hash with SHA-256.
+
+---
+
+## 5. Hybrid 2-Layer Telemetry & Dormant-Safe Free Tiers (2026)
+
+Every connector MUST operate **dormant-safe**: when its env var is empty, initialization and event dispatch silently no-op with zero console errors or failed HTTP calls.
+
+| Tool / Layer | Role | 2026 Free Tier / Policy | Overlap Guard |
+|---|---|---|---|
+| **Cloudflare Zaraz** | Edge tag manager (replaces heavy client GTM.js) | 1,000,000 events/mo free on all CF plans | Do NOT load duplicate web GTM for the same GA4/Meta IDs |
+| **PostHog** | Product events, feature flags, A/B experiments, AI observability | 1M events + 1M flags + 100K AI obs/mo free | Set `disable_session_recording: true` when Clarity is active |
+| **Microsoft Clarity** | Unlimited session replays, heatmaps & AI bot monitoring | 100% free unlimited | Owns session recording/heatmaps exclusively |
+| **LinkedIn Insight Tag** | B2B audience retargeting & `li_fat_id` attribution | Free pixel (dormant if `LINKEDIN_PARTNER_ID` unset) | Gate behind `analytics_storage` / `ad_storage` consent |
+| **Astro SSR CAPI + Outbox** | Server-side Meta CAPI / Google Enhanced / TikTok | Zero 3rd-party JS cost; retries via PG18->NATS->Valkey | Deduplicate with browser via identical UUIDv7 `event_id` |
+
+---
+
+## 6. Host-Aware Multi-Domain Env Resolution
+
+When one Astro runtime serves multiple client domains (`brand-a.com`, `brand-b.com`), resolve configuration by normalized uppercase host slug (`BRAND_A_COM_META_PIXEL_ID`, `BRAND_A_COM_CLARITY_ID`, `BRAND_A_COM_POSTHOG_KEY`) before falling back to unscoped defaults, and scope `__attr_session` to each root apex domain.
+
+---
+
+## 7. Playbook Master Mapping (`INDEX.json`)
+- **`07_ad_telemetry_ga4_gtm_and_metrics.md`** — Attribution, Consent Mode v2, GA4/Zaraz taxonomy, CAPI deduplication.
+- **`13_meta_ads_media_buying_and_scaling.md`** — Event Match Quality (EMQ), qualified-only `Lead` firing, CAPI value signals.
+- **`14_google_ads_and_youtube_growth.md`** — Enhanced Conversions, `gclid`/`gbraid`/`wbraid` capture, Consent Mode v2 compliance.

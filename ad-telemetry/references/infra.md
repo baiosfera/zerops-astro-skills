@@ -31,14 +31,23 @@ Variables are managed centrally via `zerops_env` and injected into the runtime c
 
 | Variable | Scope | Description |
 |---|---|---|
-| `META_PIXEL_ID` | Public / Client | Meta Dataset / Pixel ID (e.g. `1547000523905487`) |
-| `META_CAPI_ACCESS_TOKEN` | Private / Secret | System User Graph API access token (v21+) |
-| `META_CATALOG_ID` | Private / Config | Product catalog ID in Meta Commerce Manager |
-| `GOOGLE_ADS_CONVERSION_ID` | Public / Client | Google Ads Tag ID (e.g. `AW-XXXXXXXXX`) |
-| `GOOGLE_ADS_CONVERSION_LABEL` | Private / Secret | Conversion action label |
-| `GOOGLE_ADS_DATA_MANAGER_TOKEN` | Private / Secret | Service account OAuth token for Enhanced Conversions |
-| `TIKTOK_PIXEL_ID` | Public / Client | TikTok Pixel ID |
-| `TIKTOK_EVENTS_TOKEN` | Private / Secret | TikTok Events API v1.3 Access Token |
+| `META_PIXEL_ID` | Public / Optional | Meta Dataset / Pixel ID (`dormant-safe` when empty) |
+| `META_CAPI_ACCESS_TOKEN` | Private / Optional | System User Graph API access token (v21+) |
+| `META_CATALOG_ID` | Private / Optional | Product catalog ID in Meta Commerce Manager |
+| `GA4_MEASUREMENT_ID` | Public / Optional | Google Analytics 4 stream ID (`G-XXXXXXXXXX`) |
+| `POSTHOG_PROJECT_KEY` | Public / Optional | PostHog project key (replays disabled when Clarity active) |
+| `POSTHOG_HOST` | Public / Optional | PostHog ingestion host (`https://us.i.posthog.com`) |
+| `MICROSOFT_CLARITY_ID` | Public / Optional | Clarity project ID for heatmaps & replays |
+| `LINKEDIN_PARTNER_ID` | Public / Optional | LinkedIn Insight Tag partner ID |
+| `ZARAZ_ENABLED` | Config / Optional | Set `"true"` when tags execute at Cloudflare Zaraz Edge |
+| `BING_INDEXNOW_KEY` | Public+Private / Optional | IndexNow instant search ping key |
+| `GOOGLE_ADS_CONVERSION_ID` | Public / Optional | Google Ads Tag ID (`AW-XXXXXXXXX`, dormant until active) |
+| `GOOGLE_ADS_CONVERSION_LABEL` | Private / Optional | Conversion action label |
+| `GOOGLE_ADS_DATA_MANAGER_TOKEN` | Private / Optional | Service account OAuth token for Enhanced Conversions |
+| `TIKTOK_PIXEL_ID` | Public / Optional | TikTok Pixel ID (dormant until active) |
+| `TIKTOK_EVENTS_TOKEN` | Private / Optional | TikTok Events API v1.3 Access Token |
+
+> **Multi-Domain Prefix Convention:** For shared multi-domain runtimes, prefix any variable above with `<NORMALIZED_HOST>_` (e.g., `EXAMPLE_COM_META_PIXEL_ID`) so each host resolves isolated credentials.
 
 ---
 

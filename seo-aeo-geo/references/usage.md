@@ -185,3 +185,17 @@ Toda aplicación web de élite debe inyectar la suite de 5 capas en `<head>`:
 La skill incluye dos componentes de referencia listos para importar:
 - [`assets/SEO.astro`](file:///var/www/.agents/skills/seo-aeo-geo/assets/SEO.astro): Inyecta metadatos canónicos, OpenGraph con ancho/alto/alt explícitos y Twitter Card.
 - [`assets/FaviconSuite.astro`](file:///var/www/.agents/skills/seo-aeo-geo/assets/FaviconSuite.astro): Inyecta de forma limpia y condensada toda la suite de favicons y PWA manifest.
+
+---
+
+## 8. Cloudflare AI Crawl Control, Bing IndexNow & Host-Aware Endpoints (2026)
+
+- **Cloudflare AI Crawl Control (Free on all plans)**: Tracks server-side HTTP hits from non-JS AI crawlers (`OAI-SearchBot`, `PerplexityBot`, `Perplexity-User`, `Claude-SearchBot`, `GPTBot`, `ClaudeBot`) without requiring client scripts. Allow retrieval/search bots (`OAI-SearchBot`, `PerplexityBot`, `Perplexity-User`, `Claude-SearchBot`) while optionally gating pure training bots.
+- **Bing IndexNow**: Host `/<BING_INDEXNOW_KEY>.txt` dynamically when configured and submit URL updates to `https://api.indexnow.org/indexnow` after deploys for sub-minute Bing & ChatGPT search indexation.
+- **Multi-Domain Isolation**: `robots.txt.ts` and `llms.txt.ts` MUST resolve host dynamically via `x-forwarded-host || host`, emitting `Disallow: /` + `X-Robots-Tag: noindex, nofollow` on preview hosts (`*.zerops.app`, `localhost`, `127.0.0.1`) and domain-scoped entities on custom apex domains.
+
+---
+
+## 9. Playbook Master Mapping (`INDEX.json`)
+- **`06_seo_aeo_geo_and_organic_content.md`** — Entity-First SEO, AEO Direct-Answer blocks, Schema.org `@graph`, `llms.txt` v2, IPTC & Core Web Vitals.
+- **`16_personal_branding_authority_and_communities.md`** — Authoritative `Person` + `Organization` entity linking (`sameAs`), category ownership, and organic authority loops.

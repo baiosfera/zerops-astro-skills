@@ -35,7 +35,14 @@ El balanceador L7 de Zerops negocia automáticamente **Brotli (`br`)** y **Gzip 
 
 ---
 
-## 3. Arnés de Ejecución y Proceso (Fractal CoHaLo)
+## 3. Cloudflare AI Crawl Control & Bing IndexNow
+
+- **AI Crawl Control**: Enable per zone in Cloudflare Dashboard (`AI Crawl Control` — free on all plans) to monitor AI crawler frequency (`200` vs `403/429`) and HTTP referrers from AI answer engines.
+- **IndexNow Webhook/Script**: Trigger `POST https://api.indexnow.org/indexnow` post-deploy only on production custom domains (`!host.endsWith('.zerops.app')`) when `BING_INDEXNOW_KEY` is configured.
+
+---
+
+## 4. Arnés de Ejecución y Proceso (Fractal CoHaLo)
 
 - **Timeouts**: Comandos con `timeout 10s`.
 - **Espera Síncrona**: `WaitMsBeforeAsync: 10000`.
