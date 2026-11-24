@@ -41,8 +41,8 @@ The Zerops platform is operated exclusively through its native MCP tools:
   - *Workflows*: `bootstrap` (provisioning/adoption), `develop` (service code editing), `launch-production` (promoting to a separate HA production project), `export` (git packaging).
   - *Actions*: `start`, `complete`, `skip`, `status`, `close`, `reset`, `iterate`, `resume`, `close-mode`, `git-push-setup`, `build-integration`, `set-default-setup`, `record-deploy`, `release`, `prod-ops`.
 - **`zerops_env`**:
-  - *Parameters*: `action="get|set|delete|generate-dotenv"`, `serviceHostname`, `project: true`, `variables: string[]`, `preview: true`, `force: true`, `setup: string`.
-  - *Rule*: `set` expands preprocessors `<@...>` and restarts services unless `skipRestart=true`.
+  - *Parameters*: `action="get|set|delete|generate-dotenv"`, `serviceHostname`, `project: true`, `variables: string[]`, `sensitive: true|false`, `preview: true`, `force: true`, `setup: string`.
+  - *Rule*: `set` expands preprocessors `<@...>` and restarts services unless `skipRestart=true`. Put large (>2 KB) or single-service secrets (such as `FREEAPI_CONFIG_JSON_SECRET`) on `serviceHostname`, never `project: true`, because Zerops copies every Project Shared Vault variable to every service and build container and `zcp` aggregates them all.
 - **`zerops_scale`**:
   - *Parameters*: `serviceHostname`, `cpuMode` (`SHARED|DEDICATED`), `minCpu`, `maxCpu`, `startCpu`, `minRam`, `maxRam`, `minDisk`, `maxDisk`, `minContainers`, `maxContainers`, `minFreeRamGB`, `minFreeRamPercent`, `minFreeCpuCores`, `minFreeCpuPercent`.
 - **`zerops_subdomain`**:

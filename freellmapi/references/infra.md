@@ -21,7 +21,7 @@ FreeLLMAPI is deployed in Zerops ZCP as an autonomous internal inference engine 
 | `ENCRYPTION_KEY` | String | Yes | — | 64-character hex string (32 bytes) used for AES-256-GCM encryption of stored provider keys. |
 | `FREEAPI_DB_PATH` | String | No | `/app/server/data/freellmapi.db` | Absolute path to the persistent SQLite database file. |
 | `FREEAPI_CONFIG_PATH` | String | No | — | Absolute file path to declarative JSON startup configuration file. |
-| `FREEAPI_CONFIG_JSON` | String | No | — | Raw JSON string applied on startup to seed provider keys and routing declaratively. |
+| `FREEAPI_CONFIG_JSON` | String | No | — | Raw JSON string applied on startup to seed provider keys and routing declaratively (`${FREEAPI_CONFIG_JSON_SECRET}` stored strictly on `serviceHostname="freellmapi"`, never Project Shared Vault). |
 | `FREELLMAPI_CONTEXT_HANDOFF` | String | No | `on_model_switch` | Mode for injecting contextual session briefings upon model failover (`off` or `on_model_switch`). |
 | `REQUEST_ANALYTICS_RETENTION_DAYS` | Integer | No | `90` | Rolling retention window for per-request latency and token usage metrics. |
 | `REQUEST_ANALYTICS_MAX_ROWS` | Integer | No | `100000` | Hard cap on total logged request rows before automatic pruning. |

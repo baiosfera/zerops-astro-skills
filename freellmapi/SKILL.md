@@ -22,7 +22,7 @@ Deploying, configuring, or consuming FreeLLMAPI (`tashfeenahmed/freellmapi`), pr
    - Disable safety-classifier/broken models (`openai/gpt-oss-safeguard-20b`, `allam-2-7b`, `meta-llama/llama-prompt-guard-*`, `ovh/Qwen3Guard-Gen-*`, `nvidia/*guard*`) and avoid inventing `tpmLimit` values (`learnLimitFromError()` automatically tightens real upstream caps; set `openai/gpt-oss-120b` `tpmLimit: 8000`).
    - Transient `429` cools down `90s`, then escalates (`2m` $\to$ `10m` $\to$ `1h` $\to$ `1d`); `402`/`403` cool down `24h`. Only `heuristic` cooldowns are cleared by the 60s background probe.
 5. **Strict `$0` Upstream Behind Bifrost**: Serve on `http://freellmapi:3001` (`ubuntu/nodejs@24`, SQLite WAL at `/mnt/localstorage/freellmapi/data/freeapi.db`). Never force escalation to commercial Pro providers unless the caller explicitly opts in.
-6. **Zerops Secret Seeding**: Provision keys idempotently via `scripts/seed-freellmapi-keys.sh` + `vault_env.py` (`FREEAPI_CONFIG_JSON_SECRET`, `FREEAPI_ENCRYPTION_KEY`, `FREELLMAPI_CLIENT_KEY`), never committing raw keys.
+6. **Zerops Secret Seeding**: Provision keys idempotently via `scripts/seed-freellmapi-keys.sh` + `vault_env.py`. Keep `FREEAPI_CONFIG_JSON_SECRET` and `FREEAPI_ENCRYPTION_KEY` strictly service-scoped (`serviceHostname: "freellmapi"`, `sensitive: true`)—never in Project Shared Vault (`project: true`), where Zerops replicates every project variable across all services and build containers into `zcp`'s saved settings. Share only `FREELLMAPI_CLIENT_KEY` at project scope and never commit raw keys.
 
 ## Decision Gates & References
 - **Client Wire & Routing**: [`usage.md`](file:///var/www/zerops-astro-skills/freellmapi/references/usage.md)
