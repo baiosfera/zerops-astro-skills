@@ -10,18 +10,18 @@ metadata:
 # Astro 5 — High-Performance SSR & Disruptive Craft (v3.1)
 
 ## Activation Contract
-Activate when architecting, developing, or optimizing Astro 5 SSR applications on Zerops: Server Islands (`server:defer`), Astro Actions (`astro:actions`), Content Layer API, Brandbook W3C DTCG tokens, Pre-flight Anti-Slop Craft Gates, or decoupled backend integrations (`nats`, `valkey`, `postgresql`, `objectstorage`).
+Activate when architecting or optimizing Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actions, Content Layer API, Brandbook DTCG tokens, Anti-Slop Craft Gates, or decoupled backends (`nats`, `valkey`, `postgresql`, `objectstorage`).
 
 ## Hard Rules & Positive Guidance
-- **Host & Ports**: Bind listeners to `HOST: "0.0.0.0"` and `PORT: "3000"`. Prefix public client variables with `PUBLIC_`. Import server secrets via `astro:env/server`.
-- **Server Islands Key**: In rolling zero-downtime deployments, inject `ASTRO_KEY` across all replicas to decrypt deferred component props securely.
-- **Runtime & Base Selection**: Build on `ubuntu/bun@1.3.9` to ensure full CGO/glibc compatibility and avoid Rolldown musl binding errors. Deploy with artifacts `[dist, node_modules, package.json]`.
-- **Decoupled Backend Architecture**: Handle mutations via typed Astro Actions with Zod schemas. Connect services through Zerops internal DNS (`http://<service>:<port>`) and reference credentials via environment variables (`$queue_connectionString`, `${cache_connectionString}`, `${db_connectionString}`).
-- **Decoupled Staging Invariant**: Base recipe `06-astro-web.yaml` provisions production exclusively. Staging is strictly opt-in and provisioned through decoupled `06b-astro-web-staging.yaml`.
-- **Tailwind CSS 4**: Integrate via `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` design tokens.
-- **Pre-flight Craft Gate & Human Copy SSoT (`copy/*.md` -> `web/*.json`)**: Calibrate 3 Dials (*Variance*, *Motion*, *Density*) and enforce [`impeccable`](file:///var/www/.agents/skills/impeccable/SKILL.md), [`design-taste-frontend`](file:///var/www/.agents/skills/taste-skill/SKILL.md), and [`codecraft`](file:///var/www/.agents/skills/codecraft/SKILL.md). Before writing or compiling pages from `workspaces/<vertical>/`, treat `copy/*.md` as the **authoritative human-editable SSoT** and `web/copy_strings.es.json` as a derived runtime UI dictionary: reconcile any manual edits in `copy/*.md` into `web/copy_strings.es.json` (and mirror to Drive) first so human copy changes never get ignored. Also enforce zero uppercase hero eyebrows (`impeccable` craft-floor).
-- **Dynamic PostgreSQL SSR**: Render dynamic catalogs directly from PostgreSQL in the continuous present (`date >= NOW()`). Hydrate authenticated user profiles from session cookies to prevent checkout friction.
-- **Standalone Pages & Mobile UX**: Import `theme.css` via `<style is:global>` on standalone pages lacking layouts to emit Vite CSS. Omit `capture` on file inputs to preserve native gallery choice. Scale canvas uploads with `Math.min(maxWidth/w, maxHeight/h, 1)` for strict aspect-ratio parity. Scope admin auth cookies to `path: "/"` and guard 1-click magic links against crawler prefetch.
+- **Host & Ports**: Bind `HOST: "0.0.0.0"` and `PORT: "3000"`. Prefix client env vars `PUBLIC_`; import server secrets via `astro:env/server`.
+- **Server Islands Key**: Inject identical `ASTRO_KEY` across rolling replicas to decrypt deferred component props.
+- **Runtime & Base Selection**: Build on `ubuntu/bun@1.3.9` for glibc/CGO parity and clean Rolldown bindings. Deploy artifacts `[dist, node_modules, package.json]`.
+- **Decoupled Backend**: Handle mutations via Zod-typed Astro Actions. Connect services over internal DNS (`http://<service>:<port>`) using `${queue_connectionString}`, `${cache_connectionString}`, `${db_connectionString}`.
+- **Decoupled Staging**: `06-astro-web.yaml` provisions production exclusively; staging uses opt-in `06b-astro-web-staging.yaml`.
+- **Tailwind CSS 4**: Integrate `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` tokens.
+- **Craft Gate & Human Copy SSoT (`copy/*.md` -> `web/*.json`)**: Calibrate 3 Dials (*Variance*, *Motion*, *Density*) and enforce [`impeccable`](file:///var/www/.agents/skills/impeccable/SKILL.md), [`design-taste-frontend`](file:///var/www/.agents/skills/taste-skill/SKILL.md), and [`codecraft`](file:///var/www/.agents/skills/codecraft/SKILL.md) (including zero uppercase hero eyebrows). Treat `copy/*.md` as the **authoritative human-editable SSoT** and `web/copy_strings.es.json` as a derived UI dictionary: reconcile manual edits from `copy/*.md` into `web/copy_strings.es.json` (and Drive) before compiling pages.
+- **Dynamic PostgreSQL SSR**: Query dynamic catalogs in continuous present (`date >= NOW()`) and hydrate sessions from cookies.
+- **Standalone & Mobile UX**: Import `theme.css` via `<style is:global>` on standalone pages, omit `capture` on file inputs, scale uploads via `Math.min(maxWidth/w, maxHeight/h, 1)`, scope admin cookies `path: "/"`, and shield magic links from crawler prefetch.
 
 ## Decision Gates
 
