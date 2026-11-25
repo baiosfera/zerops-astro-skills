@@ -48,8 +48,8 @@ Los tokens de color se conectan directamente a los IDs semánticos del SVG monoc
 
 ---
 
-## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
+## 5. Arquitectura Multimarca / Multi-Vertical & Ingestión SSoT
 
-La fuente primaria y canónica de verdad es `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/astrobranding_[MARCA].md` o `dev/brandbook.json` (incluyendo extensiones verticales en `/var/www/baiosfera/PROYECTOS/[MARCA]/verticals/`).
-- **Desacople de Cascada & Aislamiento:** `chroma-engine` formula los 3 ecosistemas cromáticos completos (Dark & Light Mode en cada uno) desde `astrobranding_<brand>.md §3` (o derivación polar matemática) con cálculo físico real de luminancia WCAG 2.2 AAA ($\ge 7.0:1$) y APCA ($|L_c| \ge 75$), escribiendo únicamente en `--output-dir` sin crear directorios fantasmas.
-- **Contratos de Salida Garantizados:** Emite `chroma_manifest.json` (3 ecosistemas OKLCH, Dark/Light Mode completo en todos, WCAG AAA / APCA y `selected_ecosystem_id`), `chroma_preview.html`, bloque `@theme` y variables `:root` / `[data-theme="light"]`.
+La fuente primaria combina los 15 shards crudos de Oráculo (`ASTROLOGÍA/DIAG/<MARCA>/raw/json/dumps/client_dumps_15_shards.json`), `astrobranding_<MARCA>.md` y el contrato vertical `dev/verticals/<vertical>.json`.
+- **Diferenciación de 5 Arquetipos Verticales (`chroma-engine` v4.1):** Una misma carta sombrilla produce mundos cromáticos propios según la vertical (`architectural_b2b`, `cosmic_archetypal`, `design_system_atelier`, `editorial_manifesto`, `editorial_brand`), con prioridad estricta de `shard_04.yong_shen` sobre texto narrativo.
+- **Aislamiento & Anti-Slop:** Rechaza hexes clichés AI/beiges cálidos, exige WCAG 2.2 AAA ($\ge 7:1$ texto, $\ge 4.5:1$ botón) y APCA ($|L_c| \ge 75$), escribiendo exclusivamente en `--output-dir`.

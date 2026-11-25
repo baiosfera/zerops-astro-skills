@@ -4,26 +4,25 @@ description: "Trigger: fontgen, tipografia, fuentes, matriz tipografica, design 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.0"
+  version: "4.1"
 ---
 
-# Fontgen — Art Direction Tipográfica Anti-Slop, Oráculo 15-Shards & Live Envato Previews (v4.0)
+# Fontgen — Vanguard Dual-Sort Envato, Multi-Vertical & Live Previews (v4.1)
 
 ## Activation Contract
-Activar para diseñar la matriz tipográfica mediante `fontgen-engine` (`v4.0`) integrando los 15 shards de Oráculo (`client_dumps_15_shards.json`), el brief semiótico, `verticals/<v>.json` y la disciplina tipográfica de `design-taste-frontend` + `impeccable`, junto con previsualización SVG interactiva en vivo con `envato-font-preview`.
+Activar para diseñar la matriz tipográfica con `fontgen-engine` (`v4.1`) combinando Oráculo 15-shards, `verticals/<v>.json`, reglas de `design-taste-frontend` + `impeccable` y búsqueda **vanguardista dual-sort** en `elements.envato.com` (`sort-by-latest` + `sort-by-popular` vía `INITIAL_HYDRATION_DATA`) + `app.envato.com`, junto con galería SVG multipaleta mediante `envato-font-preview`.
 
 ## Input & Output Isolation
-- **CLI Canónico:** `fontgen-engine --brand <BRAND> --shards <client_dumps_15_shards.json> --vertical-json <vertical.json> --brief <astrobranding_<brand>.md> --output-dir <workspace>/brand [--seed N]`.
-- **Galería SVG Interactiva Multipaleta:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,NOMBRE,ESLOGAN" --out <ws>/brand/previews`.
-- **Aislamiento Estricto:** Con `--output-dir`, escribe únicamente en ese directorio. Nunca crea carpetas fantasmas.
+- **CLI Canónico:** `fontgen-engine --brand <BRAND> --shards <shards.json> --vertical-json <vertical.json> --brief <astrobranding_<brand>.md> --output-dir <ws>/brand --sort hybrid [--seed N]`.
+- **Galería SVG + Shortlist:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" --include-shortlist --out <ws>/brand/previews`.
+- **Aislamiento Estricto:** Con `--output-dir`, escribe únicamente ahí (`font_manifest.json`, `fontgen_<vertical>.md`). Nunca crea carpetas fantasmas.
 
 ## Hard Rules (Directivas Obligatorias)
-1. **Disciplina Tipográfica (`taste-skill` §4.1 + `impeccable`):** Prohibido usar `Fraunces`, `Instrument Serif` o `Inter` por defecto. En verticales B2B/consultoría/sistemas/IA (`architectural_b2b`), Eco 1 y Eco 2 priorizan displays **Sans arquitectónicos / neo-grotescos** limpios y Eco 3 ofrece como máximo 1 alternativa serif editorial cortante—**jamás scripts caligráficos nupciales ni fuentes de terror/grafiti**.
-2. **Búsqueda Viva Filtrada + `--seed`:** `app.envato.com/search?itemType=fonts` deduplica UUIDs, filtra ruido (`wedding`, `horror`, `calligraphy`, `script`, `lavish`), verifica `<svg` en `elements.envato.com/font-preview.svg` y permite rotar candidatos con `--seed`.
-3. **Ingesta Conjunta:** Combina simultáneamente `shard_01..04` (Sol/MC tropical, Fagan-Bradley sideral, Shadbala/Nakshatra védico, Day Master/Mes BaZi) + `astrobranding_<brand>.md` + `verticals/<v>.json`.
-4. **Puente Astro 5 Seguro:** `web_ready_bridge` usa familias Google limpias (`Space Grotesk`, `Bricolage Grotesque`, `Plus Jakarta Sans`, `DM Sans`, `Instrument Sans`, `JetBrains Mono`) con `envato_upgrade_targets` para `.woff2` vía `fontProviders.local()`.
-5. **Paridad & Auto-Test:** `scripts/fontgen_engine.py` debe mantenerse 100% idéntico al SSoT del catálogo y pasar `fontgen-engine --test`.
+1. **Disciplina Tipográfica (`taste-skill` §4.1 + `impeccable`):** Prohibido usar `Fraunces`, `Instrument Serif` o `Inter` como defaults. Diferencia el perfil automáticamente por vertical: `architectural_b2b` (inktrap / neo-grotesk / mono), `cosmic_archetypal` (celestial/editorial moderno o geométrico experimental, nunca scripts de boda), `design_system_atelier` y `editorial_manifesto`.
+2. **Búsqueda Vanguardista Real (`sort-by-latest` + `sort-by-popular`):** Extrae hasta 48 ítems por consulta desde `elements.envato.com/fonts/...`, puntúa novedad (`isNew`) y oficios de fundición (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra clichés/novedades (`retro`, `90s`, `western`, `pixel`, `horror`, `wedding`, `calligraphy`), verifica `<svg` vivo y emite 3 `shortlist_candidates` alternativos por rol.
+3. **Resiliencia & Tildes ES:** `envato-font-preview` reintenta errores `502`/`503`/`429` (3 intentos) e incluye botón rápido `"Probar Tildes ES"` en `preview_gallery.html`.
+4. **Puente Astro 5 & Paridad:** Emite `web_ready_bridge` libre de `Fraunces`; `scripts/fontgen_engine.py` debe mantenerse byte-idéntico al repo catálogo y pasar `fontgen-engine --test`.
 
 ## References
-- `references/usage.md` — Manual Gestalt, filtrado Envato en vivo y `envato-font-preview`.
+- `references/usage.md` — Manual Gestalt, Dual-Sort Envato y `envato-font-preview`.
 - `assets/schemas/font_manifest.schema.json` — Esquema JSON Draft 2020-12.

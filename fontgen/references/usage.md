@@ -31,15 +31,15 @@ El sistema tipográfico se organiza estrictamente en 3 capas de diseño compleme
 
 ---
 
-## 2. Protocolo de Búsqueda en Vivo en Envato & Previsualización SVG (`envato-font-preview`)
+## 2. Protocolo de Búsqueda Vanguardia Dual-Sort en Envato & Previsualización SVG (`envato-font-preview`)
 
-Para garantizar que todas las URLs de Envato Elements sean reales y previsualizables antes de descargar archivos `.woff2`:
-- **Sourcing en Vivo (`fontgen-engine` v3.1):** Consulta `app.envato.com/search?itemType=fonts` y verifica que el `itemUuid` responda con `<svg` válido en `elements.envato.com/font-preview.svg?itemUuid=...&text=...&typed=1`. Emite `web_ready_bridge` listo para Astro 5 `experimental.fonts` (`fontProviders.google()`) mientras llegan los `.woff2` locales.
-- **Previsualización SVG Interactiva (`envato-font-preview` v3.0):**
+Para garantizar fuentes actualizadas, vanguardistas y previsualizables antes de descargar archivos `.woff2`:
+- **Sourcing Dual-Sort (`fontgen-engine` v4.1):** Consulta **`elements.envato.com/fonts/<término>/<categoría>/sort-by-latest`** y **`sort-by-popular`** (`window.INITIAL_HYDRATION_DATA`) más fallback a `app.envato.com/search`. Puntúa novedad (`isNew`) y oficios de fundición (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra novedades kitsch (`retro`, `90s`, `western`, `pixel`, `horror`, `wedding`, `calligraphy`), diferencia el perfil por vertical (`architectural_b2b`, `cosmic_archetypal`, `design_system_atelier`, `editorial_manifesto`), emite 3 `shortlist_candidates` alternativos y genera `web_ready_bridge` para Astro 5 (sin `Fraunces` ni `Inter`).
+- **Previsualización SVG Multipaleta (`envato-font-preview` v3.2):**
   ```bash
-  envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SLOGAN" --out <ws>/brand/previews
+  envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" --include-shortlist --out <ws>/brand/previews
   ```
-  Genera archivos `.svg` individuales y `preview_gallery.html` (Oscuro/Claro con paleta de `chroma_manifest.json` + probador de texto en vivo, paridad con `baiosfera/brandfont`).
+  Incluye reintentos automáticos ante `502`/`503`/`429`, botón rápido `"Probar Tildes ES"` y renderizado opcional de alternativas de `shortlist_candidates`.
 - **Catálogo Curado Offline:** Si no hay red (`--no-live`), recurre a `ENVATO_VERIFIED_CATALOG` con UUIDs verificados en `app.envato.com/fonts/{uuid}`.
 
 ### Reglas de Validación de Enlaces:
