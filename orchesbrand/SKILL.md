@@ -7,22 +7,21 @@ metadata:
   version: "3.2"
 ---
 
-# Orchesbrand — Orquestador Multimarca / Multi-Vertical Agnóstico (v3.2)
+# Orchesbrand — Orquestador Visual Flexible (Con o Sin Oráculo · v4.0)
 
 ## Activation Contract
-Activar para orquestar `chroma`, `fontgen`, `previews` y `brandbook` bajo un cliente sombrilla (`astrobranding_<brand>.md` + `client_dumps_15_shards.json` + `brandbook.json` madre) generando identidades diferenciadas y aisladas por vertical en `dev/workspaces/<vertical>/brand/`.
+Activar para orquestar `chroma`, `fontgen`, `previews` Full-Color (`envato-font-preview v4.0`) y `brandbook` tanto para clientes con Oráculo como para clientes sin carta natal (`--brand-brief` + `--palette-json` / `--seed-hex` + `--envato-urls`).
 
-## Input Rule (Un Brandbook Madre → N Verticales Aisladas)
-- **Autodescubrimiento SSoT:** Localiza `client_dumps_15_shards.json`, `astrobranding_<brand>.md` y `<project_dir>/verticals/<vertical>.json`.
-- **Aislamiento de Verticales:** Nunca sobreescribe el `brandbook.json` madre ni mezcla archivos entre `workspaces/<a>/` y `workspaces/<b>/`. Cada vertical recibe su propio `vertical_context`, su `vertical_archetype` cromático y su `style_profile` tipográfico.
-- **CLI Canónico (v3.2):** `orchesbrand --brand <BRAND> --vertical <slug> --project-dir /var/www/localstorage/<Project>/dev --phases chroma,fontgen,previews,brandbook --include-shortlist --audit [--sort hybrid] [--seed N]`.
+## Input Rule (Dual Intake & Multimarca)
+- **Con Oráculo:** `orchesbrand --brand <BRAND> --vertical <slug> --project-dir /mnt/localstorage/<Project>/dev --phases chroma,fontgen,previews,brandbook --include-shortlist --audit`. Aísla cada vertical bajo `workspaces/<vertical>/brand/` sin tocar hermanas.
+- **Sin Oráculo (Art Direction First):** `orchesbrand --brand <BRAND> --vertical <slug> --brand-brief <brand_brief.json> --palette-json <palettes.json> --envato-urls "<url1>,<url2>" --output-dir <ws>/brand --audit`.
 
 ## Hard Rules (Directivas Obligatorias)
-1. **Cero Perfiles Hardcodeados y Cero Carpetas Fantasmas:** Todo artefacto va a `--output-dir` o `workspaces/<vertical>/brand/`.
-2. **Motor Cromático (`chroma-engine v4.1`):** 3 mundos OKLCH diferenciados por `vertical_archetype`, WCAG AAA ($\ge 7:1$ texto, $\ge 4.5:1$ botón) y APCA ($L_c \ge 75$).
-3. **Motor Tipográfico Vanguardia (`fontgen-engine v4.1` + `envato-font-preview v3.2`):** Dual-sort `elements.envato.com` (`sort-by-latest` + `sort-by-popular`), cero `Fraunces`/caligrafía nupcial en B2B, shortlist de alternativas y galería SVG multipaleta con reintentos ante 502.
-4. **Merge No Destructivo de `brandbook.json`:** Hereda `brand_architecture` del sombrilla si falta en el workspace, actualiza `design_system`, inyecta `vertical_context` y corrige fallbacks CSS (`sans-serif`/`serif`) en `brandbook-theme.css`.
-5. **Auditoría Física Obligatoria (`--audit`):** Valida JSON Schema, contraste y 3 ecosistemas antes de Exit 0.
+1. **Cero Perfiles Hardcodeados y Cero Carpetas Fantasmas:** Escribe únicamente en `--output-dir` o `workspaces/<vertical>/brand/`.
+2. **Motor Cromático (`chroma-engine v5.0`):** Preserva hexes vibrantes curados, calcula `on_primary` / `on_accent` ($\ge 4.5:1$) y audita WCAG AAA ($\ge 7:1$ texto).
+3. **Galería Full-Color (`envato-font-preview v4.0`):** Renderiza 4 lockups reales de marca (`--primary`, `--accent`, tarjeta invertida y Mini Hero + CTA) y soporta `--envato-urls` directas del fundador.
+4. **Merge No Destructivo de `brandbook.json`:** Hereda arquitectura padre, fusiona `design_system`, inyecta `--brand-on-primary` y `--brand-on-accent` en `brandbook-theme.css`.
+5. **Auditoría Física Obligatoria (`--audit`):** Valida JSON Schema, contraste real y 3 ecosistemas antes de Exit 0.
 
 ## References
 - [`references/pipeline.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/pipeline.md) — Topología del pipeline.

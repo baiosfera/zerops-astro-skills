@@ -7,32 +7,21 @@ metadata:
   version: "2.1"
 ---
 
-# `brand-play` — Sovereign Downstream Playbook Transmutator (v2.1)
+# `brand-play` — Copy SSoT Sync & Linter Engine (v3.0)
+
+> **Importante:** Para redactar copy estratégico desde cero leyendo tus 18 Playbooks íntegros sin truncar a 4.000 chars ni usar plantillas `{{SLOT}}`, usa el workflow [`brand-studio`](file:///var/www/zerops-astro-skills/brand-studio/SKILL.md) (`run_workflow`). `brand-play` queda enfocado en **sincronización Human-SSoT (`copy/*.md -> web/copy_strings.es.json`)** y validación `anti-slop-linter`.
 
 ## Activation Contract
-Activate when ingesting all 18 universal playbooks (`00..17`) and `INDEX.json` task routes from `/mnt/localstorage/knowledge_hub/02_PLAYBOOKS_MAESTROS/`, resolving semantic slots from workspace `brandbook.json` + `dev/verticals/<vertical>.json`, and synthesizing client-ready copy, WhatsApp/Email lifecycle sequences, ads specs, and Astro 5 tokens.
+Activar al verificar o reconciliar ediciones manuales del usuario en `workspaces/<vertical>/copy/*.md` contra `web/copy_strings.es.json`, y para auditar ortografía, clichés AI y fugas de jerga interna con `anti-slop-linter v2.1`.
 
 ## Hard Rules & Positive Guidance
-- **Prioridad Absoluta de Copy Editable por el Humano (`copy/*.md` > JSON):** En todo workspace (`workspaces/<vertical>/`), los archivos **`copy/*.md`** son la **Fuente Única de Verdad (SSoT)** editable por el fundador/operador; `web/copy_strings.es.json` es únicamente una **caché compilada de interfaz** con metadata `_ssot_policy`. Si existen ediciones manuales en `copy/*.md`, el agente **DEBE conciliarlas y regenerar `web/copy_strings.es.json`** antes de compilar `astro-web` — nunca ignorar o pisar cambios hechos en `copy/*.md`.
-- **Dual-Upstream 18-Playbook Coverage (`00..17` via `INDEX.json`)**:
-  - Anchor thesis in Crown Playbooks `00_category_of_one.md` and `01_sales_and_conversion_doctrine.md`, and distill full multi-touch tactical depth from `02..17` (Copy, Offers, Funnels/VSL, CRO, SEO/AEO/GEO, Telemetry, Instagram, WhatsApp, TikTok, LinkedIn, Email, Meta Ads, Google Ads, Consultative Closing, Personal Branding, Applied AI). Never reduce multi-touch sequences to generic 1-email stubs.
-- **Two-Layer Workspace & Vertical Resolution**: Discover `<ROOT>/<PROJECT>/dev/workspaces/<vertical>/[brand, strategy, copy, web]` and `dev/verticals/<vertical>.json` case-insensitively before fallback paths.
-- **Client-Facing Zero-Jargon & Spanish Orthography Gate**: All customer-facing copy, UI, emails, and WhatsApp flows MUST use natural local Spanish (`tú` for Colombia/LatAm unless brand specifies otherwise), complete accents (`á, é, í, ó, ú, ñ, ¿, ¡`), ZERO internal acronyms (`OPB`, `CO1`, `BANT`, `AEO`, `GEO`, `PWYW`, `Order Bump`, `Context Vault`, `Break-Even CPA`), ZERO `UPPER_SNAKE_CASE` enums, and ZERO regional voseo leakage. Validate every file with `anti-slop-linter --brand <brand>`.
-- **Bifrost Gateway Routing**: Route synthesis via `http://bifrost:8080/v1/chat/completions` (`model: "auto"` first, deterministic non-voseo/non-hardcoded-price fallback offline).
-- **Target Invariants**: Enforce Astro 5 `@theme` tokens, Schema.org JSON-LD, `llms.txt`, `ad-telemetry`, HTML `< 85 KB`, RFC 8058 One-Click headers, and transactional `isTransactional: true` T+0 WhatsApp/Email delivery.
-- **Physical Certification**: Verify via `brand-play test`, `anti-slop-linter --test`, `skills-suite-validate`, and `ssot-parity-check`.
-
-## Decision Gates
-
-| Objective | Action / Protocol | Reference / Asset |
-|---|---|---|
-| Complete Usage Guide | Slot hydration algorithm, CLI commands & recipes | [`references/usage.md`](file:///var/www/zerops-astro-skills/brand-play/references/usage.md) |
-| Zerops & SSoT Topology | Local Storage, Drive paths & Valkey cache | [`references/infra.md`](file:///var/www/zerops-astro-skills/brand-play/references/infra.md) |
-| TYM Static Contracts | Formal Zod schemas & interfaces | [`assets/playbook_tym_contracts.ts`](file:///var/www/zerops-astro-skills/brand-play/assets/playbook_tym_contracts.ts) |
-| Deterministic Hydrator | AST slot replacement engine | [`assets/slot_hydrator.ts`](file:///var/www/zerops-astro-skills/brand-play/assets/slot_hydrator.ts) |
+- **Prioridad Absoluta Human SSoT (`copy/*.md > JSON`):** Ejecutar `brand-play sync-copy --workspace <ws_dir> [--check]` antes de compilar `astro-web`. Detecta cambios manuales vía checksum SHA-256 (`NEEDS_RECONCILIATION`) y actualiza `_ssot_policy.source_checksums`.
+- **Conceptos Estratégicos Públicos vs. Jerga Backend (`anti-slop-linter v2.1`):** Permite términos de categoría declarados públicos en `public_brand_concepts` (ej. `OPB`, `CO1` cuando el brief los educa), mientras prohíbe jerga interna técnica (`BANT`, `PWYW`, `Order Bump`, `Context Vault`, `Break-Even CPA`, `server-side`, `UPPER_SNAKE_CASE`) y omisiones de tildes/`ñ`.
+- **Transmutador `transmute` Deprecado:** Reservado únicamente por compatibilidad legacy; prohibido usarlo como sustituto de la Fase 4 de `brand-studio`.
+- **Certificación Física:** `brand-play test` · `anti-slop-linter --test` · `skills-suite-validate`.
 
 ## Commands
 ```bash
-brand-play transmute --playbook 03_irresistible_offers_and_pricing --brand "<vertical>" --target all
-anti-slop-linter --brand "<BRAND>" --file <copy_file>
+brand-play sync-copy --workspace /mnt/localstorage/<Project>/dev/workspaces/<vertical> --check
+anti-slop-linter --brand "<BRAND>" --vertical "<vertical>" --file <copy_file>
 ```
