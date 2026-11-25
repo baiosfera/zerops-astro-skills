@@ -51,6 +51,5 @@ Los tokens de color se conectan directamente a los IDs semánticos del SVG monoc
 ## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
 
 La fuente primaria y canónica de verdad es `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/astrobranding_[MARCA].md` o `dev/brandbook.json` (incluyendo extensiones verticales en `/var/www/baiosfera/PROYECTOS/[MARCA]/verticals/`).
-- **Desacople de Cascada:** `chroma` formula los 3 ecosistemas cromáticos completos, la auditoría dual WCAG 2.2 AAA / APCA y los tokens DTCG directamente a partir de las directrices de color y psicología del SSoT, sin requerir que `fontgen` o `symbol` se hayan ejecutado.
-- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante. Si `symbol_manifest.json` existe, mapea sobre sus trazos; de lo contrario mapea sobre los IDs semánticos estándar.
-- **Contratos de Salida Garantizados:** Emite `chroma_manifest.json` (3 ecosistemas OKLCH, Dark/Light Mode, WCAG AAA / APCA y `selected_ecosystem_id`), el bloque `@theme` para Tailwind CSS v4 y variables CSS `:root` consumibles por `brandfont` y `brandview`.
+- **Desacople de Cascada & Aislamiento:** `chroma-engine` formula los 3 ecosistemas cromáticos completos (Dark & Light Mode en cada uno) desde `astrobranding_<brand>.md §3` (o derivación polar matemática) con cálculo físico real de luminancia WCAG 2.2 AAA ($\ge 7.0:1$) y APCA ($|L_c| \ge 75$), escribiendo únicamente en `--output-dir` sin crear directorios fantasmas.
+- **Contratos de Salida Garantizados:** Emite `chroma_manifest.json` (3 ecosistemas OKLCH, Dark/Light Mode completo en todos, WCAG AAA / APCA y `selected_ecosystem_id`), `chroma_preview.html`, bloque `@theme` y variables `:root` / `[data-theme="light"]`.

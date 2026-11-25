@@ -64,7 +64,7 @@ $$\text{brand\_input.json / SSoT} \xrightarrow{} \text{Fase Seleccionada a Deman
 ### 2.1 Contrato Unificado de Estado: `brandview_state.json` (Track 2)
 Para erradicar la fragmentación de 5 archivos satélites (`font_manifest.json`, `symbol_manifest.json`, `chroma_manifest.json`, `kinetic_manifest.json`), Orchesbrand consolida las 3 variantes de cada dimensión en un único artefacto inmutable gobernado por `assets/schemas/brandview_state.schema.json`:
 - **`typography`**: 3 combinaciones tipográficas de 6 capas (`logo`, `slogan`, `h1`, `h2`, `body`, `ui`) con tokens W3C DTCG y calibración anti-CLS (`ascent`, `descent`, `size-adjust`).
-- **`color`**: 3 paletas completas OKLCH (Quiet Luxury, High Performance, Bio-Sensual) con modos dark/light y auditoría de accesibilidad WCAG 2.2 AAA y APCA.
+- **`color`**: 3 paletas completas OKLCH derivadas dinámicamente del brief con modos dark y light y auditoría física de accesibilidad WCAG 2.2 AAA ($\ge 7:1$) y APCA ($L_c \ge 75$).
 - **`symbol`**: 3 vectores monocromáticos B/N en SVG puro (`vector-effect="non-scaling-stroke"` y sin estilos inline).
 - **`motion`**: 3 presets cinéticos a 60fps con especificación de timeline GSAP y envolventes procedurales ADSR (Web Audio API).
 - **`active_selection`**: Punteros canónicos a las opciones activas (`selected_typography_id`, `selected_color_id`, etc.).

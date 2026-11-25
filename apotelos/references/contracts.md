@@ -85,6 +85,7 @@ class MessagingSequenceStep(BaseModel):
     priority: str = Field(default=MessagePriority.P2_LIFECYCLE.value)
     template_ref: str = Field(..., description="Semantic template identifier")
     condition: Optional[str] = Field(default=None, description="Optional condition rule")
+    is_transactional: bool = Field(default=False, description="Bypass quiet hours for T+0 email + WhatsApp delivery")
 
 class AntiCollisionPolicy(BaseModel):
     cross_channel_suppression: bool = Field(default=True)

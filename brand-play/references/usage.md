@@ -23,9 +23,9 @@ The `brand-play` engine consumes universal playbooks from `/var/www/localstorage
 ### Pipeline Execution Flow
 1. **Source Ingestion**: Load the raw universal playbook from `/var/www/localstorage/knowledge_hub/02_PLAYBOOKS_MAESTROS/<id>_<slug>.md`.
 2. **Schema Separation**: Extract Frontmatter, `<system_dynamics>`, `<slots_contract>`, and `<modular_blocks>`.
-3. **Token Resolution**: Read the active brandbook (`/var/www/localstorage/${PROJECT_NAME}/dev/brandbook.json`), resolving DTCG `$value` nodes matching the slot pointers.
+3. **Token Resolution**: Read the active brandbook (`/var/www/localstorage/${PROJECT_NAME}/dev/workspaces/<vertical>/brand/brandbook.json` or `dev/brandbook.json`) AND `dev/verticals/<vertical>.json`, resolving DTCG `$value` nodes matching slot pointers.
 4. **AST Replacement**: Execute replacement of all `{{SLOT}}` markers using strict coalescing fallbacks for non-required slots.
-5. **Anti-Slop Linter**: Verify that zero unresolved `{{...}}` tags remain and no prohibited words from `communication_dictionary.prohibited_words_commercial_bias` leaked into the output.
+5. **Anti-Slop, Zero-Jargon & Spanish Orthography Gate**: Run `anti-slop-linter --brand "${PROJECT_NAME}" --vertical <vertical> --file <output>` to guarantee complete accents (`á, é, í, ó, ú, ñ`), neutral local Spanish (zero unwanted regional voseo), and zero leaked internal acronyms (`OPB`, `CO1`, `BANT`, `AEO`, `GEO`, `PWYW`, `Order Bump`, `Context Vault`) or `UPPER_SNAKE_CASE` UI enums.
 
 ---
 

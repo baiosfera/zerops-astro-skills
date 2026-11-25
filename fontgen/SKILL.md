@@ -4,41 +4,26 @@ description: "Trigger: fontgen, tipografia, fuentes, matriz tipografica, design 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.2"
+  version: "3.1"
 ---
 
-# Fontgen — Art Direction Tipográfica, 3 Ecosistemas & 6 Capas Gestalt Dual-RAG
+# Fontgen — Art Direction Tipográfica, Live Envato Previews & 6 Capas Gestalt (v3.1)
 
 ## Activation Contract
-Activar cuando se requiera diseñar la matriz tipográfica de una marca, generando **3 Ecosistemas Tipográficos Híbridos** (Envato Elements + Google Fonts v2 Variable) estructurados en **6 capas funcionales** con métricas anti-CLS. Opera desacoplado con ingestión directa desde `astrobranding_[MARCA].md` o en modo interactivo.
+Activar para diseñar la matriz tipográfica mediante `fontgen-engine` (`3` ecosistemas híbridos Envato Elements + Google Fonts Variable v2 en `6` capas funcionales + `web_ready_bridge` para Astro 5 `experimental.fonts`) y previsualizar las fuentes Envato como SVGs reales con `envato-font-preview` mientras el usuario decide cuáles descargar en `.woff2`.
 
-## Input Rule (Desacople SSoT)
-- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0) sin dependencias ni bloqueos de fases previas.
-- **Modo Standalone / Manual:** Acepta especificaciones directas del usuario o `brand_input.json`.
+## Input & Output Isolation
+- **CLI Canónico:** `fontgen-engine --brand <BRAND> --brief <astrobranding_<brand>.md> --output-dir <workspace>/brand`.
+- **Galería SVG Previa a `.woff2`:** `envato-font-preview --from-manifest <workspace>/brand/font_manifest.json --chroma <workspace>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" --out <workspace>/brand/previews`.
+- **Aislamiento Estricto:** Con `--output-dir`, escribe únicamente en ese directorio. Nunca crea carpetas globales fantasmas.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Generación de 3 Ecosistemas Tipográficos Diferenciados:**
-  - Cada ecosistema responde a una interpretación arquetípica única de la marca.
-  - Cada ecosistema define sus 6 capas funcionales:
-    1. `logo`: Tipografía para monograma / isotipo.
-    2. `slogan`: Tipografía con tracking expandido para tagline.
-    3. `h1`: Titulares principales hero.
-    4. `h2`: Subtítulos y cabeceras de sección.
-    5. `body`: Texto de párrafo de ultra-legibilidad (Google Fonts Variable).
-    6. `ui`: Botones, badges, controles interactivos y navegación.
-- **2. Emparejamiento Gestalt & Jerarquía:**
-  - Salto de escala armónica (1.25 mayor / 1.33 cuarta perfecta / 1.618 áurea).
-  - Regla de contraste formal: Serif Display con Sans-Serif Body o Neo-Grotesque Display con Humanist Body.
-- **3. Prevención Anti-CLS & Código Dev:** Declarar `ascent-override`, `descent-override` y `size-adjust` junto con el código dev `@font-face` y Google Fonts v2 listo para frontend.
-- **4. Contrato de Selección:** Incluir `selected_ecosystem_id` (ej: `"eco-1"`).
-- **5. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`:
-  - `font_manifest.json` (3 ecosistemas, 6 capas, tokens y selección)
-  - `fontgen_[MARCA].md` (ficha técnica, muestras, justificación arquetípica)
-
-## Output Contract
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/font_manifest.json`
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/fontgen_[MARCA].md`
+1. **3 Ecosistemas Diferenciados sin Repetición:** Display y Acento desde Envato (`https://app.envato.com/fonts/{uuid}` con `item_uuid` verificado como previsualizable en SVG) + Body/UI en Google Fonts v2 Variable con calibración anti-CLS (`size-adjust`, `ascent-override`, `descent-override`).
+2. **Parsing Bilingüe Real (ES/EN):** Lee signos zodiacales, Medio Cielo, Day Master y Nakshatra en español o inglés directamente desde `astrobranding_<brand>.md` o los 15 shards; nunca usa valores estáticos falsos.
+3. **Herencia de 6 Capas & Puente Web Astro 5:** Define `logo`, `slogan`, `h1`, `h2`, `body`, `ui` más `web_ready_bridge` (`fontProviders.google()` inmediato + `envato_upgrade_targets` para `fontProviders.local()` al subir `.woff2`).
+4. **Previsualización Instantánea SVG:** Todo token Envato emitido incluye `item_uuid` y `url`, permitiendo generar `<svg>` reales y `preview_gallery.html` interactivo sin login ni descarga previa.
+5. **Paridad & Auto-Test:** `scripts/fontgen_engine.py` debe mantenerse 100% idéntico al SSoT del catálogo y pasar `fontgen-engine --test`.
 
 ## References
-- `references/usage.md` — Manual de emparejamiento Gestalt, fuentes Envato/Google, desacople SSoT y optimización anti-CLS.
+- `references/usage.md` — Manual Gestalt, Envato live sourcing, `envato-font-preview` y anti-CLS.
 - `assets/schemas/font_manifest.schema.json` — Esquema JSON Draft 2020-12.

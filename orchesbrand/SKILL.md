@@ -4,36 +4,29 @@ description: "Trigger: orchesbrand, orquestar branding, pipeline de marca, ident
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.2"
+  version: "3.0"
 ---
 
-# Orchesbrand — Orquestador de Pipeline de Identidad Visual Dual-RAG
+# Orchesbrand — Orquestador Agnóstico de Identidad Visual (v3.0)
 
 ## Activation Contract
-Activar para ejecutar el pipeline completo de branding o coordinar la generación de sus 5 fases especializadas ($F1 \rightarrow F5$), garantizando la transferencia de selecciones definitivas entre etapas, validación de schemas y sincronización en tiempo real con `brandview`. Opera en modo desacoplado directo o interactivo paso a paso.
+Activar para orquestar el pipeline de branding (`chroma`, `fontgen`, `previews`, `brandbook`) sobre la SSoT `astrobranding_<brand>.md` y `dev/verticals/<vertical>.json`, escribiendo de forma aislada en `dev/workspaces/<vertical>/brand/` sin sobrescribir arquitectura de marca ni crear carpetas globales fantasmas.
 
-## Input Rule (Desacople SSoT & Modos de Ejecución)
-- **Fuente Primaria Indivisible:** Consume herméticamente `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0).
-- **Marcas Sombrilla & Verticales:** Para verticales de negocio (apotelos, astrotipia, baiosfera, seo-maps, synthemika), la marca sombrilla (`astrobranding_damaren.md`) rige la ontología junto con `dev/verticals/*.json`. Cero necesidad de cartas natales independientes de Fase 0.
-- **CLI Canónico de Ejecución:** `orchesbrand --vertical <slug|all> --phases fontgen,chroma,brandbook --audit`.
-- **Modo Desacoplado Directo:** Cada fase especializada (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) puede ejecutarse de forma autónoma e ingerir directamente desde el SSoT sin bloqueos en cascada.
-- **Modo Interactivo Paso a Paso (Brandview):** Permite disparar fases individuales a demanda desde la UI web, permitiendo al usuario seleccionar variantes y mutar manifiestos interactivamente.
+## Input Rule (Desacople SSoT & Aislamiento de Workspace)
+- **Fuente Primaria Indivisible:** Ingiere `astrobranding_<brand>.md` (y opcionalmente `dev/verticals/<vertical>.json`) sin tocar JSONs astronómicos crudos.
+- **Marcas Sombrilla & Verticales:** Para cualquier `<vertical>` bajo un proyecto sombrilla, `<project_dir>/astrobranding_<brand>.md` rige la identidad junto con `dev/verticals/<vertical>.json`.
+- **CLI Canónico (v3.0):** `orchesbrand --brand <BRAND> --vertical <slug> --project-dir /var/www/localstorage/<Project>/dev --phases chroma,fontgen,previews,brandbook --audit`.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Handoff Hermético (SSoT Indivisible):** Ingiere `astrobranding_[MARCA].md` sin tocar JSONs crudos ni esperar sub-diagnósticos. La suite de diseño opera 100% desacoplada de la data astronómica cruda.
-- **2. Cascada Flexible & No Bloqueante:**
-  $$\text{astrobranding} \xrightarrow{} \text{fontgen (F1)} \rightleftarrows \text{symbol (F2 B/N)} \rightleftarrows \text{chroma (F3 3-Eco)} \rightleftarrows \text{kinetic (F4 3-Anim)} \rightleftarrows \text{brandbook (F5 DTCG)}$$
-  La secuencia secuencial es opcional y no bloqueante; cada skill puede consumir directamente el SSoT y enriquecer los manifiestos existentes.
-- **3. Puntos de Control y Circuit Breakers:** Al ejecutar fases supervisadas:
-  - Verificar existencia del artefacto en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
-  - Conformidad estricta con el JSON Schema correspondiente en `assets/schemas/`.
-  - En caso de error de validación, reintentar con diagnóstico específico (máximo 2 intentos).
-- **4. Respeto a Contratos de Fase:** Asegurar monocromía estricta en `symbol` (F2), 3 ecosistemas OKLCH en `chroma` (F3), 3 presets 60fps en `kinetic` (F4) y tokens W3C DTCG en `brandbook` (F5).
-- **5. Sincronización SSoT Bidireccional:** Todo artefacto debe sincronizarse entre `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/mnt/localstorage/DIAG/[MARCA]/`.
+1. **Cero Perfiles Hardcodeados y Cero Carpetas Fantasmas:** Prohibido inventar cartas natales, colores o fuentes fijas por vertical. Toda salida va estrictamente a `--output-dir` o `workspaces/<vertical>/brand/`.
+2. **Motor Cromático Real (`chroma-engine`):** Deriva 3 ecosistemas completos OKLCH (Dark & Light Mode) desde `astrobranding_<brand>.md §3` (o derivación polar matemática), verificando contraste físico WCAG 2.2 AAA ($\ge 7:1$) y APCA ($L_c \ge 75$), más `chroma_preview.html`.
+3. **Motor Tipográfico Vivo (`fontgen-engine` + `envato-font-preview`):** Sourcing en vivo desde Envato Elements (`app.envato.com/fonts/{uuid}`) + Google Fonts Variable v2 + puente `web_ready_bridge` (Astro 5 `experimental.fonts`), acompañado de galería SVG interactiva `previews/preview_gallery.html` sin requerir login ni descarga `.woff2` previa.
+4. **Merge No Destructivo de `brandbook.json`:** Actualiza únicamente `design_system.colors`, `design_system.typography` y `brandbook-theme.css`, preservando intactas `brand_architecture`, `voice_tone_and_messaging`, `lexicon` y `target_audience`.
+5. **Auditoría Física Obligatoria (`--audit`):** Valida JSON Schema, WCAG AAA / APCA real y presencia de los 3 ecosistemas antes de emitir Exit 0.
 
 ## References
-- [`references/pipeline.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/pipeline.md) — Topología del pipeline desacoplado, dependencias y sincronización RFC 6902.
-- [`references/usage.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/usage.md) — Manual de invocación Antigravity, modo interactivo y control de estado.
-- [`references/infra.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/infra.md) — Infraestructura de coordinación, persistencia SSoT y conectividad Brandview.
+- [`references/pipeline.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/pipeline.md) — Topología del pipeline desacoplado, dependencias y sincronización.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/usage.md) — Manual CLI y control de estado.
+- [`references/infra.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/infra.md) — Infraestructura de persistencia SSoT y conectividad Brandview.
 - [`assets/schemas/pipeline_state.schema.json`](file:///var/www/zerops-astro-skills/orchesbrand/assets/schemas/pipeline_state.schema.json) — Esquema del estado de orquestación.
-- [`assets/schemas/brandview_state.schema.json`](file:///var/www/zerops-astro-skills/orchesbrand/assets/schemas/brandview_state.schema.json) — Esquema unificado inmutable de Brandview.
+- [`assets/schemas/brandview_state.schema.json`](file:///var/www/zerops-astro-skills/orchesbrand/assets/schemas/brandview_state.schema.json) — Esquema unificado de Brandview.

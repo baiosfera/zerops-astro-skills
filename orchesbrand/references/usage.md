@@ -45,8 +45,9 @@ Antigravity opera con subagentes dinámicos en tiempo de ejecución. El orquesta
 
 ## 3. Arquitectura Desacoplada & Modos de Invocación
 
-La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
-- **Desacople Total de Cascada:** La cascada entre fases es opcional y no bloqueante. Las skills (`fontgen`, `symbol`, `chroma`, `kinetic`, `brandbook`) pueden ser invocadas de forma aislada sin requerir que las fases precedentes se hayan ejecutado o completado.
-- **Modo Interactivo (Brandview):** Brandview puede invocar o solicitar la ejecución de una fase particular cuando el usuario interactúa con la interfaz web.
-- **Resiliencia de Manifiestos:** Cada fase genera su contrato de salida específico consumiendo directamente el SSoT y enriqueciendo los manifiestos preexistentes en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/`.
+La fuente primaria y canónica de verdad es `astrobranding_<brand>.md` junto con `dev/verticals/<vertical>.json`.
+- **Desacople y Aislamiento de Workspace:** `orchesbrand` v3.0 invoca `chroma-engine`, `fontgen-engine` y `envato-font-preview` escribiendo únicamente en `dev/workspaces/<vertical>/brand/` (o `--output-dir`), sin crear carpetas fantasmas globales.
+- **Merge No Destructivo de `brandbook.json`:** Preserva `brand_architecture`, `voice_tone_and_messaging`, `lexicon` y `target_audience` mientras inyecta los tokens OKLCH y tipográficos validados.
+- **CLI Soberano:**
+  `orchesbrand --brand <BRAND> --vertical <slug> --project-dir /var/www/localstorage/<Project>/dev --phases chroma,fontgen,previews,brandbook --audit`
 
