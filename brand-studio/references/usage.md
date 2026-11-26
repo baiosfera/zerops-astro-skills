@@ -1,4 +1,4 @@
-# `brand-studio` — Guía Operativa `run_workflow` (v1.2)
+# `brand-studio` — Guía Operativa `run_workflow` (v1.3)
 
 ## 1. Invocación desde ZCP (Fase 1 + Fase 2 Visual)
 ```python
@@ -20,6 +20,7 @@ run_workflow(
             {"branch_slug": "agencia", "route_path": "/agencia", "future_domain": "agencia.com", "delivery_tier": "dfy", "public_label": "Implementación Llave en Mano"}
         ],
         "enable_affiliate_layer": True,
+        "enable_cross_funnel_mesh": True,
         "vsl_mode": "hybrid_smart_vsl",  # o "lazy_facade_video"
         "stop_after_phase": "phase_2_art_direction"
     }

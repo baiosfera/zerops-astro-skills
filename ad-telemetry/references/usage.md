@@ -157,7 +157,10 @@ When one Astro runtime serves multiple client domains (`brand-a.com`, `brand-b.c
 
 ---
 
-## 8. Cross-Domain CAPI Bridge, Affiliate Co-Persistence & In-App Escape
-1. **Cross-Domain Checkout Decoration (`cross_domain_bridge`)**: When CTA targets a separate payment/app hostname, append (without stripping partner attribution) `fbp`, `fbc`, `src` (UUID persisted per session), `event_source_url`, and active UTMs (`utm_source`, `utm_medium`, `utm_campaign`, `utm_adset`, `utm_ad`, `utm_content`, `utm_term`). For embedded API checkouts, post `{...utms, ref_code}` in the session payload after pre-checking account email availability.
-2. **High-Intent Video & Declarative Interaction Signals**: Fire custom Meta retargeting events (e.g., `VslWatched90s`) only after `>= 90s` of unmuted playback, and attach declarative `data-track` labels for zero-bloat interaction beacons.
-3. **In-App Browser Wallet Fallback**: Inside Instagram/Facebook WebViews where Google Pay / Apple Pay often stalls, offer a primary `"Open in Chrome/Safari"` button plus a `6s` visibility fallback notice pointing to inline card checkout.
+## 8. Cross-Domain CAPI Bridge, Route-Scoped Signals & In-App Escape
+1. **Route-Scoped `ViewContent` Guard**: Fire Meta `ViewContent` and TikTok `ViewContent` strictly on acquisition landing routes (NEVER on `/checkout`, `/app`, `/admin`, or `/gracias`) to prevent low-intent or backend events from polluting ad optimization.
+2. **PostHog Privacy & Token Sanitization**: Initialize PostHog with `person_profiles: "identified_only"` and a `sanitize_properties` hook stripping sensitive tokens (`ct=`, auth codes) before transmission.
+3. **Internal Checkout Forwarding & Share Cards**: Preserve real inbound params (`utm_source..term`, `utm_id`, `gclid`, `fbclid`, `ttclid`, `msclkid`, `li_fat_id`, `ref`) onto internal `/checkout` CTAs without inventing synthetic internal UTMs. Tag viral shared diagnostic cards with `?via=<card>&utm_source=share_card&utm_medium=referral`.
+4. **Cross-Domain Checkout Decoration (`cross_domain_bridge`)**: When CTA targets a separate payment/app hostname, append (without stripping partner attribution) `fbp`, `fbc`, `src` (UUID persisted per session), `event_source_url`, and active UTMs. For embedded API checkouts, post `{...utms, ref_code}` in the session payload after pre-checking account email availability.
+5. **High-Intent Video & Declarative Interaction Signals**: Fire custom Meta retargeting events (e.g., `VslWatched90s`) only after `>= 90s` of unmuted playback, and attach declarative `data-track` labels (and paired Meta `CTAClick` / TikTok `ClickButton`) for zero-bloat interaction telemetry.
+6. **In-App Browser Wallet Fallback**: Inside Instagram/Facebook WebViews where Google Pay / Apple Pay often stalls, offer a primary `"Open in Chrome/Safari"` button plus a `6s` visibility fallback notice pointing to inline card checkout.
