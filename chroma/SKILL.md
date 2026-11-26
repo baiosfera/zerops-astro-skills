@@ -4,17 +4,17 @@ description: "Trigger: chroma, paleta de color, oklch, wcag aaa, apca, psicologi
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.1"
+  version: "5.1"
 ---
 
-# Chroma — Art-Direction OKLCH & Oráculo-Optional Engine (v5.0)
+# Chroma — Art-Direction OKLCH & Sibling-Aware Engine (v5.1)
 
 ## Activation Contract
-Activar al diseñar o validar ecosistemas cromáticos mediante `chroma-engine` (`v5.0`), generando **3 Mundos Cromáticos Diferenciados** (Dark & Light) ya sea desde Dirección de Arte (`--palette-json` / `--seed-hex` / `--brand-brief` **sin Oráculo**) o desde 15 shards crudos + `verticals/<v>.json` (**con Oráculo**).
+Activar al diseñar o validar ecosistemas cromáticos mediante `chroma-engine` (`v5.1`), generando **3 Mundos Cromáticos Diferenciados** (Dark & Light) desde Dirección de Arte (`--palette-json` / `--seed-hex` / `--brand-brief`) o desde 15 shards + `verticals/<v>.json` con rotación por rama hermana (`--sibling-workspaces-dir`).
 
 ## Input Rule (Con o Sin Oráculo & Fidelidad Cromática)
-- **CLI Sin Oráculo (Art Direction First):** `chroma-engine --brand <BRAND> --brand-brief <brand_brief.json> --palette-json <art_direction_palettes.json> [--seed-hex "#HEX"] --output-dir <ws>/brand`. Preserva los hexes vibrantes curados sin lavarlos a tonos pastel y calcula automáticamente `on_primary` / `on_accent` (`>= 4.5:1`).
-- **CLI Con Oráculo:** `chroma-engine --brand <BRAND> --vertical <slug> --shards <client_dumps_15_shards.json> --vertical-json <vertical.json> --output-dir <ws>/brand`. Respeta `yong_shen` de los shards sobre el brief.
+- **CLI Sin Oráculo (Art Direction First):** `chroma-engine --brand <BRAND> --brand-brief <brand_brief.json> --palette-json <art_direction_palettes.json> [--seed-hex "#HEX"] --output-dir <ws>/brand`. Preserva hexes vibrantes curados y calcula `on_primary` / `on_accent` ($\ge 4.5:1$).
+- **CLI Con Oráculo:** `chroma-engine --brand <BRAND> --vertical <slug> --shards <client_dumps_15_shards.json> --vertical-json <vertical.json> --sibling-workspaces-dir <dev>/workspaces --output-dir <ws>/brand`. Prioriza shards sobre brief y extrae signo/MC/Nakshatra/Day Master desde brief si faltan shards.
 - **Aislamiento Estricto:** Escribe exclusivamente en `--output-dir` (cero carpetas fantasma).
 
 ## Hard Rules (Directivas Obligatorias)

@@ -4,23 +4,23 @@ description: "Trigger: fontgen, tipografia, fuentes, matriz tipografica, design 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.1"
+  version: "4.2"
 ---
 
-# Fontgen — Vanguard Dual-Sort Envato, Multi-Vertical & Live Previews (v4.1)
+# Fontgen — Vanguard Dual-Sort Envato, Sibling-Disjoint & Live Previews (v4.2)
 
 ## Activation Contract
-Activar para diseñar la matriz tipográfica con `fontgen-engine` (`v4.1`) combinando Oráculo 15-shards, `verticals/<v>.json`, reglas de `design-taste-frontend` + `impeccable` y búsqueda **vanguardista dual-sort** en `elements.envato.com` (`sort-by-latest` + `sort-by-popular` vía `INITIAL_HYDRATION_DATA`) + `app.envato.com`, junto con galería SVG multipaleta mediante `envato-font-preview`.
+Activar para diseñar la matriz tipográfica con `fontgen-engine` (`v4.2`) combinando Oráculo 15-shards, `verticals/<v>.json`, exclusión automática de fuentes hermanas (`--sibling-workspaces-dir`), catálogo anti-slop de **20 fuentes Google Fonts variables**, búsqueda **dual-sort** en `elements.envato.com` (`sort-by-latest` + `sort-by-popular`) y galería SVG deduplicada (`envato-font-preview v4.1`).
 
 ## Input & Output Isolation
-- **CLI Canónico:** `fontgen-engine --brand <BRAND> --shards <shards.json> --vertical-json <vertical.json> --brief <astrobranding_<brand>.md> --output-dir <ws>/brand --sort hybrid [--seed N]`.
-- **Galería SVG + Shortlist:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" --include-shortlist --out <ws>/brand/previews`.
+- **CLI Canónico:** `fontgen-engine --brand <BRAND> --shards <shards.json> --vertical-json <vertical.json> --brief <astrobranding_<brand>.md> --sibling-workspaces-dir <dev>/workspaces --output-dir <ws>/brand --sort hybrid [--seed N]`.
+- **Galería SVG:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" [--include-shortlist] --out <ws>/brand/previews`.
 - **Aislamiento Estricto:** Con `--output-dir`, escribe únicamente ahí (`font_manifest.json`, `fontgen_<vertical>.md`). Nunca crea carpetas fantasmas.
 
 ## Hard Rules (Directivas Obligatorias)
-1. **Disciplina Tipográfica (`taste-skill` §4.1 + `impeccable`):** Prohibido usar `Fraunces`, `Instrument Serif` o `Inter` como defaults. Diferencia el perfil automáticamente por vertical: `architectural_b2b` (inktrap / neo-grotesk / mono), `cosmic_archetypal` (celestial/editorial moderno o geométrico experimental, nunca scripts de boda), `design_system_atelier` y `editorial_manifesto`.
-2. **Búsqueda Vanguardista Real (`sort-by-latest` + `sort-by-popular`):** Extrae hasta 48 ítems por consulta desde `elements.envato.com/fonts/...`, puntúa novedad (`isNew`) y oficios de fundición (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra clichés/novedades (`retro`, `90s`, `western`, `pixel`, `horror`, `wedding`, `calligraphy`), verifica `<svg` vivo y emite 3 `shortlist_candidates` alternativos por rol.
-3. **Resiliencia & Tildes ES:** `envato-font-preview` reintenta errores `502`/`503`/`429` (3 intentos) e incluye botón rápido `"Probar Tildes ES"` en `preview_gallery.html`.
+1. **Disciplina Tipográfica y Cero Duplicados Hermanos:** Prohibido usar `Fraunces`, `Instrument Serif` o `Inter`. Rota consultas Envato y pool de 20 Google Fonts por `vertical_slug` y excluye automáticamente Envato + Google Fonts usadas en ramas hermanas.
+2. **Búsqueda Vanguardista Real (`sort-by-latest` + `sort-by-popular`):** Puntúa novedad (`isNew`) y oficio (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra clichés, verifica `<svg` vivo y emite `shortlist_candidates`.
+3. **Galería Interactiva (`envato-font-preview v4.1`):** Deduplica por UUID, aísla IDs SVG, valida cambios de vista en Chrome headless e incluye botón `"Probar Tildes ES"`.
 4. **Puente Astro 5 & Paridad:** Emite `web_ready_bridge` libre de `Fraunces`; `scripts/fontgen_engine.py` debe mantenerse byte-idéntico al repo catálogo y pasar `fontgen-engine --test`.
 
 ## References

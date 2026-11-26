@@ -24,7 +24,7 @@ High-density upstream knowledge compiler transforming clean educational transcri
 
 | Objective | Action / Protocol | Reference / Asset |
 |---|---|---|
-| Knowledge Catalog & Routes | Emergent Playbooks (`00..17`) + `INDEX.json` | [`references/catalog.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/catalog.md) |
+| Knowledge Catalog & Routes | Emergent Playbooks (`00..18`) + `INDEX.json` | [`references/catalog.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/catalog.md) |
 | Systemic Prompts | Extraction & Map-Reduce blueprints | [`references/system_prompts.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/system_prompts.md) |
 | Anti-Slop Fusion | Separating skeletons from `brandbook.json` | [`references/anti_slop_fusion.md`](file:///var/www/zerops-astro-skills/knowledge-engine/references/anti_slop_fusion.md) |
 | Brand Transmutation | Downstream slot hydration & CrewAI routing | [`brand-play`](file:///var/www/zerops-astro-skills/brand-play/SKILL.md) |
