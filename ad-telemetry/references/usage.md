@@ -154,3 +154,10 @@ When one Astro runtime serves multiple client domains (`brand-a.com`, `brand-b.c
 - **`07_ad_telemetry_ga4_gtm_and_metrics.md`** — Attribution, Consent Mode v2, GA4/Zaraz taxonomy, CAPI deduplication.
 - **`13_meta_ads_media_buying_and_scaling.md`** — Event Match Quality (EMQ), qualified-only `Lead` firing, CAPI value signals.
 - **`14_google_ads_and_youtube_growth.md`** — Enhanced Conversions, `gclid`/`gbraid`/`wbraid` capture, Consent Mode v2 compliance.
+
+---
+
+## 8. Cross-Domain CAPI Bridge, Affiliate Co-Persistence & In-App Escape
+1. **Cross-Domain Checkout Decoration (`cross_domain_bridge`)**: When CTA targets a separate payment/app hostname, append (without stripping partner attribution) `fbp`, `fbc`, `src` (UUID persisted per session), `event_source_url`, and active UTMs (`utm_source`, `utm_medium`, `utm_campaign`, `utm_adset`, `utm_ad`, `utm_content`, `utm_term`). For embedded API checkouts, post `{...utms, ref_code}` in the session payload after pre-checking account email availability.
+2. **High-Intent Video & Declarative Interaction Signals**: Fire custom Meta retargeting events (e.g., `VslWatched90s`) only after `>= 90s` of unmuted playback, and attach declarative `data-track` labels for zero-bloat interaction beacons.
+3. **In-App Browser Wallet Fallback**: Inside Instagram/Facebook WebViews where Google Pay / Apple Pay often stalls, offer a primary `"Open in Chrome/Safari"` button plus a `6s` visibility fallback notice pointing to inline card checkout.
