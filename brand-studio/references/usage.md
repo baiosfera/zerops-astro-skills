@@ -1,27 +1,38 @@
-# `brand-studio` — Guía Operativa `run_workflow` (v1.0)
+# `brand-studio` — Guía Operativa `run_workflow` (v1.1)
 
-## 1. Invocación desde ZCP
+## 1. Invocación desde ZCP (Fase 1 + Fase 2 Visual)
 ```python
 run_workflow(
     ScriptPath="/var/www/zerops-astrobranding/workflows/brand-studio/brand_studio.wf",
-    Description="Ejecutar Fase 1 y 2 (SEO SERP + Dirección de Arte) y esperar aprobación visual",
+    Description="Ejecutar Fase 1 y 2 (SEO SERP + Hub Multirrama + Dirección de Arte) y esperar aprobación visual",
     Args={
         "project": "MiProyecto",
-        "vertical": "mi-vertical",
-        "workspace_dir": "/mnt/localstorage/MiProyecto/dev/workspaces/mi-vertical",
+        "vertical": "hub-principal",
+        "workspace_dir": "/mnt/localstorage/MiProyecto/dev/workspaces/hub-principal",
         "intake_mode": "auto",  # "oraculo" | "client" | "auto"
         "target_country": "Colombia y Latinoamérica",
         "reference_urls": ["https://ejemplo1.com", "https://ejemplo2.com"],
         "envato_urls": ["https://elements.envato.com/fonts/..."],
+        "hub_branches": [
+            {"branch_slug": "academia", "route_path": "/academia", "future_domain": "academia.com", "delivery_tier": "diy", "public_label": "Comunidad y Academia"},
+            {"branch_slug": "mentoria", "route_path": "/mentoria", "future_domain": "mentoria.com", "delivery_tier": "dwy", "public_label": "Mentoría Aplicada"},
+            {"branch_slug": "agencia", "route_path": "/agencia", "future_domain": "agencia.com", "delivery_tier": "dfy", "public_label": "Implementación Llave en Mano"}
+        ],
+        "enable_affiliate_layer": True,
+        "vsl_mode": "hybrid_smart_vsl",
         "stop_after_phase": "phase_2_art_direction"
     }
 )
 ```
 
-## 2. Esquema Mínimo `brand_brief.json` (Modo Sin Oráculo)
+## 2. Cortafuegos Terminológico (Interno vs. Público)
+- **Uso estrictamente interno:** `verticales`, `DIY`, `DWY`, `DFY`, `BANT`, `PWYW`, `Order Bump`, `AEO/GEO`, `UPPER_SNAKE_CASE`.
+- **Uso público aprobado:** Roles reales del fundador, marcas de cada línea y términos declarados en `public_brand_concepts` dentro del brief o vertical JSON. `anti-slop-linter` bloquea fugas en archivos públicos.
+
+## 3. Esquema Mínimo `brand_brief.json` (Modo Sin Oráculo)
 ```json
 {
-  "vertical_slug": "mi-vertical",
+  "vertical_slug": "mi-linea",
   "display_name": "Nombre Comercial — Propuesta Principal",
   "intake_mode": "client",
   "vertical_archetype": "architectural_b2b",
@@ -39,5 +50,5 @@ run_workflow(
 }
 ```
 
-## 3. Reanudar tras Aprobación Humana (Fases 3 a 5)
+## 4. Reanudar tras Aprobación Humana (Fases 3 a 5)
 Una vez que el fundador aprueba los colores y fuentes en `previews/preview_gallery.html` y `chroma_preview.html`, volver a ejecutar `run_workflow` con `"stop_after_phase": "phase_5_critic"`.
