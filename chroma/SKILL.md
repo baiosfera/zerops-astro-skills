@@ -4,24 +4,28 @@ description: "Trigger: chroma, paleta de color, oklch, wcag aaa, apca, psicologi
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "5.2"
+  version: "8.0"
 ---
 
-# Chroma — Art-Direction OKLCH, Surface Geometry & Sibling-Aware Engine (v5.2)
+# `chroma` — Art-Direction-First OKLCH, Step-9 & 3-Layer DTCG Engine (v8.0)
 
 ## Activation Contract
-Activar al diseñar o validar ecosistemas cromáticos mediante `chroma-engine` (`v5.1`) + contrato de superficie (`PB19`), generando **3 Mundos Cromáticos Diferenciados** (Dark & Light) desde Dirección de Arte (`--palette-json` / `--seed-hex` / `--brand-brief`) o desde 15 shards + `verticals/<v>.json` con rotación por rama hermana (`--sibling-workspaces-dir`).
+Activate when conceiving, compiling, or auditing brand color systems with `chroma-engine` (`v8.0`) aligned to Playbook 19 (`v2.0.0`), Radix Colors Step-9 saturation discipline, and CSS Color Level 5 (`OKLCH` / `Display P3`). Separates **Creative Art Direction** (`chroma_spec.json`, conceived fresh per project from positioning and visual world — never from canned archetypes) from **Deterministic Engineering Compilation** (CSS Color 4 gamut mapping, WCAG 2.2 AAA, APCA `0.0.98G-4g`, achromatic `C=0` Z-elevation monotonicity, and DTCG 2025.10 tokens).
 
-## Input Rule (Con o Sin Oráculo & Fidelidad Cromática)
-- **CLI Sin Oráculo (Art Direction First):** `chroma-engine --brand <BRAND> --brand-brief <brand_brief.json> --palette-json <art_direction_palettes.json> [--seed-hex "#HEX"] --output-dir <ws>/brand`. Preserva hexes vibrantes curados y calcula `on_primary` / `on_accent` ($\ge 4.5:1$).
-- **CLI Con Oráculo:** `chroma-engine --brand <BRAND> --vertical <slug> --shards <client_dumps_15_shards.json> --vertical-json <vertical.json> --sibling-workspaces-dir <dev>/workspaces --output-dir <ws>/brand`.
-- **Aislamiento Estricto:** Escribe exclusivamente en `--output-dir` (cero carpetas fantasma).
+## Two-Stage Workflow & Strict Opt-In Isolation
+1. **Stage 1 — Bespoke Art Direction (`chroma_spec.json`):** Author 3 contrasting visual worlds in `<ws>/brand/chroma_spec.json` grounded strictly in the client brief, competitive field, and intended surface mood (zero copied palettes across projects, zero AI cyan/violet defaults, zero washed-out dark pastels).
+   - Optionally anchor **Oráculo** ONLY when `--brief <astrobranding_*.md> --mode brief` or `--shards <15_shards.json>` are passed explicitly; never auto-crawl unrelated briefs on disk.
+2. **Stage 2 — Compile & Harden:**
+   `chroma-engine --brand <BRAND> --spec <ws>/brand/chroma_spec.json --output-dir <ws>/brand`
+   - Fallback direct modes (when no `chroma_spec.json` exists): `--palette-json <palettes.json>`, `--seed-hex "#HEX"`, `--mode brief --brief <astrobranding_*.md>`, or brand-brief synthesis.
+3. **Strict Isolation:** Writes solely inside `--output-dir` (`chroma_manifest.json`, `chroma_preview.html`). Works identically across isolated ZCP containers that have zero visibility into sibling projects.
 
-## Hard Rules (Directivas Obligatorias)
-1. **Estrategia Cromática Deliberada & Neutros Tintados:** Declarar estrategia (`Restrained`, `Committed`, `Full Palette` o `Drenched`) coherente con el mundo visual de `DESIGN.md`. Todo negro/neutro lleva matiz OKLCH de marca (`chroma 0.008–0.018`), evitando `#000000` puro, azul neón AI (`#38b6ff`/`#080c14`), púrpuras neón sin intención o beige + latón genérico.
-2. **Geometría y Elevación No Dogmática (`PB19`):** Usar radios `12–16px` en tarjetas y `8–12px` / `999px` en controles por defecto; restringir `0px` estrictamente a mundos brutalistas/editoriales con justificación explícita. Declarar elevación una sola vez (borde sutil `1px` O sombra direccional suave, nunca ambos).
-3. **Tokens W3C DTCG 2025.10 + Tailwind v4:** Emitir `$value` (`oklch`), `on_primary`, `on_accent`, `hex`, `p3`, `--brand-on-primary`, `--brand-on-accent` y `:root` alineado a `recommended_mode`.
-4. **Auditoría Física Real:** Garantizar WCAG 2.2 AAA $\ge 7.0:1$ en texto, $\ge 4.5:1$ en `on_primary` sobre `primary` y APCA $|L_c| \ge 75.0$ en ambos modos; validar con `chroma-engine --test` y `chroma_preview.html`.
+## Hard Rules (Positive Guidance)
+1. **Art-Direction-First, Zero Canned Pastels:** Preserves designer primary/accent pigments verbatim when accessible. In dark mode, prefers **Radix Step-9 solid saturated CTAs** (`L ~ 0.46–0.56` with crisp off-white `on_primary` ink `>= 4.5:1`) or pure monochrome bone (`#f2efe9`) rather than forcing vivid hues into muted `L=0.76` pastels.
+2. **Deliberate Strategy & Tinted OKLCH Neutrals:** Declares `color_strategy` (`Restrained`, `Committed`, `Full Palette`, `Drenched`) and `60-30-10` proportion. Eliminates pure `#000000` and beige/muddy AI slop while keeping subtle tinted neutrals (`C ~ 0.005–0.014`) and single-elevation geometry (`border_1px` OR `soft_shadow`).
+3. **CSS Color 4 Gamut Mapping & Display P3:** Clamps `sRGB` safely via binary search in `OKLCH` chroma (`gamut_map_oklch`) preserving perceptual Lightness and Hue while emitting `@supports (color: color(display-p3 ...))`.
+4. **Dark-Mode Z-Elevation & Achromatic Audit (`C = 0`):** Enforces progressive dark elevation (`Z0 < Z1 <= Z2 <= Z3`), luminance delta `>= 0.55`, and complete semantic/component DTCG 2025.10 tokens (`primitive -> semantic -> component`).
+5. **Physical & Visual Verification:** Guarantees WCAG 2.2 AAA (`>= 7.0:1` body), AA (`>= 4.5:1` buttons/muted), APCA (`|Lc| >= 75` body), passes `chroma-engine --test`, and verifies `chroma_preview.html` visually in headless Chrome.
 
 ## References
 - [`references/usage.md`](file:///var/www/zerops-astro-skills/chroma/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/chroma/references/infra.md)

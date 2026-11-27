@@ -1,81 +1,52 @@
-# Fontgen: Manual de Sourcing Híbrido, Art Direction y Workbench Tipográfico
+# Fontgen: Art-Direction-First Spec, Modos CLI y Envato Filtering (v7.0)
 
-Este documento especifica la metodología de emparejamiento tipográfico, leyes de Gestalt, el protocolo de búsqueda con verificación de enlaces reales y la integración con el Workbench interactivo (`webapp.html`).
+Este manual detalla el flujo en dos etapas de `fontgen_engine.py v7.0` y `envato_font_preview.py v5.1` para generar tipografía distintiva en proyectos aislados o multimarca.
 
 ---
 
-## 1. Arquitectura de los 3 Design Tokens (W3C DTCG)
+## 1. Stage 1 — `font_spec.json` a Medida del Posicionamiento
 
-El sistema tipográfico se organiza estrictamente en 3 capas de diseño complementarias:
+El agente director de arte redacta 3 ecosistemas tipográficos verdaderamente contrastantes (ej. Editorial Serif + Humanista, Grotesca Expresiva, Didone de Autoridad) dentro de `<ws>/brand/font_spec.json`:
 
+```json
+{
+  "ecosystems": [
+    {
+      "id": "eco-1",
+      "name": "Editorial Serif + Humanista",
+      "rationale": "Autoridad intelectual con lectura cálida y alta densidad conceptual.",
+      "display_web": "Source Serif 4",
+      "body_web": "Hanken Grotesk",
+      "italic_web": "Source Serif 4",
+      "scale_ratio": 1.333,
+      "tracking_em": -0.020,
+      "display_weight": 700,
+      "envato_display_query": "editorial serif",
+      "envato_accent_query": "grotesk sans"
+    }
+  ]
+}
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                       MATRIZ DE 3 DESIGN TOKENS                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. TOKEN PRIMARIO (Display & Autoridad)                                      │
-│    - Fuente: Exclusiva de Envato Elements / Local Upload.                    │
-│    - Uso: Encabezados H1, H2, Slogan / Tagline, Títulos Hero.               │
-│    - Razón: Otorga exclusividad, diferenciación y alta gama estética.       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 2. TOKEN SECUNDARIO (Workhorse & Lectura de Fricción Cero)                   │
-│    - Fuente: Exclusiva de Google Fonts Variable por CDN.                     │
-│    - Uso: Cuerpo de texto, párrafos, tablas, labels y componentes UI.       │
-│    - Razón: Legibilidad extrema en pantallas pequeñas, carga optimizada.     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 3. TOKEN DE ACENTO (Brand Voice & Personalidad Gráfica)                      │
-│    - Fuente: Exclusiva de Envato Elements / Script / Monograma.              │
-│    - Uso: Isologos, citas destacadas, iniciales y monogramas de marca.       │
-│    - Razón: Impacto visual y pregnancia nemotécnica.                        │
-└─────────────────────────────────────────────────────────────────────────────┘
+
+---
+
+## 2. Stage 2 — Compilación, Cero Fugas de Oráculo y Filtro de Calidad
+
+- **Cero Rastreo Silencioso en Disco:** `fontgen_engine.py v7.0` eliminó cualquier búsqueda implícita sobre carpetas externas de Oráculo. Sin `--shards` ni `--brief` explícitos, `has_oraculo` es estrictamente `false`.
+- **Filtro Anti-Slop Web (`GOOGLE_FONTS_CATALOG`):** 26 familias variables reales (`Source Serif 4`, `Literata`, `EB Garamond`, `Bodoni Moda`, `Bricolage Grotesque`, `Schibsted Grotesk`, `Hanken Grotesk`, `Albert Sans`, `Familjen Grotesk`, `Onest`, `Work Sans`, `Host Grotesk`, etc.) con bloqueo activo sobre fuentes quemadas por IA.
+- **Scoring Profesional Envato (`_is_noisy_title` & `_score_candidate`):** Bloquea ruido amateur/temático (`futuristic`, `cyber`, `techno`, `wedding`, `calligraphy`, `"for elegant"`, `"for branding"`), penaliza títulos SEO con más de 3 palabras y prioriza `popular` + SVG verificado.
+- **Disyunción entre Hermanos y Proyectos Aislados:** `--sibling-workspaces-dir` y `--exclude-fonts` garantizan cero superposición entre verticales; en contenedores ZCP aislados, `font_spec.json` + rotación por semilla producen selecciones únicas sin conocer proyectos vecinos.
+
+---
+
+## 3. Verificación Real & Captura Visual
+
+```bash
+fontgen-engine --brand <BRAND> --spec <ws>/brand/font_spec.json --brand-brief <vertical.json> --output-dir <ws>/brand
+envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json \
+  --texts "MARCA,SUBTITULO" --include-shortlist --out <ws>/brand/previews
+fontgen-engine --test && envato-font-preview --test
+google-chrome --headless --no-sandbox --disable-gpu --window-size=1440,1200 \
+  --virtual-time-budget=3000 --screenshot=/tmp/font_gallery.png \
+  "file://<ws>/brand/previews/preview_gallery.html"
 ```
-
----
-
-## 2. Protocolo de Búsqueda Vanguardia Dual-Sort en Envato & Previsualización SVG (`envato-font-preview`)
-
-Para garantizar fuentes actualizadas, vanguardistas y previsualizables antes de descargar archivos `.woff2`:
-- **Sourcing Dual-Sort (`fontgen-engine` v4.1):** Consulta **`elements.envato.com/fonts/<término>/<categoría>/sort-by-latest`** y **`sort-by-popular`** (`window.INITIAL_HYDRATION_DATA`) más fallback a `app.envato.com/search`. Puntúa novedad (`isNew`) y oficios de fundición (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra novedades kitsch (`retro`, `90s`, `western`, `pixel`, `horror`, `wedding`, `calligraphy`), diferencia el perfil por vertical (`architectural_b2b`, `cosmic_archetypal`, `design_system_atelier`, `editorial_manifesto`), emite 3 `shortlist_candidates` alternativos y genera `web_ready_bridge` para Astro 5 (sin `Fraunces` ni `Inter`).
-- **Previsualización SVG Multipaleta (`envato-font-preview` v3.2):**
-  ```bash
-  envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" --include-shortlist --out <ws>/brand/previews
-  ```
-  Incluye reintentos automáticos ante `502`/`503`/`429`, botón rápido `"Probar Tildes ES"` y renderizado opcional de alternativas de `shortlist_candidates`.
-- **Catálogo Curado Offline:** Si no hay red (`--no-live`), recurre a `ENVATO_VERIFIED_CATALOG` con UUIDs verificados en `app.envato.com/fonts/{uuid}`.
-
-### Reglas de Validación de Enlaces:
-- **Envato Elements:** Formato canónico `https://elements.envato.com/[slug]-[ALFANUMERICO-7]` (HTTP 200 OK obligatorio)
-- **Google Fonts:** Formato canónico `https://fonts.google.com/specimen/[Nombre+De+Fuente]` (API v2 Variable)
-
----
-
-## 3. Matriz de Herencia Funcional de 6 Capas (Leyes de Gestalt)
-
-Cada ecosistema debe definir explícitamente cómo heredan las 6 capas funcionales:
-
-1. **Logo / Marca:** Instancia `Token de Acento` (peso Black o Display 900).
-2. **Slogan / Tagline:** Instancia `Token Primario`. *Regla:* Si el logo es muy decorativo, el slogan DEBE usar el token primario para generar contraste armónico.
-3. **H1 / Títulos Hero:** Instancia `Token Primario` (Peso 400-600 máx).
-4. **H2 / Subtítulos:** Instancia `Token Primario` (Aplica regla de "The Jump": tamaño 3x menor que H1).
-5. **Cuerpo / Párrafos:** Instancia `Token Secundario` (Peso Regular 400, line-height 1.5 a 1.6).
-6. **UI / Botones (Labels):** Instancia `Token Secundario` (Inversión de peso: Medium 600 o Bold 700).
-
----
-
-## 4. Integración Bidireccional con el Workbench (`webapp.html`)
-
-El manifiesto JSON (`font_manifest.json`) exporta e importa los presets de los controles interactivos:
-- `letter_spacing_em`: Rango `-0.2` a `1.0` em.
-- `line_height`: Rango `0.5` a `3.0`.
-- `text_transform`: `uppercase`, `lowercase`, `capitalize`, `none`.
-- `ligatures_enabled`: Activa `font-feature-settings: "liga" 1, "dlig" 1`.
-- `transform_x` / `transform_y` / `rotation_deg` / `mirror_enabled`: Coordenadas de transformación visual en lienzo.
-
----
-
-## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
-
-La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards del VirtualDataLake.
-- **Desacople Total de Cascada:** `fontgen` no requiere que ninguna otra fase del pipeline se haya ejecutado previamente. Puede invocarse de manera autónoma o interactiva desde `brandview`.
-- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante.
-- **Contratos de Salida Garantizados:** Emite `font_manifest.json` (3 ecosistemas, 6 capas funcionales y `selected_ecosystem_id`), `fontgen_[MARCA].md` y código dev (`@font-face` y Google Fonts v2) para `brandview`.
-

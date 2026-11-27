@@ -1,49 +1,29 @@
-# Orchesbrand: Infraestructura, Sincronización SSoT y Conectividad Brandview (v2.0)
+# Orchesbrand: Infraestructura Modular, Aislamiento SSoT y Contrato PB19 (v4.5)
 
-Este documento define la infraestructura de coordinación, persistencia bidireccional y comunicación en caliente para el pipeline de branding.
+Este documento define la infraestructura de coordinación desacoplada y los contratos SSoT de `orchesbrand v4.5`.
 
 ---
 
-## 1. Topología del Pipeline y Aislamiento de Procesos
+## 1. Topología Desacoplada en Contenedores Aislados (`ZCP`)
 
-Orchesbrand coordina la ejecución secuencial o paralela de las 5 micro-habilidades especializadas:
+`orchesbrand` funciona sin depender de archivos globales entre clientes ni de Oráculo obligatorio:
 
 ```
-                  ┌─────────────────────────────────────────┐
-                  │ SSoT Primario: astrobranding_[MARCA].md │
-                  └────────────────────┬────────────────────┘
+  [Dirección de Arte: chroma_spec.json + font_spec.json] (+ Opt-in --brief / --shards)
                                        │
         ┌──────────────┬───────────────┼───────────────┬──────────────┐
         ▼              ▼               ▼               ▼              ▼
-  [F1 fontgen]   [F2 symbol]     [F3 chroma]     [F4 kinetic]   [F5 brandbook]
+ [chroma v8.0]   [fontgen v7.0]  [envato v5.1]  [symbol v2.0]  [kinetic v2.1]
         │              │               │               │              │
         └──────────────┴───────────────┼───────────────┴──────────────┘
-                                       │
                                        ▼
-                  ┌─────────────────────────────────────────┐
-                  │ Manifiesto Unificado: brandbook.json    │
-                  │ (W3C Design Tokens Community Group)     │
-                  └────────────────────┬────────────────────┘
-                                       │
-                    ┌──────────────────┴──────────────────┐
-                    ▼                                     ▼
-        [Zerops Local Storage]                   [Google Drive SSoT]
-     /var/www/localstorage/[MARCA]/dev/       /var/www/baiosfera/PROYECTOS/[MARCA]/
+                <ws>/brand/{brandbook.json, brandbook-theme.css}
 ```
 
 ---
 
-## 2. Sincronización SSoT Bidireccional y Zero-Lock
+## 2. Aislamiento por Workspace y Paridad Byte-a-Byte
 
-- **Directorio de Trabajo Local:** `/var/www/localstorage/[MARCA]/dev/`
-- **Repositorio Global Indestructible:** `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/` y `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/`
-- **Herramienta de Sincronización:** `zcp-sync [MARCA]`
-  Permite propagar los artefactos generados en local hacia Drive de forma no bloqueante ("Zero-Lock").
-
----
-
-## 3. Conectividad en Tiempo Real con Brandview Studio
-
-- **Transporte:** WebSockets / SSE sobre red privada interna de Zerops.
-- **Formato de Mensajes:** Parches RFC 6902 (JSON Patch) para mutaciones parciales de variantes seleccionadas sin invalidar el manifiesto completo.
-- **Validación de Esquema:** Todo parche se valida contra `assets/schemas/pipeline_state.schema.json` y `assets/schemas/brandview_state.schema.json`.
+- **Salida Local Única:** Todo artefacto se escribe dentro de `--output-dir` o `<project_dir>/workspaces/<vertical>/brand/` sin directorios fantasma en `/mnt/localstorage`.
+- **Paridad de Scripts:** `fontgen_engine.py v7.0` mantiene hash SHA-256 idéntico entre `/var/www/zerops-astrobranding/scripts/` y `/var/www/zerops-astro-skills/fontgen/scripts/` (libre de `__pycache__`).
+- **Validación:** `orchesbrand --test` ejecuta el pipeline completo multimarca + ruta sin Oráculo en directorio temporal aislado.

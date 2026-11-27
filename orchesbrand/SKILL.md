@@ -4,23 +4,23 @@ description: "Trigger: orchesbrand, orquestar branding, pipeline de marca, ident
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.2"
+  version: "4.5"
 ---
 
-# Orchesbrand — Orquestador Visual Multimarca & Visual World (v4.2)
+# `orchesbrand` — Orquestador Visual Art-Direction-First & PB19 (v4.5)
 
 ## Activation Contract
-Activar para orquestar `chroma`, `fontgen` (`v4.3`), `previews` Full-Color (`envato-font-preview v4.1`), `DESIGN.md` y `brandbook` tanto para clientes con Oráculo (`brand_slug` en `ecosystem.json` → `client_dumps_15_shards.json`) como sin carta natal (`--brand-brief` + `--palette-json` / `--seed-hex` + `--envato-urls`).
+Activar para orquestar `chroma` (`v8.0`), `fontgen` (`v7.0`), `previews` (`envato-font-preview v5.1`), `DESIGN.md` y `brandbook`, tanto para marcas **sin Oráculo** (ruta agnóstica por defecto mediante `--chroma-spec` / `--font-spec` / `--brand-brief`) como **con Oráculo** mediante opt-in explícito (`--brief <astrobranding_*.md> --shards <15_shards.json>`). Las fases vectoriales (`symbol v2.0`) y de movimiento (`kinetic v2.1`) operan desacopladas sobre los mismos tokens `OKLCH` y piezas SVG reales.
 
-## Input Rule (Dual Intake & Multimarca Disjunto)
-- **Con Oráculo:** `orchesbrand --brand <Project> --vertical <slug> --project-dir /mnt/localstorage/<Project>/dev [--palette-json <palettes.json>] --preview-texts "<MARCA>,<MÉTODO>" --audit`. Resuelve `brand_slug` desde `ecosystem.json`, excluye fuentes hermanas vía `--sibling-workspaces-dir` y aísla en `workspaces/<vertical>/brand/`.
-- **Sin Oráculo (Art Direction First):** `orchesbrand --brand <BRAND> --vertical <slug> --brand-brief <brand_brief.json> --palette-json <palettes.json> --envato-urls "<url1>,<url2>" --output-dir <ws>/brand --audit`.
+## Input Routes (Agnóstico por Defecto · Oráculo Opt-In)
+- **Art Direction First (Por Defecto):** `orchesbrand --brand <BRAND> --vertical <slug> --brand-brief <brand_brief.json> [--chroma-spec <ws>/brand/chroma_spec.json] [--font-spec <ws>/brand/font_spec.json] --output-dir <ws>/brand --audit`
+  *(Detecta automáticamente `chroma_spec.json` y `font_spec.json` dentro de `--output-dir` si existen).*
+- **Con Oráculo Explícito:** `orchesbrand --brand <Project> --vertical <slug> --project-dir <dev> --brief <astrobranding_*.md> --shards <15_shards.json> --preview-texts "<MARCA>,<SUB>" --audit`
 
 ## Hard Rules (Directivas Obligatorias)
-1. **Visual World antes de Tokens (`PB19`):** Exigir `PRODUCT.md` + `impeccable concept-seed` + `DESIGN.md` para asegurar mundos visuales propios entre verticales sin clonar referencias ni caer en plantillas uniformes.
-2. **Tipografía Real Sin Fantasmas (`fontgen v4.3`):** Garantizar que `font_manifest.json -> web_ready_bridge.fontsource_packages` resuelva exclusivamente `@fontsource-variable/*` verificadas (cero `Plus Jakarta Sans`, `Space Grotesk`, `Inter`, `Fraunces`, `Instrument Serif`, `DM Sans`, `Outfit`, `Syne`) y marque fuentes Envato como mejora opcional solo si hay `.woff2` locales.
-3. **Motor Cromático (`chroma-engine v5.1`) & Geometría Deliberada:** Rotar matices entre ramas hermanas, auditar WCAG AAA ($\ge 7:1$ texto, $\ge 4.5:1$ botón) y declarar radios/elevación coherentes (`12–16px` por defecto; `0px` únicamente cuando el mundo visual lo exija).
-4. **Galería Full-Color & Merge SSoT (`--audit`):** `envato-font-preview v4.1` deduplica por UUID y ofrece alternancia de paletas/tildes ES; fusiona `design_system` en `brandbook.json` + `brandbook-theme.css` y pasa `orchesbrand --test`.
+1. **Separación Dirección de Arte vs Compilación (`chroma v8.0`):** Diseña `chroma_spec.json` a medida por marca y compila con gamut mapping CSS Color 4, Step-9 oscuro saturado (`on_primary` legible sin lavado pastel), WCAG 2.2 AAA, APCA `0.0.98G-4g` y auditoría acromática `C=0`. Cero plantillas o arquetipos fijos.
+2. **Tipografía Curada & Cero Fugas (`fontgen v7.0` + `envato-font-preview v5.1`):** Compila `font_spec.json` o ejes explícitos sin rastreo silencioso en disco (`has_oraculo=False` por defecto), filtra ruido amateur/sci-fi en Envato, emite `astro_web_ready` (sintaxis Context7 `options.variants` y `CLS=0`) y garantiza galería legible SVG+Web.
+3. **Merge No Destructivo, Symbol & Kinetic (`v2.0`/`v2.1`):** Actualiza `design_system` (`colors`, `typography`, `dtcg_tokens`, `astro_web_ready`) y `brand_colors` en `brandbook.json` + `brandbook-theme.css` sin pisar `brand_architecture` ni léxico; valida `symbol-engine` (atributos `width`/`height` explícitos), `kinetic-engine` (`1150–1618ms` + loop vivo sutil) y pasa `orchesbrand --test`.
 
 ## References
 - [`references/pipeline.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/pipeline.md) · [`references/usage.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/orchesbrand/references/infra.md)

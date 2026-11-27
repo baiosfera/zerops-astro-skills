@@ -1,89 +1,27 @@
-# Kinetic: Manual de Motion Design a 60fps, 3 Presets de Animación y Web Audio ADSR
+# Kinetic: Manual de Motion 60fps GPU-Only y Live Preview (`v2.0`)
 
-Este documento detalla la arquitectura de animación de alto rendimiento y el motor de síntesis de audio procedural para la suite de branding.
-
----
-
-## 1. Arquitectura de 3 Opciones de Animación sobre el SVG Escogido
-
-Para dar al usuario control artístico total sobre el comportamiento dinámico de su marca, `kinetic` formula 3 opciones:
-
-### Opción A: Precesión Orbital & Respiración Armónica (Luxury / Continuo)
-- **Concepto:** Rotación orbital continua asincrónica entre elipses externas e internas con pulso sutil de compresión.
-- **Targets:** `#symbol-orbit-1` (rotación 24s antihoraria), `#symbol-orbit-2` (rotación 18s horaria), `#symbol-core` (respiración scale 1.025 a 6s).
-
-### Opción B: Velocidad Cinética & Trazado Elástico (High-Performance / Activo)
-- **Concepto:** Entrada con aceleración deportiva `power4.out`, destello de trazo y rotación rápida enérgica.
-- **Targets:** `#symbol-orbit-1` (spin a 8s), `#symbol-geometry-star` (shimmer rápido a 2.5s).
-
-### Opción C: Revelado Místico & Brillo Áureo (Minimal / Ethereal)
-- **Concepto:** Difuminado lumínico sutil, trazo `stroke-dashoffset` progresivo y micro-elevación.
-- **Targets:** `#symbol-monogram` (glow pulsante), `#symbol-geometry-star` (resplandor a 4s).
+Este manual formaliza cómo `kinetic_engine.py v2.0` traduce la doctrina de movimiento de `PB19 v2.0.0` (Módulo 6.3) a presets reutilizables de `0 KB` JS en CSS puro más un hook perezoso compatible con Astro View Transitions.
 
 ---
 
-## 2. Sintetizador Procedural Web Audio API (ADSR + BiquadFilter)
+## 1. Por qué 3 Presets Sobrios (y Cero Ruido)
 
-Erradica los "clicks" y "pops" iniciales mediante una envolvente completa **ADSR** (Attack, Decay, Sustain, Release) y filtrado tímbrico con `BiquadFilterNode`:
+En `astro-web`, el movimiento no adorna tarjetas en bucle ni dispara audios sin permiso: dirige la atención en **un momento coreografiado por vista** respetando `LCP < 1.0s`, `CLS = 0` e `INP < 200ms`.
 
-```javascript
-class BrandAudioSynthesizer {
-  constructor() {
-    this.ctx = null;
-  }
-
-  init() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-  }
-
-  playMicroSound({
-    type = 'sine',
-    frequency = 520,
-    attack = 0.015,
-    decay = 0.04,
-    sustainLevel = 0.2,
-    release = 0.06,
-    peakGain = 0.03,
-    filterFreq = 3200
-  } = {}) {
-    this.init();
-    const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gainNode = this.ctx.createGain();
-    const filter = this.ctx.createBiquadFilter();
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(filterFreq, now);
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(frequency, now);
-
-    gainNode.gain.setValueAtTime(0.0001, now);
-    gainNode.gain.linearRampToValueAtTime(peakGain, now + attack);
-    gainNode.gain.exponentialRampToValueAtTime(Math.max(0.0001, peakGain * sustainLevel), now + attack + decay);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + attack + decay + release);
-
-    osc.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(this.ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + attack + decay + release + 0.01);
-  }
-}
-```
+1. **`editorial_reveal` (`650ms`):** revelado por máscara `clip-path` + desplazamiento `translateY(10px -> 0)` en curva exponencial `cubic-bezier(0.16, 1, 0.3, 1)`. Ideal para portadas y encabezados de marca.
+2. **`staggered_precision` (`520ms` + `120ms/trazo`):** entrada secuencial sobre cada trazo real del símbolo (`#symbol-part-1`, `#symbol-part-2`, ...) generado por `symbol-engine`, más micro-elevación `translateY(-2px)` en `:hover`.
+3. **`ambient_signature` (`540ms` + hover `scale(1.035)`):** entrada limpia + respuesta arquitectónica al puntero para cabeceras y navegación.
 
 ---
 
-## 3. Arquitectura Desacoplada & Ingestión Directa SSoT
+## 2. Invariantes de Rendimiento y Accesibilidad
 
-La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los Shards 08 (Dinámica Cinética & Audio) y 10 del VirtualDataLake.
-- **Desacople de Cascada:** `kinetic` puede formular las 3 opciones de animación y sintetizar el micro-audio ADSR directamente a partir de las especificaciones cinéticas del SSoT, sin requerir que las fases previas (`fontgen`, `symbol`, `chroma`) hayan completado su ciclo.
-- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante. Si `symbol_manifest.json` y `chroma_manifest.json` existen en disco, hereda sus nodos vectoriales y paletas; de lo contrario anima directamente sobre los IDs semánticos canónicos (`#symbol-core`, `#symbol-orbit-1`, `#symbol-orbit-2`, `#symbol-geometry-star`, `#symbol-monogram`).
-- **Contratos de Salida Garantizados:** Emite `kinetic_manifest.json` (3 presets 60fps sobre IDs semánticos, tokens DTCG de aceleración/duración, presets ADSR y `selected_animation_id`) y código dev CSS/GSAP listo para `brandview`.
+- **Solo propiedades compuestas GPU:** `opacity`, `transform`, `clip-path`. Queda excluida cualquier propiedad de *Layout* o *Paint* (`width`, `height`, `margin`, `top`, `left`, `transition: all`).
+- **Degradación obligatoria:** todo CSS generado incluye `@media (prefers-reduced-motion: reduce)` anulando animaciones y dejando `opacity: 1` inmediato.
+- **Ciclo de vida Astro:** `astro_lifecycle_ts` encapsula el `IntersectionObserver` dentro de `requestIdleCallback`, limpia en `astro:before-swap` y reinicia en `astro:page-load`.
 
+---
+
+## 3. Visor Interactivo `kinetic_preview.html`
+
+Permite inspeccionar el símbolo real de `symbol_manifest.json` teñido con `chroma_manifest.json` en los 3 presets a la vez, con botones para repetir animaciones, alternar Dark/Light y simular `prefers-reduced-motion`.

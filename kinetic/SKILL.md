@@ -1,24 +1,34 @@
 ---
 name: kinetic
-description: "Trigger: kinetic, animacion gsap, microinteracciones, motion design, web audio api, sfx de marca, 60fps, 3 opciones animacion. Disena 3 opciones de animacion tipografica y vectorial a 60fps con GSAP y SFX procedurales."
+description: "Trigger: kinetic, animacion gsap, microinteracciones, motion design, 60fps, 3 opciones animacion, view transitions. Genera 3 presets de motion 60fps GPU-only vinculados a partes reales SVG y transiciones Astro."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.3"
+  version: "2.1"
 ---
 
-# Kinetic — Motion Design 60fps, Lazy GSAP/Lenis Astro 5 & Micro-Audio ADSR (v1.3)
+# `kinetic` — 60fps GPU-Only Motion, Deliberate Cadence & Subtle Living Loop (v2.1)
 
 ## Activation Contract
-Activar para diseñar e implementar sistemas de movimiento a `60fps` sobre Astro 5 SSR + SVG/DOM semántico, formulando **3 Opciones de Animación Diferenciadas**, patrón de carga perezosa **GSAP + ScrollTrigger + Lenis** compatible con View Transitions y banco opcional de micro-audio procedural ADSR. Ingiera desde `DESIGN.md`, `astrobranding_[MARCA].md`, `kinetic_manifest.json` o especificaciones directas.
+Activate when authoring, testing, or auditing brand motion systems (`60fps`) on `astro-web` via `kinetic-engine` (`v2.1`). Binds directly to real normalized SVG parts (`#symbol-part-1..N` from `symbol_manifest.json`), reads Oráculo §5 cadence (`--brief astrobranding_*.md`) when present, and pairs **human-readable entrances** (`1150ms–1618ms`) with a **subtle continuous living loop** (`6.8s–8.0s infinite`) that keeps the mark alive without distorting geometry.
 
-## Hard Rules (Directivas Obligatorias)
-1. **Un Momento Coreografiado & Rendimiento GPU (`RAIL < 16ms`):** Diseñar **1 momento protagonista por superficie** en lugar de `fade-up` repetitivo en cada tarjeta. Animar exclusivamente propiedades compuestas (`transform`, `opacity`, `clip-path`), usando curvas exponenciales (`cubic-bezier(0.16, 1, 0.3, 1)`), prohibiendo `bounce`/`elastic` y cambios de `width`/`margin` que provoquen *Layout Thrashing*.
-2. **Patrón Astro 5 Lazy Load + Lenis + View Transitions (2026):** Diferir la carga del módulo GSAP dentro de `requestIdleCallback` (fallback `150ms`) para proteger `LCP < 1.0s`; cuando se active `Lenis`, sincronizar `lenis.on('scroll', ScrollTrigger.update)` con `gsap.ticker` y `lagSmoothing(0)`. Encapsular tweens en `gsap.context()`, revertir en `astro:before-swap`, reinicializar en `astro:page-load` y degradar limpiamente bajo `prefers-reduced-motion: reduce`.
-3. **3 Presets Diferenciados (60fps):** **Opción A** (*Precesión Orbital & Respiración Armónica*), **Opción B** (*Velocidad Cinética & Trazado Elástico*), **Opción C** (*Revelado Editorial & Brillo Contenido*) orientados a IDs vectoriales (`#symbol-core`, `#symbol-orbit-1/2`, `#symbol-geometry-star`, `#symbol-monogram`) o secciones marcadas.
-4. **Tokens W3C DTCG & Micro-Audio Procedural (Web Audio API):** Emitir tokens (`fast`, `normal`, `slow`, easing) y presets ADSR sin MP3 externos cuando aplique SFX discreto tras gesto de usuario.
-5. **Salida SSoT:** Persistir `kinetic_manifest.json` validado por esquema cuando opere el pipeline de identidad.
+## Canonical CLI & Isolation
+```bash
+kinetic-engine --symbol <ws>/brand/symbol/symbol_manifest.json [--chroma <ws>/brand/chroma_manifest.json] [--brief <astrobranding_*.md>] --brand "<BRAND>" --output-dir <ws>/brand/kinetic
+```
+- **Self-Test:** `kinetic-engine --test`
+- **Strict Isolation:** Emits solely inside `--output-dir` (`kinetic_manifest.json`, `kinetic_motion.css`, `kinetic_preview.html`).
+
+## Hard Rules (Positive Guidance)
+1. **Bind Only to Real SVG Selectors (`symbol_manifest.json`):** Target `#symbol-mark` and the actual `#symbol-part-1..N` IDs emitted by `symbol-engine` — never invent phantom orbital IDs.
+2. **GPU-Composited Properties Only (`RAIL < 16ms`, `0` Bounce):** Animate strictly `transform`, `opacity`, and `clip-path` using deliberate editorial easing (`cubic-bezier(0.22, 1, 0.36, 1)`). Zero layout thrashing (`width`/`height`/`top`/`left`), zero `transition: all`, and zero unsolicited audio autoplay.
+3. **3 Authored Presets (`0 KB` CSS Core + Living Loop):**
+   - `editorial_reveal`: `1618ms` calm `clip-path` + `translateY(14px)` reveal chained to `7.2s` gentle `scale(1 -> 1.018)` breathing loop.
+   - `staggered_precision`: staggered entrance across real `#symbol-part-1..N` strokes (`1150ms` + `320ms` stagger) chained to subtle phase-offset living float (`6.8s`, `-1.8px`).
+   - `ambient_signature`: `1380ms` radial emergence chained to continuous calm solar float (`8.0s`, `-2.2px` / `scale 1.022`) + hover lift.
+4. **Astro View Transitions & `prefers-reduced-motion`:** Use lazy `requestIdleCallback` `IntersectionObserver` wiring with `astro:before-swap` teardown and `astro:page-load` re-init, plus strict `@media (prefers-reduced-motion: reduce)` stop for both entrance and infinite loop.
+5. **Interactive Visual Verification:** Inspect `kinetic_preview.html` (Replay All/Each, `Loop continuo: ON/OFF`, Light/Dark chroma toggle, and Reduced-Motion simulation) and pass `kinetic-engine --test`.
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/kinetic/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/kinetic/references/infra.md)
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/kinetic/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/kinetic/references/infra.md)
 - [`assets/schemas/kinetic_manifest.schema.json`](file:///var/www/zerops-astro-skills/kinetic/assets/schemas/kinetic_manifest.schema.json)

@@ -1,64 +1,23 @@
-# Symbol: Manual de Diseño Vectorial, Sacred Geometry & Monocromía SOTA
+# Symbol: Normalización SVG Real, Partes Semánticas y `<BrandMark.astro />` (`v2.0`)
 
-Este documento formaliza las directrices matemáticas, reglas de pureza vectorial monocromática y especificaciones de exportación client-side para el sistema de Isologos, Monogramas y Favicons.
-
----
-
-## 1. Principios de Sacred Geometry y Proporción Áurea ($\Phi = 1.618$)
-
-Los símbolos de marca deben construirse sobre retículas matemáticas rigurosas:
-- **La Flor de la Vida & Octagrama Sagrado:** Para arquetipos de Gobernanza, Autoridad y Trascendencia (ángulos de 45° y proporciones pitagóricas).
-- **La Espiral Áurea & Elipses Cinéticas:** Para arquetipos de Alto Rendimiento, Dinamismo, Creador y Movimiento Anatómico.
-- **Monogramas Esculpidos:** Iniciales de marca estilizadas con curvas de Bézier cúbicas fluidas.
+Este manual define la ingeniería vectorial real de `symbol_engine.py v2.0` alineada a `PB19 v2.0.0` para transformar logotipos o monogramas `.svg` crudos (con transformaciones anidadas, fondos rígidos o colores hardcodeados) en activos listos para `astro-web` y `kinetic`.
 
 ---
 
-## 2. Regla de Monocromía Estricta en Fase 2 (Black & White Puro)
+## 1. Flujo de Normalización Vectorial
 
-Para evaluar la fuerza del diseño, pregnancia y balance espacial sin el sesgo cromático:
-1. **Cero Colores Prematuros:** Queda estrictamente prohibido incrustar tonos verdes, dorados, azules o degradados de color en los trazos de Fase 2.
-2. **Uso de Variables Neutras:**
-   ```xml
-   <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="none">
-     <g id="symbol-core">
-       <circle id="symbol-orbit-outer" cx="256" cy="256" r="230" stroke="currentColor" stroke-width="6" vector-effect="non-scaling-stroke" />
-       <ellipse id="symbol-orbit-1" cx="256" cy="256" rx="210" ry="110" stroke="currentColor" stroke-width="4" transform="rotate(-30 256 256)" vector-effect="non-scaling-stroke" />
-       <ellipse id="symbol-orbit-2" cx="256" cy="256" rx="210" ry="110" stroke="currentColor" stroke-width="4" transform="rotate(30 256 256)" vector-effect="non-scaling-stroke" />
-     </g>
-     <g id="symbol-monogram">
-       <!-- Trazos esculpidos monocromáticos -->
-     </g>
-   </svg>
-   ```
-3. **Soporte Dark Mode / Light Mode:**
-   - **Dark Mode:** Trazos blancos (`#ffffff` o `currentColor`) sobre fondo negro/grafito (`#000000` / `#0f172a`).
-   - **Light Mode:** Trazos negros (`#000000` o `currentColor`) sobre fondo blanco/marfil (`#ffffff` / `#f8fafc`).
+1. **Aplanado de Matrices Afines:** Convierte `translate()`, `scale()`, `rotate()` y `matrix()` anidados en coordenadas absolutas sobre cada `<path>`.
+2. **Limpieza de Fondo y Colores:** Detecta rectángulos de fondo sólido (`<rect fill="...">`), registra el color original en `normalization.background_stripped` y lo elimina del master vectorial.
+3. **Subpaths Inteligentes (`#symbol-part-1..N`):** Separa trazos independientes en nodos `<path id="symbol-part-k" />` dentro de `<g id="symbol-mark">` para que `kinetic` pueda coreografiarlos, conservando unidos los huecos internos (*counters* de letras como `O`, `A`, `D`) mediante análisis de caja envolvente.
+4. **Normalización Óptica (`0 0 100 100`):** Evalúa puntos de control Bézier (`Q`/`C`) para calcular la caja real y centra proporcionalmente el símbolo dentro de `viewBox="0 0 100 100"` con margen de seguridad (`12%`).
 
 ---
 
-## 3. Estructura de 3 Opciones por Categoría en `symbol_manifest.json`
+## 2. Artefactos Emitidos (`--output-dir`)
 
-El archivo `symbol_manifest.json` debe contener:
-- **`isologos`:** Array de 3 propuestas completas con nombre, descripción geométrica y código `svg_raw`.
-- **`monograms`:** Array de 3 propuestas de iniciales (`svg_raw`).
-- **`favicons`:** Array de 3 glifos micro-optimizados (64x64).
-- **`selected_vector_id`:** ID del vector elegido por defecto o seleccionado por el usuario (ej: `"isologo-1"`).
-- **`lockup`:** Coordenadas espaciales para el ensamblado con la tipografía de Fase 1.
-
----
-
-## 4. Pipeline de Exportación Client-Side (Canvas Retina + PDF Vectorial)
-
-La WebApp `brandview` consume `symbol_manifest.json` y permite exportar mediante:
-1. **Canvas Retina ($2\times/3\times$):** Renderizado escalado por `window.devicePixelRatio` para PNG nítido.
-2. **PDF Vectorial:** Incrustación directa de comandos vectoriales a 300 DPI mediante `jsPDF` + `svg2pdf.js`.
-
----
-
-## 5. Arquitectura Desacoplada & Ingestión Directa SSoT
-
-La fuente primaria y canónica de verdad es `astrobranding_[MARCA].md` compilado por Oráculo en Fase 0 a partir de los shards astronómicos y arquetípicos.
-- **Desacople de Cascada:** `symbol` puede ejecutarse directamente sin requerir que `fontgen` haya concluido. Si `font_manifest.json` existe en disco, hereda las fuentes y proporciones de lockup; de lo contrario toma las directrices del SSoT o valores por defecto armónicos ($\Phi = 1.618$).
-- **Cascada No Bloqueante:** La cascada entre fases es opcional y no bloqueante.
-- **Contratos de Salida Garantizados:** Emite `symbol_manifest.json` (3 isologos, 3 monogramas, 3 favicons en estricto B/N con IDs semánticos `#symbol-core`, `#symbol-orbit-1`, `#symbol-orbit-2`, `#symbol-geometry-star`, `#symbol-monogram`) y código dev SVG puro para `brandview`.
-
+- `symbol_mono.svg`: maestro monocromo puro (`fill="currentColor"`).
+- `symbol_brand.svg`: maestro reactivo a tokens (`fill="var(--brand-primary, currentColor)"`).
+- `favicon.svg`: icono adaptativo 2026 con `@media (prefers-color-scheme: light)` alimentado por `chroma_manifest.json`.
+- `BrandMark.astro`: componente Astro SSR de `0 KB` JS con props `size`, `variant="mono"|"brand"` y accesibilidad automática (`aria-hidden` vs `role="img"` + `aria-label`).
+- `symbol_manifest.json`: metadatos, partes semánticas, `lockup_ratios` y SVG embebidos.
+- `symbol_preview.html`: inspector interactivo comparando SVG original vs. normalizado, B/N, teñido `chroma`, legibilidad de favicon (`16–64px`) y lockup horizontal en cabecera.

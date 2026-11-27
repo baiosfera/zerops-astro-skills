@@ -1,41 +1,31 @@
 ---
 name: symbol
-description: "Trigger: symbol, isologo, monograma, logo vectorial, geometria sagrada, svg, icono de marca, vectores b/n. Disena y cura isologos, monogramas y vectores SVG puros y monocromaticos."
+description: "Trigger: symbol, isologo, monograma, logo vectorial, svg, icono de marca, favicon adaptativo, brandmark. Normaliza, limpia y compila iconos y monogramas SVG en monocromo, tokens CSS reactivos y componentes astro-web."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.2"
+  version: "2.0"
 ---
 
-# Symbol — Motor Vectorial, Sacred Geometry & Monocromía Dual-RAG
+# `symbol` — SVG Normalizer, Subpath Splitter & Astro BrandMark Engine (v2.0)
 
 ## Activation Contract
-Activar para diseñar, vectorizar y validar el sistema de Isologos, Monogramas y Favicons SVG de una marca derivándolos del arquetipo rector, la proporción áurea ($\Phi = 1.618$) y la geometría sagrada. Opera desacoplado con ingestión directa desde `astrobranding_[MARCA].md` o en modo interactivo.
+Activate when normalizing a raw brand mark / monogram `.svg` (or designing clean SVG brand marks) for `astro-web` and `orchesbrand` via `symbol-engine` (`v2.0`). Replaces fake sacred-geometry boilerplate with real affine transform flattening, optical `viewBox` normalization, semantic subpath splitting (`#symbol-part-1..N`) for `kinetic`, adaptive `favicon.svg`, and zero-JS `<BrandMark.astro />`.
 
-## Input Rule (Desacople SSoT)
-- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0) sin requerir que fases previas se hayan ejecutado o bloqueen el pipeline. Si `font_manifest.json` existe, hereda sus tipografías; de lo contrario toma las directrices del SSoT.
-- **Modo Standalone / Manual:** Acepta requerimientos directos del usuario o `brand_input.json`.
+## Canonical CLI & Isolation
+```bash
+symbol-engine --input <raw_icon.svg> --brand "<BRAND>" [--chroma <ws>/brand/chroma_manifest.json] --output-dir <ws>/brand/symbol
+```
+- **Self-Test:** `symbol-engine --test`
+- **Strict Isolation:** Emits solely inside `--output-dir` (`symbol_mono.svg`, `symbol_brand.svg`, `favicon.svg`, `BrandMark.astro`, `symbol_manifest.json`, `symbol_preview.html`).
 
-## Hard Rules (Directivas Obligatorias)
-- **1. Monocromía Estricta (Regla B/N):** Vectores en **estricto blanco y negro puro**, empleando exclusivamente `currentColor`, `var(--vector-stroke, #ffffff)` y `var(--vector-fill, none)` o fondos neutros. La aplicación de paletas de color se delega a `chroma`.
-- **2. Generación Triple por Categoría (3 Opciones):**
-  - **3 Isologos:** Isologo A (Geometría Áurea / Elipses), Isologo B (Monograma Esculpido), Isologo C (Geometría Simétrica / Octagrama / Flor de la Vida).
-  - **3 Monogramas:** Iniciales de marca estilizadas (Entrelazado, Minimalista, Geométrico).
-  - **3 Favicons:** Glifos compactos de alta legibilidad a 16px/32px/64px.
-- **3. Semántica de IDs para Animación Downstream:** Estructurar nodos `<g>`, `<circle>`, `<ellipse>`, `<path>`, `<polygon>` con IDs semánticos:
-  - `#symbol-core`: Núcleo central del símbolo.
-  - `#symbol-orbit-1` & `#symbol-orbit-2`: Elementos orbitales / elipses cinéticas.
-  - `#symbol-geometry-star`: Polígonos de geometría sagrada / estrellas / sellos.
-  - `#symbol-monogram`: Nodos vectoriales de iniciales.
-- **4. Pureza Vectorial & Escalabilidad:** SVGs 100% vectoriales, `viewBox` explícito (`512x512` o `256x256`), `vector-effect="non-scaling-stroke"`, sin `<image>` ni scripts. Emite código dev SVG puro.
-- **5. Contrato de Selección:** Incluir `selected_vector_id` (ej: `"isologo_a"`).
-- **6. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/symbol_manifest.json` validado contra `symbol_manifest.schema.json`.
-
-## Output Contract
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/symbol_manifest.json`
+## Hard Rules (Positive Guidance)
+1. **Flatten Nested Transforms & Strip Raw Canvas:** Flatten all chained `<g transform="...">` matrices directly onto absolute coordinates, strip solid background `<rect>` layers, compute exact curve extrema (`Q`/`C`), and normalize uniformly into `viewBox="0 0 100 100"` with `12%` optical safe padding.
+2. **Semantic Subpath Splitting (`#symbol-part-1..N`):** Split independent strokes/glyphs into `<path id="symbol-part-1" ... />`, `<path id="symbol-part-2" ... />` inside `<g id="symbol-mark">` while keeping interior counter holes merged with their outer contour so fills remain intact.
+3. **Zero Hardcoded Colors in Masters:** `symbol_mono.svg` uses `fill="currentColor"` with transparent background; `symbol_brand.svg` binds to `fill="var(--brand-primary, currentColor)"` for automatic `[data-brand]` / `[data-theme]` switching.
+4. **Adaptive Dark/Light `favicon.svg` & `<BrandMark.astro />`:** Generate a single modern `favicon.svg` with embedded `@media (prefers-color-scheme: light|dark)` wired to `chroma_manifest.json`, plus a zero-JS accessible `<BrandMark.astro />` (`aria-hidden` when decorative, `role="img"` + `aria-label` when semantic).
+5. **Visual & Optical Legibility Inspection:** Inspect `symbol_preview.html` across Dark/Light/B&W/Chroma and `16px–64px` favicon sizes before promoting.
 
 ## References
-- [`references/usage.md`](file:///var/www/zerops-astro-skills/symbol/references/usage.md) — Guía de geometría sagrada, monocromía estricta, desacople SSoT y exportación.
-- [`references/infra.md`](file:///var/www/zerops-astro-skills/symbol/references/infra.md) — Optimización SVG (svgo), seguridad vectorial y pipeline de Favicons.
-- [`assets/schemas/symbol_manifest.schema.json`](file:///var/www/zerops-astro-skills/symbol/assets/schemas/symbol_manifest.schema.json) — Esquema JSON Draft 2020-12.
-- [`assets/templates/symbol_manifest_template.json`](file:///var/www/zerops-astro-skills/symbol/assets/templates/symbol_manifest_template.json) — Plantilla del manifiesto vectorial monocromático.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/symbol/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/symbol/references/infra.md)
+- [`assets/schemas/symbol_manifest.schema.json`](file:///var/www/zerops-astro-skills/symbol/assets/schemas/symbol_manifest.schema.json)

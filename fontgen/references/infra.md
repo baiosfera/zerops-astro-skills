@@ -1,45 +1,51 @@
-# Fontgen: Infraestructura, APIs y Suministro Tipográfico SOTA (2026)
+# Fontgen: Infraestructura Astro 2026 Fonts API, WOFF2 Local y `CLS = 0` (`v7.0`)
 
-Este documento define la infraestructura de conectividad, APIs de catálogo, CDNs y provisión tipográfica de alta fidelidad.
-
----
-
-## 1. APIs de Búsqueda y Validación en Vivo (Tier 1)
-
-- **Exa Search Engine (`web_search_exa`):**
-  - Rastreo en tiempo real de fuentes en `site:elements.envato.com` y `site:fonts.google.com`.
-  - Verificación de enlaces canónicos reales con ID alfanumérico para evitar alucinaciones.
-
-- **Google Fonts API v2 (Multi-Eje Variable):**
-  - **Estructura de URL SOTA:**
-    Los ejes de variación deben ordenarse alfabéticamente (`ital`, `opsz`, `slnt`, `wdth`, `wght`) y especificar tuplas ordenadas:
-    ```html
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    ```
+Este documento define el suministro tipográfico en producción para `astro-web` (cero peticiones runtime a CDNs externos), la sintaxis verificada de Astro 2026 y las métricas duales `CLS = 0` de `fontgen_engine.py v7.0`.
 
 ---
 
-## 2. Prevención de Cumulative Layout Shift (CLS = 0.00)
+## 1. Astro 2026 Native Fonts API (`astro.config.mjs`)
 
-Para anular el salto de maquetación cuando la fuente web carga sobre la fuente del sistema (`font-display: swap`), se calculan e inyectan los descriptores métricos en el `@font-face` local:
+En `astro-web`, las fuentes se descargan y empaquetan en **tiempo de build** como `WOFF2` locales con *fallbacks* métricos automáticos (`optimizedFallbacks: true`) y sintaxis verificada en Context7 (`/websites/astro_build_en`):
 
-```css
-@font-face {
-  font-family: 'Space Grotesk Fallback';
-  src: local('Arial');
-  size-adjust: 102.5%;
-  ascent-override: 95%;
-  descent-override: 22%;
-  line-gap-override: 0%;
-}
+```js
+// astro.config.mjs — generado en font_manifest.json -> astro_web_ready.astro_fonts_config
+import { defineConfig, fontProviders } from "astro/config";
+
+export default defineConfig({
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "Source Serif 4",
+      cssVariable: "--font-display",
+      weights: ["300 800"],
+      styles: ["normal", "italic"],
+      optimizedFallbacks: true,
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Hanken Grotesk",
+      cssVariable: "--font-body",
+      weights: ["300 800"],
+      styles: ["normal", "italic"],
+      optimizedFallbacks: true,
+    },
+    // Opcional cuando existan archivos .woff2 licenciados en src/assets/fonts/:
+    // { provider: fontProviders.local(), name: "CustomDisplay", cssVariable: "--font-display", options: { variants: [{ weight: "400 800", style: "normal", src: ["./src/assets/fonts/display.woff2"] }] } }
+  ],
+});
 ```
 
 ---
 
-## 3. Contratos de Persistencia SSoT
+## 2. Prevención Dual de Layout Shift (`CLS = 0.00`)
 
-Toda ejecución de `fontgen` escribe exclusivamente en:
-- **Reporte Markdown:** `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/fontgen_[MARCA].md`
-- **Manifiesto JSON W3C DTCG:** `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/font_manifest.json`
+`fontgen_engine.py v7.0` emite `@font-face` de respaldo calibrados tanto para **Display** como para **Body** (`size-adjust`, `ascent-override`, `descent-override`, `line-gap-override`), junto con `font-optical-sizing: auto` y `font-size-adjust: from-font` (respaldado por `@supports not (font-size-adjust: from-font)`).
+
+---
+
+## 3. Contratos de Persistencia y Paridad SSoT
+
+- **Salida Aislada (`--output-dir`):** `font_manifest.json` y `fontgen_<vertical>.md`.
+- **Paridad Obligatoria:** `/var/www/zerops-astrobranding/scripts/fontgen_engine.py` debe mantenerse byte-idéntico a `/var/www/zerops-astro-skills/fontgen/scripts/fontgen_engine.py` (sin residuos `__pycache__`).
+- **Validación:** `python3 -B -m py_compile` + `fontgen-engine --test` + esquema `assets/schemas/font_manifest.schema.json`.

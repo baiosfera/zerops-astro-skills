@@ -5,16 +5,24 @@
   "required": ["brand", "color_space", "ecosystems", "selected_ecosystem_id", "themes", "accessibility_audit", "css_integration"],
   "properties": {
     "brand": { "type": "string" },
+    "vertical_archetype": { "type": "string" },
+    "color_strategy": { "type": "string", "enum": ["Restrained", "Committed", "Full Palette", "Drenched"] },
     "color_space": { "type": "string", "const": "oklch" },
     "selected_ecosystem_id": { "type": "string" },
+    "recommended_mode": { "type": "string", "enum": ["light", "dark"] },
+    "surface_geometry": {
+      "type": "object",
+      "properties": {
+        "radius_card": { "type": "string" },
+        "radius_control": { "type": "string" },
+        "elevation_style": { "type": "string", "enum": ["border_1px", "soft_shadow"] },
+        "proportion": { "type": "string" }
+      }
+    },
     "ecosystems": {
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/ChromaticEcosystem" }
-    },
-    "palettes": {
-      "type": "array",
-      "description": "Acceso rápido a las paletas para la UI de brandview"
     },
     "themes": {
       "type": "object",
@@ -24,6 +32,8 @@
         "light": { "$ref": "#/$defs/ThemePalette" }
       }
     },
+    "dtcg_tokens": { "type": "object" },
+    "brandfont_export": { "type": "object" },
     "accessibility_audit": {
       "type": "object",
       "required": ["wcag_2_2_compliance", "apca_compliance"],
@@ -46,7 +56,8 @@
             "headings_lc": { "type": "number", "minimum": 60 },
             "ui_components_lc": { "type": "number" }
           }
-        }
+        },
+        "achromatic_audit": { "type": "object" }
       }
     },
     "css_integration": {
@@ -55,6 +66,7 @@
       "properties": {
         "tailwind_v4_theme_block": { "type": "string" },
         "css_variables_root": { "type": "string" },
+        "astro_anti_fouc_head_snippet": { "type": "string" },
         "gradient_interpolation": { "type": "string", "default": "in oklch" }
       }
     }
@@ -66,6 +78,7 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
+        "color_strategy": { "type": "string" },
         "concept": { "type": "string" },
         "themes": {
           "type": "object",
@@ -89,12 +102,20 @@
       "required": ["primary", "secondary", "accent", "background", "surface", "text_primary", "text_muted"],
       "properties": {
         "primary": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "on_primary": { "$ref": "#/$defs/ColorTokenDTCG" },
         "secondary": { "$ref": "#/$defs/ColorTokenDTCG" },
         "accent": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "on_accent": { "$ref": "#/$defs/ColorTokenDTCG" },
         "background": { "$ref": "#/$defs/ColorTokenDTCG" },
         "surface": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "surface_elevated": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "border_subtle": { "$ref": "#/$defs/ColorTokenDTCG" },
         "text_primary": { "$ref": "#/$defs/ColorTokenDTCG" },
-        "text_muted": { "$ref": "#/$defs/ColorTokenDTCG" }
+        "text_muted": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "feedback_success": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "feedback_warning": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "feedback_error": { "$ref": "#/$defs/ColorTokenDTCG" },
+        "feedback_info": { "$ref": "#/$defs/ColorTokenDTCG" }
       }
     },
     "ColorTokenDTCG": {

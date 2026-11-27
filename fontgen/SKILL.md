@@ -4,25 +4,29 @@ description: "Trigger: fontgen, tipografia, fuentes, matriz tipografica, design 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "4.3"
+  version: "7.0"
 ---
 
-# Fontgen — Verified @fontsource-variable, Dual-Sort Envato & Anti-Slop Engine (v4.3)
+# `fontgen` — Art-Direction-First Variable WOFF2, Astro Fonts API & CLS=0 Engine (v7.0)
 
 ## Activation Contract
-Activar para diseñar la matriz tipográfica con `fontgen-engine` (`v4.3`) combinando Oráculo 15-shards, `verticals/<v>.json`, exclusión automática de fuentes hermanas (`--sibling-workspaces-dir`), catálogo Google Fonts variable verificado alineado con `impeccable-engine` (`web_ready_bridge.fontsource_packages`), búsqueda dual-sort en Envato Elements y galería SVG (`envato-font-preview v4.1`).
+Activate when conceiving, compiling, or auditing typographic systems with `fontgen-engine` (`v7.0`) aligned to Playbook 19 (`v2.0.0`) and Astro 2026 Native Fonts API (`fontProviders.fontsource()` + `fontProviders.local()`). Separates **Creative Art Direction** (`font_spec.json`, authored fresh per project from domain tone — zero hidden Oráculo crawl) from **Deterministic Compilation** (26 curated Fontsource variable families, Envato quality filtering, dual `CLS = 0` metric overrides, and SVG specimens in `envato-font-preview v5.1`).
 
-## Input & Output Isolation
-- **CLI Canónico:** `fontgen-engine --brand <BRAND> --shards <shards.json> --vertical-json <vertical.json> --brief <astrobranding_<brand>.md> --sibling-workspaces-dir <dev>/workspaces --output-dir <ws>/brand --sort hybrid [--seed N]`.
-- **Galería SVG:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" [--include-shortlist] --out <ws>/brand/previews`.
-- **Aislamiento Estricto:** Con `--output-dir`, escribe únicamente ahí (`font_manifest.json`, `fontgen_<vertical>.md`). Nunca crea carpetas fantasmas.
+## Two-Stage Workflow & Zero Silent Oráculo Leak
+1. **Stage 1 — Bespoke Art Direction (`font_spec.json`):** Author 3 genuinely distinct typographic directions in `<ws>/brand/font_spec.json` (Display Web, Body Web, scale ratio, tracking, and targeted Envato display/accent queries) tailored to the brand's positioning — never generic tech/startup clichés.
+2. **Stage 2 — Compile & Render Specimens:**
+   - **Art-Direction Spec (Default):** `fontgen-engine --brand <BRAND> --spec <ws>/brand/font_spec.json --brand-brief <vertical.json> --output-dir <ws>/brand`
+   - **Oráculo Opt-In Only:** Add `--shards <15_shards.json> --brief <astrobranding_*.md>` explicitly when astrological chart axes are intentionally part of the design brief. Without `--shards`/`--brief`, `has_oraculo` stays strictly `false`.
+   - **Web + SVG Gallery:** `envato-font-preview --from-manifest <ws>/brand/font_manifest.json --chroma <ws>/brand/chroma_manifest.json --texts "MARCA,SUBTITULO" [--include-shortlist] --out <ws>/brand/previews`
+3. **Strict Isolation:** Writes exclusively inside `--output-dir` (`font_manifest.json`, `fontgen_<vertical>.md`) and supports `--sibling-workspaces-dir` / `--exclude-fonts` for cross-vertical distinctness.
 
-## Hard Rules (Directivas Obligatorias)
-1. **Alineación `impeccable` y Cero Fuentes Sobreusadas:** Prohíbe seleccionar defaults de plantilla AI (`Inter`, `Fraunces`, `Instrument Serif`, `Plus Jakarta Sans`, `Space Grotesk`, `DM Sans`, `Instrument Sans`, `Outfit`, `Syne`, `Playfair Display`, `Newsreader`, `IBM Plex`). Selecciona display, cuerpo y acento itálico editorial desde familias `@fontsource-variable/*` verificadas y exclusivas entre ramas hermanas.
-2. **Inexistencia de Fuentes Fantasma (`optional_upgrade_only_when_woff2_present`):** Las tipografías de Envato se registran como mejora opcional (`envato_upgrade_targets`) y únicamente se declaran en CSS web cuando existan sus archivos `.woff2` locales en `public/fonts/`. El puente web compila directamente desde `web_ready_bridge.fontsource_packages`.
-3. **Búsqueda Vanguardista Real (`sort-by-latest` + `sort-by-popular`):** Puntúa novedad y oficio (`inktrap`, `grotesk`, `neo`, `variable`, `mono`, `editorial`), filtra kitsch, verifica `<svg` vivo y emite `shortlist_candidates`.
-4. **Galería Interactiva & Paridad:** `envato-font-preview v4.1` deduplica por UUID, aísla IDs SVG y valida cambio de vistas + tildes ES; `scripts/fontgen_engine.py` debe mantenerse byte-idéntico al repo de skills y pasar `fontgen-engine --test`.
+## Hard Rules (Positive Guidance)
+1. **Anti-Slop Typographic Floor & <=2 Core Families:** Blocks AI clichés (`Inter`, `Fraunces`, `Instrument Serif`, `Plus Jakarta Sans`, `Space Grotesk`, `DM Sans`, `Instrument Sans`, `Outfit`, `Syne`, `Playfair Display`, `Newsreader`, `IBM Plex`, `Lora`, `Cormorant`, `Crimson`, `Space Mono`). Restricts active families to `display` + `body` (+ conditional `mono`).
+2. **Quality-Gated Envato Discovery:** Blocks sci-fi/amateur noise (`futuristic`, `cyber`, `techno`, `scifi`, `wedding`, `calligraphy`, `"for elegant"`, `"for branding"`), penalizes keyword-stuffed titles, and weights `popular` craft above unvetted `latest`.
+3. **Verified Astro 2026 Native Fonts Config:** Generates Context7-compliant `astro.config.mjs` entries (`fontProviders.fontsource()` and `fontProviders.local({ options: { variants: [...] } })`) with zero runtime third-party font CDNs.
+4. **Dual `CLS = 0` & Readable Visual Specimens:** Emits `@font-face` metric overrides for Display and Body, `font-size-adjust: from-font`, `60ch–72ch` prose measure, and crisp `width`/`height`/`viewBox` SVG fallbacks inside `preview_gallery.html`.
+5. **Byte-Parity & Verification:** Keep `scripts/fontgen_engine.py` byte-identical between `zerops-astrobranding/scripts/` and `zerops-astro-skills/fontgen/scripts/`, pass `fontgen-engine --test` + `envato-font-preview --test`, and inspect `preview_gallery.html` in headless Chrome.
 
 ## References
-- `references/usage.md` — Manual Gestalt, Dual-Sort Envato y `envato-font-preview`.
-- `assets/schemas/font_manifest.schema.json` — Esquema JSON Draft 2020-12.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/fontgen/references/usage.md) · [`references/infra.md`](file:///var/www/zerops-astro-skills/fontgen/references/infra.md)
+- [`assets/schemas/font_manifest.schema.json`](file:///var/www/zerops-astro-skills/fontgen/assets/schemas/font_manifest.schema.json)
