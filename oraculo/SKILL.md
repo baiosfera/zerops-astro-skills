@@ -4,10 +4,10 @@ description: "Trigger: oraculo, fase 0, fase0, carta natal, astrologia. Ejecuta 
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "7.2" # pipeline engine version: "7.2"
+  version: "7.3" # pipeline engine version: "7.3"
 ---
 
-# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v7.2)
+# `oraculo` — Oráculo Maestro & Diagnóstico Multidimensional (v7.3)
 
 ## Activation Contract
 Activar ante solicitudes de diagnóstico astrológico, numerológico, vocacional y puente semiótico a `orchesbrand`.
@@ -28,6 +28,7 @@ Compila atómicamente la totalidad de Fase 0 (12 shards físicos, 15 shards Post
   - **Runner (`brandbook_pipeline_runner.py`)**: Sintetiza en `/var/www/baiosfera/PROYECTOS/[MARCA]/dev/` (`coach_technical_sheet.md`, `fase0_author_psychology.md`, `astrobranding_[marca].md`, `brandbook_[marca].json`).
   - **Audit**: Micro-audits en `raw/json/audit/` y `extraction_health_audit.md` con estado HTTP y `X-Credits-Remaining`.
 - **Regla 4 (Domificaciones & SSoT):** Mapeo en [`references/domifications_matrix.md`](file:///var/www/.agents/skills/oraculo/references/domifications_matrix.md); mantenimiento en `/var/www/zerops-astro-skills/oraculo/`.
+- **Regla 5 (Puente al Copy & Avatar `Casa 7 Descendente`):** Cuando Oráculo esté activo, `brand-studio` y `ad-campaign-factory` deben consumir la **Tríada del Avatar (`Casa 7 Descendente`, `Casa 8`, `Casa 11`) + `Venus`** desde `astrobranding_*.md` para moldear la psicología del comprador y su voz, no solo tokens visuales.
 
 ## Decision Gates
 

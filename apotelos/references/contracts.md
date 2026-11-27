@@ -26,6 +26,7 @@ class CommercialFunnelType:
 class DynamicVerticalSpec(BaseModel):
     vertical_slug: str = Field(..., description="Unique kebab-case slug for this business vertical")
     display_name: str = Field(..., description="Public human-readable title of the unit")
+    entity_role: str = Field(default="commercial_offer", pattern="^(commercial_offer|operating_protocol|editorial_pillar|hub_root)$")
     funnel_type: str = Field(default=CommercialFunnelType.DIRECT_CHECKOUT)
     domain_strategy: str = Field(default="subroute", description="Routing topology: 'multi_tenant_astro' (host middleware), 'isolated_runtime' (dedicated Bun runtime), 'subdomain', or 'subroute'")
     custom_domain: Optional[str] = Field(default=None, description="Custom domain or FQDN if attached")
