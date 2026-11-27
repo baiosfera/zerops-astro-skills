@@ -240,52 +240,47 @@ test('OAuthButton renders with custom label', async () => {
 
 ---
 
-## 7. Anti-Slop: Anti-Slop Craft and Design Gate {#7-anti-slop}
+## 7. Anti-Slop: Vibecoding Craft Floor, Hero Punch, Real Fonts & Lazy 60fps Motion {#7-anti-slop}
 
-The Pre-flight Craft Gate eradicates generic AI layouts (*AI Slop*). Before producing HTML/CSS, the engineer calibrates three fundamental dials:
+Before coding any Astro surface, read `19_web_design_systems_craft_and_vibecoding.md`, `{ws_dir}/brand/DESIGN.md`, and `impeccable/reference/craft-floor.md` to calibrate 3 dials (*Variance*, *Motion*, *Density*):
 
-1. **Variance Dial (Layout & Hierarchy)**:
-   - **High Asymmetry**: Break the predictable 3-card grid. Utilize editorial magazine grids, alternating column widths (e.g. 60/40, 70/30), overlapping z-index layers, and full-width display typography.
-   - **Display Typography**: Utilize expressive display fonts for H1/H2, keeping body copy clean and legible.
-2. **Motion Dial (Kinetic Flow)**:
-   - **Hero Dynamism**: Confine rich GSAP animations to the Hero and key section reveals (scroll triggers).
-   - **Easing Discipline**: Strictly ban `bounce` or `elastic` easings. Use smooth cubic-bezier (`cubic-bezier(0.16, 1, 0.3, 1)`) or spring mechanics.
-3. **Density Dial (Spatial Rhythm)**:
-   - **Luxury / Minimalist**: High negative space, generous padding (`py-24`, `py-32`), understated contrast.
-   - **Technical / Industrial**: High information density, subtle borders, monospaced metadata badges.
-
-### The 44 Impeccable Deterministic Rules (Enforced)
-- **Never use untinted neutral gray**: Black must be tinted with the brand's primary OKLCH undertone (e.g. `oklch(0.12 0.02 260)` instead of `#000000`).
-- **Never use purple-on-black cards**: Eliminate the cliché dark card with purple gradient border.
-- **Strict Heading Hierarchy**: H1 must be followed by lead paragraph or H2; never jump directly to H3.
-- **Minimum Touch Targets**: All interactive elements must maintain >= 44x44px clickable areas on mobile.
+1. **Visual World & Surface Integrity (`PRODUCT.md` -> `DESIGN.md`)**:
+   - Derive an original visual world per brand/vertical without cloning external reference layouts or collapsing into generic card grids.
+   - Default radii stay `12–16px` on cards and `8–12px` / `999px` on controls; restrict `0px` exclusively to explicit editorial/brutalist specs. Declare elevation once per surface (subtle `1px` border OR soft directional offset shadow, never stacked heavy borders + wide shadows, and zero `border-left` > 1px callout bars).
+   - Theme browser surfaces (`::selection`, `caret-color`, `scrollbar-color`, `outline: 2px solid`, `tabular-nums`) and guarantee `>= 44x44px` mobile touch targets.
+2. **Verified Self-Hosted Typography (Zero Phantom Fonts)**:
+   - Import only physically bundled `@fontsource-variable/*` packages (`fontgen` `web_ready_bridge.fontsource_packages`) or real `.woff2` files present in `public/fonts/`. Never list uninstalled Envato family strings in `font-family` or fallback to `Plus Jakarta Sans`, `Space Grotesk`, `Inter`, `Fraunces`, `Instrument Serif`, `DM Sans`, `Outfit`, or `Syne`.
+3. **Hero Punch Budget & Above-the-Fold Proof**:
+   - Keep `H1` concise (`6–14` words, optional focal contrast via *editorial italic* or weight—never gradient text, never uppercase eyebrows/kickers above H1/H2, zero acronym definitions in parentheses in H1). Keep subtitle `<= 26` words, pair CTA with real interactive proof or authentic human anchor above the fold, place SEO Direct-Answer blocks below the fold, and keep cookie consent compact without occluding interactive controls.
+   - Hide oversized sticky-header buttons below `sm` when the hero CTA already sits above the fold to guarantee `scrollWidth <= innerWidth` at `390px`.
+4. **Lazy-Loaded GSAP + ScrollTrigger (+ Optional Lenis) Pattern**:
+   - Defer motion setup via `requestIdleCallback` (fallback `150ms`) so `LCP < 1.0s` and `CLS = 0` stay intact; animate GPU-composited `transform`/`opacity` only, with smooth exponential easing (`cubic-bezier(0.16, 1, 0.3, 1)`), one authored signature motion moment per surface, `prefers-reduced-motion` support, and Astro View Transitions cleanup (`ctx.revert()` on `astro:before-swap`). When pairing `Lenis` + `ScrollTrigger`, sync scroll via `gsap.ticker` with `lagSmoothing(0)`.
+5. **Physical Craft Gate Before Completion**:
+   - Run `.agents/skills/impeccable/scripts/impeccable detect src/pages/ src/components/ src/styles/` (0 anti-patterns), `anti-slop-linter`, and a batched desktop (`1440x900`) + mobile (`390x844`) visual capture check.
 
 ---
 
-## 8. Brand Tokens: Brandbook Token Ingestion into Tailwind 4 {#8-brand-tokens}
+## 8. Brand Tokens: `DESIGN.md` & `brandbook.json` Ingestion into Tailwind v4 {#8-brand-tokens}
 
-When a `brandbook.json` (W3C DTCG format) exists in the project root, Astro 5 ingests tokens natively into `src/styles/global.css`:
+When `brandbook.json` or `DESIGN.md` exists, transpile primitive -> semantic -> component tokens in `brand-tokens.css` under `@theme inline` (`oklch(...)` tinted neutrals, WCAG `>= 7.0:1` body text, `>= 4.5:1` `on-primary` buttons):
 
 ```css
 @import "tailwindcss";
 
-@theme {
-  /* Colors from brandbook.json (OKLCH) */
-  --color-brand-primary: var(--brand-color-primary, oklch(0.2 0.05 250));
-  --color-brand-surface: var(--brand-color-surface, oklch(0.98 0.01 250));
-  --color-brand-accent: var(--brand-color-accent, oklch(0.7 0.15 140));
-  
-  /* Typography tokens */
+@theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-on-primary: var(--brand-on-primary);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-accent: var(--brand-accent);
   --font-display: var(--brand-font-display, system-ui, sans-serif);
   --font-body: var(--brand-font-body, system-ui, sans-serif);
-  
-  /* Motion tokens */
+  --radius-card: var(--brand-radius-card, 14px);
+  --radius-control: var(--brand-radius-control, 10px);
   --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-reveal: 600ms;
 }
 ```
 
-Components consume `--color-brand-primary` directly without manual color re-definitions.
+Components consume semantic tokens exclusively without hardcoded hex values or manual dark/light overrides.
 
 ---
 

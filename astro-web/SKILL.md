@@ -4,38 +4,28 @@ description: "Trigger: astro-web, astro 5, astro ssr, server islands, content la
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "3.2"
+  version: "3.3"
 ---
 
-# Astro 5 — High-Performance SSR & Disruptive Craft (v3.2)
+# Astro 5 — High-Performance SSR & Disruptive Vibecoding Craft (v3.3)
 
 ## Activation Contract
-Activate when architecting or optimizing Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actions, Content Layer API, Brandbook DTCG tokens, Anti-Slop Craft Gates, or decoupled backends (`nats`, `valkey`, `postgresql`, `objectstorage`).
+Activate when architecting or optimizing Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actions, Content Layer API, `DESIGN.md` & `brandbook.json` tokens, Anti-Slop Craft Gates, GSAP/Lenis 60fps motion, or decoupled backends (`nats`, `valkey`, `postgresql`, `objectstorage`).
 
 ## Hard Rules & Positive Guidance
-- **Host & Ports**: Bind `HOST: "0.0.0.0"` and `PORT: "3000"`. Prefix client env vars `PUBLIC_`; import server secrets via `astro:env/server`.
-- **Server Islands Key**: Inject identical `ASTRO_KEY` across rolling replicas to decrypt deferred component props.
-- **Runtime & Base Selection**: Build on `ubuntu/bun@1.3.9` for glibc/CGO parity and clean Rolldown bindings. Deploy artifacts `[dist, node_modules, package.json]`.
-- **Decoupled Backend**: Handle mutations via Zod-typed Astro Actions. Connect services over internal DNS (`http://<service>:<port>`) using `${queue_connectionString}`, `${cache_connectionString}`, `${db_connectionString}`.
-- **Decoupled Staging**: `06-astro-web.yaml` provisions production exclusively; staging uses opt-in `06b-astro-web-staging.yaml`.
-- **Tailwind CSS 4**: Integrate `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` tokens.
-- **Craft Gate & Human Copy SSoT (`copy/*.md` -> `web/*.json`)**: Calibrate 3 Dials (*Variance*, *Motion*, *Density*) and enforce [`impeccable`](file:///var/www/.agents/skills/impeccable/SKILL.md), [`design-taste-frontend`](file:///var/www/.agents/skills/taste-skill/SKILL.md), and [`codecraft`](file:///var/www/.agents/skills/codecraft/SKILL.md) (including zero uppercase hero eyebrows). Treat `copy/*.md` as the **authoritative human-editable SSoT** and `web/copy_strings.es.json` as a derived UI dictionary: reconcile manual edits from `copy/*.md` into `web/copy_strings.es.json` (and Drive) before compiling pages.
-- **Dynamic PostgreSQL & Ads-First SSR (`/[vertical]/lp/[slug].astro`)**: Query dynamic catalogs in continuous present (`date >= NOW()`) and hydrate sessions from cookies. Serve dynamic Ads-First campaign landings from validated `CampaignLandingSpec` payloads (`campaigns/<slug>.json`), inheriting `[data-brand]` tokens, emitting `X-Robots-Tag: noindex, follow` by default, and rendering `<InteractiveProofCalculator />` **strictly when `lead_magnet.mechanism !== "none"`**.
-- **Standalone & Mobile UX**: Import `theme.css` via `<style is:global>` on standalone pages, omit `capture` on file inputs, scale uploads via `Math.min(maxWidth/w, maxHeight/h, 1)`, scope admin cookies `path: "/"`, and shield magic links from crawler prefetch.
+- **Host, Ports & Keys**: Bind `HOST: "0.0.0.0"` and `PORT: "4321"` (or service port). Prefix public vars `PUBLIC_`, isolate server secrets via `astro:env/server`, and share identical `ASTRO_KEY` across rolling replicas.
+- **Runtime & Base Selection**: Run SSR on `ubuntu/bun@1.4` (`bun@1.3.9+` glibc parity); deploy `[.]` on ZCP containers and inject `NODE_OPTIONS="--max-old-space-size=1024"` in build envs when bundling React islands + variable fonts.
+- **Craft Floor (`PB19` + `DESIGN.md` Before UI Code)**: Read `19_web_design_systems_craft_and_vibecoding.md`, `{ws_dir}/brand/DESIGN.md`, `design-taste-frontend`, and `impeccable/reference/craft-floor.md` before writing components. Keep each brand's own visual world without cloning reference URLs or falling into uniform cards, gradient text, uppercase hero eyebrows, or arbitrary `0px` corners.
+- **Verified Self-Hosted Fonts Only**: Load real `@fontsource-variable/*` packages from `web_ready_bridge.fontsource_packages` (or physically present `public/fonts/*.woff2`) with CLS-0 fallback overrides; exclude overused AI faces (`Inter`, `Fraunces`, `Instrument Serif`, `Plus Jakarta Sans`, `Space Grotesk`, `DM Sans`, `Outfit`, `Syne`).
+- **Hero Punch & Above-the-Fold Proof**: Deliver a `6–14`-word `H1` (optional focal italic/weight contrast), `<= 26`-word subtitle, zero acronyms in parentheses in H1, immediate interactive proof or human anchor above the fold, `PB06` Direct-Answer below the fold, and compact consent UI that never covers hero CTAs.
+- **Dynamic Ads-First SSR (`/[vertical]/lp/[slug].astro`)**: Hydrate validated `CampaignLandingSpec` JSONs inheriting `[data-brand]` tokens, defaulting to `X-Robots-Tag: noindex, follow` (unless `seo_cluster_id` is set), gating `ViewContent` to acquisition routes, and rendering `<InteractiveProofCalculator />` strictly when `lead_magnet.mechanism !== "none"`.
+- **Lazy 60fps Motion & Physical Craft Gate**: Load `GSAP + ScrollTrigger` (+ optional `Lenis` via `gsap.ticker`) inside `requestIdleCallback` with Astro View Transitions teardown and `prefers-reduced-motion`; validate with `impeccable detect`, `anti-slop-linter`, and batched desktop/mobile browser captures.
 
 ## Decision Gates
 
 | Objective | Strategy | Reference |
 |---|---|---|
-| Architecture Matrix | Astro 5 vs Next 15, Remix, Nuxt | [`references/usage.md#1-matrix`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Content Layer | Universal Custom Loader with caching | [`references/usage.md#2-content-layer`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Server Islands | Defer SSR components with ASTRO_KEY | [`references/usage.md#3-server-islands`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Actions & NATS | Typed mutations with Valkey lock & NATS | [`references/usage.md#5-actions`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Anti-Slop Gate | Variance, Motion, Density calibration | [`references/usage.md#7-anti-slop`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Admin & Mobile UX | Standalone CSS, Gallery picker, aspect ratio, crawler defense | [`references/usage.md#11-admin-invariants`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
-| Topology | Bun 1.3, NATS 2.12, Valkey 7.2, Postgres 18 | [`references/infra.md#2-topology`](file:///var/www/.agents/skills/astro-web/references/infra.md) |
-| Lifecycle | Dev (`zsc noop`) + Prod (`bun build`) | [`references/infra.md#3-lifecycle`](file:///var/www/.agents/skills/astro-web/references/infra.md) |
-
-## References
-- [`references/usage.md`](file:///var/www/.agents/skills/astro-web/references/usage.md) — Content Layer recipes, Server Islands, typed Actions, OAuth, and Anti-Slop craft.
-- [`references/infra.md`](file:///var/www/.agents/skills/astro-web/references/infra.md) — Multi-service topology, import.yaml, zerops.yaml, and secret isolation.
+| Architecture Matrix & Actions | Astro 5 SSR, Server Islands, Actions, NATS | [`references/usage.md`](file:///var/www/.agents/skills/astro-web/references/usage.md) |
+| Craft, Fonts, Hero & Motion | `PB19`, `DESIGN.md`, `@fontsource-variable`, GSAP/Lenis | [`references/usage.md#7-anti-slop`](file:///var/www/.agents/skills/astro-web/references/usage.md#7-anti-slop) |
+| Admin & Mobile UX | Standalone CSS, `path: "/"`, prefetch guard | [`references/usage.md#11-admin-invariants`](file:///var/www/.agents/skills/astro-web/references/usage.md#11-admin-invariants) |
+| Topology & Lifecycle | Bun, NATS 2.12, Valkey 7.2, Postgres 18 | [`references/infra.md`](file:///var/www/.agents/skills/astro-web/references/infra.md) |

@@ -4,34 +4,21 @@ description: "Trigger: kinetic, animacion gsap, microinteracciones, motion desig
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.2"
+  version: "1.3"
 ---
 
-# Kinetic — Motion Design a 60fps, 3 Opciones de Animación & Micro-Audio ADSR Dual-RAG
+# Kinetic — Motion Design 60fps, Lazy GSAP/Lenis Astro 5 & Micro-Audio ADSR (v1.3)
 
 ## Activation Contract
-Activar para diseñar el sistema de movimiento a 60fps, formulando **3 Opciones de Animación Diferenciadas** aplicadas sobre IDs semánticos vectoriales, banco de micro-audio procedural ADSR y código dev CSS/GSAP. Opera desacoplado con ingestión directa desde `astrobranding_[MARCA].md` o en modo interactivo.
-
-## Input Rule (Desacople SSoT)
-- **Ingestión Directa Primaria:** Ingiere directamente desde `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/astrobranding_[MARCA].md` (compilado por Oráculo en Fase 0, Shards 03 y 10) sin requerir que fases previas se hayan ejecutado o bloqueen el pipeline. Si `symbol_manifest.json` o `chroma_manifest.json` existen, hereda sus nodos y paletas; de lo contrario aplica sobre los IDs semánticos canónicos.
-- **Modo Standalone / Manual:** Acepta especificaciones directas del usuario o `brand_input.json`.
+Activar para diseñar e implementar sistemas de movimiento a `60fps` sobre Astro 5 SSR + SVG/DOM semántico, formulando **3 Opciones de Animación Diferenciadas**, patrón de carga perezosa **GSAP + ScrollTrigger + Lenis** compatible con View Transitions y banco opcional de micro-audio procedural ADSR. Ingiera desde `DESIGN.md`, `astrobranding_[MARCA].md`, `kinetic_manifest.json` o especificaciones directas.
 
 ## Hard Rules (Directivas Obligatorias)
-- **1. Generación de 3 Opciones de Animación (60fps):** Formular 3 presets de animación:
-  - **Opción A (Precesión Orbital & Respiración Armónica):** Movimiento continuo suave, rotación orbital a 24s y pulso a 6s.
-  - **Opción B (Velocidad Cinética & Trazado Elástico):** Aceleración atlética `cubic-bezier(0.16, 1, 0.3, 1)`, destellos enérgicos a 4s.
-  - **Opción C (Revelado Místico & Brillo Áureo):** Variación sutil de opacidad, micro-pulsos y trazo `stroke-dashoffset`.
-- **2. Destino Específico a IDs Semánticos:** Las reglas `@keyframes` y tweens GSAP deben apuntar a `#symbol-core`, `#symbol-orbit-1`, `#symbol-orbit-2`, `#symbol-geometry-star`, `#symbol-monogram`. Emite código dev CSS/GSAP listo para producción frontend.
-- **3. Tokens de Motion W3C DTCG:** Definir duraciones (`fast`, `normal`, `slow`) y curvas cúbicas estandarizadas.
-- **4. Banco de Micro-Audio Procedural ADSR (Web Audio API):** Presets de síntesis matemática nativa para `hover`, `click`, `modal_open`, `success_confirm` sin archivos MP3 externos.
-- **5. Contrato de Selección:** Incluir `selected_animation_id` (ej: `"anim-orbit-precession"`).
-- **6. Salida Determinista SSoT:** Escribir en `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/kinetic_manifest.json` y validar contra `kinetic_manifest.schema.json`.
-
-## Output Contract
-- `/var/www/baiosfera/ASTROLOGÍA/DIAG/[MARCA]/kinetic_manifest.json`
+1. **Un Momento Coreografiado & Rendimiento GPU (`RAIL < 16ms`):** Diseñar **1 momento protagonista por superficie** en lugar de `fade-up` repetitivo en cada tarjeta. Animar exclusivamente propiedades compuestas (`transform`, `opacity`, `clip-path`), usando curvas exponenciales (`cubic-bezier(0.16, 1, 0.3, 1)`), prohibiendo `bounce`/`elastic` y cambios de `width`/`margin` que provoquen *Layout Thrashing*.
+2. **Patrón Astro 5 Lazy Load + Lenis + View Transitions (2026):** Diferir la carga del módulo GSAP dentro de `requestIdleCallback` (fallback `150ms`) para proteger `LCP < 1.0s`; cuando se active `Lenis`, sincronizar `lenis.on('scroll', ScrollTrigger.update)` con `gsap.ticker` y `lagSmoothing(0)`. Encapsular tweens en `gsap.context()`, revertir en `astro:before-swap`, reinicializar en `astro:page-load` y degradar limpiamente bajo `prefers-reduced-motion: reduce`.
+3. **3 Presets Diferenciados (60fps):** **Opción A** (*Precesión Orbital & Respiración Armónica*), **Opción B** (*Velocidad Cinética & Trazado Elástico*), **Opción C** (*Revelado Editorial & Brillo Contenido*) orientados a IDs vectoriales (`#symbol-core`, `#symbol-orbit-1/2`, `#symbol-geometry-star`, `#symbol-monogram`) o secciones marcadas.
+4. **Tokens W3C DTCG & Micro-Audio Procedural (Web Audio API):** Emitir tokens (`fast`, `normal`, `slow`, easing) y presets ADSR sin MP3 externos cuando aplique SFX discreto tras gesto de usuario.
+5. **Salida SSoT:** Persistir `kinetic_manifest.json` validado por esquema cuando opere el pipeline de identidad.
 
 ## References
-- [`references/usage.md`](file:///var/www/zerops-astro-skills/kinetic/references/usage.md) — Guía de 3 presets de animación, GSAP context, desacople SSoT y síntesis procedural Web Audio API.
-- [`references/infra.md`](file:///var/www/zerops-astro-skills/kinetic/references/infra.md) — Infraestructura de motion 60fps, Web Audio API y accesibilidad.
-- [`assets/schemas/kinetic_manifest.schema.json`](file:///var/www/zerops-astro-skills/kinetic/assets/schemas/kinetic_manifest.schema.json) — Esquema JSON Draft 2020-12.
-- [`assets/templates/kinetic_manifest_template.json`](file:///var/www/zerops-astro-skills/kinetic/assets/templates/kinetic_manifest_template.json) — Plantilla del manifiesto cinético.
+- [`references/usage.md`](file:///var/www/.agents/skills/kinetic/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/kinetic/references/infra.md)
+- [`assets/schemas/kinetic_manifest.schema.json`](file:///var/www/zerops-astro-skills/kinetic/assets/schemas/kinetic_manifest.schema.json)

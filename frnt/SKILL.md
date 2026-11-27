@@ -4,48 +4,29 @@ description: "Trigger: frnt, frontend architecture, ui orchestrator, frontend st
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "3.2"
+  version: "3.3"
 ---
 
-# `frnt` — Master Frontend, UI/UX & Edge CDN Orchestrator (v3.2)
+# `frnt` — Master Frontend, UI/UX & Edge CDN Orchestrator (v3.3)
 
 ## Activation Contract
-Activate when designing, architecting, building, or optimizing client web applications, Astro 5 SSR Server Islands, responsive UI architectures, client state, or edge CDN delivery on Zerops. Atomic tasks on a single framework execute directly with domain skills (`astro-web`, `react-19`, `tailwind-4`).
+Activate when designing, architecting, building, or optimizing client web applications, Astro 5 SSR Server Islands, responsive UI architectures, client state, motion choreography, or edge CDN delivery on Zerops. Atomic tasks on a single framework execute directly with domain skills (`astro-web`, `react-19`, `tailwind-4`, `kinetic`).
 
 ## Hard Rules & Positive Guidance
-- **Pre-Flight Epistemic Gate**: Evaluate frontend requests against the sub-skills table. Open and inspect matching sub-skills before writing client code.
-- **Brand SSoT Ingestion**: Ingest client typography, colors, and tokens from `/brand/brandbook.json` and `/brand/fase0_system_prompt.md`. Transpile W3C DTCG tokens into Tailwind 4 CSS theme variables.
-- **Zero Layout Shift (CLS = 0)**: Provide fallback skeletons (`slot="fallback"`) on all Astro Server Islands to guarantee 100% Core Web Vitals.
-- **Secure Customer Auth**: Store Directus session tokens exclusively in `httpOnly`, `secure`, `sameSite: 'lax'` cookies handled in Astro SSR middleware.
-- **Automated E2E Verification**: Cover critical customer journeys (cart, checkout, auth) with deterministic Playwright test suites.
-- **Strict Typing & Schema Validation**: Enforce TypeScript interfaces and Zod schemas across product variants, cart payloads, and Action inputs.
-- **Fractal CoHaLo Bounded Execution**: Run commands with `timeout 10s`, `WaitMsBeforeAsync: 10000`, and clean orphan tasks. Verify UI health with HTTP 200 probes on `/`.
+- **Pre-Flight Visual-World & Knowledge Gate**: Read `19_web_design_systems_craft_and_vibecoding.md`, `{ws_dir}/brand/DESIGN.md` (plus `PRODUCT.md`), and matching sub-skills (`impeccable/reference/craft-floor.md`, `design-taste-frontend`, `astro-web`) before editing UI code. Honor each brand's committed visual world without cloning reference sites.
+- **Verified Tokens & Real Self-Hosted Fonts**: Transpile `DESIGN.md` + `brandbook.json` 3-layer OKLCH tokens into Tailwind 4 CSS variables with WCAG AA/AAA contrast, default `12–16px` card radii (unless brutalist/editorial `0px` is explicitly justified), single-mechanism elevation, and physically bundled `@fontsource-variable/*` fonts (`0` phantom or overused AI fonts).
+- **Zero Layout Shift (CLS = 0) & Hero Punch Budget**: Provide fallback skeletons (`slot="fallback"`) on Server Islands, `size-adjust` font overrides, WebP/AVIF media with explicit dimensions, `6–14`-word `H1` + `<= 26`-word subtitle + immediate above-the-fold proof, and `0px` horizontal overflow at `390px`.
+- **Secure Customer Auth & Actions**: Store session tokens exclusively in `httpOnly`, `secure`, `sameSite: 'lax'` SSR cookies and validate mutations strictly via Zod.
+- **Physical Craft & Browser QA**: Pass `.agents/skills/impeccable/scripts/impeccable detect`, `anti-slop-linter`, and batched desktop (`1440×900`) + mobile (`390×844`) Playwright/browser inspection before reporting completion.
 
 ## Active Sub-Skills Dispatch Table
 
 | Capability | Sub-Skill | Role & Boundary |
 |---|---|---|
-| **Core SSR & Craft** | `astro-web` · `impeccable` · `taste-skill` · `codecraft` | Astro 5 SSR, craft & code discipline ([`astro-web`](file:///var/www/.agents/skills/astro-web/SKILL.md)) |
+| **Core SSR & Craft** | `astro-web` · `impeccable` · `taste-skill` · `kinetic` | Astro 5 SSR, `DESIGN.md`, lazy 60fps GSAP/Lenis ([`astro-web`](file:///var/www/.agents/skills/astro-web/SKILL.md)) |
 | **Interactive Islands** | `react-19` ([`SKILL.md`](file:///var/www/.agents/skills/react-19/SKILL.md)) | Client components with React Compiler |
-| **Client State** | `zustand-5` ([`SKILL.md`](file:///var/www/.agents/skills/zustand-5/SKILL.md)) | Lightweight persistent cart store |
-| **Styling & Tokens** | `tailwind-4` ([`SKILL.md`](file:///var/www/.agents/skills/tailwind-4/SKILL.md)) | OKLCH colors, CSS theme variables |
-| **Funnels & CAPI** | `checkout-funnels` ([`SKILL.md`](file:///var/www/.agents/skills/checkout-funnels/SKILL.md)) | Multi-country checkout UI & Meta CAPI |
-| **Payment Drivers** | `payment-gateways` ([`SKILL.md`](file:///var/www/.agents/skills/payment-gateways/SKILL.md)) | Wompi, Bold, Stripe, COD OTP & locks |
-| **Edge Ingress** | `cloudflare` ([`SKILL.md`](file:///var/www/.agents/skills/cloudflare/SKILL.md)) | Edge caching & Turnstile anti-bot |
-
-## Decision Gates
-
-| Objective | Strategy | Reference |
-|---|---|---|
-| SSR Strategy | Astro 5 Server Islands vs SPA/Next.js | [`references/usage.md#1-rendering-strategies`](file:///var/www/.agents/skills/frnt/references/usage.md) |
-| Auth Middleware | Directus SDK session with HTTP-only cookies | [`references/usage.md#3-ssr-auth-middleware`](file:///var/www/.agents/skills/frnt/references/usage.md) |
-| Zustand Cart | Persistent shopping cart with hydration safety | [`references/usage.md#4-zustand-cart-state`](file:///var/www/.agents/skills/frnt/references/usage.md) |
-| Runtime Topology | Astro SSR on Bun 1.3 with Cloudflare Edge | [`references/infra.md#1-frontend-runtime-topology`](file:///var/www/.agents/skills/frnt/references/infra.md) |
-
-## Output Contract
-- High-converting, zero-layout-shift Astro 5 SSR frontend running on Bun in Zerops.
-- Passing physical sensors (`skills-suite-validate`).
+| **Client State & Styling** | `zustand-5` · `tailwind-4` | Store persistente y tokens OKLCH en `@theme` |
+| **Funnels, Gateways & Edge** | `checkout-funnels` · `payment-gateways` · `cloudflare` | Checkout multi-pasarela, CAPI y Turnstile edge |
 
 ## References
-- [`references/usage.md`](file:///var/www/.agents/skills/frnt/references/usage.md) — Rendering matrix, SSR auth middleware, and Zustand store patterns.
-- [`references/infra.md`](file:///var/www/.agents/skills/frnt/references/infra.md) — Bun runtime topology, zerops.yaml build pipelines, and harness.
+- [`references/usage.md`](file:///var/www/.agents/skills/frnt/references/usage.md) · [`references/infra.md`](file:///var/www/.agents/skills/frnt/references/infra.md)
