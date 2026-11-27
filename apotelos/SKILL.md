@@ -1,7 +1,7 @@
 ---
 name: apotelos
 description: "Trigger: apotelos, protocolo apotelos, arqueologia del futuro, causalidad inversa, reversa causal, cuadrillas apotelos, blackboard manifest, validate-campaign, campaign landing spec, interactive proof. Sovereign Universal Reverse-Causality & Multi-Agent Mesh Orchestrator for Zerops."
-version: "1.5.0"
+version: "1.5.1"
 ---
 
 # `apotelos` — Reverse Causality & Sovereign Multi-Agent Mesh Engine (v1.5)
@@ -17,7 +17,7 @@ Activate when designing, auditing, or deploying business verticals, commercial f
 5. **Two-Layer Multi-Vertical Workspaces & Human Copy SSoT**: Emit Blackboard manifests to `.apotelos/manifests/` and isolated `dev/workspaces/{vertical}/[brand, strategy, copy, web]` per vertical under one shared client `astrobranding_<brand>.md` / 15-shards without mixing sister verticals. Inside each workspace, **`copy/*.md` wins over `web/copy_strings.es.json`** (`_ssot_policy`): downstream builders must reconcile manual Markdown edits before compiling. For `READY_NOW_BIFURCATED_SLO_APPLICATION`, TOFU includes BOTH `email` and transactional `whatsapp` (`is_transactional: true`, T+0).
 6. **Pydantic Validation & Concatenation Matrix (`apotelos validate-chain` & `validate-campaign`)**: Validate end-to-end linkage with Pydantic v2 (`MasterConcatenationMatrix`: `TopicCluster` enforcing 1 intent = 1 unique URL $\to$ `UtmContract` strictly external / `allow_on_internal_links=false` $\to$ `landing_route` $\to$ `PixelEventContract` with host-prefixed env var & `shared_event_id=true` $\to$ `remarketing_audience` $\to$ `followup_flow`; `OfferRingSpec` for `1 -> N` tiers; and `entity_role` strictly separating `operating_protocol` in `editorial`/`ecosystem_entry` from `commercial_offer`). For dynamic Ads-First landings (`campaigns/*.json`), validate `CampaignLandingSpec` and polymorphic optional `InteractiveProofSpec` via `apotelos validate-campaign`. Track initiatives in Linear + `/var/www/artifacts/plans/`.
 7. **Proactive Orchestrator Invariant**: Materialize verified disk artifacts and request binary Go/No-Go before architectural shifts.
-8. **Model Reality & Clean Client Output**: Never leak internal jargon (`τε-0`, `BANT`, `OPB` unless declared public, `Rotación Barista`, `Ads-First`, `Comprador Ideal`, `UPPER_SNAKE_CASE`), voseo, or hardcoded Tailwind colors into `scaffold` HTML — bind to `--brand-*` CSS variables.
+8. **Model Reality & Clean Client Output**: Emit client-facing copy and `scaffold` HTML strictly in natural customer language bound to `--brand-*` CSS variables, keeping internal framework labels inside `strategy/` specs.
 9. **Zero Redundant LLM Calls**: Enforce JSON Mode and deterministic Pydantic validation.
 10. **Physical Materialization**: `apotelos scaffold` targets active runtime (`webdev/src/pages`) or workspace `web/scaffold/` first, hydrating `templates/astro/` modules.
 
