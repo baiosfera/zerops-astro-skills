@@ -137,3 +137,59 @@ class ApotelosManifest(BaseModel):
     deployment_spec: Dict[str, Any]  # Step 4: Astro routes, checkout endpoints, components
     messaging_spec: Dict[str, Any]   # Step 5: Omnichannel TOFU/MOFU/BOFU & anti-collision
 ```
+
+---
+
+## 6. Ads-First Campaign & Polymorphic Lead Magnet Contracts
+
+Defined in [`apotelos`](file:///var/www/zerops-astrobranding/scripts/apotelos) (`v2.5`) and validated via `apotelos validate-campaign <path_to_campaigns_dir_or_file>`:
+
+```python
+class LeadMagnetMechanismType(str, Enum):
+    NONE = "none"
+    FREEDOM_LEVERAGE_INDEX = "freedom_leverage_index"
+    DIAGNOSTIC_QUIZ = "diagnostic_quiz"
+    ROI_COST_GAP = "roi_cost_gap"
+    COMMISSION_SIMULATOR = "commission_simulator"
+    RESOURCE_GUIDE = "resource_guide"
+    MICRO_TRIAL = "micro_trial"
+
+class InteractiveProofSpec(BaseModel):
+    mechanism: LeadMagnetMechanismType = LeadMagnetMechanismType.NONE
+    title: str = ""
+    subtitle: str = ""
+    formula_profile: str = "none"
+    inputs: List[InteractiveProofInputSpec] = []
+    outputs: List[InteractiveProofOutputSpec] = []
+    share_card_enabled: bool = False
+    wa_form_rescue: bool = True
+    post_submit_route: Optional[str] = None
+
+class OfferRingSpec(BaseModel):
+    ring_id: str
+    ring_level: str  # entry | core | inner_circle | done_for_you
+    public_label: str
+    price_display: str
+    private_call_only: bool = False
+    cta_route: str
+
+class CampaignLandingSpec(BaseModel):
+    campaign_slug: str
+    vertical_slug: str
+    brand_slug: str
+    route_path: str              # e.g. /<vertical>/lp/<slug>
+    robots: str = "noindex, follow"  # index, follow requires seo_cluster_id
+    seo_cluster_id: Optional[str] = None
+    barista_rotation_window: Optional[str] = None
+    offer_ring: str
+    ad_creative: AdCreativeSpec  # hook_first_3s, primary_text, headline, utm (allow_on_internal_links=False)
+    hero_h1: str
+    hero_subheadline: str
+    message_match_keywords: List[str]
+    contrarian_proof_points: List[str]
+    lead_magnet: InteractiveProofSpec
+    primary_cta_label: str
+    primary_cta_href: str
+    wa_email_campaign_tag: str   # camp:<vertical>:<slug>
+    view_content_allowed: bool = True
+```

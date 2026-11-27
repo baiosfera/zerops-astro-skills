@@ -1,10 +1,10 @@
 ---
 name: apotelos
-description: "Trigger: apotelos, protocolo apotelos, arqueologia del futuro, causalidad inversa, reversa causal, cuadrillas apotelos, blackboard manifest. Sovereign Universal Reverse-Causality & Multi-Agent Mesh Orchestrator for Zerops."
-version: "1.3.0"
+description: "Trigger: apotelos, protocolo apotelos, arqueologia del futuro, causalidad inversa, reversa causal, cuadrillas apotelos, blackboard manifest, validate-campaign, campaign landing spec, interactive proof. Sovereign Universal Reverse-Causality & Multi-Agent Mesh Orchestrator for Zerops."
+version: "1.4.0"
 ---
 
-# `apotelos` — Reverse Causality & Sovereign Multi-Agent Mesh Engine (v1.3)
+# `apotelos` — Reverse Causality & Sovereign Multi-Agent Mesh Engine (v1.4)
 
 ## Activation Contract
 Activate when designing, auditing, or deploying business verticals, commercial funnels, multi-agent CrewAI/Hermes crews, or applying reverse-causality architecture ($\tau\epsilon$-Final $\to \tau\epsilon$-0) to any brand or holding in Zerops.
@@ -15,9 +15,9 @@ Activate when designing, auditing, or deploying business verticals, commercial f
 3. **Agnostic Domain & Dynamic Target Resolution**: Resolve dynamically without hardcoding Zerops hostnames or tenant brands: CLI path $\to$ `.apotelos/ecosystem.json` $\to$ `$LOCAL_STORAGE_PATH/{project}` $\to$ `/var/www/baiosfera/PROYECTOS/{project}`.
 4. **Domain Topology ($0 Extra IP)**: Share L7 Balancer IPv4 via host middleware or isolated runtimes; isolate SEO via canonicals and sitemaps.
 5. **Two-Layer Multi-Vertical Workspaces & Human Copy SSoT**: Emit Blackboard manifests to `.apotelos/manifests/` and isolated `dev/workspaces/{vertical}/[brand, strategy, copy, web]` per vertical under one shared client `astrobranding_<brand>.md` / 15-shards without mixing sister verticals. Inside each workspace, **`copy/*.md` wins over `web/copy_strings.es.json`** (`_ssot_policy`): downstream builders must reconcile manual Markdown edits before compiling. For `READY_NOW_BIFURCATED_SLO_APPLICATION`, TOFU includes BOTH `email` and transactional `whatsapp` (`is_transactional: true`, T+0).
-6. **Pydantic Validation & Concatenation Matrix (`apotelos validate-chain`)**: Validate end-to-end linkage with Pydantic v2 (`MasterConcatenationMatrix`: `TopicCluster` enforcing 1 intent = 1 unique URL $\to$ `UtmContract` strictly external / `allow_on_internal_links=false` $\to$ `landing_route` $\to$ `PixelEventContract` with host-prefixed env var & `shared_event_id=true` $\to$ `remarketing_audience` $\to$ `followup_flow`). Track initiatives in Linear + `/var/www/artifacts/plans/`.
+6. **Pydantic Validation & Concatenation Matrix (`apotelos validate-chain` & `validate-campaign`)**: Validate end-to-end linkage with Pydantic v2 (`MasterConcatenationMatrix`: `TopicCluster` enforcing 1 intent = 1 unique URL $\to$ `UtmContract` strictly external / `allow_on_internal_links=false` $\to$ `landing_route` $\to$ `PixelEventContract` with host-prefixed env var & `shared_event_id=true` $\to$ `remarketing_audience` $\to$ `followup_flow`; plus `OfferRingSpec` for `1 -> N` access tiers). For dynamic Ads-First landings (`campaigns/*.json`), validate `CampaignLandingSpec` and polymorphic optional `InteractiveProofSpec` (`mechanism`: `none | freedom_leverage_index | diagnostic_quiz | roi_cost_gap | commission_simulator | resource_guide | micro_trial`) via `apotelos validate-campaign` — never forcing a calculator when `none` converts better. Track initiatives in Linear + `/var/www/artifacts/plans/`.
 7. **Proactive Orchestrator Invariant**: Materialize verified disk artifacts and request binary Go/No-Go before architectural shifts.
-8. **Model Reality & Clean Client Output**: Never leak internal jargon (`τε-0`, `BANT`, `OPB`, `UPPER_SNAKE_CASE`), voseo, or hardcoded Tailwind colors into `scaffold` HTML — bind to `--brand-*` CSS variables.
+8. **Model Reality & Clean Client Output**: Never leak internal jargon (`τε-0`, `BANT`, `OPB` unless declared public, `Rotación Barista`, `Ads-First`, `Comprador Ideal`, `UPPER_SNAKE_CASE`), voseo, or hardcoded Tailwind colors into `scaffold` HTML — bind to `--brand-*` CSS variables.
 9. **Zero Redundant LLM Calls**: Enforce JSON Mode and deterministic Pydantic validation.
 10. **Physical Materialization**: `apotelos scaffold` targets active runtime (`webdev/src/pages`) or workspace `web/scaffold/` first, hydrating `templates/astro/` modules.
 

@@ -376,6 +376,19 @@ Every e-commerce, aesthetic, or service brand scaffolded on Zerops must include 
 
 ---
 
+## 12. Dynamic Ads-First Route (`/[vertical]/lp/[slug].astro`) & Polymorphic Proof Engine
+
+1. **Dynamic SSR Route (`src/pages/[vertical]/lp/[slug].astro`):**
+   - Loads `CampaignLandingSpec` JSON via `loadCampaignLanding(vertical, slug)` (from `CAMPAIGNS_DATA_DIR` or `src/data/campaigns/`) and returns `404` for unknown slugs.
+   - Sets `X-Robots-Tag` and `<meta name="robots">` from `campaign.robots` (`noindex, follow` by default unless `campaign.seo_cluster_id` justifies `index, follow`).
+   - Passes `brandSlug={campaign.brand_slug}` onto `<html data-brand={brandSlug}>` so multi-theme CSS variables resolve automatically without theme bleed.
+   - Emits `data-view-content-allowed={String(campaign.view_content_allowed)}` and forwards inbound UTMs + `?ref=` + `campaign_slug` onto primary CTAs.
+2. **Optional Polymorphic Proof Component (`src/components/InteractiveProofCalculator.astro`):**
+   - **Zero Forced Calculators:** Renders strictly when `spec.mechanism !== "none"`.
+   - Builds inputs (`range`, `select`, `number`, `toggle`) and live monospace readouts (`font-mono tabular-nums`) from `InteractiveProofSpec` using `--brand-*` CSS variables and pure formula profiles (`freedom_leverage_v1`, `roi_cost_gap_v1`, `commission_tier_v1`, `diagnostic_score_v1`).
+
+---
+
 ## Playbook Master Mapping (`INDEX.json`)
 - **`05_web_cro_landings_and_ecommerce.md`** — High-converting Astro 5 SSR landing architecture, Server Islands (`server:defer`), zero-CLS skeletons.
 - **`06_seo_aeo_geo_and_organic_content.md`** — Schema.org `@graph`, `llms.txt`, host-aware `robots.txt`, Core Web Vitals.

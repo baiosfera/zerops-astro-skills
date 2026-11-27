@@ -4,10 +4,10 @@ description: "Trigger: astro-web, astro 5, astro ssr, server islands, content la
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "3.1"
+  version: "3.2"
 ---
 
-# Astro 5 — High-Performance SSR & Disruptive Craft (v3.1)
+# Astro 5 — High-Performance SSR & Disruptive Craft (v3.2)
 
 ## Activation Contract
 Activate when architecting or optimizing Astro 5 SSR on Zerops: Server Islands (`server:defer`), Astro Actions, Content Layer API, Brandbook DTCG tokens, Anti-Slop Craft Gates, or decoupled backends (`nats`, `valkey`, `postgresql`, `objectstorage`).
@@ -20,7 +20,7 @@ Activate when architecting or optimizing Astro 5 SSR on Zerops: Server Islands (
 - **Decoupled Staging**: `06-astro-web.yaml` provisions production exclusively; staging uses opt-in `06b-astro-web-staging.yaml`.
 - **Tailwind CSS 4**: Integrate `@tailwindcss/vite` in `astro.config.mjs` with CSS-first `@theme` tokens.
 - **Craft Gate & Human Copy SSoT (`copy/*.md` -> `web/*.json`)**: Calibrate 3 Dials (*Variance*, *Motion*, *Density*) and enforce [`impeccable`](file:///var/www/.agents/skills/impeccable/SKILL.md), [`design-taste-frontend`](file:///var/www/.agents/skills/taste-skill/SKILL.md), and [`codecraft`](file:///var/www/.agents/skills/codecraft/SKILL.md) (including zero uppercase hero eyebrows). Treat `copy/*.md` as the **authoritative human-editable SSoT** and `web/copy_strings.es.json` as a derived UI dictionary: reconcile manual edits from `copy/*.md` into `web/copy_strings.es.json` (and Drive) before compiling pages.
-- **Dynamic PostgreSQL SSR**: Query dynamic catalogs in continuous present (`date >= NOW()`) and hydrate sessions from cookies.
+- **Dynamic PostgreSQL & Ads-First SSR (`/[vertical]/lp/[slug].astro`)**: Query dynamic catalogs in continuous present (`date >= NOW()`) and hydrate sessions from cookies. Serve dynamic Ads-First campaign landings from validated `CampaignLandingSpec` payloads (`campaigns/<slug>.json`), inheriting `[data-brand]` tokens, emitting `X-Robots-Tag: noindex, follow` by default, and rendering `<InteractiveProofCalculator />` **strictly when `lead_magnet.mechanism !== "none"`**.
 - **Standalone & Mobile UX**: Import `theme.css` via `<style is:global>` on standalone pages, omit `capture` on file inputs, scale uploads via `Math.min(maxWidth/w, maxHeight/h, 1)`, scope admin cookies `path: "/"`, and shield magic links from crawler prefetch.
 
 ## Decision Gates

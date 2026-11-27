@@ -1,31 +1,37 @@
 ---
 name: brand-studio
-description: "Trigger: brand-studio, crear marca, pipeline 360, playbook-first, con o sin oraculo, brand brief, estudio de marca. Sovereign 5-Phase Playbook-First Brand & Conversion Studio via Antigravity run_workflow."
+description: "Trigger: brand-studio, crear marca, pipeline 360, playbook-first, con o sin oraculo, brand brief, estudio de marca, ad-library, ad-campaign-factory, ads-first, meta ad library, rotacion barista, comprador ideal, interactive proof. Sovereign Dual-Layer Brand & Ads-First Conversion Studio via Antigravity run_workflow."
 license: Apache-2.0
 metadata:
   author: "gentleman-programming"
-  version: "1.5"
+  version: "2.0"
 ---
 
-# `brand-studio` — Estudio Integral de Marca, Arte, SEO y Embudo (v1.5)
+# `brand-studio` — Estudio Dual de Marca, SEO y Fábrica Ads-First (v2.0)
 
 ## Activation Contract
-Activar al construir, rehacer o auditar cualquier marca o ecosistema multirrama (**con o sin Oráculo**) sobre Playbooks Maestros (`00..18`), concatenando Posicionamiento, Anti-AMN Competitivo Vigente y Hub (`1 ruta = 1 SSoT`) $\to$ SERP real + SEO técnico (`index,follow`, `@graph` autocontenido por ruta) $\to$ Arte full-color + `WebP/AVIF` + multi-tema `[data-brand]` $\to$ Entrelazado secuencial Web/WA/Email + CAPI Cross-Domain + Afiliados (`?ref=`) $\to$ Copy SSoT (`copy/*.md`).
+Activar al construir, rehacer o escalar cualquier marca o campaña (**con o sin Oráculo**) sobre Playbooks (`00..18`) con **mínima intervención del usuario**: el agente auto-resuelve `ecosystem.json`, `brandbook.json`, `ad-library` y los parámetros de `run_workflow` desde una instrucción en lenguaje natural, pausando únicamente para aprobación estratégica de arte (Fase 2) o ángulos/anuncios.
 
 ## Architectural Invariant (`run_workflow` vs Hermes/CrewAI)
-- **ZCP Nativo (`run_workflow`):** Corre sobre [`workflows/brand-studio/brand_studio.wf`](file:///var/www/zerops-astrobranding/workflows/brand-studio/brand_studio.wf) con modelos frontier y MCPs reales (`firecrawl`, `exa`, `tavily`, `brave`, `jina`, `image-generator`). Cero dependencia de `hermes`, `freellmapi` ni `bifrost`.
-- **Hermes / CrewAI:** Reservados para operación post-lanzamiento 24/7, nunca para ideación ni copywriting creativo.
+- **ZCP Nativo (`run_workflow`):**
+  1. `brand_studio.wf` (`v2.0`): diseño fundacional 1 vez por marca/línea (Posicionamiento $\to$ Arte $\to$ Matriz $\to$ Copy SSoT $\to$ Crítico).
+  2. `ad_campaign_factory.wf` (`v1.0`): fábrica repetible **Ads-First** de bajo consumo (`ad-library` 0-tokens $\to$ ángulos $\to$ hidratación paralela `campaigns/<slug>.json` $\to$ gates deterministas $\to$ crítico).
+- **Hermes / CrewAI:** Reservados para operación post-lanzamiento 24/7 (`ad-library --diff` / monitoreo), nunca ideación creativa.
 
-## Cortafuegos Terminológico y Única SSoT
-- Prohibido filtrar jerga operativa (`verticales`, `DIY`, `DWY`, `DFY`, `BANT`, `PWYW`, `Order Bump`, `AEO/GEO`, `UPPER_SNAKE_CASE`) al público; exponer solo roles reales y `public_brand_concepts` declarados (`anti-slop-linter`). Usar `/mnt/localstorage/<Proyecto>/dev/ecosystem.json` como **única SSoT** (sin `_shared/`).
+## Pilares Estratégicos & Dual-Layer Web
+1. **Comprador Ideal + Contraste `CO1` + Oferta `1 → N`:** Hablar a la brecha entre capacidad top y libertad/margen (`Libertad = Beneficios / Horas`), polarizar por contraste (*ideas atraen, ofertas filtran*) y estructurar anillos de acceso sin multiplicar productos desconectados.
+2. **Núcleo Orgánico + Capa Dinámica Ads-First:** Rutas fijas `SEO/AEO/GEO` (`index, follow`, 1 intención = 1 URL, `@graph`, `/llms.txt`) conviven sin canibalización con `/[vertical]/lp/[slug]` (`noindex, follow` por defecto salvo `seo_cluster_id`).
+3. **Lead Magnet Polimórfico Opcional (`lead_magnet_mechanism`):** Nunca forzar calculadoras. Elegir por ángulo entre `none`, `freedom_leverage_index`, `diagnostic_quiz`, `roi_cost_gap`, `commission_simulator`, `resource_guide` o `micro_trial`.
+4. **Cortafuegos Terminológico:** Prohibido filtrar jerga interna (`verticales`, `DIY`, `DWY`, `DFY`, `BANT`, `PWYW`, `Order Bump`, `AEO/GEO`, `Rotación Barista`, `Ads-First`, `Comprador Ideal`, `UPPER_SNAKE_CASE`) al público. Única SSoT: `/mnt/localstorage/<Proyecto>/dev/ecosystem.json`.
 
-## Las 5 Fases Obligatorias (Playbook-First)
-1. **Fase 1 — Posicionamiento, Hub & Grounding Vigente (`PB00`, `PB06`, `PB16`):** Admite `oraculo` o `client`, aplica `1 ruta = 1 workspace SSoT` sin duplicar copy entre Hub y ramas aisladas, verifica ofertas/tiempos y madurez tecnológica/agéntica vigente vía `meta-research` (cero argumentos obsoletos, respeto estricto a `forbidden_audience_terms` y `deprecated_timelines`), y exige `index, follow`, `Skip to content`, `H1 > H2 > body`, `<html lang>` y `1 intención = 1 URL` en `strategy/seo_clusters.json`.
-2. **Fase 2 — Dirección de Arte & Pausa Humana (`taste-skill`, `impeccable`, `orchesbrand v4.1`):** Inspecciona referencias vía `firecrawl_scrape`, diseña 3 paletas (`WCAG >= 4.5:1`, `100% WebP/AVIF`) con exclusión automática de tipografías hermanas (`--project-dir`), `--preview-texts` públicos y **detiene (`stop_after_phase="phase_2_art_direction"`) hasta aprobación humana**.
-3. **Fase 3 — Concatenación, Entrelazado Secuencial & CAPI (`PB01..18` + `ad-telemetry` + `apotelos v2.4`):** Modela `offer_archetype`, `vsl_mode` (`hybrid_smart_vsl`/`lazy_facade_video`), `ViewContent` exclusivo de landing, `cross_domain_bridge` (con escape IG/FB), `affiliate_program` (`?ref=`), rescate WA, diagnóstico sin registro y **`cross_funnel_bridges` + `omnichannel_anti_collision`** (`bottom_section`/`thank_you`/`downsell`/`lifecycle_nurture` con `delay_days >= 7` y máx. 1 secuencia puente activa) validado con `apotelos validate-chain`.
-4. **Fase 4 — Escuadrón Paralelo de Copy & Astro Readiness (`PB02..18`):** Redacta `copy/*.md` (incl. testimonios por objeción, FAQ incómodo, bloque editorial inferior post-FAQ, `/afiliados` y ciclo Email/WA Días 0–7 / 8–14 / 15–30+), `web/schema_graph.json` autocontenido por ruta (`FAQPage`+`Offer`), `web/llms_txt_spec.md`, `web/astro_readiness_spec.md` multi-tema (`[data-brand]`), y reconcilia `brand-play sync-copy --all-files`.
-5. **Fase 5 — Juez Adversario Ciego:** Audita contraste, `index,follow`, `@graph`, `ViewContent` acotado, entrelazado sin distracciones ni colisiones WA/Email y cero jerga interna.
+## Las 5 Fases de `brand_studio.wf`
+1. **Fase 1:** Comprador Ideal, `CO1`, Oferta `1 → N`, Hub `1 ruta = 1 SSoT`, Anti-AMN en vivo y clústeres `seo_clusters.json`.
+2. **Fase 2:** `taste-skill` + `impeccable` + `orchesbrand` (3 paletas WCAG `>= 4.5:1`, `100% WebP/AVIF`) y **pausa humana (`stop_after_phase="phase_2_art_direction"`)**.
+3. **Fase 3:** `concatenation_matrix.json` (`InteractiveProofSpec`, `offer_rings`, `ViewContent` solo landing, `cross_domain_bridge`, `?ref=`, `cross_funnel_bridges`) validado con `apotelos validate-chain`.
+4. **Fase 4:** Escuadrón paralelo (`copy/*.md`) + reconciliación `brand-play sync-copy --all-files`.
+5. **Fase 5:** Juez Adversario Ciego (`APPROVED` / `NEEDS_REVISION`).
 
 ## References
-- [`references/usage.md`](file:///var/www/zerops-astro-skills/brand-studio/references/usage.md) — Parámetros `run_workflow` v1.4, `enable_cross_funnel_mesh`, `offer_archetype` y `brand_brief.json`.
-- [`MANUAL_BRAND_STUDIO.md`](file:///var/www/zerops-astrobranding/scripts/MANUAL_BRAND_STUDIO.md) — Manual práctico 360°.
+- [`references/usage.md`](file:///var/www/zerops-astro-skills/brand-studio/references/usage.md) — Parámetros `brand_studio.wf` v2.0 y contrato de piloto automático.
+- [`references/ad_campaign_factory.md`](file:///var/www/zerops-astro-skills/brand-studio/references/ad_campaign_factory.md) — Protocolo `ad-library` + `ad_campaign_factory.wf`.
+- [`MANUAL_BRAND_STUDIO.md`](file:///var/www/zerops-astrobranding/blueprints/MANUAL_BRAND_STUDIO.md) · [`MANUAL_AD_CAMPAIGN_FACTORY.md`](file:///var/www/zerops-astrobranding/blueprints/MANUAL_AD_CAMPAIGN_FACTORY.md)

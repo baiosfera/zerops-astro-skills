@@ -1,57 +1,38 @@
-# `brand-studio` — Guía Operativa `run_workflow` (v1.3)
+# `brand-studio` — Guía Operativa `run_workflow` (v2.0)
 
-## 1. Invocación desde ZCP (Fase 1 + Fase 2 Visual)
+## 1. Contrato de Piloto Automático (Mínima Intervención Humana)
+Cuando el usuario pida crear o replantear una marca, línea o campaña en lenguaje natural:
+1. El agente resuelve automáticamente `/mnt/localstorage/<Project>/dev/ecosystem.json`, `verticals/<vertical>.json`, `brandbook.json` y el `workspace_dir` activo.
+2. El usuario **nunca** debe redactar JSONs ni invocar `run_workflow` manualmente: el agente arma `Args` con valores seguros (`lead_magnet_mechanism="auto"`, `offer_model="auto"`, `enable_ads_first_layer=True`) y ejecuta.
+3. Solo se detiene la ejecución para decisiones estratégicas del fundador: aprobación visual (`phase_2_art_direction`) o aprobación de ángulos (`ad_campaign_factory.wf` Fase 2).
+
+## 2. Invocación desde ZCP (`brand_studio.wf` v2.0)
 ```python
 run_workflow(
     ScriptPath="/var/www/zerops-astrobranding/workflows/brand-studio/brand_studio.wf",
-    Description="Ejecutar Fase 1 y 2 (SEO SERP + Hub Multirrama + Dirección de Arte) y esperar aprobación visual",
+    Description="Ejecutar Fase 1 y 2 (Posicionamiento Comprador Ideal + SEO + Arte) y esperar aprobación visual",
     Args={
         "project": "MiProyecto",
-        "vertical": "hub-principal",
-        "workspace_dir": "/mnt/localstorage/MiProyecto/dev/workspaces/hub-principal",
-        "intake_mode": "auto",  # "oraculo" | "client" | "auto"
-        "offer_archetype": "auto",  # "auto" | "multi_branch_hub" | "high_ticket_evaluation" | "saas_trial_tiers" | "transformational_product" | "community_membership"
-        "target_country": "Colombia y Latinoamérica",
-        "reference_urls": ["https://ejemplo1.com", "https://ejemplo2.com"],
-        "envato_urls": ["https://elements.envato.com/fonts/..."],
-        "hub_branches": [
-            {"branch_slug": "academia", "route_path": "/academia", "future_domain": "academia.com", "delivery_tier": "diy", "public_label": "Comunidad y Academia"},
-            {"branch_slug": "mentoria", "route_path": "/mentoria", "future_domain": "mentoria.com", "delivery_tier": "dwy", "public_label": "Mentoría Aplicada"},
-            {"branch_slug": "agencia", "route_path": "/agencia", "future_domain": "agencia.com", "delivery_tier": "dfy", "public_label": "Implementación Llave en Mano"}
-        ],
+        "vertical": "linea-principal",
+        "workspace_dir": "/mnt/localstorage/MiProyecto/dev/workspaces/linea-principal",
+        "intake_mode": "auto",
+        "offer_archetype": "auto",
+        "offer_model": "one_to_n_rings",  # "auto" | "one_to_n_rings" | "multi_branch_hub" | "direct_checkout" | "saas_tiers"
+        "lead_magnet_mechanism": "auto",  # "auto" | "none" | "freedom_leverage_index" | "diagnostic_quiz" | "roi_cost_gap" | "commission_simulator" | "resource_guide" | "micro_trial"
+        "enable_ads_first_layer": True,
         "enable_affiliate_layer": True,
         "enable_cross_funnel_mesh": True,
-        "vsl_mode": "hybrid_smart_vsl",  # o "lazy_facade_video"
+        "target_country": "Colombia y Latinoamérica",
         "stop_after_phase": "phase_2_art_direction"
     }
 )
 ```
 
-## 2. Cortafuegos Terminológico y Única SSoT
-- **SSoT de Topología:** Usar exclusivamente `/mnt/localstorage/<Proyecto>/dev/ecosystem.json` (cero duplicados en `_shared/`).
-- **Uso estrictamente interno:** `verticales`, `DIY`, `DWY`, `DFY`, `BANT`, `PWYW`, `Order Bump`, `AEO/GEO`, `UPPER_SNAKE_CASE`.
-- **Uso público aprobado:** Roles reales del fundador, marcas de cada línea y términos declarados en `public_brand_concepts` dentro del brief o vertical JSON. `anti-slop-linter` bloquea fugas en archivos públicos.
+## 3. Cortafuegos Terminológico y Única SSoT
+- **SSoT de Topología:** Exclusivamente `/mnt/localstorage/<Proyecto>/dev/ecosystem.json`.
+- **Uso estrictamente interno (prohibido en textos/JSON públicos):** `verticales`, `DIY`, `DWY`, `DFY`, `BANT`, `PWYW`, `Order Bump`, `AEO/GEO`, `Rotación Barista`, `Ads-First`, `Comprador Ideal`, `UPPER_SNAKE_CASE`.
+- **Uso público aprobado:** Roles reales del fundador, marca comercial y `public_brand_concepts` declarados. `anti-slop-linter` bloquea fugas antes del build.
 
-## 3. Esquema Mínimo `brand_brief.json` (Modo Sin Oráculo)
-```json
-{
-  "vertical_slug": "mi-linea",
-  "display_name": "Nombre Comercial — Propuesta Principal",
-  "intake_mode": "client",
-  "offer_archetype": "saas_trial_tiers",
-  "positioning_roles": ["Estratega Digital", "Mentor de Marcas"],
-  "public_brand_concepts": ["Category of One (CO1)", "One-Person Business (OPB)"],
-  "target_avatar": {
-    "icp": "Consultores y firmas profesionales en Colombia y LatAm",
-    "pain_points": ["Competir por precio", "Operación manual"]
-  },
-  "primary_offer": {
-    "hook": "Prueba sin riesgo / Diagnóstico",
-    "core": "$599 USD + $900.000 COP/mes"
-  },
-  "reference_urls": []
-}
-```
-
-## 4. Reanudar tras Aprobación Humana (Fases 3 a 5)
-Una vez que el fundador aprueba los colores y fuentes en `previews/preview_gallery.html` y `chroma_preview.html`, volver a ejecutar `run_workflow` con `"stop_after_phase": "phase_5_critic"`.
+## 4. Reanudar tras Aprobación Visual (Fases 3 a 5)
+Tras aprobar colores y fuentes en `preview_gallery.html` / `chroma_preview.html`, ejecutar con `"start_from_phase": "phase_3_concatenation"` y `"stop_after_phase": "phase_5_critic"`.
+Para iterar campañas `Ads-First` sobre anuncios nuevos, usar [`references/ad_campaign_factory.md`](file:///var/www/zerops-astro-skills/brand-studio/references/ad_campaign_factory.md).

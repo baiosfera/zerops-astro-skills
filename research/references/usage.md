@@ -98,3 +98,6 @@ Translate local project terms into universal engineering terminology before quer
 | **Repos / Agent Skills** | — | `firecrawl_developer_search` / `exa` | `jina` (`search_web`) $\to$ `brave` | `jina` (`read_url`) / `web_fetch_exa` | `crawl4ai` |
 | **Academic / PDFs** | — | `jina` (`search_arxiv`) / `firecrawl_research_search_papers` | `exa` $\to$ `brave` | `jina` (`extract_pdf` / `read_url`) | `firecrawl_research_read_paper` |
 | **WAF / JS-Heavy SPA** | — | `tavily_search` / `brave` | `duckduckgo` | `jina` (`r.jina.ai`) | `firecrawl` (`scrape`/`interact`) / `zerops_browser` |
+| **Meta Ad Library** | — | `ad-library fetch` (`meta-api` $\to$ `firecrawl` $\to$ `jina`) | `firecrawl_scrape` $\to$ `ad-library parse` | `jina:read_url(question=...)` on winning destination URLs | `zerops_browser` |
+
+> **Token-Frugality Rule for Meta Ad Library:** Never dump raw ~65 KB Meta Ad Library scrapes into chat context. Always normalize through `ad-library` (`0` LLM tokens) into a `< 3 KB` JSON brief filtered by `days_active >= 14`, then inspect only the top 2–3 winning destination URLs with `jina:read_url(question=...)`.

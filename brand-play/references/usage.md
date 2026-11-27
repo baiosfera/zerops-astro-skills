@@ -71,15 +71,16 @@ The `brand-play` engine consumes universal playbooks from `/var/www/localstorage
 
 ---
 
-## 3. Anti-Slop Validation & CLI Usage
+## 3. Anti-Slop Validation, Human-SSoT Sync (`sync-copy`) & CLI Usage
 
 ### CLI Commands & Verification
 ```bash
-# Transmute a single playbook for active brand
-brand-play transmute --playbook 00_category_of_one --brand "${PROJECT_NAME}" --target all
+# Verificar o reconciliar ediciones manuales en copy/*.md y campaigns/*.json -> web/copy_strings.es.json
+brand-play sync-copy --workspace /mnt/localstorage/${PROJECT_NAME}/dev/workspaces/<vertical> --check
+brand-play sync-copy --workspace /mnt/localstorage/${PROJECT_NAME}/dev/workspaces/<vertical> --all-files
 
-# Transmute all discovered playbooks for active brand across all targets
-brand-play transmute --all --brand "${PROJECT_NAME}" --target all
+# Auditar JSON público de campaña o archivo Markdown con anti-slop-linter v2.2
+anti-slop-linter --brand "${PROJECT_NAME}" --vertical <vertical> --file campaigns/<slug>.json
 
 # List discovered playbooks and workspace brands
 brand-play list --playbooks
